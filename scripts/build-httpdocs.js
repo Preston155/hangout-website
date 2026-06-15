@@ -115,6 +115,10 @@ function main() {
   fs.mkdirSync(dbDir, { recursive: true });
   fs.copyFileSync(path.join(ROOT, "database", "install-all.sql"), path.join(dbDir, "install-all.sql"));
   fs.copyFileSync(path.join(ROOT, "database", "plesk.local.example.php"), path.join(dbDir, "plesk.local.example.php"));
+  const localPhp = path.join(ROOT, "database", "plesk.local.php");
+  if (fs.existsSync(localPhp)) {
+    fs.copyFileSync(localPhp, path.join(dbDir, "plesk.local.php"));
+  }
   fs.writeFileSync(path.join(dbDir, ".htaccess"), "<IfModule mod_authz_core.c>\n  Require all denied\n</IfModule>\n");
   fs.copyFileSync(path.join(ROOT, "database", "install-all.sql"), path.join(OUT, "api", "install-all.sql"));
 
