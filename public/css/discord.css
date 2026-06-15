@@ -2601,6 +2601,100 @@ button { cursor: pointer; border: none; background: none; }
   line-height: 1.4;
 }
 
+/* Desktop app update banner */
+.desktop-update {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100000;
+  padding: 10px 16px;
+  background: linear-gradient(90deg, #1e1f22 0%, #2b2d31 100%);
+  border-bottom: 1px solid rgba(88, 101, 242, 0.45);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.desktop-update__content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: min(960px, 100%);
+  margin: 0 auto;
+}
+
+.desktop-update__icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(88, 101, 242, 0.2);
+  color: #a8b5ff;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.desktop-update__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.desktop-update__title {
+  font-size: 14px;
+  color: #f2f3f5;
+}
+
+.desktop-update__message {
+  font-size: 13px;
+  color: #949ba4;
+}
+
+.desktop-update__download {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.desktop-update__dismiss {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #949ba4;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.desktop-update__dismiss:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #dbdee1;
+}
+
+body.has-desktop-update-banner .auth-screen,
+body.has-desktop-update-banner .app {
+  margin-top: 58px;
+}
+
+@media (max-width: 700px) {
+  .desktop-update__content {
+    flex-wrap: wrap;
+  }
+
+  .desktop-update__download {
+    width: 100%;
+    text-align: center;
+  }
+}
+
 /* Context menus (server icon right-click) */
 .ctx-layer {
   position: fixed;

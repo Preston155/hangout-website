@@ -1,6 +1,7 @@
 const { execSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
+const { writeDesktopVersion, writeAppVersionCs } = require("../scripts/write-desktop-version");
 
 const ROOT = path.join(__dirname);
 const DIST = path.join(ROOT, "dist");
@@ -100,6 +101,9 @@ function packageWithIExpress(stagingDir, targetExe) {
 function main() {
   console.log("Building native Windows app (WebView2, no Electron)...\n");
 
+  writeAppVersionCs(path.join(ROOT, "AppVersion.cs"));
+  console.log(`Desktop app version: ${require("../package.json").version}`);
+
   run("dotnet restore");
   run("dotnet publish -c Release -r win-x64 -p:PublishSingleFile=false -p:SelfContained=false");
 
@@ -134,6 +138,7 @@ function main() {
   fs.mkdirSync(OUT, { recursive: true });
   fs.copyFileSync(distPackage, path.join(OUT, PACKAGE_NAME));
   fs.copyFileSync(distPackage, path.join(OUT, "Discord-Remake-Portable.exe"));
+  writeDesktopVersion(OUT);
 
   const mb = (fs.statSync(distPackage).size / 1024 / 1024).toFixed(2);
   console.log(`\nBuilt native app package: ${PACKAGE_NAME} (${mb} MB)`);

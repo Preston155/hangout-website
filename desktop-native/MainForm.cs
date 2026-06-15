@@ -59,7 +59,7 @@ public sealed class MainForm : Form
         };
 
         await core.AddScriptToExecuteOnDocumentCreatedAsync(
-            "window.desktopApp = { isDesktop: true, version: '1.0.0' };");
+            $"window.desktopApp = {{ isDesktop: true, version: '{AppVersion.Value}' }};");
 
         core.NavigationCompleted += (_, args) =>
         {

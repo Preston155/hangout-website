@@ -10,10 +10,24 @@
     <title>Discord Remake</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="favicon.svg" />
-    <link rel="stylesheet" href="css/discord.css?v=41" />
+    <link rel="stylesheet" href="css/discord.css?v=42" />
   </head>
   <body>
     <div class="api-banner hidden" id="apiBanner" role="alert"></div>
+
+    <div class="desktop-update hidden" id="desktopUpdateBanner" role="status" aria-live="polite">
+      <div class="desktop-update__content">
+        <span class="desktop-update__icon" aria-hidden="true">⬆</span>
+        <div class="desktop-update__text">
+          <strong class="desktop-update__title">Desktop update available</strong>
+          <span class="desktop-update__message">A new installer is ready.</span>
+        </div>
+        <a class="desktop-update__download btn-primary" href="downloads/Discord-Remake-Setup.exe" download>
+          Download update
+        </a>
+        <button class="desktop-update__dismiss" type="button" aria-label="Dismiss update notice">✕</button>
+      </div>
+    </div>
 
     <!-- Auth / Landing -->
     <div class="auth-screen" id="authScreen">
@@ -474,8 +488,9 @@
     <!-- Toast stack -->
     <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
-    <script src="js/ui.js?v=41"></script>
-    <script src="js/auth-boot.js?v=41"></script>
-    <script src="js/discord.js?v=41"></script>
+    <script src="js/ui.js?v=42"></script>
+    <script src="js/desktop-update.js?v=42"></script>
+    <script src="js/auth-boot.js?v=42"></script>
+    <script src="js/discord.js?v=42"></script>
   </body>
 </html>

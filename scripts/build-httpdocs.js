@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { writeDesktopVersion } = require("./write-desktop-version");
 
 const ROOT = path.join(__dirname, "..");
 const OUT = path.join(ROOT, "httpdocs-ready");
@@ -176,6 +177,8 @@ function main() {
       "Place Discord-Remake-Setup.exe here after running: npm run build:desktop\n",
     );
   }
+
+  writeDesktopVersion(downloadsDir);
 
   fs.writeFileSync(path.join(OUT, ".htaccess"), HTACCESS);
   fs.writeFileSync(path.join(OUT, "DEPLOY-PLESK.md"), DEPLOY);
