@@ -17,7 +17,7 @@ const LOG_DIR = path.join(ROOT, "logs");
 const LOG_FILE = path.join(LOG_DIR, "auto-publish.log");
 const REMOTE_URL = "https://github.com/Preston155/hangout-website.git";
 const BRANCH = "main";
-const DEBOUNCE_MS = 10_000;
+const DEBOUNCE_MS = 3_000;
 
 const GIT_ENV = {
   ...process.env,
