@@ -1,8 +1,7 @@
 {
   "version": "2.0.0",
-  "installer": "Discord-Remake-Setup.exe",
-  "portable": "Discord-Remake-Portable.exe",
+  "installer": "Liberty-County-CAD-Setup.exe",
   "title": "Desktop update available",
-  "message": "Discord Remake 2.0.0 is ready. Download the new installer to update the desktop app.",
+  "message": "Liberty County CAD 2.0.0 is ready. Download the new installer to update the desktop app.",
   "publishedAt": "2026-06-15"
 }

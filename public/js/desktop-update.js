@@ -36,7 +36,7 @@
     if (title) title.textContent = info.title || "Desktop update available";
     if (message) message.textContent = info.message || `Version ${info.version} is ready.`;
     if (download) {
-      download.href = `/downloads/${info.installer || "Discord-Remake-Setup.exe"}`;
+      download.href = `/downloads/${info.installer || "Liberty-County-CAD-Setup.exe"}`;
       download.textContent = `Download v${info.version}`;
     }
 

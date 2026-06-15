@@ -8,7 +8,13 @@ const state = {
   recordsTab: "vehicles",
 };
 
-const LIVE_VIEWS = new Set(["dashboard", "dispatch", "police", "fire"]);
+window.__CAD_STATE__ = state;
+
+function isDesktopApp() {
+  return !!window.desktopApp?.isDesktop;
+}
+
+const LIVE_VIEWS = new Set(["dashboard", "dispatch", "police", "fire", "calls", "units", "bolos"]);
 let livePollTimer = null;
 let clockTimer = null;
 
@@ -26,15 +32,18 @@ function toast(msg, type = "success") {
 function esc(s) {
   return String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
+window.esc = esc;
 
 function priorityBadge(p) {
   return `<span class="badge badge--p${p}">P${p}</span>`;
 }
+window.priorityBadge = priorityBadge;
 
 function statusBadge(s) {
   const map = { pending: "pending", active: "active", closed: "closed", panic: "panic", available: "active", enroute: "pending", onscene: "active" };
   return `<span class="badge badge--${map[s] || "closed"}">${esc(s)}</span>`;
 }
+window.statusBadge = statusBadge;
 
 function modal(title, bodyHtml, onSubmit) {
   const backdrop = document.createElement("div");
@@ -82,7 +91,7 @@ function renderLanding() {
           </div>
         </div>
         <div style="display:flex;gap:10px;align-items:center">
-          <a class="btn btn--ghost" href="downloads/Discord-Remake-Setup.exe" download>📥 Desktop App</a>
+          <a class="btn btn--ghost" href="downloads/Liberty-County-CAD-Setup.exe" download>📥 Desktop App</a>
           <button class="btn btn--primary" onclick="navigate('login')">Sign In →</button>
         </div>
       </nav>
@@ -94,7 +103,7 @@ function renderLanding() {
           <p>The professional dispatch and mobile data terminal built for Emergency Response: Liberty County servers. Real-time 911, unit tracking, and full MDT access.</p>
           <div class="landing__actions">
             <button class="btn btn--primary" onclick="navigate('login')">⚡ Access CAD System</button>
-            <a class="btn btn--ghost" href="downloads/Discord-Remake-Setup.exe" download>Download Desktop App</a>
+            <a class="btn btn--ghost" href="downloads/Liberty-County-CAD-Setup.exe" download>Download Desktop App</a>
           </div>
         </div>
 
@@ -156,7 +165,7 @@ function renderLogin() {
             <div class="field"><label>Password</label><input name="password" type="password" required autocomplete="current-password" /></div>
             <button class="btn btn--primary btn--block" type="submit">Sign In to CAD</button>
           </form>
-          <button class="btn btn--ghost btn--block" style="margin-top:12px" onclick="navigate('landing')">← Back to Home</button>
+          ${isDesktopApp() ? "" : `<button class="btn btn--ghost btn--block" style="margin-top:12px" onclick="navigate('landing')">← Back to Home</button>`}
         </div>
       </div>
     </div>`;
@@ -188,6 +197,46 @@ const NAV = [
   { id: "admin", label: "Admin Panel", icon: "⚙️", roles: ["admin"] },
 ];
 
+const DESKTOP_NAV = [
+  {
+    section: "Operations",
+    items: [
+      { id: "dashboard", label: "Dashboard", icon: "📊", roles: ["all"] },
+      { id: "dispatch", label: "Dispatch Console", icon: "📡", roles: ["dispatch", "admin"] },
+      { id: "calls", label: "Active Calls", icon: "📞", roles: ["dispatch", "police", "fire", "ems", "admin"] },
+      { id: "units", label: "Units & Status", icon: "🚓", roles: ["police", "fire", "ems", "dispatch", "admin"] },
+    ],
+  },
+  {
+    section: "Mobile Data Terminal",
+    items: [
+      { id: "police", label: "Police MDT", icon: "🚔", roles: ["police", "admin"] },
+      { id: "fire", label: "Fire / EMS MDT", icon: "🚑", roles: ["fire", "ems", "admin"] },
+      { id: "civilian", label: "Civilian Portal", icon: "👤", roles: ["civilian", "admin"] },
+    ],
+  },
+  {
+    section: "Records & Lookup",
+    items: [
+      { id: "person-lookup", label: "Person Lookup", icon: "🔎", roles: ["police", "dispatch", "admin"] },
+      { id: "vehicle-lookup", label: "Vehicle Lookup", icon: "🚗", roles: ["police", "dispatch", "admin"] },
+      { id: "warrants", label: "Warrants", icon: "⚠️", roles: ["police", "dispatch", "admin"] },
+      { id: "bolos", label: "BOLOs", icon: "📋", roles: ["police", "dispatch", "admin"] },
+      { id: "citations", label: "Citations", icon: "📝", roles: ["police", "admin"] },
+      { id: "arrests", label: "Arrest Reports", icon: "🔗", roles: ["police", "admin"] },
+      { id: "incidents", label: "Incident Reports", icon: "📁", roles: ["dispatch", "police", "admin"] },
+    ],
+  },
+  {
+    section: "Administration",
+    items: [
+      { id: "admin", label: "Admin Panel", icon: "⚙️", roles: ["admin"] },
+      { id: "departments", label: "Departments", icon: "🏛️", roles: ["admin"] },
+      { id: "users", label: "User Management", icon: "👥", roles: ["admin"] },
+    ],
+  },
+];
+
 function canAccess(item) {
   if (!state.user) return false;
   if (item.roles.includes("all")) return true;
@@ -196,33 +245,67 @@ function canAccess(item) {
 
 function renderShell(content, title, badge = "CAD") {
   const navItems = NAV.filter(canAccess);
-  const navHtml = navItems.map((item) =>
-    `<button class="nav-item${state.view === item.id ? " active" : ""}" onclick="navigate('${item.id}');document.getElementById('sidebar')?.classList.remove('open')">
-      <span class="nav-item__icon">${item.icon}</span>${item.label}
-    </button>`,
-  ).join("");
+  let navHtml = "";
+
+  if (isDesktopApp()) {
+    navHtml = DESKTOP_NAV.map((group) => {
+      const items = group.items.filter(canAccess);
+      if (!items.length) return "";
+      return `<div class="nav-section">${group.section}</div>${items
+        .map(
+          (item) =>
+            `<button class="nav-item${state.view === item.id ? " active" : ""}" onclick="navigate('${item.id}');document.getElementById('sidebar')?.classList.remove('open')">
+              <span class="nav-item__icon">${item.icon}</span>${item.label}
+            </button>`,
+        )
+        .join("")}`;
+    }).join("");
+
+    navHtml += `<div class="sidebar__panic">
+      <button class="btn btn--danger btn--block sidebar__panic-btn" onclick="setUnitStatus('panic')">⚠ PANIC BUTTON</button>
+    </div>`;
+  } else {
+    navHtml = `<div class="nav-section">Modules</div>${navItems
+      .map(
+        (item) =>
+          `<button class="nav-item${state.view === item.id ? " active" : ""}" onclick="navigate('${item.id}');document.getElementById('sidebar')?.classList.remove('open')">
+            <span class="nav-item__icon">${item.icon}</span>${item.label}
+          </button>`,
+      )
+      .join("")}`;
+  }
+
+  const profileHtml = isDesktopApp()
+    ? `<div class="sidebar__profile-card">
+          <div class="sidebar__profile-avatar">${esc((state.user?.displayName || "?")[0])}</div>
+          <div>
+            <div class="sidebar__user-name">${esc(state.user?.displayName)}</div>
+            <div class="sidebar__user-role">${esc(state.user?.role)}</div>
+            ${state.user?.departmentName ? `<div class="sidebar__user-dept">${esc(state.user.departmentName)}</div>` : ""}
+          </div>
+        </div>
+        <div class="sidebar__profile-actions">
+          <button class="btn btn--ghost btn--sm" onclick="DesktopShell?.openSettings()">Settings</button>
+          <button class="btn btn--ghost btn--sm" onclick="logout()">Sign Out</button>
+        </div>`
+    : `<div class="sidebar__user-name">${esc(state.user?.displayName)}</div>
+          <div class="sidebar__user-role">${esc(state.user?.role)}</div>
+          ${state.user?.departmentName ? `<div class="sidebar__user-dept">${esc(state.user.departmentName)}</div>` : ""}
+          <button class="btn btn--ghost btn--sm btn--block" style="margin-top:12px" onclick="logout()">Sign Out</button>`;
 
   return `
-    <div class="shell">
+    <div class="shell${isDesktopApp() ? " shell--desktop" : ""}">
       <aside class="sidebar" id="sidebar">
         <div class="sidebar__brand">
           <div class="sidebar__brand-icon">🚔</div>
           <div class="sidebar__brand-text">
             ${esc(state.config.serverName)}
-            <div class="sidebar__brand-sub">CAD / MDT v2.0</div>
+            <div class="sidebar__brand-sub">CAD / MDT v${esc(window.desktopApp?.version || "2.0")}</div>
           </div>
           <span class="sidebar__brand-dot" title="System online"></span>
         </div>
-        <nav class="sidebar__nav">
-          <div class="nav-section">Modules</div>
-          ${navHtml}
-        </nav>
-        <div class="sidebar__user">
-          <div class="sidebar__user-name">${esc(state.user?.displayName)}</div>
-          <div class="sidebar__user-role">${esc(state.user?.role)}</div>
-          ${state.user?.departmentName ? `<div class="sidebar__user-dept">${esc(state.user.departmentName)}</div>` : ""}
-          <button class="btn btn--ghost btn--sm btn--block" style="margin-top:12px" onclick="logout()">Sign Out</button>
-        </div>
+        <nav class="sidebar__nav">${navHtml}</nav>
+        <div class="sidebar__user">${profileHtml}</div>
       </aside>
       <div class="sidebar-overlay" onclick="document.getElementById('sidebar').classList.remove('open')"></div>
       <div class="main">
@@ -232,18 +315,22 @@ function renderShell(content, title, badge = "CAD") {
             <h1>${esc(title)}</h1>
             <span class="topbar__badge">${esc(badge)}</span>
           </div>
-          <div class="topbar__clock" id="liveClock">--:--:--</div>
-          ${LIVE_VIEWS.has(state.view) ? `<span class="live-badge"><span class="live-badge__dot"></span>LIVE</span>` : ""}
+          <div class="topbar__right">
+            ${isDesktopApp() ? `<span class="topbar__dept">${esc(state.user?.departmentName || state.user?.role || "")}</span>` : ""}
+            <div class="topbar__clock" id="liveClock">--:--:--</div>
+            ${LIVE_VIEWS.has(state.view) ? `<span class="live-badge"><span class="live-badge__dot"></span>LIVE</span>` : ""}
+          </div>
         </header>
         <div class="content">${content}</div>
       </div>
     </div>`;
 }
+window.renderShell = renderShell;
 
 async function logout() {
   await API.post("/auth/logout");
   state.user = null;
-  navigate("landing");
+  navigate(isDesktopApp() ? "login" : "landing");
 }
 
 // ─── Dashboard ────────────────────────────────────────────────────────────────
@@ -518,8 +605,16 @@ window.setUnitStatus = async (status) => {
   try {
     const res = await API.patch("/units/status", { status });
     document.querySelectorAll(".status-btn").forEach((b) => b.classList.toggle("active", b.dataset.status === status));
-    if (res.panic) toast("⚠ PANIC BUTTON ACTIVATED — All units notified!", "error");
-    else toast(`Status: ${status}`);
+    if (res.panic) {
+      toast("⚠ PANIC BUTTON ACTIVATED — All units notified!", "error");
+      window.DesktopShell?.pushNotification({
+        title: "⚠ PANIC ACTIVATED",
+        body: "Your unit has triggered a panic alert.",
+        type: "panic",
+        urgency: "critical",
+        view: "dispatch",
+      });
+    } else toast(`Status: ${status}`);
   } catch (err) { toast(err.message, "error"); }
 };
 
@@ -797,6 +892,17 @@ async function render() {
     else if (view === "dispatch") html = await renderDispatchView();
     else if (view === "fire") html = await renderFireView();
     else if (view === "admin") html = await renderAdminView();
+    else if (view === "calls" && window.DesktopViews) html = await DesktopViews.renderCallsView();
+    else if (view === "units" && window.DesktopViews) html = await DesktopViews.renderUnitsView();
+    else if (view === "person-lookup" && window.DesktopViews) html = await DesktopViews.renderPersonLookupView();
+    else if (view === "vehicle-lookup" && window.DesktopViews) html = await DesktopViews.renderVehicleLookupView();
+    else if (view === "warrants" && window.DesktopViews) html = await DesktopViews.renderWarrantsView();
+    else if (view === "bolos" && window.DesktopViews) html = await DesktopViews.renderBolosView();
+    else if (view === "citations" && window.DesktopViews) html = await DesktopViews.renderCitationsView();
+    else if (view === "arrests" && window.DesktopViews) html = await DesktopViews.renderArrestsView();
+    else if (view === "incidents" && window.DesktopViews) html = await DesktopViews.renderIncidentsView();
+    else if (view === "departments" && window.DesktopViews) html = await DesktopViews.renderDepartmentsView();
+    else if (view === "users" && window.DesktopViews) html = await DesktopViews.renderUsersView();
     else html = await renderDashboardView();
   }
 
@@ -854,10 +960,17 @@ async function init() {
     if (auth.user) state.user = auth.user;
   } catch { /* */ }
 
-  const hash = location.hash.replace("#", "") || (state.user ? "dashboard" : "landing");
-  state.view = hash;
+  const defaultView = state.user ? "dashboard" : (isDesktopApp() ? "login" : "landing");
+  const hash = location.hash.replace("#", "") || defaultView;
+  if (isDesktopApp() && hash === "landing") {
+    state.view = state.user ? "dashboard" : "login";
+  } else {
+    state.view = hash;
+  }
   await render();
 }
+
+window.init = init;
 
 window.addEventListener("hashchange", () => {
   state.view = location.hash.replace("#", "") || "dashboard";

@@ -4,13 +4,14 @@ const path = require("path");
 const ROOT = path.join(__dirname, "..");
 const pkg = require(path.join(ROOT, "package.json"));
 
+const INSTALLER_FILENAME = "Liberty-County-CAD-Setup.exe";
+
 function writeDesktopVersion(outDir) {
   const manifest = {
     version: pkg.version,
-    installer: "Discord-Remake-Setup.exe",
-    portable: "Discord-Remake-Portable.exe",
+    installer: INSTALLER_FILENAME,
     title: "Desktop update available",
-    message: `Discord Remake ${pkg.version} is ready. Download the new installer to update the desktop app.`,
+    message: `Liberty County CAD ${pkg.version} is ready. Download the new installer to update the desktop app.`,
     publishedAt: new Date().toISOString().slice(0, 10),
   };
 
@@ -31,4 +32,4 @@ internal static class AppVersion
   fs.writeFileSync(outFile, content);
 }
 
-module.exports = { writeDesktopVersion, writeAppVersionCs, getDesktopVersion: () => pkg.version };
+module.exports = { writeDesktopVersion, writeAppVersionCs, getDesktopVersion: () => pkg.version, INSTALLER_FILENAME };
