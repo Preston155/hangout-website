@@ -1,54 +1,27 @@
-# Plesk Deploy — Discord Remake
+# Plesk Deploy — ER:LC CAD / MDT
 
-## IMPORTANT — fix 403 Forbidden
+## Node.js required
 
-403 means Apache cannot find `index.html` at the **httpdocs root**, or Node.js is not enabled.
+This CAD system runs on **Node.js + MySQL**, not PHP alone.
 
-Upload the **contents** of this folder directly into httpdocs (not the `httpdocs-ready` folder itself).
+### Setup on Plesk
 
-Your httpdocs should look like:
-```
-httpdocs/
-  index.html      ← must be here
-  css/
-  js/             ← discord.js, ui.js, auth-boot.js
-  api/            ← REQUIRED
-  data/           ← chmod 775
-  .htaccess
-```
+1. Upload the full project (or use Git deploy)
+2. Enable **Node.js** → startup file: `app.js`
+3. Set environment variables from `.env.example`
+4. Create MySQL database → run `npm run db:init` or import `database/schema.sql`
+5. Run `npm install` and restart Node.js app
 
-## Works on PHP alone (no Node.js required)
+### Static-only folder (this httpdocs-ready build)
 
-Auth + chat use the **api/** PHP folder. Node.js is optional for faster WebSocket chat.
+This folder contains the **frontend static files** only.
+The API (`/api/*`) and auth (`/auth/*`) routes are served by the Node.js app.
 
-## Verify PHP API
+For production, deploy the **full repo** with Node.js enabled — not just this folder.
 
-Open: `https://prestonhq.com/api/health.php`
-Should return: `{"ok":true,"mode":"php"}`
+### Verify
 
-## Upload checklist
+- `GET /api/health` → `{"ok":true,"mode":"cad","database":"connected"}`
+- Login at `/` with Discord or dev credentials
 
-```
-httpdocs/
-  index.html
-  css/
-  js/          ← includes auth-boot.js
-  api/         ← REQUIRED for register/chat
-  uploads/     ← chmod 775 (profile images)
-  data/        ← chmod 775
-  .htaccess
-```
-
-## Permissions (File Manager)
-
-Select httpdocs folder → Permissions:
-- Folders: **755**
-- Files: **644**
-- `data/` folder: **775** (writable)
-
-## Still 403?
-
-1. Confirm `index.html` exists in httpdocs root (not inside a subfolder)
-2. Confirm Node.js is **Enabled** and app **Restarted**
-3. Check Plesk **Node.js → Logs** for startup errors
-4. Delete any old `public/` subfolder if you uploaded the previous build
+See `CAD-SETUP.md` in the project root for full instructions.

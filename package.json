@@ -1,8 +1,8 @@
 {
-  "name": "discord-remake",
-  "version": "1.0.0",
+  "name": "erlc-cad",
+  "version": "2.0.0",
   "private": true,
-  "description": "Discord remake with live chat and server creation",
+  "description": "ER:LC CAD / MDT system for Emergency Response: Liberty County roleplay",
   "main": "app.js",
   "engines": {
     "node": ">=18"
@@ -10,6 +10,7 @@
   "scripts": {
     "start": "node app.js",
     "dev": "node server.js",
+    "db:init": "node scripts/init-db.js",
     "build:httpdocs": "node scripts/build-httpdocs.js",
     "desktop": "npm run start --prefix desktop",
     "build:desktop": "node desktop-native/build.js",
@@ -20,8 +21,11 @@
     "auto-publish": "node auto-publish.js"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "socket.io": "^4.8.1",
+    "express-session": "^1.18.1",
+    "mysql2": "^3.12.0",
     "uuid": "^11.0.5"
   }
 }

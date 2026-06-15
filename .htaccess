@@ -11,6 +11,7 @@ DirectoryIndex index.html
 
 <IfModule mod_rewrite.c>
 RewriteEngine On
+RewriteRule ^api/install-cad-db(.php)?/?$ api/install-cad-db.php [L,QSA]
 RewriteRule ^api/health(.php)?/?$ api/health.php [L,QSA]
 RewriteRule ^api/login(.php)?/?$ api/auth/login.php [L,QSA]
 RewriteRule ^api/register(.php)?/?$ api/auth/register.php [L,QSA]
@@ -26,6 +27,8 @@ RewriteRule ^api/messages/send(.php)?/?$ api/messages/send.php [L,QSA]
 RewriteRule ^api/messages/upload(.php)?/?$ api/messages/upload.php [L,QSA]
 RewriteRule ^api/messages/poll(.php)?/?$ api/messages/poll.php [L,QSA]
 RewriteRule ^api/servers/join(.php)?/?$ api/servers/join.php [L,QSA]
+RewriteRule ^api/servers/update(.php)?/?$ api/servers/update.php [L,QSA]
+RewriteRule ^api/servers/leave(.php)?/?$ api/servers/leave.php [L,QSA]
 RewriteRule ^api/profile/update(.php)?/?$ api/profile/update.php [L,QSA]
 RewriteRule ^api/profile/upload(.php)?/?$ api/profile/upload.php [L,QSA]
 RewriteRule ^api/friends/list(.php)?/?$ api/friends/list.php [L,QSA]

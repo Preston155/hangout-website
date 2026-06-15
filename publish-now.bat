@@ -6,7 +6,7 @@ echo Publishing to GitHub NOW...
 call npm run build:httpdocs
 if errorlevel 1 exit /b 1
 
-git add httpdocs-ready index.html favicon.svg .htaccess css js api downloads data uploads public
+git add httpdocs-ready index.html favicon.svg .htaccess css js api downloads data uploads public cad database server.js app.js scripts package.json package-lock.json .env.example CAD-SETUP.md PLESK-DATABASE.md
 git add -A
 
 git diff --cached --quiet

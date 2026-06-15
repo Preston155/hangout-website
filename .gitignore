@@ -20,6 +20,8 @@ httpdocs-ready/uploads/**
 !httpdocs-ready/uploads/.gitkeep
 !httpdocs-ready/uploads/*/.gitkeep
 
+database/plesk.local.php
+
 # Local profile scratch
 profiles/
 
