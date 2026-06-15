@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+desktop/node_modules/
+
+# Secrets / env
+.env
+.env.*
+!.env.example
+
+# Live user data (never commit production DB or uploads)
+data/*.json
+!data/.htaccess
+uploads/**
+!uploads/.htaccess
+!uploads/.gitkeep
+!uploads/*/.gitkeep
+httpdocs-ready/data/*.json
+httpdocs-ready/uploads/**
+!httpdocs-ready/uploads/.htaccess
+!httpdocs-ready/uploads/.gitkeep
+!httpdocs-ready/uploads/*/.gitkeep
+
+# Local profile scratch
+profiles/
+
+# Desktop app build output
+desktop/dist/
+desktop/out/
+desktop-lite/dist/
+desktop-native/bin/
+desktop-native/obj/
+desktop-native/dist/
+*.exe.WebView2/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+.idea/
+.vscode/
+*.log
+npm-debug.log*
+
+# Optional: uncomment to always build on deploy instead of committing build output
+# httpdocs-ready/

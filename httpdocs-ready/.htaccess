@@ -1,0 +1,30 @@
+# Discord Remake - Plesk httpdocs (PHP)
+DirectoryIndex index.html
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule ^api/health/?$ api/health.php [L,QSA]
+RewriteRule ^api/auth/register/?$ api/auth/register.php [L,QSA]
+RewriteRule ^api/auth/login/?$ api/auth/login.php [L,QSA]
+RewriteRule ^api/auth/restore/?$ api/auth/restore.php [L,QSA]
+RewriteRule ^api/servers/channels/?$ api/servers/channels.php [L,QSA]
+RewriteRule ^api/servers/create/?$ api/servers/create.php [L,QSA]
+RewriteRule ^api/channels/create/?$ api/channels/create.php [L,QSA]
+RewriteRule ^api/channels/join/?$ api/channels/join.php [L,QSA]
+RewriteRule ^api/messages/send/?$ api/messages/send.php [L,QSA]
+RewriteRule ^api/messages/upload/?$ api/messages/upload.php [L,QSA]
+RewriteRule ^api/messages/poll/?$ api/messages/poll.php [L,QSA]
+RewriteRule ^api/servers/join/?$ api/servers/join.php [L,QSA]
+RewriteRule ^api/profile/update/?$ api/profile/update.php [L,QSA]
+RewriteRule ^api/profile/upload/?$ api/profile/upload.php [L,QSA]
+RewriteRule ^api/friends/list/?$ api/friends/list.php [L,QSA]
+RewriteRule ^api/friends/add/?$ api/friends/add.php [L,QSA]
+RewriteRule ^api/dms/list/?$ api/dms/list.php [L,QSA]
+RewriteRule ^api/dms/open/?$ api/dms/open.php [L,QSA]
+RewriteRule ^api/typing/ping/?$ api/typing/ping.php [L,QSA]
+RewriteRule ^api/typing/poll/?$ api/typing/poll.php [L,QSA]
+RewriteRule ^data(/|$) - [F,L]
+RewriteRule ^node_modules(/|$) - [F,L]
+RewriteRule ^(server|app)\.js$ - [F,L]
+RewriteRule ^package\.json$ - [F,L]
+</IfModule>

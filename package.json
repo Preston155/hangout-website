@@ -1,0 +1,26 @@
+{
+  "name": "discord-remake",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Discord remake with live chat and server creation",
+  "main": "app.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node server.js",
+    "build:httpdocs": "node scripts/build-httpdocs.js",
+    "desktop": "npm run start --prefix desktop",
+    "build:desktop": "node desktop-native/build.js",
+    "build:desktop:lite": "node desktop-lite/build.js",
+    "build:desktop:full": "node scripts/build-desktop.js --full",
+    "build:desktop:copy": "node scripts/build-desktop.js --copy",
+    "build:desktop:electron": "node scripts/build-desktop.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1",
+    "uuid": "^11.0.5"
+  }
+}

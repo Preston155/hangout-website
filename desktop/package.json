@@ -1,0 +1,50 @@
+{
+  "name": "discord-remake-desktop",
+  "version": "1.0.0",
+  "description": "Discord Remake desktop app for Windows",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "start:local": "cross-env APP_URL=http://localhost:3000 electron .",
+    "build": "electron-builder --win portable",
+    "build:all": "electron-builder --win",
+    "build:portable": "electron-builder --win portable"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.prestonhq.discordremake",
+    "productName": "Discord Remake",
+    "copyright": "Copyright © PrestonHQ",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "icon.png",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "icon.png",
+      "signAndEditExecutable": false,
+      "artifactName": "Discord-Remake-${version}-Portable.exe"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "Discord Remake"
+    }
+  }
+}
