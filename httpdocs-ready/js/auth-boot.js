@@ -12,7 +12,7 @@
   }
 
   async function callApi(path, body) {
-    const response = await fetch(`${API}${path}.php`, {
+    const response = await fetch(`${API}${path}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -31,7 +31,7 @@
 
   async function checkApiHealth() {
     try {
-      const response = await fetch(`${API}health.php`, { cache: "no-store" });
+      const response = await fetch(`${API}health`, { cache: "no-store" });
       const data = await response.json().catch(() => ({}));
       if (!data.ok) showErr("API health check failed. Redeploy httpdocs-ready on Plesk.");
     } catch {

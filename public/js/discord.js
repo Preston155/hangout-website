@@ -616,7 +616,7 @@ function setAuthLoading(loading) {
 }
 
 async function apiPost(path, body = {}) {
-  const url = `/api/${path}.php`;
+  const url = `/api/${path}`;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
   try {
@@ -651,7 +651,7 @@ async function apiPost(path, body = {}) {
 
 async function apiGet(path, params = {}) {
   const qs = new URLSearchParams(params).toString();
-  const url = `/api/${path}.php${qs ? `?${qs}` : ""}`;
+  const url = `/api/${path}${qs ? `?${qs}` : ""}`;
   try {
     const response = await fetch(url);
     const data = await response.json().catch(() => ({}));
@@ -1747,7 +1747,7 @@ async function uploadMessageFile(file) {
   try {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
-    const response = await fetch("/api/messages/upload.php", { method: "POST", body: fd, signal: controller.signal });
+    const response = await fetch("/api/messages/upload", { method: "POST", body: fd, signal: controller.signal });
     clearTimeout(timer);
     const data = await response.json().catch(() => ({}));
     return data?.ok ? data.attachment : null;
