@@ -4,24 +4,42 @@
   const btn = document.getElementById("authSubmit");
   if (!form || !err || !btn) return;
 
+  const API = "/api/";
+
   function showErr(text) {
     err.textContent = text || "";
     err.hidden = !text;
   }
 
   async function callApi(path, body) {
-    const response = await fetch(`api/${path}.php`, {
+    const response = await fetch(`${API}${path}.php`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
+      cache: "no-store",
     });
     const text = await response.text();
     try {
       return JSON.parse(text);
     } catch {
-      return { ok: false, error: "API error — upload the api/ folder to httpdocs." };
+      return {
+        ok: false,
+        error: `API returned invalid response (${response.status}). Check that api/ is deployed.`,
+      };
     }
   }
+
+  async function checkApiHealth() {
+    try {
+      const response = await fetch(`${API}health.php`, { cache: "no-store" });
+      const data = await response.json().catch(() => ({}));
+      if (!data.ok) showErr("API health check failed. Redeploy httpdocs-ready on Plesk.");
+    } catch {
+      showErr("Cannot reach /api/health.php. Plesk must deploy the httpdocs-ready folder (includes api/).");
+    }
+  }
+
+  checkApiHealth();
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -31,20 +49,34 @@
     btn.disabled = true;
     btn.textContent = "Saving…";
 
+    const isRegister = document.getElementById("authModeRegister")?.checked;
+    const username = document.getElementById("authUsername")?.value?.trim() || "";
+    const displayName = document.getElementById("authDisplayName")?.value?.trim() || "";
+
+    let res;
     try {
-      const isRegister = document.getElementById("authModeRegister")?.checked;
-      const username = document.getElementById("authUsername")?.value?.trim() || "";
-      const displayName = document.getElementById("authDisplayName")?.value?.trim() || "";
+      res = isRegister
+        ? await callApi("register", { username, displayName })
+        : await callApi("login", { username });
+    } catch {
+      showErr(
+        "Login request blocked or failed. Try disabling ad blockers, or open https://prestonhq.com/api/health.php in your browser.",
+      );
+      btn.disabled = false;
+      btn.textContent = "Continue";
+      window.__authBusy = false;
+      return;
+    }
 
-      const res = isRegister
-        ? await callApi("auth/register", { username, displayName })
-        : await callApi("auth/login", { username });
+    if (!res?.ok) {
+      showErr(res?.error || "Authentication failed.");
+      btn.disabled = false;
+      btn.textContent = "Continue";
+      window.__authBusy = false;
+      return;
+    }
 
-      if (!res?.ok) {
-        showErr(res?.error || "Authentication failed.");
-        return;
-      }
-
+    try {
       if (typeof window.persistDiscordSession === "function") {
         window.persistDiscordSession(res);
       } else {
@@ -56,8 +88,9 @@
       } else {
         location.reload();
       }
-    } catch {
-      showErr("Cannot reach api/auth/*.php — upload the api folder to httpdocs.");
+    } catch (appErr) {
+      console.error(appErr);
+      showErr("Logged in, but the app failed to load. Hard refresh and try again.");
     } finally {
       btn.disabled = false;
       btn.textContent = "Continue";

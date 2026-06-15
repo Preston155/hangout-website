@@ -13,6 +13,9 @@ DirectoryIndex index.html
 <IfModule mod_rewrite.c>
 RewriteEngine On
 RewriteRule ^api/health/?$ api/health.php [L,QSA]
+RewriteRule ^api/login/?$ api/auth/login.php [L,QSA]
+RewriteRule ^api/register/?$ api/auth/register.php [L,QSA]
+RewriteRule ^api/restore/?$ api/auth/restore.php [L,QSA]
 RewriteRule ^api/auth/register/?$ api/auth/register.php [L,QSA]
 RewriteRule ^api/auth/login/?$ api/auth/login.php [L,QSA]
 RewriteRule ^api/auth/restore/?$ api/auth/restore.php [L,QSA]
