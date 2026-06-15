@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { writeDesktopVersion } = require("./write-desktop-version");
+const { syncRootDeploy } = require("./sync-root-deploy");
 
 const ROOT = path.join(__dirname, "..");
 const OUT = path.join(ROOT, "httpdocs-ready");
@@ -182,6 +183,8 @@ function main() {
 
   fs.writeFileSync(path.join(OUT, ".htaccess"), HTACCESS);
   fs.writeFileSync(path.join(OUT, "DEPLOY-PLESK.md"), DEPLOY);
+
+  syncRootDeploy();
 
   console.log(`Done. Upload contents of:\n  ${OUT}\n  into Plesk httpdocs (not the folder itself).`);
 }
