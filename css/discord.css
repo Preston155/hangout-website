@@ -2601,6 +2601,234 @@ button { cursor: pointer; border: none; background: none; }
   line-height: 1.4;
 }
 
+/* Desktop app update banner */
+.desktop-update {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100000;
+  padding: 10px 16px;
+  background: linear-gradient(90deg, #1e1f22 0%, #2b2d31 100%);
+  border-bottom: 1px solid rgba(88, 101, 242, 0.45);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.desktop-update__content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: min(960px, 100%);
+  margin: 0 auto;
+}
+
+.desktop-update__icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(88, 101, 242, 0.2);
+  color: #a8b5ff;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.desktop-update__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.desktop-update__title {
+  font-size: 14px;
+  color: #f2f3f5;
+}
+
+.desktop-update__message {
+  font-size: 13px;
+  color: #949ba4;
+}
+
+.desktop-update__download {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.desktop-update__dismiss {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #949ba4;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.desktop-update__dismiss:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #dbdee1;
+}
+
+body.has-desktop-update-banner .auth-screen,
+body.has-desktop-update-banner .app {
+  margin-top: 58px;
+}
+
+@media (max-width: 700px) {
+  .desktop-update__content {
+    flex-wrap: wrap;
+  }
+
+  .desktop-update__download {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Context menus (server icon right-click) */
+.ctx-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  pointer-events: none;
+}
+
+.ctx-layer:not(.hidden) {
+  pointer-events: auto;
+}
+
+.ctx-menu {
+  min-width: 196px;
+  max-width: 280px;
+  padding: 6px;
+  border-radius: 4px;
+  background: #111214;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+
+.ctx-menu--root,
+.ctx-menu--sub {
+  pointer-events: auto;
+}
+
+.ctx-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 32px;
+  padding: 6px 8px;
+  border: none;
+  border-radius: 2px;
+  background: transparent;
+  color: #b5bac1;
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.2;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ctx-menu__item:hover:not(:disabled),
+.ctx-menu__item--submenu:hover:not(:disabled) {
+  background: #4752c4;
+  color: #fff;
+}
+
+.ctx-menu__item--disabled,
+.ctx-menu__item--disabled:hover {
+  color: #6d6f78;
+  background: transparent;
+  cursor: default;
+}
+
+.ctx-menu__item--danger {
+  color: #f23f43;
+}
+
+.ctx-menu__item--danger:hover:not(:disabled) {
+  background: #f23f43;
+  color: #fff;
+}
+
+.ctx-menu__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ctx-menu__label {
+  font-weight: 500;
+}
+
+.ctx-menu__sublabel {
+  color: #949ba4;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.ctx-menu__item:hover:not(:disabled) .ctx-menu__sublabel {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.ctx-menu__arrow {
+  flex-shrink: 0;
+  margin-left: auto;
+  color: #949ba4;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.ctx-menu__item:hover:not(:disabled) .ctx-menu__arrow {
+  color: #fff;
+}
+
+.ctx-menu__check {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  margin-left: auto;
+  border: 2px solid #6d6f78;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  color: transparent;
+}
+
+.ctx-menu__check--on {
+  border-color: #fff;
+  background: #4752c4;
+  color: #fff;
+}
+
+.ctx-menu__check--on::before {
+  content: "✓";
+}
+
+.ctx-menu__separator {
+  height: 1px;
+  margin: 4px 8px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
 .modal--confirm .confirm-body {
   text-align: center;
 }

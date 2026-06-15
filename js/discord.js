@@ -1,5 +1,8 @@
 const STORAGE_USER = "discordRemakeUserId";
 const STORAGE_SESSION = "discordRemakeSession";
+const STORAGE_SERVER_MUTE = "discordRemakeServerMute";
+const STORAGE_SERVER_NOTIF = "discordRemakeServerNotif";
+const STORAGE_HIDE_MUTED = "discordRemakeHideMutedChannels";
 const DEFAULT_AVATAR = "https://cdn.discordapp.com/embed/avatars/0.png";
 
 const els = {
@@ -227,6 +230,34 @@ function avatarSrc(user) {
   return user?.avatar || DEFAULT_AVATAR;
 }
 
+function serverIconSrc(server) {
+  if (!server?.icon) return null;
+  const icon = String(server.icon);
+  if (/^(https?:|data:|\/)/i.test(icon)) return icon;
+  return `/${icon.replace(/^\.\//, "")}`;
+}
+
+function applyGuildIcon(btn, server) {
+  const src = serverIconSrc(server);
+  if (!src) {
+    btn.textContent = server.name.slice(0, 2).toUpperCase();
+    return;
+  }
+
+  btn.classList.add("has-icon");
+  btn.textContent = "";
+  const img = document.createElement("img");
+  img.src = src;
+  img.alt = server.name;
+  img.draggable = false;
+  img.addEventListener("error", () => {
+    btn.classList.remove("has-icon");
+    btn.textContent = server.name.slice(0, 2).toUpperCase();
+    img.remove();
+  });
+  btn.append(img);
+}
+
 function statusClass(status) {
   return `status-${status || "online"}`;
 }
@@ -234,7 +265,202 @@ function statusClass(status) {
 let pendingCreateCategoryId = null;
 
 function isServerOwner() {
-  return currentServer && currentUser && currentServer.ownerId === currentUser.id;
+  return isServerOwnerOf(currentServer);
+}
+
+function isServerOwnerOf(server) {
+  return Boolean(server && currentUser && server.ownerId === currentUser.id);
+}
+
+function readJsonStore(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function writeJsonStore(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+function getServerMute(serverId) {
+  const map = readJsonStore(STORAGE_SERVER_MUTE, {});
+  return map[serverId] ?? null;
+}
+
+function setServerMute(serverId, value) {
+  const map = readJsonStore(STORAGE_SERVER_MUTE, {});
+  if (value == null) delete map[serverId];
+  else map[serverId] = value;
+  writeJsonStore(STORAGE_SERVER_MUTE, map);
+  if (value) Toast.success("Server muted.");
+  else Toast.success("Server unmuted.");
+}
+
+function isServerMuted(serverId) {
+  const mute = getServerMute(serverId);
+  if (!mute) return false;
+  if (mute === "forever") return true;
+  if (typeof mute === "number" && Date.now() < mute) return true;
+  if (typeof mute === "number") {
+    setServerMute(serverId, null);
+    return false;
+  }
+  return false;
+}
+
+function getServerNotif(serverId) {
+  const map = readJsonStore(STORAGE_SERVER_NOTIF, {});
+  return map[serverId] || "all";
+}
+
+function setServerNotif(serverId, value) {
+  const map = readJsonStore(STORAGE_SERVER_NOTIF, {});
+  map[serverId] = value;
+  writeJsonStore(STORAGE_SERVER_NOTIF, map);
+  Toast.success("Notification settings updated.");
+}
+
+function notifLabel(value) {
+  if (value === "mentions") return "Only @mentions";
+  if (value === "none") return "Nothing";
+  return "All Messages";
+}
+
+function getHideMutedChannels() {
+  return readJsonStore(STORAGE_HIDE_MUTED, false) === true;
+}
+
+function setHideMutedChannels(value) {
+  writeJsonStore(STORAGE_HIDE_MUTED, Boolean(value));
+}
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    Toast.success("Copied to clipboard!");
+  } catch {
+    Toast.info(text);
+  }
+}
+
+async function copyServerInvite(server) {
+  await copyText(server.id);
+}
+
+async function ensureServerSelected(server) {
+  if (currentServer?.id === server.id) return;
+  await selectServer(server);
+}
+
+async function openCreateChannelForServer(server, categoryId, defaultType) {
+  await ensureServerSelected(server);
+  openCreateChannelModal(categoryId, defaultType);
+}
+
+function showGuildContextMenu(event, server) {
+  const owner = isServerOwnerOf(server);
+  const muted = isServerMuted(server.id);
+  const notif = getServerNotif(server.id);
+  const hideMuted = getHideMutedChannels();
+
+  const muteChildren = [
+    { type: "item", label: "For 15 Minutes", action: () => setServerMute(server.id, Date.now() + 15 * 60 * 1000) },
+    { type: "item", label: "For 1 Hour", action: () => setServerMute(server.id, Date.now() + 60 * 60 * 1000) },
+    { type: "item", label: "For 8 Hours", action: () => setServerMute(server.id, Date.now() + 8 * 60 * 60 * 1000) },
+    { type: "item", label: "For 24 Hours", action: () => setServerMute(server.id, Date.now() + 24 * 60 * 60 * 1000) },
+    { type: "item", label: "Until I turn it back on", action: () => setServerMute(server.id, "forever") },
+  ];
+  if (muted) {
+    muteChildren.push({ type: "separator" });
+    muteChildren.push({ type: "item", label: "Unmute Server", action: () => setServerMute(server.id, null) });
+  }
+
+  const items = [
+    { type: "item", label: "Mark As Read", disabled: true },
+    { type: "separator" },
+    { type: "item", label: "Invite to Server", action: () => copyServerInvite(server) },
+    { type: "separator" },
+    {
+      type: "submenu",
+      label: "Mute Server",
+      sublabel: muted ? "Muted" : undefined,
+      children: muteChildren,
+    },
+    {
+      type: "submenu",
+      label: "Notification Settings",
+      sublabel: notifLabel(notif),
+      children: [
+        { type: "item", label: "All Messages", action: () => setServerNotif(server.id, "all") },
+        { type: "item", label: "Only @mentions", action: () => setServerNotif(server.id, "mentions") },
+        { type: "item", label: "Nothing", action: () => setServerNotif(server.id, "none") },
+      ],
+    },
+    {
+      type: "checkbox",
+      label: "Hide Muted Channels",
+      checked: hideMuted,
+      action: (next) => setHideMutedChannels(next),
+    },
+    { type: "separator" },
+  ];
+
+  if (owner) {
+    items.push({
+      type: "submenu",
+      label: "Server Settings",
+      children: [
+        { type: "item", label: "Overview", action: () => Toast.info("Server settings coming soon.") },
+      ],
+    });
+  }
+
+  items.push(
+    { type: "item", label: "Privacy Settings", action: () => Toast.info("Privacy settings coming soon.") },
+    { type: "item", label: "Edit Per-server Profile", action: () => Toast.info("Per-server profiles coming soon.") },
+    { type: "separator" },
+  );
+
+  if (owner) {
+    items.push(
+      { type: "item", label: "Create Channel", action: () => openCreateChannelForServer(server, null, "text") },
+      { type: "item", label: "Create Category", action: () => openCreateChannelForServer(server, null, "category") },
+      { type: "item", label: "Create Event", disabled: true },
+      { type: "separator" },
+    );
+  }
+
+  items.push({
+    type: "submenu",
+    label: "Copy Server Info",
+    children: [
+      { type: "item", label: "Copy Server ID", action: () => copyServerInvite(server) },
+      { type: "item", label: "Copy Server Name", action: () => copyText(server.name) },
+    ],
+  });
+
+  ContextMenu.open(event.clientX, event.clientY, items);
+}
+
+function wireGuildContextMenu() {
+  if (!els.guildList || els.guildList.dataset.contextMenuWired) return;
+  els.guildList.dataset.contextMenuWired = "1";
+
+  els.guildList.addEventListener("contextmenu", (e) => {
+    const pill = e.target.closest(".guild-pill");
+    if (!pill || !els.guildList.contains(pill)) return;
+
+    const serverId = pill.dataset.serverId;
+    const server = servers.find((s) => s.id === serverId);
+    if (!server) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    showGuildContextMenu(e, server);
+  });
 }
 
 function channelIcon(type) {
@@ -390,7 +616,7 @@ function setAuthLoading(loading) {
 }
 
 async function apiPost(path, body = {}) {
-  const url = `api/${path}.php`;
+  const url = `/api/${path}.php`;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
   try {
@@ -425,7 +651,7 @@ async function apiPost(path, body = {}) {
 
 async function apiGet(path, params = {}) {
   const qs = new URLSearchParams(params).toString();
-  const url = `api/${path}.php${qs ? `?${qs}` : ""}`;
+  const url = `/api/${path}.php${qs ? `?${qs}` : ""}`;
   try {
     const response = await fetch(url);
     const data = await response.json().catch(() => ({}));
@@ -907,7 +1133,7 @@ function renderHome() {
     if (server.icon) {
       icon.classList.add("has-image");
       const img = document.createElement("img");
-      img.src = server.icon;
+      img.src = serverIconSrc(server) || server.icon;
       img.alt = server.name;
       icon.append(img);
     } else {
@@ -941,15 +1167,8 @@ function renderGuilds() {
     btn.type = "button";
     if (currentServer?.id === server.id) btn.classList.add("active");
 
-    if (server.icon) {
-      btn.classList.add("has-icon");
-      const img = document.createElement("img");
-      img.src = server.icon;
-      img.alt = server.name;
-      btn.append(img);
-    } else {
-      btn.textContent = server.name.slice(0, 2).toUpperCase();
-    }
+    btn.dataset.serverId = server.id;
+    applyGuildIcon(btn, server);
 
     btn.addEventListener("click", () => selectServer(server));
     els.guildList.append(btn);
@@ -1420,8 +1639,8 @@ async function handleAuth(event) {
 
     const res =
       authMode === "register"
-        ? await apiPost("auth/register", { username, displayName })
-        : await apiPost("auth/login", { username });
+        ? await apiPost("register", { username, displayName })
+        : await apiPost("login", { username });
 
     if (!res?.ok) {
       showError(res?.error || "Authentication failed.");
@@ -1528,7 +1747,7 @@ async function uploadMessageFile(file) {
   try {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
-    const response = await fetch("api/messages/upload.php", { method: "POST", body: fd, signal: controller.signal });
+    const response = await fetch("/api/messages/upload.php", { method: "POST", body: fd, signal: controller.signal });
     clearTimeout(timer);
     const data = await response.json().catch(() => ({}));
     return data?.ok ? data.attachment : null;
@@ -1750,6 +1969,8 @@ async function handleProfileSave(event) {
 function wireModals() {
   Toast.init();
   Confirm.init();
+  ContextMenu.init();
+  wireGuildContextMenu();
   wireProfileEditor();
 
   document.querySelectorAll("[data-close-modal]").forEach((btn) => {
@@ -1884,7 +2105,7 @@ async function tryRestoreSession() {
     return;
   }
 
-  const res = await apiPost("auth/restore", { userId });
+  const res = await apiPost("restore", { userId });
   if (res?.ok) {
     enterApp(res);
     return;
