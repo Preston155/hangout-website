@@ -77,10 +77,14 @@
     }
 
     try {
-      if (typeof window.persistDiscordSession === "function") {
-        window.persistDiscordSession(res);
-      } else {
-        localStorage.setItem("discordRemakeUserId", res.user.id);
+      try {
+        if (typeof window.persistDiscordSession === "function") {
+          window.persistDiscordSession(res);
+        } else {
+          localStorage.setItem("discordRemakeUserId", res.user.id);
+        }
+      } catch (storageErr) {
+        console.warn("Could not save session cache:", storageErr);
       }
 
       if (typeof window.enterDiscordApp === "function") {

@@ -173,6 +173,19 @@ function persistSession(res) {
   );
 }
 
+function safePersistSession(res) {
+  try {
+    persistSession(res);
+  } catch (err) {
+    console.warn("Session storage failed:", err);
+    try {
+      if (res?.user?.id) localStorage.setItem(STORAGE_USER, res.user.id);
+    } catch {
+      /* storage blocked */
+    }
+  }
+}
+
 function readSessionCache() {
   try {
     const raw = localStorage.getItem(STORAGE_SESSION);
@@ -238,9 +251,10 @@ function serverIconSrc(server) {
 }
 
 function applyGuildIcon(btn, server) {
+  const label = String(server?.name || "SV").slice(0, 2).toUpperCase();
   const src = serverIconSrc(server);
   if (!src) {
-    btn.textContent = server.name.slice(0, 2).toUpperCase();
+    btn.textContent = label;
     return;
   }
 
@@ -248,11 +262,11 @@ function applyGuildIcon(btn, server) {
   btn.textContent = "";
   const img = document.createElement("img");
   img.src = src;
-  img.alt = server.name;
+  img.alt = server?.name || "Server";
   img.draggable = false;
   img.addEventListener("error", () => {
     btn.classList.remove("has-icon");
-    btn.textContent = server.name.slice(0, 2).toUpperCase();
+    btn.textContent = label;
     img.remove();
   });
   btn.append(img);
@@ -923,20 +937,37 @@ function trackMessages(messages) {
 }
 
 function showApp() {
-  els.authScreen.classList.add("hidden");
-  els.app.classList.remove("hidden");
+  els.authScreen?.classList.add("hidden");
+  els.app?.classList.remove("hidden");
 }
 
 function enterApp(res) {
-  currentUser = res.user;
-  servers = res.servers || [];
-  persistSession(res);
-  showApp();
-  updateUserPanel();
-  renderGuilds();
-  initSocket();
-  loadFriendsAndDms();
-  showHome();
+  const user = res?.user;
+  if (!user?.id) {
+    Toast.error("Login response was invalid. Try again.");
+    return;
+  }
+
+  currentUser = user;
+  servers = Array.isArray(res?.servers) ? res.servers.filter(Boolean) : [];
+  safePersistSession(res);
+
+  try {
+    showApp();
+    updateUserPanel();
+    renderGuilds();
+    initSocket();
+    showHome();
+    loadFriendsAndDms().catch((err) => console.warn("Friends/DMs load failed:", err));
+  } catch (err) {
+    console.error("enterApp failed:", err);
+    Toast.error("Logged in, but part of the app failed to load. Hard refresh once.");
+    try {
+      showApp();
+    } catch {
+      /* ignore */
+    }
+  }
 }
 
 window.enterDiscordApp = enterApp;
@@ -1150,17 +1181,19 @@ function renderHome() {
 
 function updateUserPanel() {
   if (!currentUser) return;
-  els.panelAvatar.src = avatarSrc(currentUser);
-  els.panelDisplayName.textContent = currentUser.displayName;
-  els.panelUsername.textContent = `@${currentUser.username}`;
+  if (els.panelAvatar) els.panelAvatar.src = avatarSrc(currentUser);
+  if (els.panelDisplayName) els.panelDisplayName.textContent = currentUser.displayName || currentUser.username;
+  if (els.panelUsername) els.panelUsername.textContent = `@${currentUser.username}`;
   if (els.panelStatusDot) {
     els.panelStatusDot.className = `status-dot ${statusClass(currentUser.status || "online")}`;
   }
 }
 
 function renderGuilds() {
+  if (!els.guildList) return;
   els.guildList.innerHTML = "";
   servers.forEach((server) => {
+    if (!server?.id) return;
     const btn = document.createElement("button");
     btn.className = "guild-pill";
     btn.title = server.name;
