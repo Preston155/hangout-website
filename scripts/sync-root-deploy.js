@@ -11,6 +11,7 @@ const DEPLOY_ENTRIES = [
   "css",
   "js",
   "api",
+  "database",
   "downloads",
   "data",
   "uploads",
@@ -47,6 +48,12 @@ function syncRootDeploy() {
     const from = path.join(SRC, name);
     const to = path.join(ROOT, name);
     if (!fs.existsSync(from)) continue;
+
+    if (name === "database") {
+      fs.mkdirSync(to, { recursive: true });
+      copyDir(from, to);
+      continue;
+    }
 
     if (fs.statSync(from).isDirectory()) {
       rimraf(to);

@@ -24,30 +24,11 @@ DirectoryIndex index.html
 RewriteEngine On
 RewriteRule ^api/install-cad-db(\.php)?/?$ api/install-cad-db.php [L,QSA]
 RewriteRule ^api/health(\.php)?/?$ api/health.php [L,QSA]
-RewriteRule ^api/login(\.php)?/?$ api/auth/login.php [L,QSA]
-RewriteRule ^api/register(\.php)?/?$ api/auth/register.php [L,QSA]
-RewriteRule ^api/restore(\.php)?/?$ api/auth/restore.php [L,QSA]
-RewriteRule ^api/auth/register(\.php)?/?$ api/auth/register.php [L,QSA]
-RewriteRule ^api/auth/login(\.php)?/?$ api/auth/login.php [L,QSA]
-RewriteRule ^api/auth/restore(\.php)?/?$ api/auth/restore.php [L,QSA]
-RewriteRule ^api/servers/channels(\.php)?/?$ api/servers/channels.php [L,QSA]
-RewriteRule ^api/servers/create(\.php)?/?$ api/servers/create.php [L,QSA]
-RewriteRule ^api/channels/create(\.php)?/?$ api/channels/create.php [L,QSA]
-RewriteRule ^api/channels/join(\.php)?/?$ api/channels/join.php [L,QSA]
-RewriteRule ^api/messages/send(\.php)?/?$ api/messages/send.php [L,QSA]
-RewriteRule ^api/messages/upload(\.php)?/?$ api/messages/upload.php [L,QSA]
-RewriteRule ^api/messages/poll(\.php)?/?$ api/messages/poll.php [L,QSA]
-RewriteRule ^api/servers/join(\.php)?/?$ api/servers/join.php [L,QSA]
-RewriteRule ^api/servers/update(\.php)?/?$ api/servers/update.php [L,QSA]
-RewriteRule ^api/servers/leave(\.php)?/?$ api/servers/leave.php [L,QSA]
-RewriteRule ^api/profile/update(\.php)?/?$ api/profile/update.php [L,QSA]
-RewriteRule ^api/profile/upload(\.php)?/?$ api/profile/upload.php [L,QSA]
-RewriteRule ^api/friends/list(\.php)?/?$ api/friends/list.php [L,QSA]
-RewriteRule ^api/friends/add(\.php)?/?$ api/friends/add.php [L,QSA]
-RewriteRule ^api/dms/list(\.php)?/?$ api/dms/list.php [L,QSA]
-RewriteRule ^api/dms/open(\.php)?/?$ api/dms/open.php [L,QSA]
-RewriteRule ^api/typing/ping(\.php)?/?$ api/typing/ping.php [L,QSA]
-RewriteRule ^api/typing/poll(\.php)?/?$ api/typing/poll.php [L,QSA]
+# ER:LC CAD API (PHP — works on Plesk without Node.js)
+RewriteCond %{REQUEST_URI} ^/api/
+RewriteCond %{REQUEST_URI} !^/api/health
+RewriteCond %{REQUEST_URI} !^/api/install-cad-db
+RewriteRule ^api/(.*)$ api/cad/router.php [L,QSA]
 RewriteRule ^data(/|$) - [F,L]
 RewriteRule ^node_modules(/|$) - [F,L]
 RewriteRule ^(server|app)\\.js$ - [F,L]
@@ -62,31 +43,27 @@ const DATA_HTACCESS = `<IfModule mod_authz_core.c>
 
 const DEPLOY = `# Plesk Deploy — ER:LC CAD / MDT
 
-## Node.js required
+## PHP + MySQL (default on Plesk)
 
-This CAD system runs on **Node.js + MySQL**, not PHP alone.
+This build includes a **PHP CAD API** at \`api/cad/\` — no Node.js required.
 
-### Setup on Plesk
+### One-time setup
 
-1. Upload the full project (or use Git deploy)
-2. Enable **Node.js** → startup file: \`app.js\`
-3. Set environment variables from \`.env.example\`
-4. Create MySQL database → run \`npm run db:init\` or import \`database/schema.sql\`
-5. Run \`npm install\` and restart Node.js app
-
-### Static-only folder (this httpdocs-ready build)
-
-This folder contains the **frontend static files** only.
-The API (\`/api/*\`) and auth (\`/auth/*\`) routes are served by the Node.js app.
-
-For production, deploy the **full repo** with Node.js enabled — not just this folder.
+1. Git deploy (or upload \`httpdocs-ready\` contents to httpdocs)
+2. Copy \`database/plesk.local.example.php\` → \`database/plesk.local.php\`
+3. Paste your Plesk database password into \`plesk.local.php\`
+4. Import \`database/install-all.sql\` via phpMyAdmin (if not done already)
+5. Delete \`api/install-cad-db.php\` after setup
 
 ### Verify
 
 - \`GET /api/health\` → \`{"ok":true,"mode":"cad","database":"connected"}\`
-- Login at \`/\` with Discord or dev credentials
+- Dev login: **admin** / **admin123** (disable with \`dev_login => false\` in plesk.local.php)
 
-See \`CAD-SETUP.md\` in the project root for full instructions.
+### Optional: Node.js
+
+For Discord OAuth and the full Express server, enable Node.js with startup \`app.js\`.
+See \`CAD-SETUP.md\` in the project root.
 `;
 
 function rimraf(dir) {
@@ -135,6 +112,7 @@ function main() {
   fs.mkdirSync(dbDir, { recursive: true });
   fs.copyFileSync(path.join(ROOT, "database", "install-all.sql"), path.join(dbDir, "install-all.sql"));
   fs.copyFileSync(path.join(ROOT, "database", "plesk.local.example.php"), path.join(dbDir, "plesk.local.example.php"));
+  fs.writeFileSync(path.join(dbDir, ".htaccess"), "<IfModule mod_authz_core.c>\n  Require all denied\n</IfModule>\n");
   fs.copyFileSync(path.join(ROOT, "database", "install-all.sql"), path.join(OUT, "api", "install-all.sql"));
 
   const dataDir = path.join(OUT, "data");

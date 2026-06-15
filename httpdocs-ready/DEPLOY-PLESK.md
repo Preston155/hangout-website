@@ -1,27 +1,23 @@
 # Plesk Deploy — ER:LC CAD / MDT
 
-## Node.js required
+## PHP + MySQL (default on Plesk)
 
-This CAD system runs on **Node.js + MySQL**, not PHP alone.
+This build includes a **PHP CAD API** at `api/cad/` — no Node.js required.
 
-### Setup on Plesk
+### One-time setup
 
-1. Upload the full project (or use Git deploy)
-2. Enable **Node.js** → startup file: `app.js`
-3. Set environment variables from `.env.example`
-4. Create MySQL database → run `npm run db:init` or import `database/schema.sql`
-5. Run `npm install` and restart Node.js app
-
-### Static-only folder (this httpdocs-ready build)
-
-This folder contains the **frontend static files** only.
-The API (`/api/*`) and auth (`/auth/*`) routes are served by the Node.js app.
-
-For production, deploy the **full repo** with Node.js enabled — not just this folder.
+1. Git deploy (or upload `httpdocs-ready` contents to httpdocs)
+2. Copy `database/plesk.local.example.php` → `database/plesk.local.php`
+3. Paste your Plesk database password into `plesk.local.php`
+4. Import `database/install-all.sql` via phpMyAdmin (if not done already)
+5. Delete `api/install-cad-db.php` after setup
 
 ### Verify
 
 - `GET /api/health` → `{"ok":true,"mode":"cad","database":"connected"}`
-- Login at `/` with Discord or dev credentials
+- Dev login: **admin** / **admin123** (disable with `dev_login => false` in plesk.local.php)
 
-See `CAD-SETUP.md` in the project root for full instructions.
+### Optional: Node.js
+
+For Discord OAuth and the full Express server, enable Node.js with startup `app.js`.
+See `CAD-SETUP.md` in the project root.
