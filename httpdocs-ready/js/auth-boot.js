@@ -29,6 +29,17 @@
     }
   }
 
+  async function waitForDiscordApp(maxMs = 8000) {
+    if (typeof window.enterDiscordApp === "function") return;
+    const start = Date.now();
+    while (typeof window.enterDiscordApp !== "function") {
+      if (Date.now() - start > maxMs) {
+        throw new Error("App scripts did not load. Hard refresh the page (Ctrl+Shift+R).");
+      }
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+  }
+
   async function checkApiHealth() {
     try {
       const response = await fetch(`${API}health`, { cache: "no-store" });
@@ -77,24 +88,11 @@
     }
 
     try {
-      try {
-        if (typeof window.persistDiscordSession === "function") {
-          window.persistDiscordSession(res);
-        } else {
-          localStorage.setItem("discordRemakeUserId", res.user.id);
-        }
-      } catch (storageErr) {
-        console.warn("Could not save session cache:", storageErr);
-      }
-
-      if (typeof window.enterDiscordApp === "function") {
-        window.enterDiscordApp(res);
-      } else {
-        location.reload();
-      }
+      await waitForDiscordApp();
+      window.enterDiscordApp(res);
     } catch (appErr) {
       console.error(appErr);
-      showErr("Logged in, but the app failed to load. Hard refresh and try again.");
+      showErr(appErr?.message || "Logged in, but the app failed to load. Hard refresh (Ctrl+Shift+R) and try again.");
     } finally {
       btn.disabled = false;
       btn.textContent = "Continue";
