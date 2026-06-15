@@ -16,7 +16,8 @@
     "build:desktop:lite": "node desktop-lite/build.js",
     "build:desktop:full": "node scripts/build-desktop.js --full",
     "build:desktop:copy": "node scripts/build-desktop.js --copy",
-    "build:desktop:electron": "node scripts/build-desktop.js"
+    "build:desktop:electron": "node scripts/build-desktop.js",
+    "auto-publish": "node auto-publish.js"
   },
   "dependencies": {
     "express": "^4.21.2",

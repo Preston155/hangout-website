@@ -32,6 +32,15 @@ desktop-native/obj/
 desktop-native/dist/
 *.exe.WebView2/
 
+# Auto-publish watcher (local PID only)
+.auto-publish.pid
+
+# Generic build/cache folders (not deployed)
+logs/
+cache/
+dist/
+build/
+
 # OS / editor
 .DS_Store
 Thumbs.db

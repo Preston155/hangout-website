@@ -44,7 +44,7 @@ public sealed class MainForm : Form
         }
 
         var core = _webView.CoreWebView2;
-        core.Settings.AreDefaultContextMenusEnabled = false;
+        core.Settings.AreDefaultContextMenusEnabled = true;
         core.Settings.AreDevToolsEnabled = false;
         core.Settings.IsStatusBarEnabled = false;
         core.Settings.IsZoomControlEnabled = false;

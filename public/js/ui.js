@@ -75,6 +75,7 @@ const ContextMenu = {
     document.body.appendChild(this.layer);
 
     document.addEventListener("mousedown", (e) => {
+      if (e.button === 2) return;
       if (!this.layer.classList.contains("hidden") && !this.layer.contains(e.target)) {
         this.close();
       }
@@ -94,14 +95,16 @@ const ContextMenu = {
 
   open(x, y, items) {
     this.init();
-    this.close();
-    this.layer.classList.remove("hidden");
+    requestAnimationFrame(() => {
+      this.close();
+      this.layer.classList.remove("hidden");
 
-    const menu = this.renderMenu(items);
-    menu.classList.add("ctx-menu--root");
-    menu.style.position = "fixed";
-    this.layer.append(menu);
-    this.positionMenu(menu, x, y);
+      const menu = this.renderMenu(items);
+      menu.classList.add("ctx-menu--root");
+      menu.style.position = "fixed";
+      this.layer.append(menu);
+      this.positionMenu(menu, x, y);
+    });
   },
 
   positionMenu(el, x, y) {

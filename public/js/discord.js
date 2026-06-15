@@ -230,6 +230,34 @@ function avatarSrc(user) {
   return user?.avatar || DEFAULT_AVATAR;
 }
 
+function serverIconSrc(server) {
+  if (!server?.icon) return null;
+  const icon = String(server.icon);
+  if (/^(https?:|data:|\/)/i.test(icon)) return icon;
+  return `/${icon.replace(/^\.\//, "")}`;
+}
+
+function applyGuildIcon(btn, server) {
+  const src = serverIconSrc(server);
+  if (!src) {
+    btn.textContent = server.name.slice(0, 2).toUpperCase();
+    return;
+  }
+
+  btn.classList.add("has-icon");
+  btn.textContent = "";
+  const img = document.createElement("img");
+  img.src = src;
+  img.alt = server.name;
+  img.draggable = false;
+  img.addEventListener("error", () => {
+    btn.classList.remove("has-icon");
+    btn.textContent = server.name.slice(0, 2).toUpperCase();
+    img.remove();
+  });
+  btn.append(img);
+}
+
 function statusClass(status) {
   return `status-${status || "online"}`;
 }
@@ -415,6 +443,24 @@ function showGuildContextMenu(event, server) {
   });
 
   ContextMenu.open(event.clientX, event.clientY, items);
+}
+
+function wireGuildContextMenu() {
+  if (!els.guildList || els.guildList.dataset.contextMenuWired) return;
+  els.guildList.dataset.contextMenuWired = "1";
+
+  els.guildList.addEventListener("contextmenu", (e) => {
+    const pill = e.target.closest(".guild-pill");
+    if (!pill || !els.guildList.contains(pill)) return;
+
+    const serverId = pill.dataset.serverId;
+    const server = servers.find((s) => s.id === serverId);
+    if (!server) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    showGuildContextMenu(e, server);
+  });
 }
 
 function channelIcon(type) {
@@ -1087,7 +1133,7 @@ function renderHome() {
     if (server.icon) {
       icon.classList.add("has-image");
       const img = document.createElement("img");
-      img.src = server.icon;
+      img.src = serverIconSrc(server) || server.icon;
       img.alt = server.name;
       icon.append(img);
     } else {
@@ -1121,22 +1167,10 @@ function renderGuilds() {
     btn.type = "button";
     if (currentServer?.id === server.id) btn.classList.add("active");
 
-    if (server.icon) {
-      btn.classList.add("has-icon");
-      const img = document.createElement("img");
-      img.src = server.icon;
-      img.alt = server.name;
-      btn.append(img);
-    } else {
-      btn.textContent = server.name.slice(0, 2).toUpperCase();
-    }
+    btn.dataset.serverId = server.id;
+    applyGuildIcon(btn, server);
 
     btn.addEventListener("click", () => selectServer(server));
-    btn.addEventListener("contextmenu", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      showGuildContextMenu(e, server);
-    });
     els.guildList.append(btn);
   });
 }
@@ -1936,6 +1970,7 @@ function wireModals() {
   Toast.init();
   Confirm.init();
   ContextMenu.init();
+  wireGuildContextMenu();
   wireProfileEditor();
 
   document.querySelectorAll("[data-close-modal]").forEach((btn) => {
