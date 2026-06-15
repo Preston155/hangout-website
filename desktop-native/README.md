@@ -17,6 +17,15 @@ Upload `httpdocs-ready/downloads/Discord-Remake-Setup.exe` to your site.
 - Loads https://prestonhq.com in an embedded WebView2 control
 - External links open in the default browser
 - `window.desktopApp.isDesktop === true` injected for the site
+- In-app banner when a newer installer is on the site (`downloads/desktop-version.json`)
+
+## Versioning / updates
+
+1. Bump `"version"` in root `package.json` (e.g. `1.0.1`)
+2. Run `npm run build:desktop` then `npm run build:httpdocs`
+3. Upload / auto-publish — desktop users on an older `.exe` see an **Update available** banner with download link
+
+The website UI still auto-updates without reinstalling. The banner only appears when the **installer** version on the site is newer than the embedded app version.
 
 ## Requirements (most PCs already have these)
 

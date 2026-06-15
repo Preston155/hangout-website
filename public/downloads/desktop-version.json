@@ -1,0 +1,8 @@
+{
+  "version": "1.0.0",
+  "installer": "Discord-Remake-Setup.exe",
+  "portable": "Discord-Remake-Portable.exe",
+  "title": "Desktop update available",
+  "message": "Discord Remake 1.0.0 is ready. Download the new installer to update the desktop app.",
+  "publishedAt": "2026-06-15"
+}
