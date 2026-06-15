@@ -1319,3 +1319,347 @@ body.has-desktop-update-banner .login-page { padding-top: 52px; }
 ::-webkit-scrollbar-track { background: var(--bg-deep); }
 ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent-dim); }
+
+/* ─── Electron Desktop App ─── */
+.electron-app {
+  padding-top: 36px;
+  overflow: hidden;
+  height: 100vh;
+}
+
+.electron-app #app {
+  min-height: calc(100vh - 36px);
+  height: calc(100vh - 36px);
+  overflow: hidden;
+}
+
+.electron-app .shell--desktop {
+  height: calc(100vh - 36px);
+}
+
+.electron-app .shell--desktop .main {
+  min-height: 0;
+}
+
+.electron-app .shell--desktop .content {
+  overflow-y: auto;
+  max-height: calc(100vh - 36px - 56px);
+}
+
+.desktop-titlebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 36px;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px 0 12px;
+  background: linear-gradient(180deg, rgba(12, 18, 32, 0.98) 0%, rgba(8, 12, 22, 0.98) 100%);
+  border-bottom: 1px solid rgba(0, 180, 255, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-app-region: drag;
+  user-select: none;
+}
+
+.desktop-titlebar__drag {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.desktop-titlebar__icon { flex-shrink: 0; }
+
+.desktop-titlebar__name {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.desktop-titlebar__conn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-family: var(--mono);
+  letter-spacing: 0.1em;
+  padding: 3px 8px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  margin-left: 8px;
+}
+
+.desktop-titlebar__conn-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--warning);
+  box-shadow: 0 0 8px currentColor;
+}
+
+.desktop-titlebar__conn--connected { border-color: rgba(16, 185, 129, 0.4); color: var(--success); }
+.desktop-titlebar__conn--connected .desktop-titlebar__conn-dot { background: var(--success); }
+
+.desktop-titlebar__conn--connecting { border-color: rgba(245, 158, 11, 0.4); color: var(--warning); }
+.desktop-titlebar__conn--connecting .desktop-titlebar__conn-dot { animation: conn-pulse 1s ease infinite; }
+
+.desktop-titlebar__conn--offline { border-color: rgba(239, 68, 68, 0.4); color: var(--danger); }
+.desktop-titlebar__conn--offline .desktop-titlebar__conn-dot { background: var(--danger); }
+
+@keyframes conn-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.85); }
+}
+
+.desktop-titlebar__actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  -webkit-app-region: no-drag;
+}
+
+.desktop-titlebar__btn {
+  width: 36px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 13px;
+  position: relative;
+  transition: background 0.15s, color 0.15s;
+}
+
+.desktop-titlebar__btn:hover { background: rgba(255, 255, 255, 0.06); color: var(--text); }
+.desktop-titlebar__btn--close:hover { background: #e81123; color: #fff; }
+
+.desktop-titlebar__badge {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 4px;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 14px;
+  text-align: center;
+  border-radius: 99px;
+  background: var(--accent);
+  color: #001018;
+}
+
+.offline-screen {
+  position: fixed;
+  inset: 36px 0 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(4, 7, 13, 0.92);
+  backdrop-filter: blur(8px);
+}
+
+.offline-screen__card {
+  text-align: center;
+  max-width: 420px;
+  padding: 40px 32px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-glow);
+}
+
+.offline-screen__icon { font-size: 48px; margin-bottom: 16px; }
+.offline-screen__card h2 { margin-bottom: 10px; font-size: 20px; }
+.offline-screen__card p { color: var(--text-muted); margin-bottom: 24px; font-size: 14px; }
+.offline-screen__actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+.notification-center {
+  position: fixed;
+  top: 44px;
+  right: 12px;
+  width: 320px;
+  max-height: 420px;
+  z-index: 9998;
+  background: rgba(12, 18, 32, 0.98);
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: card-in 0.25s var(--ease);
+}
+
+.notification-center__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.notification-center__list {
+  overflow-y: auto;
+  max-height: 360px;
+  padding: 8px;
+}
+
+.notification-center__empty {
+  padding: 24px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.notification-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-input);
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.notification-item:hover { border-color: var(--accent-dim); background: var(--bg-hover); }
+.notification-item strong { font-size: 13px; }
+.notification-item span { font-size: 12px; color: var(--text-muted); }
+.notification-item time { font-size: 10px; color: var(--text-dim); font-family: var(--mono); }
+.notification-item--panic { border-color: rgba(255, 34, 68, 0.5); background: rgba(255, 34, 68, 0.08); }
+
+.shell--desktop .sidebar {
+  background: linear-gradient(180deg, rgba(12, 18, 32, 0.98) 0%, rgba(8, 12, 22, 0.98) 100%);
+  border-right: 1px solid rgba(0, 180, 255, 0.1);
+}
+
+.shell--desktop .sidebar__panic {
+  padding: 10px 12px 0;
+}
+
+.shell--desktop .sidebar__panic-btn {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  animation: panic-glow 2.5s ease-in-out infinite;
+}
+
+@keyframes panic-glow {
+  0%, 100% { box-shadow: 0 0 12px rgba(255, 34, 68, 0.25); }
+  50% { box-shadow: 0 0 24px rgba(255, 34, 68, 0.45); }
+}
+
+.sidebar__profile-card {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.sidebar__profile-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dim) 100%);
+  color: #001018;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.sidebar__profile-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.topbar__right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.topbar__dept {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-family: var(--mono);
+}
+
+.modal--settings { max-width: 440px; }
+
+.settings-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.settings-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.settings-meta {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 12px;
+  background: var(--bg-input);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  font-size: 12px;
+}
+
+.settings-meta div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.settings-meta span { color: var(--text-muted); }
+
+.settings-hint {
+  margin-top: 12px;
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.text-muted { color: var(--text-muted); font-size: 13px; }
+
+.electron-app .landing { display: none; }
+
+.electron-app .login-page {
+  min-height: calc(100vh - 36px);
+}
+
+.electron-app .login-page .login-brand__features .login-brand__feat:last-child {
+  display: none;
+}
+
+.electron-app .login-page .btn--discord {
+  display: none;
+}
+
+.electron-app .login-divider {
+  display: none;
+}

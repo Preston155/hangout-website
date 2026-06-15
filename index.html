@@ -4,31 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#060a12" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' http://127.0.0.1:* https:; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline';" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
     <title>Liberty County CAD</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="css/cad.css?v=4" />
+    <link rel="stylesheet" href="css/cad.css?v=5" />
   </head>
   <body>
-    <div class="desktop-update hidden" id="desktopUpdateBanner" role="status">
-      <div class="desktop-update__content">
-        <span class="desktop-update__icon">⬆</span>
-        <div class="desktop-update__text">
-          <strong class="desktop-update__title">Update available</strong>
-          <span class="desktop-update__message">A new version is ready.</span>
-        </div>
-        <a class="btn btn--primary desktop-update__download" href="downloads/Liberty-County-CAD-Setup.exe" download>Download</a>
-        <button class="desktop-update__dismiss" type="button" aria-label="Dismiss">✕</button>
-      </div>
-    </div>
-
     <div id="app"></div>
     <div class="toast-stack" id="toastStack"></div>
 
-    <script src="js/desktop-update.js?v=4"></script>
-    <script src="js/desktop.js?v=4"></script>
-    <script src="js/api.js?v=4"></script>
-    <script src="js/desktop-views.js?v=4"></script>
-    <script src="js/app.js?v=4"></script>
+    <script src="js/api.js?v=5"></script>
+    <script src="js/app.js?v=5"></script>
   </body>
 </html>

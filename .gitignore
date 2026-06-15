@@ -32,6 +32,8 @@ desktop-lite/dist/
 desktop-native/bin/
 desktop-native/obj/
 desktop-native/dist/
+dist-electron/
+electron/
 *.exe.WebView2/
 
 # Auto-publish watcher (local PID only)

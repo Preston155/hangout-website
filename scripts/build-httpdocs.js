@@ -1,6 +1,5 @@
 const fs = require("fs");
 const path = require("path");
-const { writeDesktopVersion, INSTALLER_FILENAME } = require("./write-desktop-version");
 const { syncRootDeploy } = require("./sync-root-deploy");
 
 const ROOT = path.join(__dirname, "..");
@@ -106,6 +105,10 @@ function main() {
   const rootDownloads = path.join(ROOT, "downloads");
   if (fs.existsSync(rootDownloads)) {
     copyDir(rootDownloads, path.join(OUT, "downloads"));
+  } else {
+    const downloadsDir = path.join(OUT, "downloads");
+    fs.mkdirSync(downloadsDir, { recursive: true });
+    fs.writeFileSync(path.join(downloadsDir, ".htaccess"), "Options -Indexes\n");
   }
 
   const dbDir = path.join(OUT, "database");
@@ -127,35 +130,6 @@ function main() {
   fs.mkdirSync(path.join(uploadsDir, "server-icons"), { recursive: true });
   fs.writeFileSync(path.join(uploadsDir, ".htaccess"), "Options -Indexes\n");
   fs.writeFileSync(path.join(uploadsDir, ".gitkeep"), "");
-
-  const downloadsDir = path.join(OUT, "downloads");
-  fs.mkdirSync(downloadsDir, { recursive: true });
-
-  const electronInstaller = path.join(ROOT, "dist-electron", "Liberty County CAD Setup.exe");
-  const publicInstaller = path.join(ROOT, "public", "downloads", INSTALLER_FILENAME);
-  const nativeExe = path.join(ROOT, "desktop-native", "dist", "Discord-Remake-Setup.exe");
-  const liteExe = path.join(ROOT, "desktop-lite", "dist", "Discord-Remake-Setup.exe");
-
-  const sourceExe = fs.existsSync(electronInstaller)
-    ? electronInstaller
-    : fs.existsSync(publicInstaller)
-      ? publicInstaller
-      : fs.existsSync(nativeExe)
-        ? nativeExe
-        : fs.existsSync(liteExe)
-          ? liteExe
-          : null;
-
-  if (sourceExe) {
-    fs.copyFileSync(sourceExe, path.join(downloadsDir, INSTALLER_FILENAME));
-  } else {
-    fs.writeFileSync(
-      path.join(downloadsDir, "README.txt"),
-      `Place ${INSTALLER_FILENAME} here after running: npm run dist\n`,
-    );
-  }
-
-  writeDesktopVersion(downloadsDir);
 
   fs.writeFileSync(path.join(OUT, ".htaccess"), HTACCESS);
   fs.writeFileSync(path.join(OUT, "DEPLOY-PLESK.md"), DEPLOY);

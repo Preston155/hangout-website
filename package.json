@@ -10,14 +10,9 @@
   "scripts": {
     "start": "node app.js",
     "dev": "node server.js",
+    "build": "node scripts/build-httpdocs.js",
     "db:init": "node scripts/init-db.js",
     "build:httpdocs": "node scripts/build-httpdocs.js",
-    "desktop": "npm run start --prefix desktop",
-    "build:desktop": "node desktop-native/build.js",
-    "build:desktop:lite": "node desktop-lite/build.js",
-    "build:desktop:full": "node scripts/build-desktop.js --full",
-    "build:desktop:copy": "node scripts/build-desktop.js --copy",
-    "build:desktop:electron": "node scripts/build-desktop.js",
     "auto-publish": "node auto-publish.js"
   },
   "dependencies": {

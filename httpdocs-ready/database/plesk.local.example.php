@@ -7,7 +7,7 @@ return [
   'host' => 'localhost',
   'port' => 3306,
   'user' => 'prestonh_database',
-  'pass' => 'PASTE_PASSWORD_FROM_PLESK_CONNECTION_INFO',
+  'pass' => '0625$$Odie$$',
   'name' => 'prestonh_database',
   'dev_login' => true,
   'dev_login_password' => 'admin123',
