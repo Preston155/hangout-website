@@ -60,6 +60,16 @@
       "permission": "Manage Server",
       "description": "Send the City of Angels support ticket panel to a channel."
     },
+    "slash:counting": {
+      "permission": "Manage Server",
+      "description": "Manage the premium counting system (channel, reset, status).",
+      "subcommands": [
+        { "name": "setup", "description": "Set the counting channel and optional start number." },
+        { "name": "status", "description": "Show counting status, next number, and record." },
+        { "name": "reset", "description": "Reset counting to a start number." },
+        { "name": "disable", "description": "Turn off the counting system." }
+      ]
+    },
     "prefix:status": {
       "permission": "Everyone",
       "aliases": ["serverstatus", "server-status", "server"]
@@ -96,6 +106,18 @@
       "permission": "Manage Server",
       "aliases": ["welcometest"]
     },
+    "prefix:counting": {
+      "permission": "Manage Server",
+      "aliases": ["count"],
+      "usage": ".counting <action>",
+      "description": "Manage the counting system — setup, status, reset, or disable.",
+      "subcommands": [
+        { "name": "setup", "description": "Set counting channel and optional start (`.counting setup #channel 0`)." },
+        { "name": "status", "description": "Show current counting status embed." },
+        { "name": "reset", "description": "Reset the count (optional start number)." },
+        { "name": "disable", "description": "Turn off counting." }
+      ]
+    },
     "session:session": {
       "permission": "Manage Server (vote/start/end)",
       "aliases": [
@@ -104,6 +126,17 @@
         { "name": "se", "description": "Session End" }
       ]
     }
+  },
+  "manualCommands": {
+    "prefix": [
+      {
+        "name": "counting",
+        "type": "prefix",
+        "usage": ".counting <action>",
+        "aliases": ["count"],
+        "description": "Manage the counting system — setup, status, reset, or disable."
+      }
+    ]
   },
   "systems": [
     {
@@ -117,6 +150,10 @@
     {
       "name": "Ticket System",
       "description": "Support tickets via the /ticket-panel and button interactions."
+    },
+    {
+      "name": "Counting System",
+      "description": "Members count up in a dedicated channel — wrong numbers or double-counts reset to 1. Use /counting or .counting to manage."
     },
     {
       "name": "Reaction Roles",

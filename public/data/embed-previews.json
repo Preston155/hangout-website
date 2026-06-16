@@ -37,6 +37,29 @@
     ],
     "footer": { "text": "City of Angels · Support System" }
   },
+  "slash:counting:slash": {
+    "color": "#22c55e",
+    "title": "🔢 Premium Counting",
+    "description": "Counting channel status and stats.",
+    "fields": [
+      { "name": "Channel", "value": "#counting", "inline": true },
+      { "name": "Status", "value": "Enabled", "inline": true },
+      { "name": "Next", "value": "`42`", "inline": true },
+      { "name": "Record", "value": "`128`", "inline": true },
+      { "name": "Mistakes", "value": "`3`", "inline": true }
+    ],
+    "footer": { "text": "City of Angels • Counting System" }
+  },
+  "prefix:counting:prefix": {
+    "color": "#22c55e",
+    "title": "🔢 Premium Counting",
+    "description": "Same status embed as /counting status.",
+    "fields": [
+      { "name": "Next", "value": "`42`", "inline": true },
+      { "name": "Current", "value": "`41`", "inline": true }
+    ],
+    "footer": { "text": ".counting status" }
+  },
   "prefix:level:prefix": {
     "color": "#3ba55d",
     "title": "Your Level",
@@ -83,6 +106,16 @@
       { "name": "Next Step", "value": "Check #rules", "inline": true }
     ],
     "footer": { "text": "Veltrix · Welcome System" }
+  },
+  "systems:Counting System:system": {
+    "color": "#22c55e",
+    "title": "🔢 Counting Started",
+    "description": "Members send the next number in order.\n\n**Rule:** No double-counting — wrong numbers reset to 1.",
+    "fields": [
+      { "name": "Channel", "value": "#counting", "inline": true },
+      { "name": "Next", "value": "`1`", "inline": true }
+    ],
+    "footer": { "text": "City of Angels • Counting System" }
   },
   "prefix:testwelcome:prefix": {
     "color": "#2b7fff",

@@ -64,6 +64,18 @@
           "type": "slash",
           "description": "Send the City of Angels support ticket panel to a channel.",
           "permission": "Manage Server"
+        },
+        {
+          "name": "counting",
+          "type": "slash",
+          "description": "Manage the premium counting system (channel, reset, status).",
+          "permission": "Manage Server",
+          "subcommands": [
+            { "name": "setup", "description": "Set the counting channel and optional start number." },
+            { "name": "status", "description": "Show counting status, next number, and record." },
+            { "name": "reset", "description": "Reset counting to a start number." },
+            { "name": "disable", "description": "Turn off the counting system." }
+          ]
         }
       ]
     },
@@ -136,6 +148,20 @@
           "aliases": ["welcometest"],
           "description": "Preview the welcome message for yourself in the current channel.",
           "permission": "Manage Server"
+        },
+        {
+          "name": "counting",
+          "type": "prefix",
+          "usage": ".counting <action>",
+          "aliases": ["count"],
+          "description": "Manage the counting system — setup, status, reset, or disable.",
+          "permission": "Manage Server",
+          "subcommands": [
+            { "name": "setup", "description": "Set counting channel and optional start (`.counting setup #channel 0`)." },
+            { "name": "status", "description": "Show current counting status embed." },
+            { "name": "reset", "description": "Reset the count (optional start number)." },
+            { "name": "disable", "description": "Turn off counting." }
+          ]
         }
       ]
     },
@@ -187,6 +213,11 @@
           "name": "Ticket System",
           "type": "system",
           "description": "Support tickets via the /ticket-panel and button interactions."
+        },
+        {
+          "name": "Counting System",
+          "type": "system",
+          "description": "Members count up in a dedicated channel — wrong numbers or double-counts reset to 1. Use /counting or .counting to manage."
         },
         {
           "name": "Reaction Roles",

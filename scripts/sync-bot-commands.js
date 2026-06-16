@@ -82,6 +82,15 @@ function buildOutput(extractedMap, meta, prefix) {
     buckets[_category]?.push(merged);
   }
 
+  for (const [category, cmds] of Object.entries(meta.manualCommands || {})) {
+    if (!buckets[category]) buckets[category] = [];
+    for (const cmd of cmds) {
+      if (buckets[category].some((c) => c.name === cmd.name)) continue;
+      const overrideKey = `${category}:${cmd.name}`;
+      buckets[category].push(applyOverride({ ...cmd, type: cmd.type || category }, meta.overrides?.[overrideKey]));
+    }
+  }
+
   for (const key of Object.keys(buckets)) {
     buckets[key].sort((a, b) => a.name.localeCompare(b.name));
   }
