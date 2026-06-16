@@ -361,7 +361,7 @@ function renderCard(cmd, catId) {
   const key = cmdKey(cmd, catId);
   const hasMore = (cmd.subcommands || []).length || (cmd.options || []).length || cmd.notes;
   const preview = isPreviewableCommand(cmd) ? getCommandPreview(cmd, catId) : null;
-  const previewHtml = preview?.compactEmbed ? renderCommandPreview(preview, true) : "";
+  const previewHtml = preview ? renderCommandPreview(preview, true) : "";
 
   const perm = cmd.permission
     ? `<span class="pill ${permClass(cmd.permission)}">${esc(cmd.permission)}</span>`
