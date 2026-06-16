@@ -220,6 +220,35 @@
           "permission": "Manage Server"
         },
         {
+          "name": "shift",
+          "type": "prefix",
+          "usage": ".shift <action>",
+          "aliases": [
+            "staffshift",
+            "duty"
+          ],
+          "description": "Staff shift tracker — clock in, clock out, status, and points.",
+          "permission": "Staff",
+          "subcommands": [
+            {
+              "name": "start",
+              "description": "Start your staff shift."
+            },
+            {
+              "name": "end",
+              "description": "End your staff shift."
+            },
+            {
+              "name": "status",
+              "description": "View shift status for you or another staff member."
+            },
+            {
+              "name": "leaderboard",
+              "description": "View the staff points leaderboard."
+            }
+          ]
+        },
+        {
           "name": "status",
           "type": "prefix",
           "description": "",

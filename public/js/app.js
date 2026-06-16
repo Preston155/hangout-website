@@ -357,7 +357,7 @@ function renderCard(cmd, catId) {
   const key = cmdKey(cmd, catId);
   const hasMore = (cmd.subcommands || []).length || (cmd.options || []).length || cmd.notes;
   const preview = isPreviewableCommand(cmd) ? getCommandPreview(cmd, catId) : null;
-  const previewHtml = preview ? renderCommandPreview(preview, true) : "";
+  const previewHtml = preview?.compactEmbed ? renderCommandPreview(preview, true) : "";
 
   const perm = cmd.permission
     ? `<span class="pill ${permClass(cmd.permission)}">${esc(cmd.permission)}</span>`
@@ -735,8 +735,8 @@ async function init() {
 
   try {
     const [cmdRes, previewRes] = await Promise.all([
-      fetch("data/bot-commands.json?v=12", { cache: "no-store" }),
-      fetch("data/command-previews.json?v=1", { cache: "no-store" }),
+      fetch("data/bot-commands.json?v=13", { cache: "no-store" }),
+      fetch("data/command-previews.json?v=2", { cache: "no-store" }),
     ]);
     if (!cmdRes.ok) throw new Error("Failed to load commands");
     state.data = await cmdRes.json();

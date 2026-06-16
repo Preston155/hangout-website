@@ -70,6 +70,18 @@
         { "name": "disable", "description": "Turn off the counting system." }
       ]
     },
+    "prefix:shift": {
+      "permission": "Staff",
+      "aliases": ["staffshift", "duty"],
+      "usage": ".shift <action>",
+      "description": "Staff shift tracker — clock in, clock out, status, and points.",
+      "subcommands": [
+        { "name": "start", "description": "Start your staff shift." },
+        { "name": "end", "description": "End your staff shift." },
+        { "name": "status", "description": "View shift status for you or another staff member." },
+        { "name": "leaderboard", "description": "View the staff points leaderboard." }
+      ]
+    },
     "prefix:status": {
       "permission": "Everyone",
       "aliases": ["serverstatus", "server-status", "server"]
@@ -180,6 +192,20 @@
         "usage": ".roles [page]",
         "aliases": ["serverroles", "server-roles"],
         "description": "Show server roles list (prefix version of /server-roles)."
+      },
+      {
+        "name": "shift",
+        "type": "prefix",
+        "usage": ".shift <action>",
+        "aliases": ["staffshift", "duty"],
+        "description": "Staff shift tracker — clock in, clock out, status, and points."
+      },
+      {
+        "name": "status",
+        "type": "prefix",
+        "usage": ".status",
+        "aliases": ["serverstatus", "server-status", "server"],
+        "description": "Live Discord server status overview (same as /server-status)."
       }
     ]
   },

@@ -52,6 +52,22 @@
     ],
     "effects": ["Aliases: .serverstatus, .server-status, .server"]
   },
+  "prefix:shift": {
+    "summary": "Prefix version of /shift — staff clock in/out and earn points.",
+    "steps": [
+      { "type": "user", "content": ".shift start" },
+      {
+        "type": "bot",
+        "embed": {
+          "color": "#22c55e",
+          "title": "🟢 Shift Started",
+          "description": "**Staff:** @You\n**Status:** On duty\n**Started:** just now",
+          "footer": { "text": "City of Angels • Staff Shifts" }
+        }
+      }
+    ],
+    "effects": ["Aliases: .staffshift, .duty", "Also available as /shift"]
+  },
   "prefix:purge": {
     "summary": "Bulk-deletes messages in the current channel. Pinned messages are always skipped.",
     "steps": [

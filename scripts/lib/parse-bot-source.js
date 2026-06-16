@@ -84,16 +84,34 @@ function extractSlashCommand(text, filePath) {
   return cmd;
 }
 
+function isValidPrefixCommandName(name) {
+  return /^[a-z0-9][a-z0-9-_]*$/i.test(name);
+}
+
 function extractPrefixCommand(text, filePath) {
+  const normalized = String(filePath || "").replace(/\\/g, "/");
+  const base = pathBasename(normalized).toLowerCase();
+
+  if (base === "config.js" || base === "index.js") return null;
+  if (normalized.includes("systems/") && !/prefixName\s*:|executePrefix|prefixCommand/.test(text)) {
+    return null;
+  }
+  if (/counting-system|staff-shift-system|server-layout|erlc-role-manager/.test(normalized)) {
+    return null;
+  }
+
+  const prefixName = firstMatch(text, [/prefixName\s*:\s*['"]([^'"]+)['"]/]);
+  const hasPrefixHandler = /executePrefix|prefixCommand/.test(text);
+  if (!prefixName && !hasPrefixHandler) return null;
+
   const name =
-    firstMatch(text, [
-      /prefixName\s*:\s*['"]([^'"]+)['"]/,
-      /(?:^|\n)\s*name\s*:\s*['"]([^'"]+)['"]/m,
-    ]) || null;
+    prefixName ||
+    firstMatch(text, [/^\s*name\s*:\s*['"]([^'"]+)['"]/m]) ||
+    null;
 
-  if (!name && !/messageCreate|prefix|aliases\s*:/.test(text)) return null;
+  if (!name || !isValidPrefixCommandName(name)) return null;
 
-  const resolvedName = name || pathBasename(filePath);
+  const resolvedName = name;
   const description =
     firstMatch(text, [/description\s*:\s*['"]([^'"]+)['"]/, /\/\/\s*@description\s+(.+)/]) || "";
 
