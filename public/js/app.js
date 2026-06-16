@@ -7,6 +7,23 @@ const state = {
   modalCmd: null,
 };
 
+const LOGO_V = 8;
+
+function logoPicture(className, w, h, alt = "") {
+  const q = `?v=${LOGO_V}`;
+  return `<picture class="${className}-wrap">
+    <source srcset="assets/veltrix-logo-256.webp${q}" type="image/webp" />
+    <img class="${className}" src="assets/veltrix-logo.png${q}" alt="${esc(alt)}" width="${w}" height="${h}" decoding="async" />
+  </picture>`;
+}
+
+function dismissBoot() {
+  const boot = document.getElementById("boot");
+  if (!boot) return;
+  boot.classList.add("is-done");
+  document.body.classList.add("is-ready");
+  setTimeout(() => boot.remove(), 220);
+}
 let revealObserver = null;
 let toolbarScrollHandler = null;
 
@@ -269,7 +286,7 @@ function render() {
       <aside class="sidebar" id="sidebar">
         <div class="sidebar__brand">
           <div class="sidebar__logo">
-            <img src="assets/veltrix-logo.png?v=7" alt="Veltrix" width="52" height="52" />
+            ${logoPicture("sidebar__logo-img", 52, 52, "Veltrix")}
           </div>
           <div>
             <div class="sidebar__title">${esc(state.data.botName)}</div>
@@ -295,7 +312,7 @@ function render() {
         <header class="hero reveal">
           <div class="hero__row">
             <div class="hero__brand">
-              <img class="hero__logo" src="assets/veltrix-logo.png?v=7" alt="" width="96" height="96" />
+              ${logoPicture("hero__logo", 96, 96)}
               <div>
                 <p class="hero__label">City of Angels</p>
                 <h1><span>Veltrix</span> commands</h1>
@@ -338,6 +355,7 @@ function render() {
   renderModal();
   initReveal();
   initToolbarStick();
+  dismissBoot();
 }
 
 function initReveal() {
@@ -447,7 +465,7 @@ document.addEventListener("keydown", (e) => {
 
 async function init() {
   try {
-    const res = await fetch("data/bot-commands.json?v=4", { cache: "no-store" });
+    const res = await fetch("data/bot-commands.json?v=8", { cache: "no-store" });
     if (!res.ok) throw new Error("Failed to load commands");
     state.data = await res.json();
   } catch (err) {
