@@ -55,7 +55,10 @@ function matches(cmd, q) {
 function renderCard(cmd) {
   const type = cmd.type || "system";
   const nameClass = type === "slash" ? "cmd-name cmd-name--slash" : type === "prefix" ? "cmd-name cmd-name--prefix" : "cmd-name";
-  const displayName = type === "prefix" && cmd.usage ? cmd.usage.split(" ")[0] : cmd.name;
+  const displayName =
+    type === "prefix"
+      ? (cmd.usage ? cmd.usage.split(" ")[0].replace(/^\./, "") : cmd.name)
+      : cmd.name;
 
   const aliases = (cmd.aliases || []).length
     ? `<span>${cmd.aliases.map((a) => (type === "prefix" ? "." : "") + esc(a)).join(", ")}</span>`
