@@ -111,6 +111,11 @@
           "description": "Create or update the City of Angels role structure."
         },
         {
+          "name": "shift",
+          "type": "slash",
+          "description": "Staff shift and points system."
+        },
+        {
           "name": "ticket-panel",
           "type": "slash",
           "description": "Send the City of Angels support ticket panel to a channel.",
@@ -125,25 +130,14 @@
       "description": "Message commands using the . prefix.",
       "commands": [
         {
-          "name": "╭──・",
+          "name": "addxp",
           "type": "prefix",
-          "description": "",
-          "usage": ".╭──・"
-        },
-        {
-          "name": "📌 INFORMATION",
-          "type": "prefix",
-          "description": "",
-          "usage": ".📌 INFORMATION",
+          "usage": ".addxp @user <amount>",
           "aliases": [
-            "📢・announcements"
-          ]
-        },
-        {
-          "name": "config",
-          "type": "prefix",
-          "description": "",
-          "usage": ".config"
+            "givexp"
+          ],
+          "description": "Grant XP to a member manually.",
+          "permission": "Manage Server"
         },
         {
           "name": "counting",
@@ -174,16 +168,25 @@
           ]
         },
         {
-          "name": "counting-system",
+          "name": "level",
           "type": "prefix",
-          "description": "",
-          "usage": ".counting-system"
+          "usage": ".level [@user]",
+          "aliases": [
+            "rank"
+          ],
+          "description": "Check your or another member's XP level and rank.",
+          "permission": "Everyone"
         },
         {
-          "name": "index",
+          "name": "levels",
           "type": "prefix",
-          "description": "",
-          "usage": ".index"
+          "usage": ".levels",
+          "aliases": [
+            "leaderboard",
+            "lb"
+          ],
+          "description": "Show the server XP leaderboard.",
+          "permission": "Everyone"
         },
         {
           "name": "purge",
@@ -196,6 +199,27 @@
           "permission": "Manage Messages"
         },
         {
+          "name": "roles",
+          "type": "prefix",
+          "usage": ".roles [page]",
+          "aliases": [
+            "serverroles",
+            "server-roles"
+          ],
+          "description": "Show server roles list (prefix version of /server-roles).",
+          "permission": "Manage Roles"
+        },
+        {
+          "name": "setuproles",
+          "type": "prefix",
+          "usage": ".setuproles",
+          "aliases": [
+            "reactionroles"
+          ],
+          "description": "Post the reaction-role setup panel in the current channel.",
+          "permission": "Manage Server"
+        },
+        {
           "name": "status",
           "type": "prefix",
           "description": "",
@@ -206,6 +230,16 @@
             "server"
           ],
           "permission": "Everyone"
+        },
+        {
+          "name": "testwelcome",
+          "type": "prefix",
+          "usage": ".testwelcome",
+          "aliases": [
+            "welcometest"
+          ],
+          "description": "Preview the welcome message in the current channel.",
+          "permission": "Manage Server"
         }
       ]
     },

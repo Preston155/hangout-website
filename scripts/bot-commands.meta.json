@@ -127,6 +127,9 @@
       ]
     }
   },
+  "excludeCommands": {
+    "prefix": ["╭──・", "📌 INFORMATION", "counting-system", "index", "config", "staff-shift-system"]
+  },
   "manualCommands": {
     "prefix": [
       {
@@ -135,6 +138,48 @@
         "usage": ".counting <action>",
         "aliases": ["count"],
         "description": "Manage the counting system — setup, status, reset, or disable."
+      },
+      {
+        "name": "level",
+        "type": "prefix",
+        "usage": ".level [@user]",
+        "aliases": ["rank"],
+        "description": "Check your or another member's XP level and rank."
+      },
+      {
+        "name": "levels",
+        "type": "prefix",
+        "usage": ".levels",
+        "aliases": ["leaderboard", "lb"],
+        "description": "Show the server XP leaderboard."
+      },
+      {
+        "name": "addxp",
+        "type": "prefix",
+        "usage": ".addxp @user <amount>",
+        "aliases": ["givexp"],
+        "description": "Grant XP to a member manually."
+      },
+      {
+        "name": "setuproles",
+        "type": "prefix",
+        "usage": ".setuproles",
+        "aliases": ["reactionroles"],
+        "description": "Post the reaction-role setup panel in the current channel."
+      },
+      {
+        "name": "testwelcome",
+        "type": "prefix",
+        "usage": ".testwelcome",
+        "aliases": ["welcometest"],
+        "description": "Preview the welcome message in the current channel."
+      },
+      {
+        "name": "roles",
+        "type": "prefix",
+        "usage": ".roles [page]",
+        "aliases": ["serverroles", "server-roles"],
+        "description": "Show server roles list (prefix version of /server-roles)."
       }
     ]
   },

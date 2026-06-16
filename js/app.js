@@ -2,7 +2,7 @@
 
 const state = {
   data: null,
-  embeds: null,
+  previews: null,
   query: "",
   filter: "all",
   view: "commands",
@@ -102,129 +102,15 @@ function cmdKey(cmd, catId) {
   return `${catId}:${cmd.name}:${cmd.type || "system"}`;
 }
 
-function getEmbedPreview(cmd, catId) {
-  if (!state.embeds) return null;
-  return state.embeds[cmdKey(cmd, catId)] || null;
+function hasCustomPreview(cmd, catId) {
+  if (!state.previews) return false;
+  const key = previewKey(cmd, catId);
+  const alt = previewLookupKey(cmd, catId);
+  return Boolean(state.previews[key] || state.previews[alt]);
 }
 
-const EMBED_COLORS = {
-  slash: "#5865f2",
-  prefix: "#3ba55d",
-  session: "#a855f7",
-};
-
-function embedColorFor(cmd, catId) {
-  const type = cmd.type || "system";
-  if (type === "prefix" && catId === "session") return EMBED_COLORS.session;
-  return EMBED_COLORS[type] || "#2b7fff";
-}
-
-function humanizeCmdTitle(cmd) {
-  const raw = cmd.type === "system" ? cmd.name : cmdDisplayName(cmd);
-  if (/[^\x00-\x7F]/.test(raw)) return raw;
-  return raw
-    .replace(/-/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-function buildEmbedFromCommand(cmd, catId) {
-  const type = cmd.type || "system";
-  if (type !== "slash" && type !== "prefix") return null;
-
-  const invoke = cmdCopyText(cmd);
-  const title = humanizeCmdTitle(cmd);
-  let description = (cmd.description || "").trim();
-
-  if (!description) {
-    description =
-      type === "slash"
-        ? `Veltrix responds with an embed when you run ${invoke}.`
-        : `Type ${cmd.usage || invoke} in chat to trigger this command.`;
-  }
-
-  const fields = [];
-
-  if (cmd.permission) {
-    fields.push({ name: "Permission", value: cmd.permission, inline: true });
-  }
-
-  if (cmd.usage) {
-    fields.push({ name: "Usage", value: `\`${cmd.usage}\``, inline: true });
-  }
-
-  if ((cmd.subcommands || []).length) {
-    const lines = cmd.subcommands
-      .slice(0, 8)
-      .map((s) => `**${s.name}** — ${s.description || "Subcommand"}`)
-      .join("\n");
-    fields.push({ name: "Subcommands", value: lines, inline: false });
-  }
-
-  if ((cmd.options || []).length) {
-    const lines = cmd.options.map((o) => `**${o.name}** — ${o.description || "Option"}`).join("\n");
-    fields.push({ name: "Options", value: lines, inline: false });
-  }
-
-  if ((cmd.aliases || []).length) {
-    const labels = cmd.aliases.slice(0, 6).map((a) => aliasLabel(a, type)).join(", ");
-    fields.push({ name: "Aliases", value: labels, inline: true });
-  }
-
-  if (type === "slash" && !cmd.subcommands?.length && !cmd.options?.length) {
-    fields.push({ name: "Response", value: "Embed confirmation from Veltrix", inline: true });
-  }
-
-  return {
-    color: embedColorFor(cmd, catId),
-    author: { name: "Veltrix · City of Angels" },
-    title,
-    description,
-    fields: fields.length ? fields : undefined,
-    footer: { text: `${invoke} · City of Angels` },
-  };
-}
-
-function resolveEmbedPreview(cmd, catId) {
-  return getEmbedPreview(cmd, catId) || buildEmbedFromCommand(cmd, catId);
-}
-
-function showsEmbedPreview(cmd) {
-  const type = cmd.type || "system";
-  return type === "slash" || type === "prefix";
-}
-
-function renderDiscordEmbed(embed, compact = false) {
-  if (!embed) return "";
-  const color = embed.color || "#2b7fff";
-  const fields = (embed.fields || [])
-    .slice(0, compact ? 2 : undefined)
-    .map(
-      (f) =>
-        `<div class="d-embed__field${f.inline ? " d-embed__field--inline" : ""}">
-          <div class="d-embed__field-name">${esc(f.name)}</div>
-          <div class="d-embed__field-value">${esc(f.value)}</div>
-        </div>`,
-    )
-    .join("");
-
-  const buttons = compact
-    ? ""
-    : (embed.buttons || [])
-        .map((b) => `<span class="d-btn d-btn--${esc(b.style || "secondary")}">${esc(b.label)}</span>`)
-        .join("");
-
-  return `<div class="d-embed${compact ? " d-embed--compact" : ""}" style="--embed-color: ${esc(color)}">
-    ${
-      embed.author
-        ? `<div class="d-embed__author">${embed.author.icon !== false ? `<span class="d-embed__author-icon"></span>` : ""}<span>${esc(embed.author.name)}</span></div>`
-        : ""
-    }
-    ${embed.title ? `<div class="d-embed__title">${esc(embed.title)}</div>` : ""}
-    ${embed.description ? `<div class="d-embed__desc">${esc(embed.description)}</div>` : ""}
-    ${fields ? `<div class="d-embed__fields">${fields}</div>` : ""}
-    ${embed.footer ? `<div class="d-embed__footer">${esc(embed.footer.text)}</div>` : ""}
-    ${buttons ? `<div class="d-embed__buttons">${buttons}</div>` : ""}
-  </div>`;
+function getCommandPreview(cmd, catId) {
+  return resolveCommandPreview(cmd, catId, state.previews);
 }
 
 function isAdminAuthed() {
@@ -343,8 +229,8 @@ function permissionStats(data) {
 
 function embedCoverage(data) {
   const rows = collectAllCommands(data);
-  const slashPrefix = rows.filter(({ cmd }) => showsEmbedPreview(cmd));
-  const custom = slashPrefix.filter(({ cmd, cat }) => getEmbedPreview(cmd, cat.id));
+  const slashPrefix = rows.filter(({ cmd }) => isPreviewableCommand(cmd));
+  const custom = slashPrefix.filter(({ cmd, cat }) => hasCustomPreview(cmd, cat.id));
   return { total: slashPrefix.length, withEmbed: slashPrefix.length, custom: custom.length, items: slashPrefix };
 }
 
@@ -363,7 +249,7 @@ function renderAdminMain() {
   const embedItems = embeds.items
     .map(({ cmd, cat }) => {
       const label = cmdCopyText(cmd);
-      const isCustom = !!getEmbedPreview(cmd, cat.id);
+      const isCustom = hasCustomPreview(cmd, cat.id);
       return `<div class="admin-embed-item"><code>${esc(label)}</code><span class="admin-badge${isCustom ? "" : " admin-badge--auto"}">${isCustom ? "Custom" : "Auto"}</span></div>`;
     })
     .join("");
@@ -470,8 +356,8 @@ function renderCard(cmd, catId) {
   const displayName = type === "system" ? cmd.name : cmdDisplayName(cmd);
   const key = cmdKey(cmd, catId);
   const hasMore = (cmd.subcommands || []).length || (cmd.options || []).length || cmd.notes;
-  const embed = showsEmbedPreview(cmd) ? resolveEmbedPreview(cmd, catId) : null;
-  const embedHtml = embed ? `<div class="card__preview">${renderDiscordEmbed(embed, true)}</div>` : "";
+  const preview = isPreviewableCommand(cmd) ? getCommandPreview(cmd, catId) : null;
+  const previewHtml = preview ? renderCommandPreview(preview, true) : "";
 
   const perm = cmd.permission
     ? `<span class="pill ${permClass(cmd.permission)}">${esc(cmd.permission)}</span>`
@@ -491,7 +377,7 @@ function renderCard(cmd, catId) {
       </div>
     </div>
     <p class="card__desc">${esc(cmd.description || "")}</p>
-    ${embedHtml}
+    ${previewHtml}
     <div class="meta">${perm}${aliasPill}${cmd.usage ? `<span class="pill">${esc(cmd.usage)}</span>` : ""}</div>
     ${hasMore ? `<div class="card__more">Details</div>` : ""}
   </article>`;
@@ -535,12 +421,12 @@ function renderModal() {
     ? `<div class="modal__block"><div class="modal__block-title">Notes</div><p class="modal__desc">${esc(cmd.notes)}</p></div>`
     : "";
 
-  const embed =
-    state.modalCmd && showsEmbedPreview(cmd) ? resolveEmbedPreview(cmd, state.modalCmd.cat.id) : null;
-  const embedBlock = embed
+  const preview =
+    state.modalCmd && isPreviewableCommand(cmd) ? getCommandPreview(cmd, state.modalCmd.cat.id) : null;
+  const previewBlock = preview
     ? `<div class="modal__block">
-        <div class="modal__embed-label">Discord preview</div>
-        <div class="modal__embed-wrap">${renderDiscordEmbed(embed)}</div>
+        <div class="modal__embed-label">What this command does</div>
+        <div class="modal__preview-wrap">${renderCommandPreview(preview)}</div>
       </div>`
     : "";
 
@@ -568,7 +454,7 @@ function renderModal() {
               <button class="btn" data-copy="${esc(copyVal)}" type="button">Copy</button>
             </div>
           </div>
-          ${embedBlock}
+          ${previewBlock}
           ${perm}${aliases}${subs}${opts}${notes}
           <button class="btn btn--ghost" id="modalClose2" type="button" style="width:100%;margin-top:6px">Close</button>
         </div>
@@ -848,13 +734,13 @@ async function init() {
   state.adminAuth = isAdminAuthed();
 
   try {
-    const [cmdRes, embedRes] = await Promise.all([
-      fetch("data/bot-commands.json?v=11", { cache: "no-store" }),
-      fetch("data/embed-previews.json?v=3", { cache: "no-store" }),
+    const [cmdRes, previewRes] = await Promise.all([
+      fetch("data/bot-commands.json?v=12", { cache: "no-store" }),
+      fetch("data/command-previews.json?v=1", { cache: "no-store" }),
     ]);
     if (!cmdRes.ok) throw new Error("Failed to load commands");
     state.data = await cmdRes.json();
-    if (embedRes.ok) state.embeds = await embedRes.json();
+    if (previewRes.ok) state.previews = await previewRes.json();
   } catch (err) {
     dismissBoot();
     document.getElementById("app").innerHTML = `<div class="empty" style="min-height:100vh;display:grid;place-items:center"><p>Couldn't load commands. ${esc(err.message)}</p></div>`;

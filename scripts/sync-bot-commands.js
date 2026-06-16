@@ -91,6 +91,12 @@ function buildOutput(extractedMap, meta, prefix) {
     }
   }
 
+  for (const [category, names] of Object.entries(meta.excludeCommands || {})) {
+    if (!buckets[category]) continue;
+    const drop = new Set(names);
+    buckets[category] = buckets[category].filter((c) => !drop.has(c.name));
+  }
+
   for (const key of Object.keys(buckets)) {
     buckets[key].sort((a, b) => a.name.localeCompare(b.name));
   }

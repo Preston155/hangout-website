@@ -1,0 +1,380 @@
+{
+  "slash:server-status": {
+    "summary": "Posts a live server status embed that auto-refreshes every 30 seconds.",
+    "compactEmbed": {
+      "color": "#2b7fff",
+      "author": { "name": "City of Angels Status" },
+      "description": "Live Discord server overview. Refreshes every **30 seconds**.",
+      "fields": [
+        { "name": "Community", "value": "Members: **1,284**\nBoosts: **8**\nRoles: **67**", "inline": true },
+        { "name": "Channels", "value": "Text: **42**\nVoice: **12**\nCategories: **9**", "inline": true }
+      ]
+    },
+    "steps": [
+      { "type": "user", "content": "/server-status" },
+      {
+        "type": "bot",
+        "embed": {
+          "color": "#2b7fff",
+          "author": { "name": "City of Angels Status" },
+          "description": "Live Discord server overview. Refreshes every **30 seconds**.",
+          "fields": [
+            { "name": "Community", "value": "Members: **1,284**\nBoosts: **8**\nRoles: **67**", "inline": true },
+            { "name": "Channels", "value": "Text: **42**\nVoice: **12**\nCategories: **9**", "inline": true },
+            { "name": "Details", "value": "Created: Jan 12, 2024\nUpdated: just now", "inline": false }
+          ]
+        }
+      }
+    ],
+    "effects": ["Embed edits itself every 30s", "Running again removes the previous status message in that channel"]
+  },
+  "prefix:status": {
+    "summary": "Same live status embed as /server-status — triggered with the . prefix.",
+    "compactEmbed": {
+      "color": "#2b7fff",
+      "author": { "name": "City of Angels Status" },
+      "description": "Live Discord server overview."
+    },
+    "steps": [
+      { "type": "user", "content": ".status" },
+      {
+        "type": "bot",
+        "embed": {
+          "color": "#2b7fff",
+          "author": { "name": "City of Angels Status" },
+          "description": "Live Discord server overview. Refreshes every **30 seconds**.",
+          "fields": [
+            { "name": "Community", "value": "Members: **1,284**", "inline": true },
+            { "name": "Channels", "value": "Text: **42**", "inline": true }
+          ]
+        }
+      }
+    ],
+    "effects": ["Aliases: .serverstatus, .server-status, .server"]
+  },
+  "prefix:purge": {
+    "summary": "Bulk-deletes messages in the current channel. Pinned messages are always skipped.",
+    "steps": [
+      { "type": "user", "content": ".purge 50" },
+      { "type": "deleted", "text": "Your .purge command message is deleted" },
+      { "type": "bot", "content": "Purging messages..." },
+      { "type": "bot", "content": "Purged **50** messages. Skipped **2** pinned messages." },
+      { "type": "note", "text": "The result message auto-deletes after 5 seconds." }
+    ],
+    "effects": ["Max 500 messages per run", "Messages older than 14 days are deleted one-by-one", "Requires Manage Messages"]
+  },
+  "slash:server-roles": {
+    "summary": "Sends a paginated embed listing every server role (20 per page).",
+    "compactEmbed": {
+      "color": "#0b1f4d",
+      "title": "🛡️・Server Roles",
+      "description": "**1.** @Owner • pos 25 • 1 members"
+    },
+    "steps": [
+      { "type": "user", "content": "/server-roles page:1" },
+      {
+        "type": "bot",
+        "embed": {
+          "color": "#0b1f4d",
+          "title": "🛡️・Server Roles",
+          "description": "**1.** @Owner • `Owner` • pos 25 • 1 members\n**2.** @Admin • `Admin` • pos 24 • 4 members\n**3.** @Staff • `Staff` • pos 20 • 18 members",
+          "fields": [
+            { "name": "Server", "value": "City of Angels", "inline": true },
+            { "name": "Roles", "value": "67", "inline": true },
+            { "name": "Page", "value": "1/4", "inline": true }
+          ],
+          "footer": { "text": "Use /server-roles page:2 for the next page." }
+        }
+      }
+    ],
+    "effects": ["Prefix version: .roles [page]", "Reply is ephemeral (only you see it) for slash"]
+  },
+  "prefix:roles": {
+    "summary": "Prefix version of /server-roles — same paginated role list embed.",
+    "steps": [
+      { "type": "user", "content": ".roles" },
+      {
+        "type": "bot",
+        "embed": {
+          "color": "#0b1f4d",
+          "title": "🛡️・Server Roles",
+          "description": "**1.** @Owner • pos 25 • 1 members\n**2.** @Admin • pos 24 • 4 members",
+          "fields": [
+            { "name": "Page", "value": "1/4", "inline": true }
+          ]
+        }
+      }
+    ]
+  },
+  "slash:counting": {
+    "summary": "Staff tool to set up, check, reset, or disable the counting channel.",
+    "compactEmbed": {
+      "color": "#22c55e",
+      "title": "🔢 Premium Counting",
+      "fields": [
+        { "name": "Next", "value": "`42`", "inline": true },
+        { "name": "Status", "value": "Enabled", "inline": true }
+      ]
+    },
+    "steps": [
+      { "type": "user", "content": "/counting status" },
+      {
+        "type": "bot",
+        "embed": {
+          "color": "#22c55e",
+          "title": "🔢 Premium Counting",
+          "description": "**Channel:** #counting\n**Status:** Enabled\n**Next:** `42`\n**Current:** `41`\n**Record:** `128`\n**Mistakes:** `3`",
+          "footer": { "text": "City of Angels • Counting System" }
+        }
+      },
+      { "type": "note", "text": "**setup** — pick channel + start number\n**reset** — restart the count\n**disable** — turn counting off" }
+    ],
+    "effects": ["Members count in the channel by sending the next number", "Wrong number or double-count resets to 1"]
+  },
+  "prefix:counting": {
+    "summary": "Prefix version of /counting — setup, status, reset, disable. When enabled, members count in the channel.",
+    "steps": [
+      { "type": "user", "content": ".counting setup #counting 0" },
+      {
+        "type": "bot",
+        "embed": {
+          "color": "#22c55e",
+          "title": "🔢 Counting Started",
+          "description": "**Channel:** #counting\n**Next:** `1`\n**Rule:** No double-counting.",
+          "footer": { "text": "City of Angels • Counting System" }
+        }
+      },
+      { "type": "note", "text": "In #counting, members send **41**, **42**… Veltrix reacts ✅. Wrong number → ❌ + reset to 1." }
+    ],
+    "effects": ["Alias: .count", "Double-counting by the same user breaks the chain"]
+  },
+  "slash:delete-lcrp-channels": {
+    "summary": "Deletes one selected channel after staff confirmation (legacy LCRP cleanup).",
+    "steps": [
+      { "type": "user", "content": "/delete-lcrp-channels" },
+      { "type": "bot", "embed": { "color": "#f59e0b", "title": "Confirm Channel Delete", "description": "Select the channel to delete. This cannot be undone.", "buttons": [{ "label": "Confirm", "style": "danger" }, { "label": "Cancel", "style": "secondary" }] } },
+      { "type": "channel", "name": "old-channel", "meta": "channel deleted" }
+    ]
+  },
+  "slash:setup-lcrp-channels": {
+    "summary": "Creates or updates the City of Angels ERLC channel layout and permissions.",
+    "steps": [
+      { "type": "user", "content": "/setup-lcrp-channels" },
+      { "type": "bot", "embed": { "color": "#22c55e", "title": "Channel Layout Updated", "description": "ERLC categories and channels synced for City of Angels." } }
+    ]
+  },
+  "slash:setup-lcrp-roles": {
+    "summary": "Creates or updates the City of Angels role structure.",
+    "steps": [
+      { "type": "user", "content": "/setup-lcrp-roles" },
+      { "type": "bot", "embed": { "color": "#22c55e", "title": "Roles Updated", "description": "City of Angels role structure created or refreshed." } }
+    ]
+  },
+  "slash:ticket-panel": {
+    "summary": "Staff posts the support ticket panel in the channel. Members pick a category to open a private ticket.",
+    "steps": [
+      { "type": "user", "content": "/ticket-panel" },
+      {
+        "type": "bot",
+        "embed": {
+          "color": "#38bdf8",
+          "title": "City of Angels Support",
+          "description": "Choose a category below to open a private support ticket.",
+          "select": [{ "placeholder": "🎫 Select a support category…" }]
+        }
+      },
+      { "type": "bot", "content": "Ticket panel sent.", "ephemeral": true }
+    ],
+    "effects": ["Creates a private ticket channel when a member selects a category", "Staff can claim, close, and generate transcripts"]
+  },
+  "session:session": {
+    "summary": "Session vote with Ready/Out buttons, then start or end the in-game session.",
+    "compactEmbed": {
+      "color": "#5865f2",
+      "title": "Session Vote",
+      "description": "✅ Ready: 12 · ❌ Out: 3"
+    },
+    "steps": [
+      { "type": "user", "content": ".session vote" },
+      {
+        "type": "bot",
+        "embed": {
+          "color": "#5865f2",
+          "title": "Session Vote · `VOTE OPEN`",
+          "description": "✅ **Ready:** 12\n❌ **Out:** 3\n📊 **Total:** 15",
+          "buttons": [
+            { "label": "Ready", "style": "success" },
+            { "label": "Out", "style": "danger" }
+          ],
+          "footer": { "text": "City of Angels • Session Management" }
+        }
+      },
+      { "type": "note", "text": "Aliases: .sv (vote), .ss (start), .se (end)" }
+    ],
+    "effects": [".session start launches the session", ".session end closes it and logs to staff channels"]
+  },
+  "slash:setup": {
+    "summary": "Administrator setup toolkit — channels, roles, permissions, audit, and cleanup.",
+    "steps": [
+      { "type": "user", "content": "/setup channels" },
+      {
+        "type": "bot",
+        "embed": {
+          "color": "#22c55e",
+          "title": "Setup · Channels",
+          "description": "City of Angels channel layout created or updated.\n\nCategories like **INFORMATION**, **SESSIONS**, **COMMUNITY**, and **STAFF** are synced."
+        }
+      },
+      { "type": "note", "text": "Other subcommands: **roles**, **permissions**, **audit**, **delete-channels**, **delete-roles**, **reset-server**" }
+    ],
+    "effects": ["Administrator only", "Rebuilds the safe COA server layout"]
+  },
+  "slash:setup-erlc-roles": {
+    "summary": "Creates or syncs the in-game ERLC role hierarchy on Discord.",
+    "steps": [
+      { "type": "user", "content": "/setup-erlc-roles" },
+      {
+        "type": "bot",
+        "embed": {
+          "color": "#22c55e",
+          "title": "ERLC Roles Synced",
+          "description": "In-game role hierarchy created or updated on the server."
+        }
+      }
+    ]
+  },
+  "slash:fix-erlc-role-order": {
+    "summary": "Reapplies role position order without changing channels.",
+    "steps": [
+      { "type": "user", "content": "/fix-erlc-role-order" },
+      {
+        "type": "bot",
+        "embed": {
+          "color": "#f59e0b",
+          "title": "Role Order Fixed",
+          "description": "Role hierarchy order reapplied successfully."
+        }
+      }
+    ]
+  },
+  "slash:fix-erlc-channel-permissions": {
+    "summary": "Reapplies ERLC category and channel permission overwrites across the server.",
+    "steps": [
+      { "type": "user", "content": "/fix-erlc-channel-permissions" },
+      {
+        "type": "bot",
+        "embed": {
+          "color": "#2563eb",
+          "title": "ERLC Permission Sync",
+          "description": "Applying category permission overwrites first..."
+        }
+      },
+      {
+        "type": "bot",
+        "embed": {
+          "color": "#22c55e",
+          "title": "ERLC Permission Sync Complete",
+          "description": "Categories and channels updated with the correct overwrites.",
+          "fields": [
+            { "name": "Categories", "value": "12 synced", "inline": true },
+            { "name": "Channels", "value": "48 synced", "inline": true }
+          ]
+        }
+      }
+    ]
+  },
+  "slash:shift": {
+    "summary": "Staff shift tracker — clock in/out, view status, leaderboard, and award points.",
+    "steps": [
+      { "type": "user", "content": "/shift start" },
+      {
+        "type": "bot",
+        "embed": {
+          "color": "#22c55e",
+          "title": "🟢 Shift Started",
+          "description": "**Staff:** @You\n**Status:** On duty\n**Started:** just now",
+          "footer": { "text": "City of Angels • Staff Shifts" }
+        }
+      },
+      { "type": "note", "text": "Also: **end**, **status**, **leaderboard**, **addpoints** (managers)" }
+    ],
+    "effects": ["Earns staff points based on time on shift", "Logs to staff shift channel if configured"]
+  },
+  "prefix:level": {
+    "summary": "Shows XP level, rank, progress bar, and level role for you or a mentioned member.",
+    "compactEmbed": {
+      "color": "#2b7fff",
+      "author": { "name": "Preston's Level" },
+      "description": "Level **14** · Rank **#3**\n████████░░ **2,450/3,200 XP** to Level 15"
+    },
+    "steps": [
+      { "type": "user", "content": ".level" },
+      {
+        "type": "bot",
+        "embed": {
+          "color": "#2b7fff",
+          "author": { "name": "Preston's Level" },
+          "description": "Level **14** · Rank **#3**\n████████░░ **2,450/3,200 XP** to Level 15\nTotal XP: **18,420**\nRole: **⭐・LVL 10**"
+        }
+      }
+    ],
+    "effects": ["Aliases: .rank", "XP is earned passively from messages (60s cooldown)"]
+  },
+  "prefix:levels": {
+    "summary": "Shows the top 10 members on the XP leaderboard.",
+    "steps": [
+      { "type": "user", "content": ".levels" },
+      {
+        "type": "bot",
+        "embed": {
+          "color": "#2b7fff",
+          "title": "XP Leaderboard",
+          "description": "🥇 **Alex** — Level 22 · 41,200 XP\n🥈 **Jordan** — Level 18 · 32,100 XP\n🥉 **Preston** — Level 14 · 18,420 XP",
+          "footer": { "text": "City of Angels · Leveling" }
+        }
+      }
+    ],
+    "effects": ["Aliases: .leaderboard, .lb"]
+  },
+  "prefix:addxp": {
+    "summary": "Staff manually grants XP to a member (no embed — plain confirmation).",
+    "steps": [
+      { "type": "user", "content": ".addxp @Member 500" },
+      { "type": "bot", "content": "✅ Added **500 XP** to @Member. Now **Level 12** with **8,200 XP**." }
+    ],
+    "effects": ["Requires Manage Server", "Aliases: .givexp", "Can announce level-up in channel"]
+  },
+  "prefix:testwelcome": {
+    "summary": "Posts the welcome message to the channel — plain text with Verify + member count buttons.",
+    "steps": [
+      { "type": "user", "content": ".testwelcome" },
+      {
+        "type": "bot",
+        "content": "👋 Welcome @You to **City of Angels**! You are our **1,284th member**, we hope you enjoy your stay!",
+        "embed": null
+      },
+      { "type": "note", "text": "Includes **Verify** link button and disabled **👥 member count** button." }
+    ],
+    "effects": ["Requires Manage Server", "Same message sent automatically when someone joins"]
+  },
+  "prefix:setuproles": {
+    "summary": "Posts the reaction-role panel so members can self-assign roles.",
+    "steps": [
+      { "type": "user", "content": ".setuproles" },
+      {
+        "type": "bot",
+        "embed": {
+          "color": "#a855f7",
+          "title": "Reaction Roles",
+          "description": "React below to get your roles.",
+          "fields": [
+            { "name": "🎮 Gamer", "value": "Session pings", "inline": true },
+            { "name": "📢 Announcements", "value": "Event pings", "inline": true }
+          ]
+        }
+      },
+      { "type": "note", "text": "Members react to assign/remove roles automatically." }
+    ],
+    "effects": ["Alias: .reactionroles"]
+  }
+}
