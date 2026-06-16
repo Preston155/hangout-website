@@ -121,13 +121,25 @@ img {
   width: 80px;
   height: 80px;
   object-fit: contain;
-  transform: scale(1.35);
-  animation: logo-in 0.35s var(--ease) both;
+  transform-origin: center center;
+  animation:
+    logo-in 0.4s var(--ease) both,
+    logo-sway 4.5s ease-in-out 0.4s infinite;
 }
 
 @keyframes logo-in {
-  from { opacity: 0; transform: scale(1.2); }
-  to { opacity: 1; transform: scale(1.35); }
+  from { opacity: 0; transform: scale(1.15) rotate(-8deg); }
+  to { opacity: 1; transform: scale(1.35) rotate(0deg); }
+}
+
+@keyframes logo-sway {
+  0%, 100% { transform: scale(1.35) rotate(-6deg); }
+  50% { transform: scale(1.38) rotate(6deg); }
+}
+
+@keyframes logo-sway-sm {
+  0%, 100% { transform: scale(1.45) rotate(-4deg); }
+  50% { transform: scale(1.48) rotate(4deg); }
 }
 
 body.is-ready .boot { display: none; }
@@ -177,8 +189,9 @@ body.is-ready .boot { display: none; }
   width: 100%;
   height: 100%;
   object-fit: contain;
-  transform: scale(1.45);
+  transform-origin: center center;
   display: block;
+  animation: logo-sway-sm 5.5s ease-in-out infinite;
 }
 
 .sidebar__title {
@@ -213,13 +226,18 @@ body.is-ready .boot { display: none; }
   font-weight: 500;
   text-align: left;
   cursor: pointer;
-  transition: background 0.15s var(--ease), color 0.15s var(--ease);
+  transition: background 0.15s var(--ease), color 0.15s var(--ease), transform 0.15s var(--ease);
   width: 100%;
 }
 
 .nav-link:hover {
   background: var(--surface-hover);
   color: var(--text);
+  transform: translateX(2px);
+}
+
+.nav-link:active {
+  transform: translateX(1px) scale(0.99);
 }
 
 .nav-link.active {
@@ -296,21 +314,29 @@ body.is-ready .boot { display: none; }
 .hero__logo-wrap {
   flex-shrink: 0;
   line-height: 0;
+  animation: logo-glow 3s ease-in-out infinite;
+}
+
+@keyframes logo-glow {
+  0%, 100% { filter: drop-shadow(0 0 0 transparent); }
+  50% { filter: drop-shadow(0 0 14px rgba(43, 127, 255, 0.35)); }
 }
 
 .hero__logo {
   width: 96px;
   height: 96px;
   object-fit: contain;
-  transform: scale(1.35);
+  transform-origin: center center;
   pointer-events: none;
   user-select: none;
-  animation: hero-logo-in 0.5s var(--ease) 0.05s both;
+  animation:
+    hero-logo-in 0.55s var(--ease) 0.05s both,
+    logo-sway 4s ease-in-out 0.6s infinite;
 }
 
 @keyframes hero-logo-in {
-  from { opacity: 0; transform: scale(1.2); }
-  to { opacity: 1; transform: scale(1.35); }
+  from { opacity: 0; transform: scale(1.1) rotate(-10deg); }
+  to { opacity: 1; transform: scale(1.35) rotate(0deg); }
 }
 
 .hero__label {
@@ -373,11 +399,12 @@ body.is-ready .boot { display: none; }
   border: 1px solid var(--border);
   background: var(--surface);
   min-width: 72px;
-  transition: border-color 0.15s var(--ease);
+  transition: border-color 0.15s var(--ease), transform 0.2s var(--ease);
 }
 
 .stat:hover {
   border-color: var(--border-light);
+  transform: translateY(-2px);
 }
 
 .stat__val {
@@ -464,15 +491,24 @@ body.is-ready .boot { display: none; }
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.15s var(--ease);
 }
 
-.chip:hover { color: var(--text); border-color: var(--border-light); }
+.chip:hover {
+  color: var(--text);
+  border-color: var(--border-light);
+  transform: translateY(-1px);
+}
+
+.chip:active {
+  transform: translateY(0) scale(0.97);
+}
 
 .chip.active {
   background: rgba(43, 127, 255, 0.1);
   border-color: rgba(43, 127, 255, 0.35);
   color: var(--text);
+  transform: translateY(-1px);
 }
 
 /* sections */
@@ -519,7 +555,11 @@ body.is-ready .boot { display: none; }
   border-radius: var(--radius);
   padding: 14px 16px;
   cursor: pointer;
-  transition: border-color 0.15s var(--ease), background 0.15s var(--ease), transform 0.2s var(--ease);
+  transition:
+    border-color 0.2s var(--ease),
+    background 0.2s var(--ease),
+    transform 0.25s var(--ease),
+    box-shadow 0.25s var(--ease);
   border-left-width: 3px;
 }
 
@@ -530,7 +570,13 @@ body.is-ready .boot { display: none; }
 .card:hover {
   border-color: var(--border-light);
   background: var(--surface-hover);
-  transform: translateY(-1px);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+}
+
+.card:active {
+  transform: translateY(-1px) scale(0.995);
+  transition-duration: 0.08s;
 }
 
 .card__top {
@@ -680,13 +726,13 @@ body.is-ready .boot { display: none; }
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: calc(var(--radius) + 2px);
-  animation: slide-up 0.22s var(--ease);
+  animation: modal-in 0.28s var(--ease);
   cursor: default;
 }
 
-@keyframes slide-up {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes modal-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .modal__head {
@@ -911,11 +957,15 @@ body.is-ready .boot { display: none; }
   .hero__logo {
     width: 72px;
     height: 72px;
-    transform: scale(1.3);
+  }
+
+  @keyframes logo-sway {
+    0%, 100% { transform: scale(1.3) rotate(-5deg); }
+    50% { transform: scale(1.33) rotate(5deg); }
   }
 
   @keyframes hero-logo-in {
-    to { transform: scale(1.3); }
+    to { transform: scale(1.3) rotate(0deg); }
   }
 
   .stats { gap: 8px; flex-wrap: wrap; }
@@ -928,11 +978,26 @@ body.is-ready .boot { display: none; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
 
   .reveal {
     opacity: 1;
     transform: none;
+  }
+
+  .boot__logo,
+  .hero__logo,
+  .sidebar__logo img,
+  .sidebar__logo-img,
+  .hero__logo-wrap {
+    animation: none !important;
+    transform: scale(1.35);
+  }
+
+  .sidebar__logo img,
+  .sidebar__logo-img {
+    transform: scale(1.45);
   }
 }
