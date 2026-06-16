@@ -98,8 +98,11 @@
     },
     "session:session": {
       "permission": "Manage Server (vote/start/end)",
-      "aliases": ["sv", "ss", "se"],
-      "notes": "Aliases: .sv = vote, .ss = start, .se = end"
+      "aliases": [
+        { "name": "sv", "description": "Session Vote" },
+        { "name": "ss", "description": "Session Start" },
+        { "name": "se", "description": "Session End" }
+      ]
     }
   },
   "systems": [

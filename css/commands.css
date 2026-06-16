@@ -694,8 +694,18 @@ body.is-ready .boot { display: none; }
   font-family: var(--mono);
   color: var(--accent);
   flex-shrink: 0;
-  min-width: 72px;
+  min-width: 48px;
   font-size: 12px;
+}
+
+.modal__row--alias code {
+  min-width: 36px;
+}
+
+.modal__row--alias span::before {
+  content: "—";
+  margin: 0 10px;
+  color: var(--dim);
 }
 
 .modal__row span { color: var(--muted); }

@@ -149,10 +149,13 @@
           "name": "session",
           "type": "prefix",
           "usage": ".session <action>",
-          "aliases": ["sv", "ss", "se"],
+          "aliases": [
+            { "name": "sv", "description": "Session Vote" },
+            { "name": "ss", "description": "Session Start" },
+            { "name": "se", "description": "Session End" }
+          ],
           "description": "Manage in-game session votes and roster.",
           "permission": "Manage Server (vote/start/end)",
-          "notes": "Aliases: .sv = vote, .ss = start, .se = end",
           "subcommands": [
             { "name": "help", "description": "Show session command help." },
             { "name": "vote", "description": "Open a session vote with Ready / Out buttons." },

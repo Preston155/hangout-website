@@ -63,7 +63,7 @@ function matches(cmd, q) {
     cmd.usage,
     cmd.permission,
     cmd.notes,
-    ...(cmd.aliases || []),
+    ...(cmd.aliases || []).map(aliasHaystack),
     ...(cmd.subcommands || []).map((s) => s.name + " " + s.description),
     ...(cmd.options || []).map((o) => o.name + " " + o.description),
   ]
@@ -123,7 +123,19 @@ async function copyText(text) {
   }
 }
 
-function navLabel(cat) {
+function aliasName(a) {
+  return typeof a === "string" ? a : a.name;
+}
+
+function aliasLabel(a, type) {
+  const name = aliasName(a);
+  return type === "prefix" ? `.${name}` : name;
+}
+
+function aliasHaystack(a) {
+  if (typeof a === "string") return a;
+  return `${a.name} ${a.description || ""}`;
+}
   return cat.label
     .replace(" Commands", "")
     .replace("Automatic ", "");
@@ -147,7 +159,7 @@ function renderCard(cmd, catId) {
 
   const aliasPill =
     (cmd.aliases || []).length > 0
-      ? `<span class="pill">${esc((cmd.aliases || []).slice(0, 2).map((a) => (type === "prefix" ? "." : "") + a).join(", "))}${cmd.aliases.length > 2 ? " +" + (cmd.aliases.length - 2) : ""}</span>`
+      ? `<span class="pill">${esc((cmd.aliases || []).slice(0, 2).map((a) => aliasLabel(a, type)).join(", "))}${cmd.aliases.length > 2 ? " +" + (cmd.aliases.length - 2) : ""}</span>`
       : "";
 
   return `<article class="card card--${type} reveal" data-cmd="${esc(key)}">
@@ -190,7 +202,11 @@ function renderModal() {
 
   const aliases = (cmd.aliases || []).length
     ? `<div class="modal__block"><div class="modal__block-title">Aliases</div><div class="modal__list">${cmd.aliases
-        .map((a) => `<div class="modal__row"><code>${esc(type === "prefix" ? "." + a : a)}</code></div>`)
+        .map((a) => {
+          const label = aliasLabel(a, type);
+          const desc = typeof a === "object" && a.description ? a.description : "";
+          return `<div class="modal__row modal__row--alias"><code>${esc(label)}</code>${desc ? `<span>${esc(desc)}</span>` : ""}</div>`;
+        })
         .join("")}</div></div>`
     : "";
 
@@ -465,7 +481,7 @@ document.addEventListener("keydown", (e) => {
 
 async function init() {
   try {
-    const res = await fetch("data/bot-commands.json?v=8", { cache: "no-store" });
+    const res = await fetch("data/bot-commands.json?v=9", { cache: "no-store" });
     if (!res.ok) throw new Error("Failed to load commands");
     state.data = await res.json();
   } catch (err) {
