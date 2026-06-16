@@ -2,6 +2,7 @@
   "botName": "Bot3",
   "subtitle": "Veltrix LCRP Bot",
   "prefix": ".",
+  "package": "veltrix-lcrp-bot",
   "updatedAt": "2026-06-16",
   "categories": [
     {

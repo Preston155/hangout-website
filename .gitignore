@@ -54,5 +54,9 @@ desktop.ini
 *.log
 npm-debug.log*
 
-# Optional: uncomment to always build on deploy instead of committing build output
+# SSH scripts (may contain credentials — never commit)
+scripts/ssh-*.py
+scripts/fetch-bot3*.py
+bot3-*.txt
+
 # httpdocs-ready/

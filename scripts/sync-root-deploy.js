@@ -10,11 +10,7 @@ const DEPLOY_ENTRIES = [
   ".htaccess",
   "css",
   "js",
-  "api",
-  "database",
-  "downloads",
   "data",
-  "uploads",
 ];
 
 function rimraf(dir) {
@@ -42,18 +38,12 @@ function syncRootDeploy() {
     throw new Error("Missing httpdocs-ready/. Run npm run build:httpdocs first.");
   }
 
-  console.log("Syncing httpdocs-ready → repo root (for Plesk root deploy)...");
+  console.log("Syncing httpdocs-ready → repo root (for Plesk Git deploy)...");
 
   for (const name of DEPLOY_ENTRIES) {
     const from = path.join(SRC, name);
     const to = path.join(ROOT, name);
     if (!fs.existsSync(from)) continue;
-
-    if (name === "database") {
-      fs.mkdirSync(to, { recursive: true });
-      copyDir(from, to);
-      continue;
-    }
 
     if (fs.statSync(from).isDirectory()) {
       rimraf(to);

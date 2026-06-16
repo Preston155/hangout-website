@@ -155,7 +155,7 @@ function render() {
 
       ${sections || `<div class="empty">No commands match your search.</div>`}
 
-      <footer class="footer">Updated ${esc(state.data.updatedAt)} · Host: 172.82.64.171 · ${esc(state.data.package || "bot3")}</footer>
+      <footer class="footer">Updated ${esc(state.data.updatedAt)} · ${esc(state.data.package || "Bot3")}</footer>
     </div>`;
 
   document.getElementById("searchInput")?.addEventListener("input", (e) => {
