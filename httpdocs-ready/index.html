@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0e0e10" />
+    <meta name="description" content="Command reference for Veltrix — City of Angels Discord bot." />
+    <title>Veltrix · City of Angels</title>
+    <link rel="preload" href="assets/veltrix-logo-256.webp?v=8" as="image" type="image/webp" fetchpriority="high" />
+    <link rel="preload" href="data/bot-commands.json?v=13" as="fetch" crossorigin />
+    <link rel="icon" href="assets/favicon-32.png?v=8" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="assets/veltrix-logo-256.webp?v=8" />
+    <link rel="stylesheet" href="css/commands.css?v=27" />
+  </head>
+  <body>
+    <div class="announce-bar" role="status">
+      <span class="announce-bar__sr">THIS IS ALL COMMANDS FOR THE VELTRIX BOT!</span>
+      <div class="announce-bar__badge" aria-hidden="true">
+        <span class="announce-bar__dot"></span>
+        Veltrix
+      </div>
+      <div class="announce-bar__marquee" aria-hidden="true">
+        <div class="announce-bar__track">
+          <span class="announce-bar__item"><span class="announce-bar__text">THIS IS ALL COMMANDS FOR THE VELTRIX BOT!</span><span class="announce-bar__sep">✦</span></span>
+          <span class="announce-bar__item"><span class="announce-bar__text">THIS IS ALL COMMANDS FOR THE VELTRIX BOT!</span><span class="announce-bar__sep">✦</span></span>
+          <span class="announce-bar__item"><span class="announce-bar__text">THIS IS ALL COMMANDS FOR THE VELTRIX BOT!</span><span class="announce-bar__sep">✦</span></span>
+          <span class="announce-bar__item"><span class="announce-bar__text">THIS IS ALL COMMANDS FOR THE VELTRIX BOT!</span><span class="announce-bar__sep">✦</span></span>
+        </div>
+      </div>
+      <div class="announce-bar__line" aria-hidden="true"></div>
+    </div>
+    <div id="boot" class="boot" aria-live="polite" aria-busy="true" aria-label="Loading Veltrix">
+      <div class="boot__content">
+        <div class="boot__logo-wrap">
+          <picture>
+            <source srcset="assets/veltrix-logo-256.webp?v=8" type="image/webp" />
+            <img
+              class="boot__logo"
+              src="assets/veltrix-logo.png?v=8"
+              alt=""
+              width="88"
+              height="88"
+              fetchpriority="high"
+              decoding="sync"
+            />
+          </picture>
+        </div>
+        <p class="boot__title">Veltrix</p>
+        <div class="boot__progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="boot__progress-bar" id="bootProgress"></div>
+        </div>
+      </div>
+    </div>
+    <div id="app"></div>
+    <div id="toast" class="toast hidden" role="status"></div>
+    <script src="js/admin-editor.js?v=4"></script>
+    <script src="js/app.js?v=22"></script>
+  </body>
+</html>

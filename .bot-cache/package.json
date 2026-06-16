@@ -1,0 +1,17 @@
+{
+  "name": "veltrix-lcrp-bot",
+  "version": "1.0.0",
+  "description": "Discord bot starter for bot3",
+  "main": "src/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node src/index.js",
+    "commands:clear": "node scripts/clearCommands.js",
+    "commands:deploy": "node scripts/deployCommands.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.21.0",
+    "dotenv": "^16.4.7"
+  }
+}
