@@ -134,6 +134,73 @@
     ],
     "footer": { "text": "Use /server-roles page:2 for more" }
   },
+  "slash:setup:slash": {
+    "color": "#5865f2",
+    "title": "City of Angels Setup",
+    "description": "Setup command completed successfully.",
+    "fields": [
+      { "name": "Channels", "value": "Layout updated", "inline": true },
+      { "name": "Roles", "value": "Synced", "inline": true },
+      { "name": "Permissions", "value": "Reapplied", "inline": true }
+    ],
+    "footer": { "text": "/setup · Administrator" }
+  },
+  "slash:setup-erlc-roles:slash": {
+    "color": "#5865f2",
+    "title": "ERLC Role Hierarchy",
+    "description": "In-game role order has been created or synced.",
+    "fields": [
+      { "name": "Status", "value": "Complete", "inline": true },
+      { "name": "Roles synced", "value": "24", "inline": true }
+    ],
+    "footer": { "text": "/setup-erlc-roles" }
+  },
+  "slash:setup-lcrp-channels:slash": {
+    "color": "#5865f2",
+    "title": "Channel Layout",
+    "description": "City of Angels channel categories and permissions updated.",
+    "footer": { "text": "/setup-lcrp-channels" }
+  },
+  "slash:setup-lcrp-roles:slash": {
+    "color": "#5865f2",
+    "title": "Role Structure",
+    "description": "City of Angels roles created or refreshed.",
+    "footer": { "text": "/setup-lcrp-roles" }
+  },
+  "slash:fix-erlc-channel-permissions:slash": {
+    "color": "#f59e0b",
+    "title": "Permissions Fixed",
+    "description": "Category and channel overwrites have been reapplied.",
+    "fields": [
+      { "name": "Categories", "value": "12 checked", "inline": true },
+      { "name": "Channels", "value": "38 updated", "inline": true }
+    ],
+    "footer": { "text": "/fix-erlc-channel-permissions" }
+  },
+  "slash:fix-erlc-role-order:slash": {
+    "color": "#f59e0b",
+    "title": "Role Order Fixed",
+    "description": "Hierarchy order reapplied without touching channels.",
+    "footer": { "text": "/fix-erlc-role-order" }
+  },
+  "slash:delete-lcrp-channels:slash": {
+    "color": "#ed4245",
+    "title": "Channel Deleted",
+    "description": "The selected channel was removed after confirmation.",
+    "fields": [
+      { "name": "Action", "value": "Confirmed delete", "inline": true }
+    ],
+    "footer": { "text": "/delete-lcrp-channels" }
+  },
+  "prefix:purge:prefix": {
+    "color": "#ed4245",
+    "title": "Messages Purged",
+    "description": "Bulk-deleted messages in this channel (pinned messages skipped).",
+    "fields": [
+      { "name": "Deleted", "value": "50 messages", "inline": true }
+    ],
+    "footer": { "text": ".purge · Manage Messages" }
+  },
   "systems:Ticket System:system": {
     "color": "#e8b84a",
     "title": "Ticket #1042",

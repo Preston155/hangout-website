@@ -107,6 +107,92 @@ function getEmbedPreview(cmd, catId) {
   return state.embeds[cmdKey(cmd, catId)] || null;
 }
 
+const EMBED_COLORS = {
+  slash: "#5865f2",
+  prefix: "#3ba55d",
+  session: "#a855f7",
+};
+
+function embedColorFor(cmd, catId) {
+  const type = cmd.type || "system";
+  if (type === "prefix" && catId === "session") return EMBED_COLORS.session;
+  return EMBED_COLORS[type] || "#2b7fff";
+}
+
+function humanizeCmdTitle(cmd) {
+  const raw = cmd.type === "system" ? cmd.name : cmdDisplayName(cmd);
+  if (/[^\x00-\x7F]/.test(raw)) return raw;
+  return raw
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function buildEmbedFromCommand(cmd, catId) {
+  const type = cmd.type || "system";
+  if (type !== "slash" && type !== "prefix") return null;
+
+  const invoke = cmdCopyText(cmd);
+  const title = humanizeCmdTitle(cmd);
+  let description = (cmd.description || "").trim();
+
+  if (!description) {
+    description =
+      type === "slash"
+        ? `Veltrix responds with an embed when you run ${invoke}.`
+        : `Type ${cmd.usage || invoke} in chat to trigger this command.`;
+  }
+
+  const fields = [];
+
+  if (cmd.permission) {
+    fields.push({ name: "Permission", value: cmd.permission, inline: true });
+  }
+
+  if (cmd.usage) {
+    fields.push({ name: "Usage", value: `\`${cmd.usage}\``, inline: true });
+  }
+
+  if ((cmd.subcommands || []).length) {
+    const lines = cmd.subcommands
+      .slice(0, 8)
+      .map((s) => `**${s.name}** — ${s.description || "Subcommand"}`)
+      .join("\n");
+    fields.push({ name: "Subcommands", value: lines, inline: false });
+  }
+
+  if ((cmd.options || []).length) {
+    const lines = cmd.options.map((o) => `**${o.name}** — ${o.description || "Option"}`).join("\n");
+    fields.push({ name: "Options", value: lines, inline: false });
+  }
+
+  if ((cmd.aliases || []).length) {
+    const labels = cmd.aliases.slice(0, 6).map((a) => aliasLabel(a, type)).join(", ");
+    fields.push({ name: "Aliases", value: labels, inline: true });
+  }
+
+  if (type === "slash" && !cmd.subcommands?.length && !cmd.options?.length) {
+    fields.push({ name: "Response", value: "Embed confirmation from Veltrix", inline: true });
+  }
+
+  return {
+    color: embedColorFor(cmd, catId),
+    author: { name: "Veltrix · City of Angels" },
+    title,
+    description,
+    fields: fields.length ? fields : undefined,
+    footer: { text: `${invoke} · City of Angels` },
+  };
+}
+
+function resolveEmbedPreview(cmd, catId) {
+  return getEmbedPreview(cmd, catId) || buildEmbedFromCommand(cmd, catId);
+}
+
+function showsEmbedPreview(cmd) {
+  const type = cmd.type || "system";
+  return type === "slash" || type === "prefix";
+}
+
 function renderDiscordEmbed(embed, compact = false) {
   if (!embed) return "";
   const color = embed.color || "#2b7fff";
@@ -257,8 +343,9 @@ function permissionStats(data) {
 
 function embedCoverage(data) {
   const rows = collectAllCommands(data);
-  const withEmbed = rows.filter(({ cmd, cat }) => getEmbedPreview(cmd, cat.id));
-  return { total: rows.length, withEmbed: withEmbed.length, items: withEmbed };
+  const slashPrefix = rows.filter(({ cmd }) => showsEmbedPreview(cmd));
+  const custom = slashPrefix.filter(({ cmd, cat }) => getEmbedPreview(cmd, cat.id));
+  return { total: slashPrefix.length, withEmbed: slashPrefix.length, custom: custom.length, items: slashPrefix };
 }
 
 function renderAdminMain() {
@@ -275,8 +362,9 @@ function renderAdminMain() {
 
   const embedItems = embeds.items
     .map(({ cmd, cat }) => {
-      const label = cmd.type === "system" ? cmd.name : cmdCopyText(cmd);
-      return `<div class="admin-embed-item"><code>${esc(label)}</code><span class="admin-badge">Preview</span></div>`;
+      const label = cmdCopyText(cmd);
+      const isCustom = !!getEmbedPreview(cmd, cat.id);
+      return `<div class="admin-embed-item"><code>${esc(label)}</code><span class="admin-badge${isCustom ? "" : " admin-badge--auto"}">${isCustom ? "Custom" : "Auto"}</span></div>`;
     })
     .join("");
 
@@ -290,7 +378,7 @@ function renderAdminMain() {
       <div class="admin-card"><div class="admin-card__val">${counts.total}</div><div class="admin-card__label">Total commands</div></div>
       <div class="admin-card"><div class="admin-card__val">${counts.slash}</div><div class="admin-card__label">Slash</div></div>
       <div class="admin-card"><div class="admin-card__val">${counts.prefix}</div><div class="admin-card__label">Prefix</div></div>
-      <div class="admin-card"><div class="admin-card__val">${embeds.withEmbed}</div><div class="admin-card__label">Embed previews</div></div>
+      <div class="admin-card"><div class="admin-card__val">${embeds.withEmbed}</div><div class="admin-card__label">Embed previews (/ & .)</div></div>
     </div>
 
     <div class="admin-panel reveal is-visible">
@@ -313,7 +401,7 @@ function renderAdminMain() {
     </div>
 
     <div class="admin-panel reveal is-visible">
-      <h3>Commands with embed previews (${embeds.withEmbed}/${embeds.total})</h3>
+      <h3>Slash &amp; prefix embed previews (${embeds.custom} custom · ${embeds.withEmbed} total)</h3>
       <div class="admin-embed-list">${embedItems || "<p class=\"modal__desc\">No embed previews configured yet.</p>"}</div>
     </div>
 
@@ -382,7 +470,7 @@ function renderCard(cmd, catId) {
   const displayName = type === "system" ? cmd.name : cmdDisplayName(cmd);
   const key = cmdKey(cmd, catId);
   const hasMore = (cmd.subcommands || []).length || (cmd.options || []).length || cmd.notes;
-  const embed = getEmbedPreview(cmd, catId);
+  const embed = showsEmbedPreview(cmd) ? resolveEmbedPreview(cmd, catId) : null;
   const embedHtml = embed ? `<div class="card__preview">${renderDiscordEmbed(embed, true)}</div>` : "";
 
   const perm = cmd.permission
@@ -447,7 +535,8 @@ function renderModal() {
     ? `<div class="modal__block"><div class="modal__block-title">Notes</div><p class="modal__desc">${esc(cmd.notes)}</p></div>`
     : "";
 
-  const embed = state.modalCmd ? getEmbedPreview(cmd, state.modalCmd.cat.id) : null;
+  const embed =
+    state.modalCmd && showsEmbedPreview(cmd) ? resolveEmbedPreview(cmd, state.modalCmd.cat.id) : null;
   const embedBlock = embed
     ? `<div class="modal__block">
         <div class="modal__embed-label">Discord preview</div>
@@ -479,7 +568,8 @@ function renderModal() {
               <button class="btn" data-copy="${esc(copyVal)}" type="button">Copy</button>
             </div>
           </div>
-          ${perm}${aliases}${subs}${opts}${embedBlock}${notes}
+          ${embedBlock}
+          ${perm}${aliases}${subs}${opts}${notes}
           <button class="btn btn--ghost" id="modalClose2" type="button" style="width:100%;margin-top:6px">Close</button>
         </div>
       </div>
@@ -760,7 +850,7 @@ async function init() {
   try {
     const [cmdRes, embedRes] = await Promise.all([
       fetch("data/bot-commands.json?v=11", { cache: "no-store" }),
-      fetch("data/embed-previews.json?v=2", { cache: "no-store" }),
+      fetch("data/embed-previews.json?v=3", { cache: "no-store" }),
     ]);
     if (!cmdRes.ok) throw new Error("Failed to load commands");
     state.data = await cmdRes.json();

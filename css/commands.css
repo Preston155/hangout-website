@@ -1538,3 +1538,8 @@ body.is-ready .boot { display: none; }
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
+
+.admin-badge--auto {
+  background: rgba(88, 101, 242, 0.15);
+  color: #949cf0;
+}
