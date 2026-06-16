@@ -1,0 +1,64 @@
+{
+  "botName": "Bot3",
+  "package": "veltrix-lcrp-bot",
+  "prefix": "!",
+  "slashCommands": [
+    {
+      "file": "src/commands/purge.js",
+      "name": "purge",
+      "description": "",
+      "options": [],
+      "subcommands": []
+    },
+    {
+      "file": "src/commands/server-roles.js",
+      "name": "server-roles",
+      "description": "Show the roles in this server.",
+      "options": [],
+      "subcommands": []
+    },
+    {
+      "file": "src/commands/server-status.js",
+      "name": "server-status",
+      "description": "Live Discord server overview. Refreshes every **30 seconds**.",
+      "options": [],
+      "subcommands": []
+    },
+    {
+      "file": "src/commands/ticket-panel.js",
+      "name": "ticket-panel",
+      "description": "Send the City of Angels ticket panel.",
+      "options": [],
+      "subcommands": []
+    },
+    {
+      "file": "src/commands/admin/fix-erlc-channel-permissions.js",
+      "name": "fix-erlc-channel-permissions",
+      "description": "Only existing categories/channels were updated. No channels or roles were created/deleted/renamed.",
+      "options": [],
+      "subcommands": []
+    },
+    {
+      "file": "src/commands/admin/fix-erlc-role-order.js",
+      "name": "fix-erlc-role-order",
+      "description": "Reapply the ERLC role hierarchy order without touching channels.",
+      "options": [],
+      "subcommands": []
+    },
+    {
+      "file": "src/commands/admin/setup-erlc-roles.js",
+      "name": "setup-erlc-roles",
+      "description": "Create or sync only the ERLC role hierarchy.",
+      "options": [],
+      "subcommands": []
+    },
+    {
+      "file": "src/commands/admin/setup.js",
+      "name": "setup",
+      "description": "Manage the Veltrix setup system.",
+      "options": [],
+      "subcommands": []
+    }
+  ],
+  "prefixCommands": []
+}
