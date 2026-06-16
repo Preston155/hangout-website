@@ -2,10 +2,17 @@
 
 const state = {
   data: null,
+  embeds: null,
   query: "",
   filter: "all",
+  view: "commands",
+  adminAuth: false,
   modalCmd: null,
+  adminGateOpen: false,
 };
+
+const ADMIN_SESSION_KEY = "vx_admin";
+const ADMIN_PASS = "COARP";
 
 const LOGO_V = 8;
 
@@ -95,6 +102,227 @@ function cmdKey(cmd, catId) {
   return `${catId}:${cmd.name}:${cmd.type || "system"}`;
 }
 
+function getEmbedPreview(cmd, catId) {
+  if (!state.embeds) return null;
+  return state.embeds[cmdKey(cmd, catId)] || null;
+}
+
+function renderDiscordEmbed(embed, compact = false) {
+  if (!embed) return "";
+  const color = embed.color || "#2b7fff";
+  const fields = (embed.fields || [])
+    .slice(0, compact ? 2 : undefined)
+    .map(
+      (f) =>
+        `<div class="d-embed__field${f.inline ? " d-embed__field--inline" : ""}">
+          <div class="d-embed__field-name">${esc(f.name)}</div>
+          <div class="d-embed__field-value">${esc(f.value)}</div>
+        </div>`,
+    )
+    .join("");
+
+  const buttons = compact
+    ? ""
+    : (embed.buttons || [])
+        .map((b) => `<span class="d-btn d-btn--${esc(b.style || "secondary")}">${esc(b.label)}</span>`)
+        .join("");
+
+  return `<div class="d-embed${compact ? " d-embed--compact" : ""}" style="--embed-color: ${esc(color)}">
+    ${
+      embed.author
+        ? `<div class="d-embed__author">${embed.author.icon !== false ? `<span class="d-embed__author-icon"></span>` : ""}<span>${esc(embed.author.name)}</span></div>`
+        : ""
+    }
+    ${embed.title ? `<div class="d-embed__title">${esc(embed.title)}</div>` : ""}
+    ${embed.description ? `<div class="d-embed__desc">${esc(embed.description)}</div>` : ""}
+    ${fields ? `<div class="d-embed__fields">${fields}</div>` : ""}
+    ${embed.footer ? `<div class="d-embed__footer">${esc(embed.footer.text)}</div>` : ""}
+    ${buttons ? `<div class="d-embed__buttons">${buttons}</div>` : ""}
+  </div>`;
+}
+
+function isAdminAuthed() {
+  return sessionStorage.getItem(ADMIN_SESSION_KEY) === "1";
+}
+
+function setAdminAuthed(on) {
+  if (on) sessionStorage.setItem(ADMIN_SESSION_KEY, "1");
+  else sessionStorage.removeItem(ADMIN_SESSION_KEY);
+  state.adminAuth = on;
+}
+
+function openAdminGate() {
+  state.adminGateOpen = true;
+  renderAdminGate();
+}
+
+function closeAdminGate() {
+  state.adminGateOpen = false;
+  document.getElementById("adminGate")?.remove();
+}
+
+function renderAdminGate() {
+  document.getElementById("adminGate")?.remove();
+  if (!state.adminGateOpen) return;
+
+  document.body.insertAdjacentHTML(
+    "beforeend",
+    `<div class="admin-gate-backdrop" id="adminGate">
+      <div class="admin-gate" role="dialog" aria-modal="true" aria-labelledby="adminGateTitle">
+        <div class="admin-gate__icon" aria-hidden="true">🔐</div>
+        <h2 class="admin-gate__title" id="adminGateTitle">Admin Dashboard</h2>
+        <p class="admin-gate__sub">Enter your access code to continue.</p>
+        <form id="adminGateForm" autocomplete="off">
+          <div class="admin-gate__field">
+            <input id="adminPassInput" type="password" placeholder="Access code" spellcheck="false" autocapitalize="off" />
+            <button class="admin-gate__toggle" id="adminPassToggle" type="button" aria-label="Show password">👁</button>
+          </div>
+          <div class="admin-gate__error" id="adminGateError" aria-live="polite"></div>
+          <div class="admin-gate__actions">
+            <button class="btn btn--ghost" id="adminGateCancel" type="button">Cancel</button>
+            <button class="btn" type="submit">Unlock</button>
+          </div>
+        </form>
+      </div>
+    </div>`,
+  );
+
+  const input = document.getElementById("adminPassInput");
+  const form = document.getElementById("adminGateForm");
+  const toggle = document.getElementById("adminPassToggle");
+
+  input?.focus();
+
+  toggle?.addEventListener("click", () => {
+    const show = input.type === "password";
+    input.type = show ? "text" : "password";
+    toggle.textContent = show ? "🙈" : "👁";
+    toggle.setAttribute("aria-label", show ? "Hide password" : "Show password");
+  });
+
+  document.getElementById("adminGateCancel")?.addEventListener("click", closeAdminGate);
+  document.getElementById("adminGate")?.addEventListener("click", (e) => {
+    if (e.target.id === "adminGate") closeAdminGate();
+  });
+
+  form?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const val = input?.value.trim() || "";
+    const gate = document.querySelector(".admin-gate");
+    const err = document.getElementById("adminGateError");
+
+    if (val === ADMIN_PASS) {
+      setAdminAuthed(true);
+      closeAdminGate();
+      state.view = "admin";
+      closeSidebar();
+      render();
+      showToast("Admin access granted");
+      return;
+    }
+
+    input?.classList.add("is-error");
+    if (err) err.textContent = "Incorrect access code";
+    gate?.classList.remove("is-shake");
+    void gate?.offsetWidth;
+    gate?.classList.add("is-shake");
+    input?.select();
+  });
+
+  input?.addEventListener("input", () => {
+    input.classList.remove("is-error");
+    const err = document.getElementById("adminGateError");
+    if (err) err.textContent = "";
+  });
+}
+
+function collectAllCommands(data) {
+  const rows = [];
+  for (const cat of data.categories) {
+    for (const cmd of cat.commands) {
+      rows.push({ cmd, cat });
+    }
+  }
+  return rows;
+}
+
+function permissionStats(data) {
+  const map = new Map();
+  for (const { cmd } of collectAllCommands(data)) {
+    const key = cmd.permission || "—";
+    map.set(key, (map.get(key) || 0) + 1);
+  }
+  return [...map.entries()].sort((a, b) => b[1] - a[1]);
+}
+
+function embedCoverage(data) {
+  const rows = collectAllCommands(data);
+  const withEmbed = rows.filter(({ cmd, cat }) => getEmbedPreview(cmd, cat.id));
+  return { total: rows.length, withEmbed: withEmbed.length, items: withEmbed };
+}
+
+function renderAdminMain() {
+  const counts = countCommands(state.data);
+  const perms = permissionStats(state.data);
+  const embeds = embedCoverage(state.data);
+
+  const permRows = perms
+    .map(
+      ([perm, n]) =>
+        `<tr><td>${esc(perm)}</td><td>${n}</td></tr>`,
+    )
+    .join("");
+
+  const embedItems = embeds.items
+    .map(({ cmd, cat }) => {
+      const label = cmd.type === "system" ? cmd.name : cmdCopyText(cmd);
+      return `<div class="admin-embed-item"><code>${esc(label)}</code><span class="admin-badge">Preview</span></div>`;
+    })
+    .join("");
+
+  return `
+    <div class="admin-hero reveal is-visible">
+      <h1>Admin Dashboard</h1>
+      <p>Command reference overview for Veltrix · City of Angels. Session active until you sign out.</p>
+    </div>
+
+    <div class="admin-grid reveal is-visible">
+      <div class="admin-card"><div class="admin-card__val">${counts.total}</div><div class="admin-card__label">Total commands</div></div>
+      <div class="admin-card"><div class="admin-card__val">${counts.slash}</div><div class="admin-card__label">Slash</div></div>
+      <div class="admin-card"><div class="admin-card__val">${counts.prefix}</div><div class="admin-card__label">Prefix</div></div>
+      <div class="admin-card"><div class="admin-card__val">${embeds.withEmbed}</div><div class="admin-card__label">Embed previews</div></div>
+    </div>
+
+    <div class="admin-panel reveal is-visible">
+      <h3>Sync &amp; data</h3>
+      <table class="admin-table">
+        <tr><th>Field</th><th>Value</th></tr>
+        <tr><td>Last updated</td><td>${esc(state.data.updatedAt)}</td></tr>
+        <tr><td>Package</td><td>${esc(state.data.package || "—")}</td></tr>
+        <tr><td>Prefix</td><td><code>${esc(state.data.prefix)}</code></td></tr>
+        <tr><td>Categories</td><td>${state.data.categories.length}</td></tr>
+      </table>
+    </div>
+
+    <div class="admin-panel reveal is-visible">
+      <h3>Permissions breakdown</h3>
+      <table class="admin-table">
+        <tr><th>Permission</th><th>Commands</th></tr>
+        ${permRows}
+      </table>
+    </div>
+
+    <div class="admin-panel reveal is-visible">
+      <h3>Commands with embed previews (${embeds.withEmbed}/${embeds.total})</h3>
+      <div class="admin-embed-list">${embedItems || "<p class=\"modal__desc\">No embed previews configured yet.</p>"}</div>
+    </div>
+
+    <div class="admin-actions reveal is-visible">
+      <button class="btn" id="adminBackBtn" type="button">← Back to commands</button>
+      <button class="btn btn--ghost" id="adminLogoutBtn" type="button">Sign out</button>
+    </div>`;
+}
+
 function findCommand(key) {
   if (!state.data || !key) return null;
   for (const cat of state.data.categories) {
@@ -154,6 +382,8 @@ function renderCard(cmd, catId) {
   const displayName = type === "system" ? cmd.name : cmdDisplayName(cmd);
   const key = cmdKey(cmd, catId);
   const hasMore = (cmd.subcommands || []).length || (cmd.options || []).length || cmd.notes;
+  const embed = getEmbedPreview(cmd, catId);
+  const embedHtml = embed ? `<div class="card__preview">${renderDiscordEmbed(embed, true)}</div>` : "";
 
   const perm = cmd.permission
     ? `<span class="pill ${permClass(cmd.permission)}">${esc(cmd.permission)}</span>`
@@ -173,6 +403,7 @@ function renderCard(cmd, catId) {
       </div>
     </div>
     <p class="card__desc">${esc(cmd.description || "")}</p>
+    ${embedHtml}
     <div class="meta">${perm}${aliasPill}${cmd.usage ? `<span class="pill">${esc(cmd.usage)}</span>` : ""}</div>
     ${hasMore ? `<div class="card__more">Details</div>` : ""}
   </article>`;
@@ -216,6 +447,14 @@ function renderModal() {
     ? `<div class="modal__block"><div class="modal__block-title">Notes</div><p class="modal__desc">${esc(cmd.notes)}</p></div>`
     : "";
 
+  const embed = state.modalCmd ? getEmbedPreview(cmd, state.modalCmd.cat.id) : null;
+  const embedBlock = embed
+    ? `<div class="modal__block">
+        <div class="modal__embed-label">Discord preview</div>
+        <div class="modal__embed-wrap">${renderDiscordEmbed(embed)}</div>
+      </div>`
+    : "";
+
   const perm = cmd.permission
     ? `<div class="modal__block"><div class="modal__block-title">Permission</div><span class="pill ${permClass(cmd.permission)}">${esc(cmd.permission)}</span></div>`
     : "";
@@ -240,7 +479,7 @@ function renderModal() {
               <button class="btn" data-copy="${esc(copyVal)}" type="button">Copy</button>
             </div>
           </div>
-          ${perm}${aliases}${subs}${opts}${notes}
+          ${perm}${aliases}${subs}${opts}${embedBlock}${notes}
           <button class="btn btn--ghost" id="modalClose2" type="button" style="width:100%;margin-top:6px">Close</button>
         </div>
       </div>
@@ -315,12 +554,18 @@ function render() {
           ${navLinks
             .map(
               ([id, label, count]) =>
-                `<button class="nav-link${state.filter === id ? " active" : ""}" data-filter="${esc(id)}" type="button">
+                `<button class="nav-link${state.view === "commands" && state.filter === id ? " active" : ""}" data-filter="${esc(id)}" type="button">
                   <span class="nav-link__dot"></span>${esc(label)}
                   <span class="nav-link__count">${count}</span>
                 </button>`,
             )
             .join("")}
+          <div class="sidebar__divider"></div>
+          <button class="nav-link nav-link--admin${state.view === "admin" ? " active" : ""}" id="adminNavBtn" type="button">
+            <span class="nav-link__icon nav-link__icon--lock"></span>
+            Admin Dashboard
+            ${state.adminAuth ? "" : `<span class="nav-link__lock">Locked</span>`}
+          </button>
         </nav>
         <div class="sidebar__meta">
           Press <kbd>/</kbd> to search. Click a command for the full breakdown.
@@ -348,7 +593,7 @@ function render() {
           </div>
         </header>
 
-        <div class="toolbar" id="toolbar">
+        ${state.view === "admin" && state.adminAuth ? "" : `<div class="toolbar" id="toolbar">
           <div class="search">
             <span class="search__icon"></span>
             <input id="searchInput" type="search" placeholder="Search commands…" value="${esc(state.query)}" autocomplete="off" />
@@ -361,9 +606,9 @@ function render() {
               )
               .join("")}
           </div>
-        </div>
+        </div>`}
 
-        ${sections || `<div class="empty reveal"><p>No commands match that search.</p></div>`}
+        ${state.view === "admin" && state.adminAuth ? renderAdminMain() : sections || `<div class="empty reveal"><p>No commands match that search.</p></div>`}
 
         <footer class="footer">Updated ${esc(state.data.updatedAt)} · Veltrix · City of Angels</footer>
       </main>
@@ -371,6 +616,7 @@ function render() {
 
   wireEvents();
   renderModal();
+  renderAdminGate();
   initReveal();
   initToolbarStick();
   dismissBoot();
@@ -432,6 +678,7 @@ function wireEvents() {
 
   document.querySelectorAll("[data-filter]").forEach((btn) => {
     btn.addEventListener("click", () => {
+      state.view = "commands";
       state.filter = btn.dataset.filter;
       closeSidebar();
       render();
@@ -439,6 +686,29 @@ function wireEvents() {
         document.getElementById(`cat-${state.filter}`)?.scrollIntoView({ behavior: "smooth" });
       }
     });
+  });
+
+  document.getElementById("adminNavBtn")?.addEventListener("click", () => {
+    if (state.adminAuth) {
+      state.view = "admin";
+      closeSidebar();
+      render();
+      return;
+    }
+    openAdminGate();
+  });
+
+  document.getElementById("adminBackBtn")?.addEventListener("click", () => {
+    state.view = "commands";
+    render();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  document.getElementById("adminLogoutBtn")?.addEventListener("click", () => {
+    setAdminAuthed(false);
+    state.view = "commands";
+    render();
+    showToast("Signed out");
   });
 
   document.querySelectorAll("[data-copy]").forEach((btn) => {
@@ -474,18 +744,27 @@ function closeSidebar() {
 }
 
 document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") closeModal();
-  if (e.key === "/" && document.activeElement?.tagName !== "INPUT") {
+  if (e.key === "Escape") {
+    if (state.adminGateOpen) closeAdminGate();
+    else closeModal();
+  }
+  if (e.key === "/" && document.activeElement?.tagName !== "INPUT" && !state.adminGateOpen) {
     e.preventDefault();
     document.getElementById("searchInput")?.focus();
   }
 });
 
 async function init() {
+  state.adminAuth = isAdminAuthed();
+
   try {
-    const res = await fetch("data/bot-commands.json?v=9", { cache: "no-store" });
-    if (!res.ok) throw new Error("Failed to load commands");
-    state.data = await res.json();
+    const [cmdRes, embedRes] = await Promise.all([
+      fetch("data/bot-commands.json?v=9", { cache: "no-store" }),
+      fetch("data/embed-previews.json?v=1", { cache: "no-store" }),
+    ]);
+    if (!cmdRes.ok) throw new Error("Failed to load commands");
+    state.data = await cmdRes.json();
+    if (embedRes.ok) state.embeds = await embedRes.json();
   } catch (err) {
     dismissBoot();
     document.getElementById("app").innerHTML = `<div class="empty" style="min-height:100vh;display:grid;place-items:center"><p>Couldn't load commands. ${esc(err.message)}</p></div>`;
