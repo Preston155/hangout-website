@@ -1,0 +1,2246 @@
+﻿const {
+  SlashCommandBuilder,
+  PermissionFlagsBits,
+  ChannelType,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ComponentType,
+  EmbedBuilder,
+  PermissionsBitField,
+  MessageFlags
+} = require("discord.js");
+
+const setupChannels = require("../../systems/server-layout");
+const setupRoles = require("../../systems/role-layout");
+
+const BRAND_COLOR = 0x0b1f4d;
+const OK_COLOR = 0x22c55e;
+const WARN_COLOR = 0xf59e0b;
+const ERROR_COLOR = 0xef4444;
+
+const SETUP_CATEGORY_NAMES = [
+  "≡ƒôî INFORMATION",
+  "≡ƒÄ½ SUPPORT",
+  "≡ƒÜö SESSIONS",
+  "≡ƒÆ¼ COMMUNITY",
+  "≡ƒÅ¢∩╕Å DEPARTMENTS",
+  "≡ƒ¢í∩╕Å INTERNAL AFFAIRS",
+  "≡ƒ¢í∩╕Å STAFF",
+  "≡ƒöè VOICE",
+  "≡ƒôîπâ╗INFORMATION",
+  "≡ƒÄ½πâ╗SUPPORT",
+  "≡ƒÜôπâ╗SESSIONS",
+  "≡ƒÆ¼πâ╗COMMUNITY",
+  "≡ƒÅ¢∩╕Åπâ╗DEPARTMENTS",
+  "≡ƒ¢í∩╕Åπâ╗INTERNAL AFFAIRS",
+  "≡ƒ¢í∩╕Åπâ╗STAFF",
+  "≡ƒöèπâ╗VOICE",
+  "INFORMATION",
+  "SUPPORT",
+  "SESSIONS",
+  "COMMUNITY",
+  "DEPARTMENTS",
+  "INTERNAL AFFAIRS",
+  "STAFF",
+  "VOICE",
+  "≡ƒôè Server Status",
+  "≡ƒÆÄBoost Only",
+  "≡ƒùÆ∩╕Å Information",
+  "Γ₧┐ Voice Channel's",
+  "≡ƒº╛ Important",
+  "≡ƒæ╛πâ╗SSU/SSD Information",
+  "≡ƒô¥ Application's",
+  "≡ƒùÆ∩╕Å Partnership Information",
+  "≡ƒÆ¼ Community",
+  "≡ƒÆíSuggestions",
+  "Γ₧┐ In - Game VC's",
+  "≡ƒæ╛ In-Game",
+  "ΓÜò∩╕Å Server Staff",
+  "Application Review's",
+  "ΓÜò∩╕Åπâ╗IA+ Server Staff",
+  "≡ƒôñπâ╗General Support",
+  "≡ƒôñπâ╗Internal Support",
+  "≡ƒôñπâ╗Management Support",
+  "≡ƒôñπâ╗Partnership Support",
+  "LCRP Staff Application ticket",
+  "Staff VC's",
+  "Tickets",
+  "Priority Tickets",
+  "ΓöüΓöü ≡ƒî▓ WELCOME",
+  "Server Status",
+  "Boost Only",
+  "Information",
+  "Voice Channel's",
+  "Important",
+  "SSU/SSD Information",
+  "Application's",
+  "Partnership Information",
+  "Community",
+  "Suggestions",
+  "In - Game VC's",
+  "In-Game",
+  "Server Staff",
+  "IA+ Server Staff"
+];
+
+const SETUP_CHANNEL_NAMES = [
+  "≡ƒôóπâ╗announcements",
+  "≡ƒô£πâ╗server-rules",
+  "Γ£àπâ╗verify",
+  "≡ƒôèπâ╗server-status",
+  "≡ƒôîπâ╗important-info",
+  "≡ƒÄ½πâ╗create-ticket",
+  "≡ƒÄ½πâ╗open-ticket",
+  "≡ƒôûπâ╗support-info",
+  "≡ƒôüπâ╗ticket-logs",
+  "≡ƒôïπâ╗session-vote",
+  "≡ƒÜ¿πâ╗session-start",
+  "≡ƒôÿπâ╗session-logs",
+  "≡ƒôúπâ╗emergency-pings",
+  "≡ƒÜ¿πâ╗emergency-pings",
+  "≡ƒÆ¼πâ╗general",
+  "≡ƒô╕πâ╗media",
+  "≡ƒñûπâ╗bot-commands",
+  "≡ƒÄëπâ╗giveaways",
+  "≡ƒôèπâ╗polls",
+  "≡ƒÆíπâ╗suggestions",
+  "≡ƒÜôπâ╗pd-chat",
+  "≡ƒÜöπâ╗mpd-chat",
+  "≡ƒÜÆπâ╗fire-ems-chat",
+  "≡ƒÜÆπâ╗fems-chat",
+  "ΓÿÄ∩╕Åπâ╗dispatch-chat",
+  "≡ƒô₧πâ╗dispatch-chat",
+  "≡ƒÅ¢∩╕Åπâ╗government-chat",
+  "≡ƒôüπâ╗department-command",
+  "≡ƒôïπâ╗department-logs",
+  "≡ƒ¢í∩╕Åπâ╗ia-chat",
+  "≡ƒöÄπâ╗ia-investigations",
+  "≡ƒôüπâ╗ia-logs",
+  "≡ƒôïπâ╗ia-reports",
+  "≡ƒôîπâ╗staff-announcements",
+  "≡ƒÆ¼πâ╗staff-chat",
+  "≡ƒôïπâ╗mod-logs",
+  "≡ƒº╛πâ╗mod-logs",
+  "≡ƒô¥πâ╗applications-review",
+  "≡ƒôïπâ╗applications-review",
+  "ΓÜÆ∩╕Åπâ╗staff-commands",
+  "≡ƒôéπâ╗staff-resources",
+  "≡ƒöèπâ╗General VC",
+  "≡ƒÄ«πâ╗Session VC",
+  "≡ƒÜôπâ╗Session VC",
+  "≡ƒ¢í∩╕Åπâ╗Staff VC",
+  "≡ƒôüπâ╗Command VC",
+  "≡ƒÄÖ∩╕Åπâ╗AFK",
+  "transcripts",
+  "moderator-only",
+  "≡ƒôèΓöâserver-info",
+  "≡ƒöùΓöâchain-of-command",
+  "≡ƒôÖΓöâserver-rules",
+  "≡ƒôìΓöâreaction-roles",
+  "≡ƒ¢ì∩╕ÅΓöâserver-shop",
+  "≡ƒÆÄΓöâserver-boost",
+  "≡ƒÄéΓöâbirthdays",
+  "≡ƒôóΓöâannouncements",
+  "≡ƒô¥Γöâserver-updates",
+  "≡ƒôóΓöâcommunity",
+  "≡ƒÄèΓöâgiveaways",
+  "≡ƒô║Γöâsocials",
+  "≡ƒôñΓöâsupport",
+  "≡ƒöÇΓöâinvite-tracker",
+  "≡ƒæ«≡ƒÅ╜Γöâsheriff-cmps",
+  "≡ƒô╕Γöâlcrpc-memories",
+  "ingame-news",
+  "Γä╣∩╕ÅΓöâssu-info",
+  "≡ƒôÿΓöâgame-rules",
+  "≡ƒÄ«Γöâsessions",
+  "≡ƒô╕Γöâlcrpc-media",
+  "≡ƒôÅΓöâapplication-rules",
+  "ΓÜò∩╕ÅΓöâstaff-application",
+  "≡ƒôèΓöâapplication-results",
+  "≡ƒÅ¼Γöâdepartments",
+  "≡ƒôùΓöâpartnership-requirements",
+  "≡ƒ¢╣Γöâour-ad",
+  "≡ƒñ₧≡ƒÅ╜Γöâpartnerships",
+  "≡ƒ¢╣Γöâserver-relations",
+  "≡ƒÆ¼Γöâchat",
+  "≡ƒô╖Γöâmedia",
+  "Γ£¥∩╕ÅΓöâdaily-verse",
+  "≡ƒñûΓöâcmds",
+  "≡ƒÆ»Γöâcounting",
+  "≡ƒÆ½Γöâlvl-ups",
+  "Γ¥öΓöâbot-help",
+  "Γÿä∩╕ÅΓöâsuggestions",
+  "≡ƒùú∩╕ÅΓöâssu-chat",
+  "≡ƒôÄΓöâssu-clips",
+  "≡ƒÆ┤Γöâeconomy",
+  "≡ƒÆ╡Γöâgame-stores",
+  "≡ƒÆ╢Γöâgame-shop",
+  "≡ƒº╛Γöâscene-rules",
+  "≡ƒôÜΓöâscene-requests",
+  "≡ƒù₧∩╕ÅΓöâscene-lists",
+  "≡ƒîìΓöâaop-map",
+  "≡ƒôÜΓöâciv-info",
+  "≡ƒôæΓöâfoid-cards",
+  "≡ƒù₧∩╕ÅΓöâstaff-shouts",
+  "≡ƒô¥Γöâstaff-rules",
+  "≡ƒôâΓöâstaff-tasks",
+  "≡ƒñûΓöâstaff-commands",
+  "Γ¢ô∩╕ÅΓÇì≡ƒÆÑΓöâstaff-guide",
+  "≡ƒ¬äΓöâstaff-chat",
+  "≡ƒÄÑΓöâstaff-images",
+  "πâ╗πâ╗πâ╗πâ╗πâ╗πâ╗πâ╗πâ╗πâ╗πâ╗",
+  "≡ƒôêΓöâstaff-promotions",
+  "≡ƒôëΓöâstaff-punishments",
+  "≡ƒ¬╡Γöâmod-logs",
+  "≡ƒ¬╡Γöâtranscripts",
+  "ΓÅ│Γöâwaiting-for-reply",
+  "≡ƒ¬╡Γöâin-game-logs",
+  "≡ƒ¬╡Γöâkick-logs",
+  "≡ƒ¬╡Γöâban-logs",
+  "≡ƒ¬╡Γöâwarning-logs",
+  "≡ƒ¬╡Γöâbot-help-logs",
+  "≡ƒô╕Γöâlcrpc-staff-memories",
+  "application-reviews",
+  "application-results",
+  "≡ƒù₧∩╕ÅΓöâshouts",
+  "≡ƒ¬äΓöâchat",
+  "≡ƒº¬Γöâtesting-channel",
+  "≡ƒôªΓöâcommands",
+  "≡ƒ¬╡Γöâssuvote-logs",
+  "≡ƒ¬╡Γöâloa-logs",
+  "do-not-close",
+  "ticket-8",
+  "≡ƒÆÄBooster VC",
+  "≡ƒÄÖ∩╕ÅΓöâVoice Channel 1",
+  "≡ƒÄÖ∩╕ÅΓöâVoice Channel 2",
+  "≡ƒÄÖ∩╕ÅΓöâStaff Voice",
+  "≡ƒÄÖ∩╕ÅΓöâMovie Night",
+  "≡ƒÄÖ∩╕ÅΓöâCommunity Event's",
+  "ΓÅ│ΓöâStaff Waiting Room",
+  "≡ƒÄÖ∩╕ÅΓöâStaff Scene 1",
+  "≡ƒÄÖ∩╕ÅΓöâStaff Scene 2",
+  "≡ƒÄÖ∩╕ÅΓöâStaff Scene 3",
+  "≡ƒÄÖ∩╕ÅΓöâStaff Scene 4",
+  "≡ƒÄÖ∩╕ÅΓöâGLOBAL RTO",
+  "≡ƒÄÖ∩╕ÅΓöâTac One",
+  "≡ƒÄÖ∩╕ÅΓöâTac Two",
+  "≡ƒô₧ΓöâPD 911",
+  "≡ƒÄÖ∩╕ÅΓöâPD Scene 1",
+  "≡ƒÄÖ∩╕ÅΓöâPD Scene 2",
+  "≡ƒÄÖ∩╕ÅΓöâPD Scene 3",
+  "≡ƒÄÖ∩╕ÅΓöâPD Scene 4",
+  "≡ƒÄÖ∩╕ÅΓöâPD Scene 5",
+  "≡ƒô₧ΓöâLCOM Fire 911",
+  "≡ƒÄÖ∩╕ÅΓöâLCOM Scene 1",
+  "≡ƒÄÖ∩╕ÅΓöâLCOM Scene 2",
+  "≡ƒÄÖ∩╕ÅΓöâLCOM Scene 3",
+  "≡ƒÄÖ∩╕ÅΓöâLCOM Scene 4",
+  "≡ƒÄÖ∩╕ÅΓöâCivilian VC",
+  "≡ƒÄÖ∩╕ÅΓöâCiv Scene 1",
+  "≡ƒÄÖ∩╕ÅΓöâCiv Scene 2",
+  "≡ƒÄÖ∩╕ÅΓöâCiv Scene 3",
+  "Waiting Room",
+  "Liberties Office",
+  "Ted's Office",
+  "o's Office - Working on app join in!",
+  "Gouby's Office",
+  "Prestons Office"
+];
+
+const SETUP_ROLE_NAMES = [
+  "Verified",
+  "Trial Staff",
+  "Moderator",
+  "Senior Moderator",
+  "Administrator",
+  "Management",
+  "Internal Affairs",
+  "Department Command",
+  "Police Department",
+  "Fire/EMS Department",
+  "Government",
+  "Dispatch",
+  "Muted",
+  "Session Ping",
+  "Giveaway Ping",
+  "Announcement Ping",
+  "Event Ping",
+  "Poll Ping",
+  "Media Ping",
+  "Active Chat Ping",
+  "EST",
+  "CST",
+  "MST",
+  "PST",
+  "GMT",
+  "CET",
+  "AEST",
+  "≡ƒÄô Staff Trainee",
+  "≡ƒº¬ Trial Moderator",
+  "≡ƒ¢í∩╕Å Moderator",
+  "≡ƒ¢á∩╕Å Head Moderator",
+  "≡ƒº░ Administrator",
+  "≡ƒö¿ Head Administrator",
+  "≡ƒ¢í∩╕Å Head Administrator",
+  "≡ƒò┤∩╕Å Management",
+  "≡ƒºá Server Director",
+  "≡ƒÅ¢∩╕Å Community Director",
+  "ΓÜí Co Owner",
+  "≡ƒÆÄ Owner",
+  "≡ƒææ Founder",
+  "≡ƒ¢í∩╕Å Internal Affairs",
+  "≡ƒöÄ IA Investigator",
+  "≡ƒôü IA Supervisor",
+  "≡ƒ¢í∩╕Å Internal Affairs Director",
+  "≡ƒÜö Metropolitan Police Department",
+  "≡ƒÜô LEO Certified",
+  "≡ƒÜö MPD Supervisor",
+  "≡ƒÜö MPD Assistant Chief",
+  "≡ƒÜö MPD Chief",
+  "≡ƒÜÆ Fire & EMS",
+  "≡ƒÜÆ FEMS Certified",
+  "≡ƒÜÆ FEMS Supervisor",
+  "≡ƒÜÆ FEMS Assistant Chief",
+  "≡ƒÜÆ FEMS Chief",
+  "≡ƒô₧ Dispatch",
+  "≡ƒô₧ Dispatch Certified",
+  "≡ƒô₧ Dispatch Director",
+  "≡ƒÅ¢∩╕Å Government",
+  "≡ƒÅ¢∩╕Å Government Certified",
+  "≡ƒÅ¢∩╕Å Government Official",
+  "ΓÜû∩╕Å Judge",
+  "≡ƒÄ¡ Roleplay Member",
+  "≡ƒª║ Whitelisted Member",
+  "≡ƒÆ¼ Member",
+  "≡ƒîƒ Active Member",
+  "≡ƒöÆ Muted",
+  "≡ƒÜª Session Ping",
+  "≡ƒÄü Giveaway Ping",
+  "≡ƒôó Announcement Ping",
+  "≡ƒôè Poll Ping",
+  "≡ƒôï Application Ping",
+  "≡ƒôî Update Ping",
+  "Operations Director",
+  "Staff Director",
+  "Roleplay Director",
+  "Department Director",
+  "Chief of Staff",
+  "Server Manager",
+  "Civilian",
+  "Registered Driver",
+  "Business Owner",
+  "Media",
+  "Server Booster",
+  "OG Member",
+  "New Member",
+  "Emergency Ping",
+  "Bots",
+  "≡ƒÄ¡ Operations Director",
+  "≡ƒôï Staff Director",
+  "≡ƒÜ¿ Roleplay Director",
+  "≡ƒÅ¢∩╕Å Department Director",
+  "Γ¡É Chief of Staff",
+  "≡ƒ¢í∩╕Å Server Manager",
+  "≡ƒÆ╗ Civilian",
+  "≡ƒÜù Registered Driver",
+  "≡ƒÅó Business Owner",
+  "≡ƒô░ Media",
+  "≡ƒÜÇ Server Booster",
+  "≡ƒææ OG Member",
+  "≡ƒæï New Member",
+  "≡ƒÜ¿ Emergency Ping",
+  "≡ƒñû Bots",
+  "Deputy Director",
+  "Chief Operations Officer",
+  "Head Executive Director",
+  "Senior Executive Director",
+  "Office Superintendent",
+  "Office Director",
+  "πâ╗Office of the Director",
+  "Γû¼ Directory Γû¼",
+  "πâ╗ Direct Management",
+  "πâ╗Head Management",
+  "πâ╗Senior Management",
+  "πâ╗Management",
+  "πâ╗Junior Management",
+  "πâ╗Trainee Management",
+  "Γû¼ ManagementΓû¼",
+  "πâ╗Internal Affairs Management",
+  "πâ╗Internal Affairs Chief",
+  "πâ╗Internal Affairs Senior Member",
+  "πâ╗Internal Affairs Experienced Member",
+  "πâ╗Internal Affairs Member",
+  "Γû¼ Internal AffairsΓû¼",
+  "πâ╗Supreme Administrator",
+  "πâ╗Head Administrator",
+  "πâ╗Senior Administrator",
+  "πâ╗Administrator",
+  "πâ╗Junior Administrator",
+  "Γû¼ AdministrationΓû¼",
+  "πâ╗Surreal Moderator",
+  "πâ╗Supreme Moderator",
+  "πâ╗Head Moderator",
+  "πâ╗Senior Moderator",
+  "πâ╗Moderator",
+  "πâ╗Junior Moderator",
+  "πâ╗Trial Moderator",
+  "Γû¼ Γû¼ ModerationΓû¼ Γû¼",
+  "LCRP - Staff Team",
+  "πâ╗Former Staff",
+  "Γû¼ Random Role's Γû¼",
+  "πâ╗Bible Perms",
+  "πâ╗100th Member",
+  "πâ╗LCRPC Administrative Partner",
+  "πâ╗LCRP Partner",
+  "πâ╗LCRPC OG",
+  "πâ╗Bot's",
+  "πâ╗Whitelisted Member",
+  "πâ╗V.I.P",
+  "πâ╗Member",
+  "Γû¼ Civ Role's Γû¼",
+  "Unverified",
+  "Γû¼ Verify Roles Γû¼",
+  "LCRP - Announcement Notification",
+  "LCRP - Session Ping",
+  "LCRP - Giveaway Notification",
+  "LCRP - Active Chat Notification",
+  "Γû¼ Role Ping's Γû¼",
+  "≡ƒç║≡ƒç╕ EST",
+  "≡ƒç║≡ƒç╕ CST",
+  "≡ƒç║≡ƒç╕ MST",
+  "≡ƒç║≡ƒç╕ PST",
+  "≡ƒç¼≡ƒçº GMT",
+  "≡ƒç¬≡ƒç║ CET",
+  "Γû¼ TimeZone's Γû¼",
+  "SSU Poll Perms",
+  "SSU Perms",
+  "SSD Perms",
+  "Γû¼ SSU Role's Γû¼",
+  "LockDown Perms",
+  "Γû¼ Bot's Γû¼",
+  "24 hour SSU Command Permission",
+  "Support Team",
+  "Zero Tolerance Policy",
+  "TestRole",
+  "Reduced Activity",
+  "Liberties Office Keys",
+  "Preston's Office Keys",
+  "Ted's Office Keys",
+  "Silkies Office Keys",
+  "Gouby's Office Keys",
+  "new role",
+  "Minecraft Server Member",
+  "Roblox Verified",
+  "Tickets Support",
+  "Tickets Admin",
+  "Europe",
+  "North America",
+  "South America",
+  "Asia",
+  "Oceania",
+  "Africa",
+  "No Quota (here to help out)",
+  "iPhone",
+  "Android",
+  "Samsung",
+  "PS4",
+  "XBOX",
+  "PC",
+  "Laptop",
+  "LCRPC Police Helper",
+  "Γ¡Éπâ╗LVL 5",
+  "Γ¡Éπâ╗LVL 10",
+  "Γ¡Éπâ╗LVL 15",
+  "Γ¡Éπâ╗LVL 20",
+  "Γ¡Éπâ╗LVL 30",
+  "Γ¡Éπâ╗LVL 40",
+  "Γ¡Éπâ╗LVL 50",
+  "Γ¡Éπâ╗LVL 50+"
+];
+
+function hasSetupPermission(interaction) {
+  if (interaction.memberPermissions?.has(PermissionFlagsBits.Administrator)) return true;
+  return interaction.member?.roles?.cache?.some((role) => role.name === "Management" || role.name === "≡ƒò┤∩╕Å Management");
+}
+
+function embed(color, title, description) {
+  return new EmbedBuilder().setColor(color).setTitle(title).setDescription(description).setFooter({ text: "Veltrix ΓÇó Setup Safety" }).setTimestamp();
+}
+
+function format(items) {
+  if (!items?.length) return "None";
+  return items.slice(0, 15).map((item) => "ΓÇó " + item).join("\n") + (items.length > 15 ? "\n+" + (items.length - 15) + " more" : "");
+}
+
+function setupChannelTypes() {
+  return new Set([ChannelType.GuildCategory, ChannelType.GuildText, ChannelType.GuildAnnouncement, ChannelType.GuildVoice]);
+}
+
+async function deleteSetupChannels(guild) {
+  const deletedCategories = [];
+  const deletedChannels = [];
+  const skipped = [];
+  await guild.channels.fetch().catch(() => null);
+  const categoryNames = new Set(SETUP_CATEGORY_NAMES);
+  const channelNames = new Set(SETUP_CHANNEL_NAMES);
+  const types = setupChannelTypes();
+  const categories = guild.channels.cache.filter((channel) => channel.type === ChannelType.GuildCategory && categoryNames.has(channel.name)).sort((a, b) => b.position - a.position);
+
+  for (const category of categories.values()) {
+    const children = guild.channels.cache.filter((channel) => channel.parentId === category.id).sort((a, b) => b.position - a.position);
+    for (const child of children.values()) {
+      try {
+        await child.delete("Veltrix setup delete-channels/reset-server");
+        deletedChannels.push(child.name + " / " + child.id);
+        console.log("Deleted channel: " + child.name + "/" + child.id);
+      } catch (error) {
+        skipped.push(child.name + " / " + child.id + " / " + error.message);
+      }
+    }
+    try {
+      await category.delete("Veltrix setup delete-channels/reset-server");
+      deletedCategories.push(category.name + " / " + category.id);
+      console.log("Deleted category: " + category.name + "/" + category.id);
+    } catch (error) {
+      skipped.push(category.name + " / " + category.id + " / " + error.message);
+    }
+  }
+
+  await guild.channels.fetch().catch(() => null);
+  const looseChannels = guild.channels.cache.filter((channel) => types.has(channel.type) && channel.type !== ChannelType.GuildCategory && !channel.parentId && channelNames.has(channel.name));
+  for (const channel of looseChannels.values()) {
+    try {
+      await channel.delete("Veltrix setup loose channel cleanup");
+      deletedChannels.push(channel.name + " / " + channel.id);
+      console.log("Deleted channel: " + channel.name + "/" + channel.id);
+    } catch (error) {
+      skipped.push(channel.name + " / " + channel.id + " / " + error.message);
+    }
+  }
+  return { deletedCategories, deletedChannels, skipped };
+}
+
+async function deleteSetupRoles(guild) {
+  const deletedRoles = [];
+  const skippedRoles = [];
+  await guild.roles.fetch().catch(() => null);
+  const botMember = guild.members.me || await guild.members.fetchMe();
+  for (const roleName of SETUP_ROLE_NAMES) {
+    const role = guild.roles.cache.find((item) => item.name === roleName);
+    if (!role) continue;
+    if (role.id === guild.roles.everyone.id) {
+      skippedRoles.push(role.name + " / " + role.id + " / @everyone");
+      continue;
+    }
+    if (role.managed) {
+      skippedRoles.push(role.name + " / " + role.id + " / managed role");
+      console.log("Skipped role: " + role.name + "/" + role.id + "/managed role");
+      continue;
+    }
+    if (role.id === botMember.roles.botRole?.id) {
+      skippedRoles.push(role.name + " / " + role.id + " / bot role");
+      console.log("Skipped role: " + role.name + "/" + role.id + "/bot role");
+      continue;
+    }
+    if (!role.editable || role.position >= botMember.roles.highest.position) {
+      skippedRoles.push(role.name + " / " + role.id + " / above or equal to bot role");
+      console.log("Skipped role: " + role.name + "/" + role.id + "/above or equal to bot role");
+      continue;
+    }
+    try {
+      await role.delete("Veltrix setup delete-roles/reset-server");
+      deletedRoles.push(role.name + " / " + role.id);
+      console.log("Deleted role: " + role.name + "/" + role.id);
+    } catch (error) {
+      skippedRoles.push(role.name + " / " + role.id + " / " + error.message);
+      console.log("Skipped role: " + role.name + "/" + role.id + "/" + error.message);
+    }
+  }
+  return { deletedRoles, skippedRoles };
+}
+
+async function createServerLayout(guild) {
+  const messages = [];
+  const fakeInteraction = {
+    guild,
+    memberPermissions: new PermissionsBitField([PermissionFlagsBits.Administrator]),
+    async deferReply() {
+      messages.push("Deferred setup.");
+    },
+    async editReply(payload) {
+      const data = payload?.embeds?.[0]?.data;
+      if (data?.title) messages.push(data.title);
+    }
+  };
+  await setupChannels.execute(fakeInteraction);
+  return { messages };
+}
+
+async function applyChannelPermissions(guild) {
+  return createServerLayout(guild);
+}
+
+async function auditPermissions(guild) {
+  await guild.channels.fetch().catch(() => null);
+  const risky = ["≡ƒôüπâ╗ticket-logs", "≡ƒôÿπâ╗session-logs", "≡ƒñûπâ╗bot-commands", "≡ƒôïπâ╗department-logs", "≡ƒôüπâ╗department-command", "≡ƒ¢í∩╕Åπâ╗ia-chat", "≡ƒöÄπâ╗ia-investigations", "≡ƒôüπâ╗ia-logs", "≡ƒôïπâ╗ia-reports", "≡ƒôîπâ╗staff-announcements", "≡ƒÆ¼πâ╗staff-chat", "≡ƒôïπâ╗mod-logs", "≡ƒô¥πâ╗applications-review", "ΓÜÆ∩╕Åπâ╗staff-commands", "≡ƒôéπâ╗staff-resources"];
+  const failures = [];
+  for (const name of risky) {
+    const channel = guild.channels.cache.find((item) => item.name === name);
+    if (!channel) continue;
+    const perms = channel.permissionsFor(guild.roles.everyone);
+    if (perms?.has(PermissionFlagsBits.ViewChannel) || perms?.has(PermissionFlagsBits.SendMessages)) failures.push(name + " still grants @everyone view/send.");
+  }
+  return { failures };
+}
+
+async function confirm(interaction, title, description, confirmLabel) {
+  const row = new ActionRowBuilder().addComponents(
+    new ButtonBuilder().setCustomId("setup_confirm").setLabel(confirmLabel).setStyle(ButtonStyle.Danger),
+    new ButtonBuilder().setCustomId("setup_cancel").setLabel("Cancel").setStyle(ButtonStyle.Secondary)
+  );
+  await interaction.editReply({ embeds: [embed(WARN_COLOR, title, description)], components: [row] });
+  const reply = await interaction.fetchReply();
+  let button;
+  try {
+    button = await reply.awaitMessageComponent({ componentType: ComponentType.Button, time: 30_000 });
+  } catch {
+    await interaction.editReply({ embeds: [embed(ERROR_COLOR, "Timed Out", "No changes were made.")], components: [] });
+    return false;
+  }
+  if (button.user.id !== interaction.user.id) {
+    await button.reply({ content: "Only the command user can confirm this action.", flags: 64 });
+    return false;
+  }
+  if (button.customId === "setup_cancel") {
+    await button.update({ embeds: [embed(OK_COLOR, "Cancelled", "No changes were made.")], components: [] });
+    return false;
+  }
+  await button.update({ embeds: [embed(BRAND_COLOR, "Confirmed", "Working now. This may take a moment...")], components: [] });
+  return true;
+}
+
+async function safeFinalReply(interaction, payload) {
+  try {
+    await interaction.editReply(payload);
+    return;
+  } catch (error) {
+    console.error("Setup final reply fallback:", error.message);
+  }
+
+  const target = interaction.channel && interaction.channel.isTextBased?.()
+    ? interaction.channel
+    : interaction.guild.systemChannel;
+  if (target?.isTextBased?.()) {
+    await target.send({ ...payload, components: [] }).catch(() => null);
+    return;
+  }
+  await interaction.user?.send({ ...payload, components: [] }).catch(() => null);
+}
+
+async function runSetupChannels(interaction) {
+  await interaction.editReply({ embeds: [embed(BRAND_COLOR, "Setting Up Channels", "Creating/updating the Veltrix channel layout and permissions...")] });
+  const setup = await createServerLayout(interaction.guild);
+  const audit = await auditPermissions(interaction.guild);
+  await interaction.editReply({ embeds: [embed(audit.failures.length ? WARN_COLOR : OK_COLOR, "Setup Channels Complete", "Channel layout and permissions were synced.").addFields({ name: "Setup", value: format(setup.messages), inline: false }, { name: "Permission Audit", value: audit.failures.length ? format(audit.failures) : "Passed", inline: false })], components: [] });
+}
+
+async function runSetupRoles(interaction) {
+  const messages = [];
+  const fakeInteraction = {
+    guild: interaction.guild,
+    memberPermissions: new PermissionsBitField([PermissionFlagsBits.Administrator]),
+    async deferReply() { messages.push("Deferred role setup."); },
+    async editReply(payload) {
+      const data = payload?.embeds?.[0]?.data;
+      if (data?.title) messages.push(data.title);
+      if (data?.fields) for (const field of data.fields) messages.push(field.name + ": " + String(field.value || "").replace(/\n/g, " | ").slice(0, 300));
+    }
+  };
+  await setupRoles.execute(fakeInteraction);
+  await interaction.editReply({ embeds: [embed(OK_COLOR, "Setup Roles Complete", "Role setup was synced safely.").addFields({ name: "Summary", value: format(messages), inline: false })], components: [] });
+}
+
+async function runSetupPermissions(interaction) {
+  await runSetupChannels(interaction);
+}
+
+async function runSetupAudit(interaction) {
+  const audit = await auditPermissions(interaction.guild);
+  await interaction.editReply({ embeds: [embed(audit.failures.length ? WARN_COLOR : OK_COLOR, "Permission Audit", audit.failures.length ? "Some risky permissions still need attention." : "Audit passed. Risky channels are locked from @everyone.").addFields({ name: "Findings", value: audit.failures.length ? format(audit.failures) : "Passed", inline: false })], components: [] });
+}
+
+async function runDeleteChannels(interaction) {
+  if (!(await confirm(interaction, "Confirm Channel Cleanup", "This will delete only Veltrix setup-created categories/channels and their children. Unrelated channels will not be touched.", "Delete Setup Channels"))) return;
+  const result = await deleteSetupChannels(interaction.guild);
+  await safeFinalReply(interaction, { embeds: [embed(OK_COLOR, "Setup Channels Deleted", "Channel cleanup completed.").addFields({ name: "Deleted Categories", value: format(result.deletedCategories), inline: false }, { name: "Deleted Channels", value: format(result.deletedChannels), inline: false }, { name: "Skipped", value: format(result.skipped), inline: false })], components: [] });
+}
+
+async function runDeleteRoles(interaction) {
+  if (!(await confirm(interaction, "Confirm Role Cleanup", "This will delete only exact Veltrix/LCRP setup role names that are safe for the bot to delete.", "Delete Setup Roles"))) return;
+  const result = await deleteSetupRoles(interaction.guild);
+  await safeFinalReply(interaction, { embeds: [embed(OK_COLOR, "Setup Roles Deleted", "Role cleanup completed.").addFields({ name: "Deleted Roles", value: format(result.deletedRoles), inline: false }, { name: "Skipped Roles", value: format(result.skippedRoles), inline: false })], components: [] });
+}
+
+async function runResetServer(interaction) {
+  if (!(await confirm(interaction, "Confirm Server Reset", "This deletes only setup-created channels/categories and setup-created role names, then rebuilds the improved safe server layout.", "Confirm Reset"))) return;
+  const channels = await deleteSetupChannels(interaction.guild);
+  const roles = await deleteSetupRoles(interaction.guild);
+  const setup = await createServerLayout(interaction.guild);
+  const audit = await auditPermissions(interaction.guild);
+  await safeFinalReply(interaction, { embeds: [embed(audit.failures.length ? WARN_COLOR : OK_COLOR, "Server Reset Complete", "Veltrix setup reset finished. Unrelated channels and roles were not touched.").addFields({ name: "Deleted Categories", value: format(channels.deletedCategories), inline: true }, { name: "Deleted Channels", value: format(channels.deletedChannels), inline: true }, { name: "Deleted Roles", value: format(roles.deletedRoles), inline: true }, { name: "Skipped Channels", value: format(channels.skipped), inline: false }, { name: "Skipped Roles", value: format(roles.skippedRoles), inline: false }, { name: "Setup", value: format(setup.messages), inline: false }, { name: "Permission Audit", value: audit.failures.length ? format(audit.failures) : "Passed", inline: false })], components: [] });
+}
+
+module.exports = {
+  data: new SlashCommandBuilder()
+    .setName("setup")
+    .setDescription("Manage the Veltrix setup system.")
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+    .setDMPermission(false)
+    .addSubcommand((subcommand) => subcommand.setName("channels").setDescription("Create or update the safe Veltrix channel layout."))
+    .addSubcommand((subcommand) => subcommand.setName("roles").setDescription("Create or update Veltrix setup roles."))
+    .addSubcommand((subcommand) => subcommand.setName("permissions").setDescription("Reapply safe Veltrix channel permissions."))
+    .addSubcommand((subcommand) => subcommand.setName("audit").setDescription("Audit risky setup channel permissions."))
+    .addSubcommand((subcommand) => subcommand.setName("delete-channels").setDescription("Delete all Veltrix setup-created channels/categories."))
+    .addSubcommand((subcommand) => subcommand.setName("delete-roles").setDescription("Delete all safe Veltrix setup-created roles."))
+    .addSubcommand((subcommand) => subcommand.setName("reset-server").setDescription("Delete setup items and rebuild the safe layout.")),
+
+  async execute(interaction) {
+    await interaction.deferReply({ flags: 64 }).catch(() => null);
+    if (!hasSetupPermission(interaction)) {
+      await interaction.editReply({ embeds: [embed(ERROR_COLOR, "Missing Permission", "Only Administrator or Management can use setup cleanup/reset commands.")] });
+      return;
+    }
+    const subcommand = interaction.options.getSubcommand();
+    if (subcommand === "channels") return runSetupChannels(interaction);
+    if (subcommand === "roles") return runSetupRoles(interaction);
+    if (subcommand === "permissions") return runSetupPermissions(interaction);
+    if (subcommand === "audit") return runSetupAudit(interaction);
+    if (subcommand === "delete-channels") return runDeleteChannels(interaction);
+    if (subcommand === "delete-roles") return runDeleteRoles(interaction);
+    if (subcommand === "reset-server") return runResetServer(interaction);
+  },
+
+  deleteSetupChannels,
+  deleteSetupRoles,
+  createServerLayout,
+  applyChannelPermissions,
+  auditPermissions
+};
+const {
+  ChannelType,
+  EmbedBuilder,
+  PermissionFlagsBits,
+  SlashCommandBuilder
+} = require("discord.js");
+
+const P = PermissionFlagsBits;
+const COLORS = { working: 0x2563eb, ok: 0x22c55e, warn: 0xf59e0b, error: 0xef4444 };
+
+const CATEGORIES = {
+  INFORMATION: "Γò¡ΓöÇΓöÇπâ╗INFORMATIONπâ╗ΓöÇΓöÇΓò«",
+  SESSION: "Γò¡ΓöÇΓöÇπâ╗SESSION CENTERπâ╗ΓöÇΓöÇΓò«",
+  COMMUNITY: "Γò¡ΓöÇΓöÇπâ╗COMMUNITYπâ╗ΓöÇΓöÇΓò«",
+  ROLEPLAY: "Γò¡ΓöÇΓöÇπâ╗ROLEPLAYπâ╗ΓöÇΓöÇΓò«",
+  DEPARTMENTS: "Γò¡ΓöÇΓöÇπâ╗DEPARTMENTSπâ╗ΓöÇΓöÇΓò«",
+  SUPPORT: "Γò¡ΓöÇΓöÇπâ╗SUPPORT DESKπâ╗ΓöÇΓöÇΓò«",
+  STAFF: "Γò¡ΓöÇΓöÇπâ╗STAFF AREAπâ╗ΓöÇΓöÇΓò«",
+  IA: "Γò¡ΓöÇΓöÇπâ╗INTERNAL AFFAIRSπâ╗ΓöÇΓöÇΓò«",
+  MANAGEMENT: "Γò¡ΓöÇΓöÇπâ╗MANAGEMENTπâ╗ΓöÇΓöÇΓò«",
+  VOICE: "Γò¡ΓöÇΓöÇπâ╗VOICE CHANNELSπâ╗ΓöÇΓöÇΓò«"
+};
+
+const CHANNELS = {
+  announcements: "≡ƒôóΓöâannouncements",
+  serverInfo: "≡ƒôîΓöâserver-information",
+  serverRules: "≡ƒô£Γöâserver-rules",
+  roleplayRules: "≡ƒôÜΓöâroleplay-rules",
+  verification: "Γ£àΓöâverification",
+  reactionRoles: "≡ƒÄ¡Γöâreaction-roles",
+  serverEvents: "≡ƒôàΓöâserver-events",
+  importantLinks: "≡ƒöùΓöâimportant-links",
+  ssuVote: "≡ƒòÆΓöâssu-vote",
+  sessionStart: "≡ƒÜ¿Γöâsession-start",
+  serverCode: "≡ƒöóΓöâserver-code",
+  serverStatus: "≡ƒôìΓöâserver-status",
+  shutdownNotices: "≡ƒ¢æΓöâshutdown-notices",
+  sessionLogs: "≡ƒôèΓöâsession-logs",
+  sessionAttendance: "≡ƒÄ»Γöâsession-attendance",
+  generalChat: "≡ƒÆ¼Γöâgeneral-chat",
+  media: "≡ƒô╕Γöâmedia",
+  clips: "≡ƒÄÑΓöâclips",
+  suggestions: "≡ƒÆíΓöâsuggestions",
+  giveaways: "≡ƒÄëΓöâgiveaways",
+  botCommands: "≡ƒñûΓöâbot-commands",
+  memes: "≡ƒÿéΓöâmemes",
+  introductions: "≡ƒæïΓöâintroductions",
+  roleplayNews: "≡ƒô░Γöâroleplay-news",
+  civilianInfo: "≡ƒôïΓöâcivilian-info",
+  vehicleRegistration: "≡ƒÜùΓöâvehicle-registration",
+  businessRegistration: "≡ƒÅáΓöâbusiness-registration",
+  characterProfiles: "≡ƒ¬¬Γöâcharacter-profiles",
+  calls911: "≡ƒô₧Γöâ911-calls",
+  courtCases: "ΓÜû∩╕ÅΓöâcourt-cases",
+  boloAlerts: "≡ƒÜºΓöâbolo-alerts",
+  lawEnforcement: "≡ƒÜôΓöâlaw-enforcement",
+  fireRescue: "≡ƒÜÆΓöâfire-rescue",
+  emergencyMedical: "≡ƒÜæΓöâemergency-medical",
+  civilianOperations: "≡ƒÅ¢∩╕ÅΓöâcivilian-operations",
+  dotOperations: "≡ƒ¢╗Γöâdot-operations",
+  departmentApplications: "≡ƒôüΓöâdepartment-applications",
+  departmentAnnouncements: "≡ƒôîΓöâdepartment-announcements",
+  openTicket: "≡ƒÄ½Γöâopen-ticket",
+  generalSupport: "≡ƒô¿Γöâgeneral-support",
+  partnerships: "≡ƒñ¥Γöâpartnerships",
+  banAppeals: "≡ƒô¥Γöâban-appeals",
+  staffApplications: "≡ƒôïΓöâstaff-applications",
+  playerReports: "ΓÜá∩╕ÅΓöâplayer-reports",
+  ticketTranscripts: "≡ƒôüΓöâticket-transcripts",
+  staffChat: "≡ƒ¢í∩╕ÅΓöâstaff-chat",
+  staffAnnouncements: "≡ƒôóΓöâstaff-announcements",
+  staffInformation: "≡ƒôïΓöâstaff-information",
+  staffPoints: "≡ƒôèΓöâstaff-points",
+  staffActivity: "≡ƒòÆΓöâstaff-activity",
+  staffLogs: "≡ƒôüΓöâstaff-logs",
+  moderationLogs: "ΓÜá∩╕ÅΓöâmoderation-logs",
+  ticketLogs: "≡ƒÄ½Γöâticket-logs",
+  iaChat: "ΓÜû∩╕ÅΓöâia-chat",
+  iaCases: "≡ƒôéΓöâia-cases",
+  staffReports: "≡ƒô¥Γöâstaff-reports",
+  investigations: "≡ƒöìΓöâinvestigations",
+  iaAnnouncements: "≡ƒôîΓöâia-announcements",
+  iaLogs: "≡ƒôüΓöâia-logs",
+  managementChat: "≡ƒææΓöâmanagement-chat",
+  managementAnnouncements: "≡ƒôîΓöâmanagement-announcements",
+  serverStatistics: "≡ƒôèΓöâserver-statistics",
+  managementLogs: "≡ƒôüΓöâmanagement-logs",
+  staffRecords: "≡ƒº╛Γöâstaff-records",
+  serverPlanning: "≡ƒùé∩╕ÅΓöâserver-planning",
+  privateDiscussion: "≡ƒöÆΓöâprivate-discussion",
+  generalVc: "≡ƒöèΓöâGeneral VC",
+  patrolVc: "≡ƒÜôΓöâPatrol VC",
+  fireEmsVc: "≡ƒÜÆΓöâFire/EMS VC",
+  staffVc: "≡ƒ¢í∩╕ÅΓöâStaff VC",
+  managementVc: "≡ƒææΓöâManagement VC",
+  interviewRoom: "≡ƒÄÖ∩╕ÅΓöâInterview Room",
+  afk: "≡ƒöçΓöâAFK"
+};
+
+const ROLE_GROUPS = {
+  OWNERSHIP: ["≡ƒææπâ╗Server Owner", "≡ƒÆÄπâ╗Co Owner", "≡ƒ¢á∩╕Åπâ╗Founder", "≡ƒîƒπâ╗Community Director"],
+  HIGH_COMMAND: ["≡ƒÆ╝πâ╗Executive Team", "≡ƒ¢í∩╕Åπâ╗Management Team", "≡ƒôîπâ╗Head Administrator", "ΓÜû∩╕Åπâ╗Internal Affairs Director", "≡ƒÄû∩╕Åπâ╗Staff Director"],
+  STAFF: ["≡ƒÆ╝πâ╗Executive Team", "≡ƒ¢í∩╕Åπâ╗Management Team", "≡ƒôîπâ╗Head Administrator", "ΓÜû∩╕Åπâ╗Internal Affairs Director", "≡ƒÄû∩╕Åπâ╗Staff Director", "≡ƒö▒πâ╗Senior Administrator", "≡ƒº¡πâ╗Administrator", "≡ƒÄû∩╕Åπâ╗Senior Moderator", "≡ƒö¿πâ╗Moderator", "≡ƒº░πâ╗Trial Moderator", "≡ƒôïπâ╗Staff Assistant"],
+  SENIOR_STAFF: ["≡ƒÆ╝πâ╗Executive Team", "≡ƒ¢í∩╕Åπâ╗Management Team", "≡ƒôîπâ╗Head Administrator", "ΓÜû∩╕Åπâ╗Internal Affairs Director", "≡ƒÄû∩╕Åπâ╗Staff Director", "≡ƒö▒πâ╗Senior Administrator", "≡ƒº¡πâ╗Administrator", "≡ƒÄû∩╕Åπâ╗Senior Moderator", "≡ƒö¿πâ╗Moderator"],
+  IA: ["ΓÜû∩╕Åπâ╗Internal Affairs Director", "ΓÜû∩╕Åπâ╗Internal Affairs", "≡ƒöìπâ╗Investigation Team"],
+  MANAGEMENT: ["≡ƒææπâ╗Server Owner", "≡ƒÆÄπâ╗Co Owner", "≡ƒ¢á∩╕Åπâ╗Founder", "≡ƒîƒπâ╗Community Director", "≡ƒÆ╝πâ╗Executive Team", "≡ƒ¢í∩╕Åπâ╗Management Team"],
+  SESSION_ACCESS: ["≡ƒÄ¼πâ╗Session Host", "≡ƒÆ╝πâ╗Executive Team", "≡ƒ¢í∩╕Åπâ╗Management Team", "≡ƒôîπâ╗Head Administrator", "ΓÜû∩╕Åπâ╗Internal Affairs Director", "≡ƒÄû∩╕Åπâ╗Staff Director", "≡ƒö▒πâ╗Senior Administrator", "≡ƒº¡πâ╗Administrator", "≡ƒÄû∩╕Åπâ╗Senior Moderator", "≡ƒö¿πâ╗Moderator", "≡ƒº░πâ╗Trial Moderator", "≡ƒôïπâ╗Staff Assistant"],
+  LEO: ["≡ƒÜôπâ╗Police Chief", "≡ƒÜöπâ╗Sheriff", "≡ƒÜôπâ╗Law Enforcement"],
+  FIRE_EMS: ["≡ƒÜÆπâ╗Fire Chief", "≡ƒÜæπâ╗EMS Director", "≡ƒÜÆπâ╗Fire & Rescue", "≡ƒÜæπâ╗Emergency Medical Services"],
+  CIV: ["≡ƒÅ¢∩╕Åπâ╗Civilian Director", "≡ƒÅ¢∩╕Åπâ╗Civilian Operations"],
+  DOT: ["≡ƒ¢╗πâ╗DOT Supervisor", "≡ƒ¢╗πâ╗Department of Transportation"],
+  DEPT_COMMAND: ["≡ƒÜôπâ╗Police Chief", "≡ƒÜöπâ╗Sheriff", "≡ƒÜÆπâ╗Fire Chief", "≡ƒÜæπâ╗EMS Director", "≡ƒÅ¢∩╕Åπâ╗Civilian Director", "≡ƒ¢╗πâ╗DOT Supervisor"],
+  PUBLIC_ACCESS: ["Γ£àπâ╗Verified", "≡ƒÄ«πâ╗Member", "Γ¡Éπâ╗Active Member", "≡ƒîƒπâ╗Known Member", "≡ƒÅåπâ╗Veteran Member", "≡ƒÄëπâ╗Server Booster"],
+  PUNISHMENT: ["Γ¢öπâ╗Suspended", "≡ƒÜ½πâ╗Blacklisted"],
+  TICKET_SUPPORT: ["≡ƒÄ½πâ╗Ticket Support"],
+  PARTNERSHIP: ["≡ƒñ¥πâ╗Partnership Team"]
+};
+
+const REQUIRED_ROLES = [...new Set(Object.values(ROLE_GROUPS).flat())];
+const INFO_LOCKED = [CHANNELS.announcements, CHANNELS.serverInfo, CHANNELS.serverRules, CHANNELS.roleplayRules, CHANNELS.serverEvents, CHANNELS.importantLinks];
+const VERIFICATION = [CHANNELS.verification, CHANNELS.reactionRoles];
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function getRole(guild, name) {
+  return guild.roles.cache.find((role) => role.name === name) || null;
+}
+
+function getCategory(guild, name) {
+  return guild.channels.cache.find((channel) => channel.type === ChannelType.GuildCategory && channel.name === name) || null;
+}
+
+function getChannel(guild, name) {
+  return guild.channels.cache.find((channel) => channel.name === name && channel.type !== ChannelType.GuildCategory) || null;
+}
+
+function unique(values) {
+  return [...new Set(values.filter(Boolean))];
+}
+
+function roleNamesFromGroups(groups) {
+  return unique(groups.flatMap((group) => ROLE_GROUPS[group] || []));
+}
+
+function roleOverwrites(guild, roles, allowArray = [], denyArray = [], missingRoles) {
+  const result = [];
+  for (const name of roles) {
+    const role = getRole(guild, name);
+    if (!role) {
+      missingRoles.add(name);
+      continue;
+    }
+    result.push({ id: role.id, allow: allowArray, deny: denyArray });
+  }
+  return result;
+}
+
+function botOverwrite(guild) {
+  return {
+    id: guild.members.me.id,
+    allow: [P.ViewChannel, P.SendMessages, P.ManageChannels, P.ReadMessageHistory, P.UseApplicationCommands, P.ManageMessages, P.Connect, P.Speak],
+    deny: []
+  };
+}
+
+function publicBase(guild, missingRoles, options = {}) {
+  const everyoneDeny = options.everyoneDeny ?? [P.ViewChannel];
+  return [
+    { id: guild.roles.everyone.id, allow: options.everyoneAllow || [], deny: everyoneDeny },
+    ...roleOverwrites(guild, roleNamesFromGroups(["PUBLIC_ACCESS"]), options.publicAllow || [P.ViewChannel, P.SendMessages, P.ReadMessageHistory, P.UseApplicationCommands, P.AddReactions, P.AttachFiles, P.EmbedLinks], options.publicDeny || [], missingRoles),
+    ...roleOverwrites(guild, roleNamesFromGroups(["PUNISHMENT"]), options.punishAllow || [], options.punishDeny || [P.SendMessages, P.AddReactions, P.UseApplicationCommands, P.Connect, P.Speak], missingRoles),
+    ...roleOverwrites(guild, roleNamesFromGroups(["STAFF"]), options.staffAllow || [P.ViewChannel, P.SendMessages, P.ReadMessageHistory, P.ManageMessages, P.UseApplicationCommands], options.staffDeny || [], missingRoles),
+    botOverwrite(guild)
+  ];
+}
+
+function privateBase(guild, missingRoles, groups, extra = {}) {
+  return [
+    { id: guild.roles.everyone.id, allow: [], deny: [P.ViewChannel] },
+    ...roleOverwrites(guild, roleNamesFromGroups(["PUBLIC_ACCESS"]), [], [P.ViewChannel], missingRoles),
+    ...roleOverwrites(guild, roleNamesFromGroups(groups), extra.allow || [P.ViewChannel, P.SendMessages, P.ReadMessageHistory, P.ManageMessages, P.UseApplicationCommands], [], missingRoles),
+    botOverwrite(guild)
+  ];
+}
+
+function infoLocked(guild, missingRoles) {
+  return [
+    { id: guild.roles.everyone.id, allow: [P.ViewChannel, P.ReadMessageHistory], deny: [P.SendMessages, P.AddReactions] },
+    ...roleOverwrites(guild, roleNamesFromGroups(["PUBLIC_ACCESS"]), [P.ViewChannel, P.ReadMessageHistory], [P.SendMessages], missingRoles),
+    ...roleOverwrites(guild, roleNamesFromGroups(["PUNISHMENT"]), [P.ViewChannel, P.ReadMessageHistory], [P.SendMessages, P.AddReactions, P.UseApplicationCommands, P.Connect, P.Speak], missingRoles),
+    ...roleOverwrites(guild, roleNamesFromGroups(["STAFF"]), [P.ViewChannel, P.SendMessages, P.ReadMessageHistory, P.ManageMessages, P.UseApplicationCommands], [], missingRoles),
+    botOverwrite(guild)
+  ];
+}
+
+function verificationLocked(guild, missingRoles) {
+  return [
+    { id: guild.roles.everyone.id, allow: [P.ViewChannel, P.ReadMessageHistory, P.UseApplicationCommands], deny: [P.SendMessages, P.AddReactions] },
+    ...roleOverwrites(guild, roleNamesFromGroups(["PUBLIC_ACCESS"]), [P.ViewChannel, P.ReadMessageHistory, P.UseApplicationCommands], [P.SendMessages], missingRoles),
+    ...roleOverwrites(guild, roleNamesFromGroups(["PUNISHMENT"]), [P.ViewChannel, P.ReadMessageHistory], [P.SendMessages, P.AddReactions, P.UseApplicationCommands, P.Connect, P.Speak], missingRoles),
+    ...roleOverwrites(guild, roleNamesFromGroups(["STAFF"]), [P.ViewChannel, P.SendMessages, P.ReadMessageHistory, P.ManageMessages, P.UseApplicationCommands], [], missingRoles),
+    botOverwrite(guild)
+  ];
+}
+
+function readOnlyPublic(guild, missingRoles, extraSendGroups = []) {
+  return publicBase(guild, missingRoles, {
+    publicAllow: [P.ViewChannel, P.ReadMessageHistory, P.UseApplicationCommands, P.AddReactions],
+    publicDeny: [P.SendMessages],
+    staffAllow: [P.ViewChannel, P.SendMessages, P.ReadMessageHistory, P.ManageMessages, P.UseApplicationCommands]
+  }).concat(roleOverwrites(guild, roleNamesFromGroups(extraSendGroups), [P.ViewChannel, P.SendMessages, P.ReadMessageHistory, P.ManageMessages, P.UseApplicationCommands], [], missingRoles));
+}
+
+function departmentPrivate(guild, missingRoles, groups) {
+  return [
+    { id: guild.roles.everyone.id, allow: [], deny: [P.ViewChannel] },
+    ...roleOverwrites(guild, roleNamesFromGroups(["PUBLIC_ACCESS"]), [], [P.ViewChannel], missingRoles),
+    ...roleOverwrites(guild, roleNamesFromGroups(groups), [P.ViewChannel, P.SendMessages, P.ReadMessageHistory, P.UseApplicationCommands], [], missingRoles),
+    ...roleOverwrites(guild, roleNamesFromGroups(["STAFF", "MANAGEMENT"]), [P.ViewChannel, P.SendMessages, P.ReadMessageHistory, P.ManageMessages, P.UseApplicationCommands], [], missingRoles),
+    botOverwrite(guild)
+  ];
+}
+
+function voiceBase(guild, missingRoles) {
+  return [
+    { id: guild.roles.everyone.id, allow: [], deny: [P.ViewChannel] },
+    ...roleOverwrites(guild, roleNamesFromGroups(["PUBLIC_ACCESS"]), [P.ViewChannel, P.Connect, P.Speak], [], missingRoles),
+    ...roleOverwrites(guild, roleNamesFromGroups(["PUNISHMENT"]), [], [P.Connect, P.Speak], missingRoles),
+    ...roleOverwrites(guild, roleNamesFromGroups(["STAFF"]), [P.ViewChannel, P.Connect, P.Speak, P.MuteMembers, P.DeafenMembers, P.MoveMembers], [], missingRoles),
+    botOverwrite(guild)
+  ];
+}
+
+function buildOverwrites(guild, config, missingRoles) {
+  return config(guild, missingRoles);
+}
+
+async function applyOverwrites(channelOrCategory, overwrites) {
+  await channelOrCategory.permissionOverwrites.set(overwrites, "ERLC permission sync");
+}
+
+async function syncChildren(category) {
+  const children = category.children?.cache;
+  if (!children?.size) return;
+  for (const channel of children.values()) {
+    if (!channel.permissionsLocked) continue;
+    await channel.lockPermissions().catch(() => null);
+    await sleep(500);
+  }
+}
+
+function listText(items) {
+  const values = [...items].filter(Boolean);
+  if (!values.length) return "None";
+  return values.slice(0, 30).join("\n") + (values.length > 30 ? "\n+" + (values.length - 30) + " more" : "");
+}
+
+function summaryEmbed(summary) {
+  return new EmbedBuilder()
+    .setColor(summary.errors.length || summary.missingRoles.size || summary.missingCategories.size || summary.missingChannels.size ? COLORS.warn : COLORS.ok)
+    .setTitle("ERLC Channel Permissions Synced")
+    .setDescription("Only existing categories/channels were updated. No channels or roles were created/deleted/renamed.")
+    .addFields(
+      { name: "Categories Updated", value: listText(summary.categoriesUpdated), inline: true },
+      { name: "Channels Updated", value: listText(summary.channelsUpdated), inline: true },
+      { name: "Missing Roles", value: listText(summary.missingRoles), inline: false },
+      { name: "Missing Categories", value: listText(summary.missingCategories), inline: false },
+      { name: "Missing Channels", value: listText(summary.missingChannels), inline: false },
+      { name: "Errors", value: listText(summary.errors), inline: false }
+    )
+    .setTimestamp();
+}
+
+function categoryConfigs() {
+  return new Map([
+    [CATEGORIES.INFORMATION, infoLocked],
+    [CATEGORIES.SESSION, (guild, miss) => publicBase(guild, miss, { publicAllow: [P.ViewChannel, P.ReadMessageHistory], publicDeny: [P.SendMessages], staffAllow: [P.ViewChannel, P.SendMessages, P.ManageMessages, P.ReadMessageHistory] }).concat(roleOverwrites(guild, roleNamesFromGroups(["SESSION_ACCESS"]), [P.ViewChannel, P.SendMessages, P.ManageMessages, P.ReadMessageHistory], [], miss))],
+    [CATEGORIES.COMMUNITY, publicBase],
+    [CATEGORIES.ROLEPLAY, (guild, miss) => publicBase(guild, miss, { publicAllow: [P.ViewChannel, P.ReadMessageHistory], publicDeny: [], staffAllow: [P.ViewChannel, P.SendMessages, P.ReadMessageHistory, P.ManageMessages, P.UseApplicationCommands] })],
+    [CATEGORIES.DEPARTMENTS, (guild, miss) => privateBase(guild, miss, ["STAFF", "MANAGEMENT"])],
+    [CATEGORIES.SUPPORT, (guild, miss) => publicBase(guild, miss, { publicAllow: [P.ViewChannel, P.ReadMessageHistory, P.UseApplicationCommands], publicDeny: [], staffAllow: [P.ViewChannel, P.SendMessages, P.ManageMessages, P.ReadMessageHistory, P.UseApplicationCommands] })],
+    [CATEGORIES.STAFF, (guild, miss) => privateBase(guild, miss, ["STAFF", "SENIOR_STAFF"], { allow: [P.ViewChannel, P.SendMessages, P.ReadMessageHistory, P.UseApplicationCommands] }).concat(roleOverwrites(guild, roleNamesFromGroups(["SENIOR_STAFF"]), [P.ManageMessages], [], miss))],
+    [CATEGORIES.IA, (guild, miss) => privateBase(guild, miss, ["IA", "MANAGEMENT"])],
+    [CATEGORIES.MANAGEMENT, (guild, miss) => privateBase(guild, miss, ["MANAGEMENT", "OWNERSHIP"])],
+    [CATEGORIES.VOICE, voiceBase]
+  ]);
+}
+
+function channelConfigs() {
+  const map = new Map();
+  for (const name of INFO_LOCKED) map.set(name, infoLocked);
+  for (const name of VERIFICATION) map.set(name, verificationLocked);
+  for (const name of [CHANNELS.ssuVote]) map.set(name, (g, m) => readOnlyPublic(g, m, ["SESSION_ACCESS"]));
+  for (const name of [CHANNELS.sessionStart, CHANNELS.serverCode, CHANNELS.serverStatus, CHANNELS.shutdownNotices]) map.set(name, (g, m) => readOnlyPublic(g, m, ["SESSION_ACCESS"]));
+  for (const name of [CHANNELS.sessionLogs, CHANNELS.sessionAttendance]) map.set(name, (g, m) => privateBase(g, m, ["STAFF", "SESSION_ACCESS"]));
+  map.set(CHANNELS.giveaways, (g, m) => readOnlyPublic(g, m, ["STAFF"]));
+  for (const name of [CHANNELS.roleplayNews, CHANNELS.civilianInfo, CHANNELS.boloAlerts]) map.set(name, (g, m) => readOnlyPublic(g, m, name === CHANNELS.civilianInfo ? ["STAFF"] : ["STAFF", "SESSION_ACCESS"]));
+  for (const name of [CHANNELS.vehicleRegistration, CHANNELS.businessRegistration, CHANNELS.characterProfiles, CHANNELS.calls911, CHANNELS.courtCases, CHANNELS.generalChat, CHANNELS.media, CHANNELS.clips, CHANNELS.suggestions, CHANNELS.botCommands, CHANNELS.memes, CHANNELS.introductions]) map.set(name, publicBase);
+  map.set(CHANNELS.lawEnforcement, (g, m) => departmentPrivate(g, m, ["LEO"]));
+  map.set(CHANNELS.fireRescue, (g, m) => departmentPrivate(g, m, ["FIRE_EMS"]));
+  map.set(CHANNELS.emergencyMedical, (g, m) => departmentPrivate(g, m, ["FIRE_EMS"]));
+  map.set(CHANNELS.civilianOperations, (g, m) => departmentPrivate(g, m, ["CIV"]));
+  map.set(CHANNELS.dotOperations, (g, m) => departmentPrivate(g, m, ["DOT"]));
+  map.set(CHANNELS.departmentApplications, publicBase);
+  map.set(CHANNELS.departmentAnnouncements, (g, m) => [
+    { id: g.roles.everyone.id, allow: [], deny: [P.ViewChannel] },
+    ...roleOverwrites(g, roleNamesFromGroups(["LEO", "FIRE_EMS", "CIV", "DOT", "STAFF", "MANAGEMENT"]), [P.ViewChannel, P.ReadMessageHistory], [P.SendMessages], m),
+    ...roleOverwrites(g, roleNamesFromGroups(["DEPT_COMMAND", "STAFF", "MANAGEMENT"]), [P.ViewChannel, P.SendMessages, P.ReadMessageHistory, P.ManageMessages], [], m),
+    botOverwrite(g)
+  ]);
+  map.set(CHANNELS.openTicket, (g, m) => publicBase(g, m, { publicAllow: [P.ViewChannel, P.ReadMessageHistory, P.UseApplicationCommands], publicDeny: [P.SendMessages], staffAllow: [P.ViewChannel, P.SendMessages, P.ManageMessages, P.ReadMessageHistory] }));
+  map.set(CHANNELS.generalSupport, (g, m) => publicBase(g, m, { publicAllow: [P.ViewChannel, P.ReadMessageHistory], publicDeny: [P.SendMessages], staffAllow: [P.ViewChannel, P.SendMessages, P.ManageMessages, P.ReadMessageHistory] }));
+  for (const name of [CHANNELS.partnerships, CHANNELS.banAppeals, CHANNELS.staffApplications, CHANNELS.playerReports]) map.set(name, publicBase);
+  map.set(CHANNELS.partnerships, (g, m) => publicBase(g, m).concat(roleOverwrites(g, roleNamesFromGroups(["PARTNERSHIP"]), [P.ManageMessages], [], m)));
+  map.set(CHANNELS.ticketTranscripts, (g, m) => privateBase(g, m, ["STAFF"]));
+  for (const name of [CHANNELS.staffChat, CHANNELS.staffInformation, CHANNELS.staffPoints, CHANNELS.staffActivity]) map.set(name, (g, m) => privateBase(g, m, ["STAFF", "SENIOR_STAFF"]));
+  map.set(CHANNELS.staffAnnouncements, (g, m) => privateBase(g, m, ["STAFF"], { allow: [P.ViewChannel, P.ReadMessageHistory] }).concat(roleOverwrites(g, roleNamesFromGroups(["SENIOR_STAFF", "MANAGEMENT"]), [P.ViewChannel, P.SendMessages, P.ReadMessageHistory, P.ManageMessages], [], m)));
+  for (const name of [CHANNELS.staffLogs, CHANNELS.moderationLogs]) map.set(name, (g, m) => privateBase(g, m, ["SENIOR_STAFF", "MANAGEMENT"]));
+  map.set(CHANNELS.ticketLogs, (g, m) => privateBase(g, m, ["STAFF", "TICKET_SUPPORT"]));
+  for (const name of [CHANNELS.iaChat, CHANNELS.iaCases, CHANNELS.staffReports, CHANNELS.investigations, CHANNELS.iaAnnouncements, CHANNELS.iaLogs]) map.set(name, (g, m) => privateBase(g, m, ["IA", "MANAGEMENT"]));
+  for (const name of [CHANNELS.managementChat, CHANNELS.managementAnnouncements, CHANNELS.serverStatistics, CHANNELS.managementLogs, CHANNELS.staffRecords, CHANNELS.serverPlanning, CHANNELS.privateDiscussion]) map.set(name, (g, m) => privateBase(g, m, ["MANAGEMENT", "OWNERSHIP"]));
+  map.set(CHANNELS.generalVc, voiceBase);
+  map.set(CHANNELS.patrolVc, (g, m) => privateBase(g, m, ["LEO", "SESSION_ACCESS", "STAFF", "MANAGEMENT"], { allow: [P.ViewChannel, P.Connect, P.Speak] }));
+  map.set(CHANNELS.fireEmsVc, (g, m) => privateBase(g, m, ["FIRE_EMS", "SESSION_ACCESS", "STAFF", "MANAGEMENT"], { allow: [P.ViewChannel, P.Connect, P.Speak] }));
+  map.set(CHANNELS.staffVc, (g, m) => privateBase(g, m, ["STAFF", "MANAGEMENT"], { allow: [P.ViewChannel, P.Connect, P.Speak] }));
+  map.set(CHANNELS.managementVc, (g, m) => privateBase(g, m, ["MANAGEMENT", "OWNERSHIP"], { allow: [P.ViewChannel, P.Connect, P.Speak] }));
+  map.set(CHANNELS.interviewRoom, (g, m) => [
+    { id: g.roles.everyone.id, allow: [], deny: [P.ViewChannel] },
+    ...roleOverwrites(g, roleNamesFromGroups(["PUBLIC_ACCESS"]), [P.ViewChannel], [P.Connect], m),
+    ...roleOverwrites(g, roleNamesFromGroups(["STAFF", "MANAGEMENT"]), [P.ViewChannel, P.Connect, P.Speak, P.MoveMembers], [], m),
+    botOverwrite(g)
+  ]);
+  map.set(CHANNELS.afk, (g, m) => publicBase(g, m, { publicAllow: [P.ViewChannel, P.Connect], publicDeny: [P.Speak], staffAllow: [P.ViewChannel, P.Connect, P.MoveMembers] }));
+  return map;
+}
+
+async function runFix(interaction) {
+  await interaction.deferReply({ flags: 64 });
+  const summary = {
+    categoriesUpdated: new Set(),
+    channelsUpdated: new Set(),
+    missingRoles: new Set(),
+    missingCategories: new Set(),
+    missingChannels: new Set(),
+    errors: new Set()
+  };
+
+  if (!interaction.member?.permissions?.has(P.Administrator)) {
+    await interaction.editReply({ embeds: [new EmbedBuilder().setColor(COLORS.error).setTitle("Administrator Required").setDescription("You need Administrator permission to run this command.")] });
+    return;
+  }
+
+  const guild = interaction.guild;
+  const botMember = guild.members.me || await guild.members.fetchMe();
+  if (!botMember.permissions.has(P.ManageChannels)) {
+    await interaction.editReply({ embeds: [new EmbedBuilder().setColor(COLORS.error).setTitle("Missing Bot Permission").setDescription("I need **Manage Channels** before I can apply permission overwrites.")] });
+    return;
+  }
+
+  await guild.roles.fetch().catch(() => null);
+  await guild.channels.fetch().catch(() => null);
+
+  for (const roleName of REQUIRED_ROLES) {
+    if (!getRole(guild, roleName)) summary.missingRoles.add(roleName);
+  }
+  for (const categoryName of Object.values(CATEGORIES)) {
+    if (!getCategory(guild, categoryName)) summary.missingCategories.add(categoryName);
+  }
+  for (const channelName of Object.values(CHANNELS)) {
+    if (!getChannel(guild, channelName)) summary.missingChannels.add(channelName);
+  }
+
+  await interaction.editReply({ embeds: [new EmbedBuilder().setColor(COLORS.working).setTitle("ERLC Permission Sync").setDescription("Applying category permission overwrites first...")] });
+
+  for (const [categoryName, config] of categoryConfigs()) {
+    const category = getCategory(guild, categoryName);
+    if (!category) continue;
+    try {
+      await applyOverwrites(category, buildOverwrites(guild, config, summary.missingRoles));
+      summary.categoriesUpdated.add(categoryName);
+      await syncChildren(category);
+      await sleep(500);
+    } catch (error) {
+      summary.errors.add(categoryName + " ΓÇö " + error.message);
+    }
+  }
+
+  await interaction.editReply({ embeds: [new EmbedBuilder().setColor(COLORS.working).setTitle("ERLC Permission Sync").setDescription("Applying channel-specific overwrites...")] });
+
+  for (const [channelName, config] of channelConfigs()) {
+    const channel = getChannel(guild, channelName);
+    if (!channel) continue;
+    try {
+      await applyOverwrites(channel, buildOverwrites(guild, config, summary.missingRoles));
+      summary.channelsUpdated.add(channelName);
+      await sleep(500);
+    } catch (error) {
+      summary.errors.add(channelName + " ΓÇö " + error.message);
+    }
+  }
+
+  await interaction.editReply({ embeds: [summaryEmbed(summary)] });
+}
+
+module.exports = {
+  data: new SlashCommandBuilder()
+    .setName("fix-erlc-channel-permissions")
+    .setDescription("Fix only existing ERLC category/channel permission overwrites.")
+    .setDefaultMemberPermissions(P.Administrator)
+    .setDMPermission(false),
+
+  async execute(interaction) {
+    await runFix(interaction);
+  }
+};
+const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
+const { runRoleOrderFix } = require("../../systems/erlc-role-manager");
+
+module.exports = {
+  data: new SlashCommandBuilder()
+    .setName("fix-erlc-role-order")
+    .setDescription("Reapply the ERLC role hierarchy order without touching channels.")
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+    .setDMPermission(false),
+
+  async execute(interaction) {
+    await runRoleOrderFix(interaction);
+  }
+};
+const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
+const { runRoleSetup } = require("../../systems/erlc-role-manager");
+
+module.exports = {
+  data: new SlashCommandBuilder()
+    .setName("setup-erlc-roles")
+    .setDescription("Create or sync only the ERLC role hierarchy.")
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+    .setDMPermission(false),
+
+  async execute(interaction) {
+    await runRoleSetup(interaction, { createMissing: true });
+  }
+};
+const { PermissionFlagsBits } = require("discord.js");
+
+const MAX_PURGE = 500;
+const BULK_DELETE_MAX_AGE = 14 * 24 * 60 * 60 * 1000;
+const OLD_DELETE_DELAY_MS = 125;
+
+function parseAmount(args) {
+  const amount = Number.parseInt(args[0], 10);
+  if (!Number.isInteger(amount) || amount < 1) {
+    return null;
+  }
+  return Math.min(amount, MAX_PURGE);
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function isPinned(message) {
+  return Boolean(message.pinned);
+}
+
+function isBulkDeletable(message) {
+  return Date.now() - message.createdTimestamp < BULK_DELETE_MAX_AGE && !isPinned(message);
+}
+
+function isOldSingleDeletable(message) {
+  return !isPinned(message) && !isBulkDeletable(message);
+}
+
+async function deleteOldMessages(messages) {
+  let deleted = 0;
+
+  for (const message of messages.values()) {
+    if (isPinned(message)) {
+      continue;
+    }
+
+    try {
+      await message.delete();
+      deleted += 1;
+      await sleep(OLD_DELETE_DELAY_MS);
+    } catch (error) {
+      if (error.code !== 10008) {
+        console.warn("Could not delete old message " + message.id + ": " + error.message);
+      }
+    }
+  }
+
+  return deleted;
+}
+
+async function fetchMessages(channel, amount, beforeId) {
+  return channel.messages.fetch({
+    limit: Math.min(amount, 100),
+    before: beforeId
+  });
+}
+
+module.exports = {
+  prefixName: "purge",
+  aliases: ["clear"],
+  async executePrefix(message, args) {
+    if (!message.member.permissions.has(PermissionFlagsBits.ManageMessages)) {
+      await message.channel.send("You need Manage Messages permission to use this command.");
+      return;
+    }
+
+    const botMember = message.guild.members.me;
+    if (!botMember.permissionsIn(message.channel).has(PermissionFlagsBits.ManageMessages)) {
+      await message.channel.send("I need Manage Messages permission in this channel.");
+      return;
+    }
+
+    const amount = parseAmount(args);
+    if (!amount) {
+      await message.channel.send("Usage: .purge <amount>");
+      return;
+    }
+
+    const progress = await message.channel.send("Purging messages...");
+    await message.delete().catch(() => null);
+
+    let remaining = amount;
+    let beforeId;
+    let deleted = 0;
+    let scanned = 0;
+    let pinnedSkipped = 0;
+
+    while (remaining > 0) {
+      const fetched = await fetchMessages(message.channel, remaining, beforeId);
+      if (fetched.size === 0) {
+        break;
+      }
+
+      scanned += fetched.size;
+      beforeId = fetched.last().id;
+
+      const pinned = fetched.filter(isPinned);
+      pinnedSkipped += pinned.size;
+
+      const bulkable = fetched.filter(isBulkDeletable);
+      const oldMessages = fetched.filter(isOldSingleDeletable);
+
+      if (bulkable.size > 0) {
+        const result = await message.channel.bulkDelete(bulkable, true);
+        deleted += result.size;
+      }
+
+      if (oldMessages.size > 0) {
+        deleted += await deleteOldMessages(oldMessages);
+      }
+
+      remaining -= fetched.size;
+    }
+
+    let summary = "Purged " + deleted + " message" + (deleted === 1 ? "" : "s") + ".";
+    if (pinnedSkipped > 0) {
+      summary += " Skipped " + pinnedSkipped + " pinned message" + (pinnedSkipped === 1 ? "" : "s") + ".";
+    }
+
+    let resultMessage = progress;
+    await progress.edit(summary).catch(async () => {
+      resultMessage = await message.channel.send(summary).catch(() => null);
+    });
+
+    setTimeout(() => {
+      resultMessage?.delete().catch(() => null);
+    }, 5000);
+
+    if (deleted === 0 && scanned > 0) {
+      console.warn("Purge scanned messages but none could be deleted.");
+    }
+  }
+};
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require("discord.js");
+
+const PAGE_SIZE = 20;
+const BRAND_COLOR = 0x0b1f4d;
+
+function cleanRoleName(role) {
+  return role.name === "@everyone" ? "@everyone" : role.name;
+}
+
+function getRoles(guild) {
+  return [...guild.roles.cache.values()]
+    .filter((role) => role.name !== "@everyone")
+    .sort((a, b) => b.position - a.position || a.name.localeCompare(b.name));
+}
+
+function clampPage(page, totalPages) {
+  const parsed = Number.parseInt(page, 10);
+  if (!Number.isFinite(parsed) || parsed < 1) return 1;
+  return Math.min(parsed, totalPages);
+}
+
+function formatRoleLine(role, index) {
+  const tags = [];
+  if (role.managed) tags.push("managed");
+  if (role.hoist) tags.push("displayed");
+  if (role.mentionable) tags.push("mentionable");
+  const suffix = tags.length ? " _" + tags.join(", ") + "_" : "";
+  return "**" + index + ".** " + role.toString() + " ΓÇó `" + cleanRoleName(role) + "` ΓÇó pos " + role.position + " ΓÇó " + role.members.size + " members" + suffix;
+}
+
+function buildRolesEmbed(guild, page = 1) {
+  const roles = getRoles(guild);
+  const totalPages = Math.max(1, Math.ceil(roles.length / PAGE_SIZE));
+  const safePage = clampPage(page, totalPages);
+  const start = (safePage - 1) * PAGE_SIZE;
+  const pageRoles = roles.slice(start, start + PAGE_SIZE);
+
+  const description = pageRoles.length
+    ? pageRoles.map((role, offset) => formatRoleLine(role, start + offset + 1)).join("\n")
+    : "No roles found.";
+
+  return new EmbedBuilder()
+    .setColor(BRAND_COLOR)
+    .setTitle("≡ƒ¢í∩╕Åπâ╗Server Roles")
+    .setDescription(description)
+    .addFields(
+      { name: "Server", value: guild.name, inline: true },
+      { name: "Roles", value: String(roles.length), inline: true },
+      { name: "Page", value: safePage + "/" + totalPages, inline: true }
+    )
+    .setFooter({ text: "Use /server-roles page:" + Math.min(safePage + 1, totalPages) + " for the next page." })
+    .setTimestamp();
+}
+
+async function sendServerRoles(target, page) {
+  const guild = target.guild;
+  const embed = buildRolesEmbed(guild, page);
+
+  if (target.reply) {
+    await target.reply({ embeds: [embed], flags: 64 });
+    return;
+  }
+
+  await target.channel.send({ embeds: [embed] });
+}
+
+module.exports = {
+  data: new SlashCommandBuilder()
+    .setName("server-roles")
+    .setDescription("Show the roles in this server.")
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
+    .addIntegerOption((option) =>
+      option
+        .setName("page")
+        .setDescription("Page number to view.")
+        .setMinValue(1)
+        .setRequired(false)
+    ),
+
+  buildRolesEmbed,
+  async execute(interaction) {
+    const page = interaction.options.getInteger("page") || 1;
+    await sendServerRoles(interaction, page);
+  },
+
+  async handlePrefix(message, args) {
+    const page = args[0] || 1;
+    await sendServerRoles(message, page);
+  }
+};
+const { baseEmbed } = require("../utils/embed-theme");
+
+const UPDATE_MS = 30_000;
+
+function buildStatusEmbed(guild) {
+  const channels = guild.channels.cache;
+  const textChannels = channels.filter((channel) => channel.isTextBased()).size;
+  const voiceChannels = channels.filter((channel) => channel.isVoiceBased()).size;
+  const categories = channels.filter((channel) => channel.type === 4).size;
+  const createdUnix = Math.floor(guild.createdTimestamp / 1000);
+  const refreshedUnix = Math.floor(Date.now() / 1000);
+
+  return baseEmbed(guild)
+    .setAuthor({
+      name: guild.name + " Status",
+      iconURL: guild.iconURL({ size: 128 }) || undefined
+    })
+    .setDescription("Live Discord server overview. Refreshes every **30 seconds**.")
+    .addFields(
+      {
+        name: "Community",
+        value: [
+          "Members: **" + (guild.memberCount || 0) + "**",
+          "Boosts: **" + (guild.premiumSubscriptionCount || 0) + "**",
+          "Roles: **" + guild.roles.cache.size + "**"
+        ].join("\n"),
+        inline: true
+      },
+      {
+        name: "Channels",
+        value: [
+          "Text: **" + textChannels + "**",
+          "Voice: **" + voiceChannels + "**",
+          "Categories: **" + categories + "**"
+        ].join("\n"),
+        inline: true
+      },
+      {
+        name: "Details",
+        value: [
+          "Created: <t:" + createdUnix + ":D>",
+          "Updated: <t:" + refreshedUnix + ":R>",
+          "ID: `" + guild.id + "`"
+        ].join("\n"),
+        inline: false
+      }
+    );
+}
+
+async function updateLiveMessage(statusMessage, guild, key, liveStatusMessages) {
+  try {
+    await statusMessage.edit({ embeds: [buildStatusEmbed(guild)] });
+  } catch (error) {
+    clearInterval(liveStatusMessages.get(key)?.interval);
+    liveStatusMessages.delete(key);
+    console.error("Stopped live status updater:", error.message);
+  }
+}
+
+module.exports = {
+  prefixName: "status",
+  aliases: ["serverstatus", "server-status", "server"],
+  async executePrefix(message, liveStatusMessages) {
+    const key = message.channel.id;
+    const existing = liveStatusMessages.get(key);
+    if (existing) {
+      clearInterval(existing.interval);
+      liveStatusMessages.delete(key);
+      await existing.message.delete().catch(() => null);
+    }
+
+    const statusMessage = await message.channel.send({
+      embeds: [buildStatusEmbed(message.guild)]
+    });
+
+    const interval = setInterval(() => {
+      updateLiveMessage(statusMessage, message.guild, key, liveStatusMessages);
+    }, UPDATE_MS);
+
+    liveStatusMessages.set(key, { message: statusMessage, interval });
+  }
+};
+const { PermissionFlagsBits, SlashCommandBuilder } = require("discord.js");
+const { sendTicketPanel, isStaff, CONFIG } = require("../systems/ticket-system");
+
+module.exports = {
+  data: new SlashCommandBuilder()
+    .setName("ticket-panel")
+    .setDescription("Send the City of Angels ticket panel.")
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
+
+  async execute(interaction) {
+    if (!interaction.guild || !interaction.channel?.isTextBased()) {
+      await interaction.reply({ content: "Run this inside a server text channel.", flags: 64 });
+      return;
+    }
+    if (!isStaff(interaction.member)) {
+      await interaction.reply({ content: "Only staff can send the ticket panel.", flags: 64 });
+      return;
+    }
+    await sendTicketPanel(interaction.channel);
+    const warnings = [];
+    if (!CONFIG.STAFF_ROLE_ID) warnings.push("TICKET_STAFF_ROLE_ID is not set, so Admin/Manage Channels users count as staff.");
+    if (!CONFIG.TICKET_LOG_CHANNEL_ID) warnings.push("TICKET_LOG_CHANNEL_ID is not set, so ticket logs will not send.");
+    await interaction.reply({ content: "Ticket panel sent." + (warnings.length ? "\\n\\n" + warnings.map((w) => "Warning: " + w).join("\\n") : ""), flags: 64 });
+  }
+};
+require("dotenv").config();
+
+module.exports = {
+  token: process.env.DISCORD_TOKEN || "",
+  clientId: process.env.CLIENT_ID || "",
+  guildId: process.env.GUILD_ID || "",
+  prefix: process.env.PREFIX || ".",
+  serverName: process.env.SERVER_NAME || "City of Angels",
+  welcomeChannelId: process.env.WELCOME_CHANNEL_ID || "",
+  verifyUrl: process.env.VERIFY_URL || "",
+  rulesChannelId: process.env.RULES_CHANNEL_ID || "",
+  levelUpChannelId: process.env.LEVEL_UP_CHANNEL_ID || ""
+};
+const fs = require("fs");
+const path = require("path");
+
+const erlcLogs = require("./erlc-session-logs");
+
+const {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ContainerBuilder,
+  EmbedBuilder,
+  MessageFlags,
+  PermissionFlagsBits,
+  SeparatorBuilder,
+  SeparatorSpacingSize,
+  TextDisplayBuilder
+} = require("discord.js");
+
+const DATA_DIR = path.join(__dirname, "..", "data");
+const SESSION_DATA_FILE = path.join(DATA_DIR, "sessions.json");
+const SESSION_BRAND = process.env.SESSION_BRAND || "City of Angels";
+const SESSION_FOOTER = SESSION_BRAND + " ΓÇó Session Management";
+const activeSessions = new Map();
+loadSessions();
+
+function ensureDataDir() {
+  if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+  }
+}
+
+function saveSessions() {
+  ensureDataDir();
+  const sessions = {};
+
+  for (const [key, session] of activeSessions.entries()) {
+    sessions[key] = {
+      ...session,
+      attending: Array.from(session.attending),
+      notAttending: Array.from(session.notAttending)
+    };
+  }
+
+  fs.writeFileSync(SESSION_DATA_FILE, JSON.stringify({ sessions }, null, 2));
+}
+
+function loadSessions() {
+  ensureDataDir();
+  if (!fs.existsSync(SESSION_DATA_FILE)) {
+    return;
+  }
+
+  try {
+    const data = JSON.parse(fs.readFileSync(SESSION_DATA_FILE, "utf8"));
+    for (const [key, session] of Object.entries(data.sessions || {})) {
+      activeSessions.set(key, {
+        ...session,
+        attending: new Set(session.attending || []),
+        notAttending: new Set(session.notAttending || [])
+      });
+    }
+  } catch (error) {
+    console.error("Could not load saved sessions:", error.message);
+  }
+}
+
+function staffCheck(message) {
+  return message.member.permissions.has(PermissionFlagsBits.ManageGuild);
+}
+
+function makeSessionId() {
+  return Date.now().toString(36);
+}
+
+function sessionKey(guildId) {
+  return guildId;
+}
+
+function progressBar(value, total) {
+  const slots = 10;
+  const safeTotal = Math.max(0, Number(total) || 0);
+  if (!safeTotal) {
+    return "`ΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæ` **0%**";
+  }
+
+  const ratio = Math.max(0, Math.min(1, value / safeTotal));
+  const percent = Math.round(ratio * 100);
+  const filled = Math.max(0, Math.min(slots, Math.round(ratio * slots)));
+  return "`" + "Γûê".repeat(filled) + "Γûæ".repeat(slots - filled) + "` **" + percent + "%**";
+}
+
+function voteStatusLine(session) {
+  if (session.endedAt) return "Closed";
+  if (session.startedAt) return "Active";
+  return "Active";
+}
+
+function compactStats(session) {
+  const total = session.attending.size + session.notAttending.size;
+  return [
+    "Γ£à **Ready:** " + session.attending.size,
+    "Γ¥î **Out:** " + session.notAttending.size,
+    "≡ƒôè **Total:** " + total
+  ].join("\n");
+}
+
+function voteBadge(session) {
+  if (session.startedAt) return "`LIVE`";
+  if (session.endedAt) return "`CLOSED`";
+  return "`VOTE OPEN`";
+}
+
+function memberLine(ids, emptyText) {
+  const list = Array.from(ids).map((id) => "<@" + id + ">");
+  return list.length ? list.join("  ") : emptyText;
+}
+
+function statusPill(label) {
+  return "`" + label + "`";
+}
+
+function mentionList(ids, emptyText) {
+  const list = Array.from(ids).map((id, index) => "**" + (index + 1) + ".** <@" + id + ">");
+  return list.length ? list.join("\n") : emptyText;
+}
+
+function sessionSummary(session) {
+  const total = session.attending.size + session.notAttending.size;
+  return {
+    total,
+    ready: session.attending.size,
+    out: session.notAttending.size,
+    status: voteStatusLine(session)
+  };
+}
+
+function compactEmbed(color, title, description) {
+  return new EmbedBuilder()
+    .setColor(color)
+    .setTitle(title)
+    .setDescription(description)
+    .setFooter({ text: SESSION_FOOTER })
+    .setTimestamp();
+}
+
+function sessionHelpEmbed() {
+  return compactEmbed(
+    0x2f6bff,
+    "City of Angels Sessions",
+    [
+      "**.session vote** - open a patrol vote",
+      "**.session start** - start the active session",
+      "**.session end** - close and save attendance",
+      "**.session status** - view the current session",
+      "**.session list** - show ready/out voters"
+    ].join("\n")
+  );
+}
+
+function sessionStatusEmbed(session) {
+  if (!session) {
+    return compactEmbed(0x95a5a6, "No Active Session", "Start one with **.session vote**.");
+  }
+
+  const summary = sessionSummary(session);
+  return compactEmbed(
+    session.startedAt ? 0x2f6bff : 0x2ecc71,
+    "City of Angels Session Status",
+    [
+      "**Host:** <@" + session.hostId + ">  ΓÇó  **Status:** " + summary.status,
+      "**Votes:** Γ£à " + summary.ready + " Ready  ΓÇó  Γ¥î " + summary.out + " Out  ΓÇó  ≡ƒôè " + summary.total + " Total",
+      "**Readiness:** " + progressBar(summary.ready, summary.total)
+    ].join("\n")
+  );
+}
+
+function sessionListEmbed(session) {
+  if (!session) {
+    return compactEmbed(0x95a5a6, "No Active Session", "There is no active vote list.");
+  }
+
+  return compactEmbed(
+    0x2f6bff,
+    "Session Vote List",
+    [
+      "**Ready:** " + memberLine(session.attending, "None yet."),
+      "**Out:** " + memberLine(session.notAttending, "None yet.")
+    ].join("\n")
+  );
+}
+
+function buildVoteContainer(session) {
+  const totalVotes = session.attending.size + session.notAttending.size;
+  const accent = session.endedAt ? 0x2b2d31 : session.startedAt ? 0xed4245 : 0x0f8f4d;
+
+  const container = new ContainerBuilder()
+    .setAccentColor(accent)
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        "## ≡ƒôï City of Angels Session Vote\n" +
+        "**Hosted by:** <@" + session.hostId + ">\n" +
+        "**Server:** City of Angels"
+      )
+    )
+    .addSeparatorComponents(makeSmallSeparator())
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        "**Roster**\n" +
+          compactStats(session)
+      )
+    )
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        "**Readiness**\n" +
+          progressBar(session.attending.size, totalVotes)
+      )
+    )
+    .addSeparatorComponents(makeSmallSeparator());
+
+  container.addActionRowComponents(voteRows(session)[0]);
+
+  container.addSeparatorComponents(makeSmallSeparator());
+  container.addTextDisplayComponents(
+    new TextDisplayBuilder().setContent("-# City of Angels ΓÇó Session Management")
+  );
+
+  return container;
+}
+
+
+function attendingMentionIds(session) {
+  return Array.from(session.attending || []).filter((id) => /^\d+$/.test(id));
+}
+
+function attendingPingText(session) {
+  const ids = attendingMentionIds(session);
+  return ids.length ? ids.map((id) => "<@" + id + ">").join(" ") : "No attendees to ping.";
+}
+
+function makeSmallSeparator() {
+  return new SeparatorBuilder()
+    .setDivider(true)
+    .setSpacing(SeparatorSpacingSize.Small);
+}
+
+function buildStartContainer(session) {
+  const gameCode = process.env.SESSION_GAME_CODE || "CityAngels";
+  const serverOwner = process.env.SESSION_SERVER_OWNER || "Preston";
+  const pinged = session.attending.size ? attendingPingText(session) : "No attendees yet.";
+
+  return new ContainerBuilder()
+    .setAccentColor(0x1f6feb)
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        "## ≡ƒÜª City of Angels Session Started\n" +
+        "**Session is now open. Join up and begin patrol.**"
+      )
+    )
+    .addSeparatorComponents(makeSmallSeparator())
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        "**≡ƒÄ« Server**\n" +
+          "> **Code:** `" + gameCode + "`\n" +
+          "> **Owner:** " + serverOwner
+      )
+    )
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        "**Γ£à Attendance**\n" +
+          "> **Ready:** " + session.attending.size + "\n" +
+          "> **Pinged:** " + pinged
+      )
+    )
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        "**≡ƒÜô Patrol Notice**\n" +
+          "> Realistic scenes\n" +
+          "> Clean comms\n" +
+          "> Follow staff direction"
+      )
+    )
+    .addSeparatorComponents(makeSmallSeparator())
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent("-# City of Angels ΓÇó Active Patrol")
+    );
+}
+
+
+function sessionMentionIds(session, extraIds = []) {
+  return Array.from(new Set([...extraIds, ...attendingMentionIds(session)].filter((id) => /^\d+$/.test(id))));
+}
+
+function mentionContent(ids) {
+  return ids.length ? ids.map((id) => "<@" + id + ">").join(" ") : "";
+}
+
+async function sendCleanPingEmbed(channel, pingIds, payload) {
+  const sent = await channel.send({
+    ...payload,
+    content: mentionContent(pingIds),
+    allowedMentions: {
+      parse: [],
+      users: pingIds
+    }
+  });
+
+  if (pingIds.length) {
+    setTimeout(() => {
+      sent.edit({ content: "", allowedMentions: { parse: [] } }).catch(() => null);
+    }, 1200);
+  }
+
+  return sent;
+}
+
+async function sendSessionStarted(channel, session) {
+  const attendingIds = attendingMentionIds(session);
+
+  await channel.send({
+    flags: MessageFlags.IsComponentsV2,
+    components: [buildStartContainer(session)],
+    allowedMentions: {
+      users: attendingIds,
+      roles: [],
+      parse: []
+    }
+  });
+
+  await erlcLogs.logSessionStarted(channel.guild, session);
+  erlcLogs.startSessionMonitor(channel.client, channel.guild, session);
+}
+
+async function refreshVoteMessage(guild, session) {
+  if (!session.voteMessageId || !session.channelId) {
+    return;
+  }
+
+  const channel = guild.channels.cache.get(session.channelId);
+  if (!channel || !channel.isTextBased()) {
+    return;
+  }
+
+  const voteMessage = await channel.messages.fetch(session.voteMessageId).catch(() => null);
+  if (!voteMessage) {
+    return;
+  }
+
+  await voteMessage.edit({
+    content: "",
+    embeds: [],
+    flags: MessageFlags.IsComponentsV2,
+    components: [buildVoteContainer(session)],
+    allowedMentions: {
+      users: sessionMentionIds(session, [session.hostId]),
+      roles: [],
+      parse: []
+    }
+  });
+}
+
+function shouldAutoStartSession(session) {
+  return !session.startedAt && session.attending.size >= 1;
+}
+
+function buildEndContainer(message, session) {
+  const attendance = memberLine(session.attending, "No attendance logged.");
+  const totalVotes = session.attending.size + session.notAttending.size;
+
+  return new ContainerBuilder()
+    .setAccentColor(0xed4245)
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        "## ≡ƒÅü City of Angels Session Closed\n" +
+        "**Session ended. Attendance has been saved.**"
+      )
+    )
+    .addSeparatorComponents(makeSmallSeparator())
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        "**≡ƒôï Report**\n" +
+          "> **Closed By:** " + message.author.toString() + "\n" +
+          "> **Attended:** " + session.attending.size + "\n" +
+          "> **Votes:** " + totalVotes
+      )
+    )
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        "**≡ƒæÑ Attendance**\n> " + attendance.slice(0, 3500)
+      )
+    )
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        "**≡ƒôª Closing Notice**\n" +
+          "> Reset scenes\n" +
+          "> Clear vehicles\n" +
+          "> Prepare for next patrol"
+      )
+    )
+    .addSeparatorComponents(makeSmallSeparator())
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent("-# City of Angels ΓÇó Session Closed")
+    );
+}
+
+
+function voteRows(session) {
+  const locked = Boolean(session.endedAt);
+  return [
+    new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId("session:attend:" + session.id)
+        .setLabel("Ready")
+        .setEmoji("Γ£à")
+        .setStyle(ButtonStyle.Success)
+        .setDisabled(locked),
+      new ButtonBuilder()
+        .setCustomId("session:decline:" + session.id)
+        .setLabel("Out")
+        .setEmoji("Γ¥î")
+        .setStyle(ButtonStyle.Danger)
+        .setDisabled(locked),
+      new ButtonBuilder()
+        .setCustomId("session:remove:" + session.id)
+        .setLabel("Clear")
+        .setEmoji("≡ƒº╣")
+        .setStyle(ButtonStyle.Secondary)
+        .setDisabled(locked)
+    )
+  ];
+}
+
+
+async function runSessionCommand(message, args) {
+  const subcommand = (args[0] || "help").toLowerCase();
+  const aliases = {
+    v: "vote",
+    s: "start",
+    e: "end",
+    close: "end",
+    stop: "end",
+    info: "status",
+    voters: "list",
+    roster: "list"
+  };
+  const action = aliases[subcommand] || subcommand;
+
+  if (!["help", "vote", "start", "end", "status", "list"].includes(action)) {
+    await message.channel.send({ embeds: [sessionHelpEmbed()], allowedMentions: { parse: [] } });
+    return;
+  }
+
+  if (action === "help") {
+    await message.channel.send({ embeds: [sessionHelpEmbed()], allowedMentions: { parse: [] } });
+    return;
+  }
+
+  const key = sessionKey(message.guild.id);
+  const session = activeSessions.get(key);
+
+  if (action === "status") {
+    await message.channel.send({ embeds: [sessionStatusEmbed(session)], allowedMentions: { parse: [] } });
+    return;
+  }
+
+  if (action === "list") {
+    await message.channel.send({
+      embeds: [sessionListEmbed(session)],
+      allowedMentions: {
+        users: session ? sessionMentionIds(session, [session.hostId]) : [],
+        roles: [],
+        parse: []
+      }
+    });
+    return;
+  }
+
+  if (!staffCheck(message)) {
+    await message.channel.send({
+      embeds: [compactEmbed(0xed4245, "Session Command Denied", "You need **Manage Server** to control sessions.")],
+      allowedMentions: { parse: [] }
+    });
+    return;
+  }
+
+  if (action === "vote") {
+    await startVote(message);
+    return;
+  }
+
+  if (action === "start") {
+    await startSession(message);
+    return;
+  }
+
+  await endSession(message);
+}
+
+async function startVote(message) {
+  const key = sessionKey(message.guild.id);
+  const session = {
+    id: makeSessionId(),
+    guildId: message.guild.id,
+    channelId: message.channel.id,
+    hostId: message.author.id,
+    attending: new Set(),
+    notAttending: new Set(),
+    voteMessageId: null,
+    startedAt: null
+  };
+
+  const existing = activeSessions.get(key);
+  if (existing && !existing.endedAt) {
+    await message.channel.send({
+      embeds: [sessionStatusEmbed(existing).setTitle("Session Already Open")],
+      allowedMentions: { parse: [] }
+    });
+    return;
+  }
+
+  activeSessions.set(key, session);
+  saveSessions();
+
+  const sent = await message.channel.send({
+    flags: MessageFlags.IsComponentsV2,
+    components: [buildVoteContainer(session)],
+    allowedMentions: {
+      users: [session.hostId],
+      roles: [],
+      parse: []
+    }
+  });
+
+  session.voteMessageId = sent.id;
+  saveSessions();
+}
+
+async function startSession(message) {
+  const key = sessionKey(message.guild.id);
+  let session = activeSessions.get(key);
+
+  if (!session) {
+    session = {
+      id: makeSessionId(),
+      guildId: message.guild.id,
+      channelId: message.channel.id,
+      hostId: message.author.id,
+      attending: new Set(),
+      notAttending: new Set(),
+      voteMessageId: null,
+      startedAt: null
+    };
+    activeSessions.set(key, session);
+    saveSessions();
+  }
+
+  session.startedAt = Date.now();
+  saveSessions();
+
+  await refreshVoteMessage(message.guild, session);
+  await sendSessionStarted(message.channel, session);
+}
+
+async function endSession(message) {
+  const key = sessionKey(message.guild.id);
+  const session = activeSessions.get(key);
+
+  if (!session) {
+    await message.channel.send({
+      embeds: [compactEmbed(0x95a5a6, "No Active Session", "There is no session to close.")],
+      allowedMentions: { parse: [] }
+    });
+    return;
+  }
+
+  const endPingIds = sessionMentionIds(session, [message.author.id]);
+  await message.channel.send({
+    flags: MessageFlags.IsComponentsV2,
+    components: [buildEndContainer(message, session)],
+    allowedMentions: {
+      users: endPingIds,
+      roles: [],
+      parse: []
+    }
+  });
+  await erlcLogs.logSessionEnded(message.guild, session);
+  erlcLogs.stopSessionMonitor(message.guild.id);
+  activeSessions.delete(key);
+  saveSessions();
+}
+
+async function updateVoteMessage(interaction, session) {
+  await interaction.message.edit({
+    content: "",
+    embeds: [],
+    flags: MessageFlags.IsComponentsV2,
+    components: [buildVoteContainer(session)],
+    allowedMentions: {
+      users: sessionMentionIds(session, [session.hostId]),
+      roles: [],
+      parse: []
+    }
+  });
+}
+
+async function handleInteraction(interaction) {
+  if (!interaction.isButton() || !interaction.customId.startsWith("session:")) {
+    return false;
+  }
+
+  const [, action, sessionId] = interaction.customId.split(":");
+  const session = activeSessions.get(sessionKey(interaction.guild.id));
+
+  if (!session || session.id !== sessionId) {
+    await interaction.reply({ content: "This session vote is no longer active.", flags: 64 });
+    return true;
+  }
+
+  if (action === "attend") {
+    await interaction.deferReply({ flags: 64 });
+
+    session.attending.add(interaction.user.id);
+    session.notAttending.delete(interaction.user.id);
+
+    const shouldStart = shouldAutoStartSession(session);
+    if (shouldStart) {
+      session.startedAt = Date.now();
+    }
+
+    saveSessions();
+    await updateVoteMessage(interaction, session);
+
+    if (shouldStart) {
+      await refreshVoteMessage(interaction.guild, session);
+      await interaction.editReply("Ready. Session started.");
+      erlcLogs.logVote(interaction, session, "attend").catch(() => null);
+      await sendSessionStarted(interaction.channel, session);
+      return true;
+    }
+
+    await interaction.editReply("Ready.");
+    erlcLogs.logVote(interaction, session, "attend").catch(() => null);
+    return true;
+  }
+
+  if (action === "decline") {
+    await interaction.deferReply({ flags: 64 });
+
+    session.notAttending.add(interaction.user.id);
+    session.attending.delete(interaction.user.id);
+    saveSessions();
+    await updateVoteMessage(interaction, session);
+    await interaction.editReply("Marked out.");
+    erlcLogs.logVote(interaction, session, "decline").catch(() => null);
+    return true;
+  }
+
+  if (action === "remove") {
+    await interaction.deferReply({ flags: 64 });
+
+    const canClear = interaction.user.id === session.hostId || interaction.member.permissions.has(PermissionFlagsBits.ManageGuild);
+    if (!canClear) {
+      await interaction.editReply("Only the host or staff can clear this vote.");
+      return true;
+    }
+
+    session.attending.clear();
+    session.notAttending.clear();
+    saveSessions();
+    await updateVoteMessage(interaction, session);
+    await interaction.editReply("Votes cleared.");
+    erlcLogs.logVote(interaction, session, "remove").catch(() => null);
+    return true;
+  }
+
+  if (action === "view") {
+    await interaction.deferReply({ flags: 64 });
+    await interaction.editReply({ embeds: [sessionListEmbed(session)] });
+    return true;
+  }
+
+  return true;
+}
+
+module.exports = {
+  runSessionCommand,
+  handleInteraction
+};
+
+
+========== /root/bots/bot3/src/commands/admin/setup.js ==========
+
+
+
+========== /root/bots/bot3/src/commands/admin/fix-erlc-channel-permissions.js ==========
+
+
+
+========== /root/bots/bot3/src/commands/admin/fix-erlc-role-order.js ==========
+
+
+
+========== /root/bots/bot3/src/commands/admin/setup-erlc-roles.js ==========
+
+
+
+========== /root/bots/bot3/src/commands/purge.js ==========
+
+
+
+========== /root/bots/bot3/src/commands/server-roles.js ==========
+
+
+
+========== /root/bots/bot3/src/commands/server-status.js ==========
+
+
+
+========== /root/bots/bot3/src/commands/ticket-panel.js ==========
+
+
+
+========== /root/bots/bot3/src/config.js ==========
+
+
+
+========== /root/bots/bot3/src/systems/session-system.js ==========
+
