@@ -136,6 +136,8 @@ function aliasHaystack(a) {
   if (typeof a === "string") return a;
   return `${a.name} ${a.description || ""}`;
 }
+
+function navLabel(cat) {
   return cat.label
     .replace(" Commands", "")
     .replace("Automatic ", "");
@@ -485,6 +487,7 @@ async function init() {
     if (!res.ok) throw new Error("Failed to load commands");
     state.data = await res.json();
   } catch (err) {
+    dismissBoot();
     document.getElementById("app").innerHTML = `<div class="empty" style="min-height:100vh;display:grid;place-items:center"><p>Couldn't load commands. ${esc(err.message)}</p></div>`;
     return;
   }
