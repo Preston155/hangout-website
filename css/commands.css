@@ -24,6 +24,7 @@
   --font: "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, sans-serif;
   --mono: "Cascadia Code", "Consolas", monospace;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --announce-h: 38px;
   --rgb-gradient: linear-gradient(
     90deg,
     #ff3b5c 0%,
@@ -40,7 +41,7 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 72px;
+  scroll-padding-top: calc(var(--announce-h) + 72px);
 }
 
 html, body {
@@ -54,6 +55,103 @@ html, body {
   -webkit-user-select: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  padding-top: var(--announce-h);
+}
+
+/* top announcement */
+.announce-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  height: var(--announce-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(43, 127, 255, 0.28);
+  background: rgba(10, 10, 12, 0.96);
+}
+
+.announce-bar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--rgb-gradient);
+  background-size: 400% 100%;
+  animation: rgb-shift 10s linear infinite;
+  opacity: 0.2;
+}
+
+.announce-bar::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 45%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14), transparent);
+  animation: announce-shine 3.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes announce-shine {
+  0% { transform: translateX(-130%); }
+  100% { transform: translateX(330%); }
+}
+
+.announce-bar__track {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: max-content;
+  animation: announce-marquee 22s linear infinite;
+}
+
+.announce-bar__text {
+  flex-shrink: 0;
+  padding: 0 3rem;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  background: var(--rgb-gradient);
+  background-size: 400% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: rgb-shift 6s linear infinite;
+}
+
+@keyframes announce-marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.announce-bar__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 860px) {
+  :root { --announce-h: 34px; }
+
+  .announce-bar__text {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    padding: 0 2rem;
+  }
 }
 
 #app { min-height: 100vh; }
@@ -277,8 +375,8 @@ body.is-ready .boot { display: none; }
 /* sidebar */
 .sidebar {
   position: sticky;
-  top: 0;
-  height: 100vh;
+  top: var(--announce-h);
+  height: calc(100vh - var(--announce-h));
   padding: 20px 12px;
   border-right: 1px solid var(--border);
   background: var(--surface);
@@ -553,7 +651,7 @@ body.is-ready .boot { display: none; }
 /* toolbar */
 .toolbar {
   position: sticky;
-  top: 0;
+  top: var(--announce-h);
   z-index: 40;
   display: flex;
   gap: 12px;
@@ -1148,7 +1246,7 @@ body.is-ready .boot { display: none; }
   .sidebar {
     position: fixed;
     left: 0;
-    top: 0;
+    top: var(--announce-h);
     z-index: 90;
     width: min(var(--sidebar-w), 82vw);
     transform: translateX(-100%);
@@ -1253,6 +1351,10 @@ body.is-ready .boot { display: none; }
   .modal__cmd--slash::before,
   .modal__cmd--prefix::before,
   .hero__label::before,
+  .announce-bar::before,
+  .announce-bar::after,
+  .announce-bar__track,
+  .announce-bar__text,
   .chip.active::after {
     animation: none !important;
   }
@@ -1263,12 +1365,17 @@ body.is-ready .boot { display: none; }
   .cmd-name--slash,
   .cmd-name--prefix,
   .modal__cmd--slash,
-  .modal__cmd--prefix {
+  .modal__cmd--prefix,
+  .announce-bar__text {
     background: none;
     color: var(--accent);
     -webkit-background-clip: unset;
     background-clip: unset;
     filter: none;
+  }
+
+  .announce-bar__track {
+    transform: none;
   }
 
   .cmd-name--prefix,
