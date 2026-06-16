@@ -342,6 +342,12 @@ function navLabel(cat) {
     .replace("Automatic ", "");
 }
 
+function catIcon(id) {
+  if (id === "all") return "◈";
+  const cat = state.data?.categories.find((c) => c.id === id);
+  return cat?.icon || "•";
+}
+
 function renderCard(cmd, catId) {
   const type = cmd.type || "system";
   const nameClass =
@@ -474,7 +480,7 @@ function buildToolbarHtml() {
       ${[["all", "All"], ["slash", "Slash"], ["prefix", "Prefix"], ["session", "Session"], ["systems", "Systems"]]
         .map(
           ([id, label]) =>
-            `<button class="chip${state.filter === id ? " active" : ""}" data-filter="${esc(id)}" type="button">${label}</button>`,
+            `<button class="chip chip--${esc(id)}${state.filter === id ? " active" : ""}" data-filter="${esc(id)}" type="button">${label}</button>`,
         )
         .join("")}
     </div>
@@ -488,12 +494,15 @@ function buildSectionsHtml() {
     .map((cat) => {
       const cmds = cat.commands.filter((c) => matches(c, q));
       if (!cmds.length) return "";
-      return `<section class="section" id="cat-${esc(cat.id)}">
+      return `<section class="section section--${esc(cat.id)}" id="cat-${esc(cat.id)}">
         <div class="section__head">
-          <h2>${esc(cat.label)}</h2>
+          <span class="section__icon" aria-hidden="true">${esc(cat.icon || "•")}</span>
+          <div class="section__titles">
+            <h2>${esc(cat.label)}</h2>
+            <p class="section__desc">${esc(cat.description)}</p>
+          </div>
           <span class="section__count">${cmds.length}</span>
         </div>
-        <p class="section__desc">${esc(cat.description)}</p>
         <div class="grid">${cmds.map((c) => renderCard(c, cat.id)).join("")}</div>
       </section>`;
     })
@@ -573,8 +582,9 @@ function render(opts = {}) {
           ${navLinks
             .map(
               ([id, label, count]) =>
-                `<button class="nav-link${state.view === "commands" && state.filter === id ? " active" : ""}" data-filter="${esc(id)}" type="button">
-                  <span class="nav-link__dot"></span>${esc(label)}
+                `<button class="nav-link nav-link--${esc(id)}${state.view === "commands" && state.filter === id ? " active" : ""}" data-filter="${esc(id)}" type="button">
+                  <span class="nav-link__icon" aria-hidden="true">${esc(catIcon(id))}</span>
+                  ${esc(label)}
                   <span class="nav-link__count">${count}</span>
                 </button>`,
             )
@@ -606,9 +616,9 @@ function render(opts = {}) {
               </div>
             </div>
             <div class="stats">
-              <div class="stat"><div class="stat__val">${counts.total}</div><div class="stat__label">commands</div></div>
-              <div class="stat"><div class="stat__val">${counts.slash}</div><div class="stat__label">slash</div></div>
-              <div class="stat"><div class="stat__val">${counts.prefix}</div><div class="stat__label">prefix</div></div>
+              <div class="stat stat--total"><div class="stat__val">${counts.total}</div><div class="stat__label">commands</div></div>
+              <div class="stat stat--slash"><div class="stat__val">${counts.slash}</div><div class="stat__label">slash</div></div>
+              <div class="stat stat--prefix"><div class="stat__val">${counts.prefix}</div><div class="stat__label">prefix</div></div>
             </div>
           </div>
         </header>
@@ -617,7 +627,7 @@ function render(opts = {}) {
         ${state.view === "admin" && state.adminAuth ? renderAdminMain() : `${buildToolbarHtml()}${sections || `<div class="empty"><p>No commands match that search.</p></div>`}`}
         </div>
 
-        <footer class="footer">Updated ${esc(state.data.updatedAt)} · Veltrix · City of Angels</footer>
+        <footer class="footer"><span class="footer__brand">Veltrix</span> · City of Angels · Updated ${esc(state.data.updatedAt)}</footer>
         </div>
       </main>
     </div>`;
