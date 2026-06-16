@@ -10,7 +10,7 @@
     <link rel="preload" href="data/bot-commands.json?v=13" as="fetch" crossorigin />
     <link rel="icon" href="assets/favicon-32.png?v=8" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="assets/veltrix-logo-256.webp?v=8" />
-    <link rel="stylesheet" href="css/commands.css?v=25" />
+    <link rel="stylesheet" href="css/commands.css?v=26" />
   </head>
   <body>
     <div class="announce-bar" role="status">
@@ -29,23 +29,43 @@
       </div>
       <div class="announce-bar__line" aria-hidden="true"></div>
     </div>
-    <div id="boot" class="boot" aria-hidden="true">
-      <picture>
-        <source srcset="assets/veltrix-logo-256.webp?v=8" type="image/webp" />
-        <img
-          class="boot__logo"
-          src="assets/veltrix-logo.png?v=8"
-          alt=""
-          width="80"
-          height="80"
-          fetchpriority="high"
-          decoding="sync"
-        />
-      </picture>
+    <div id="boot" class="boot" aria-live="polite" aria-busy="true" aria-label="Loading Veltrix">
+      <div class="boot__bg" aria-hidden="true">
+        <div class="boot__glow boot__glow--1"></div>
+        <div class="boot__glow boot__glow--2"></div>
+        <div class="boot__grid"></div>
+      </div>
+      <div class="boot__content">
+        <div class="boot__logo-wrap">
+          <picture>
+            <source srcset="assets/veltrix-logo-256.webp?v=8" type="image/webp" />
+            <img
+              class="boot__logo"
+              src="assets/veltrix-logo.png?v=8"
+              alt=""
+              width="112"
+              height="112"
+              fetchpriority="high"
+              decoding="sync"
+            />
+          </picture>
+        </div>
+        <div class="boot__brand">
+          <p class="boot__eyebrow">City of Angels</p>
+          <h1 class="boot__title"><span>Veltrix</span></h1>
+          <p class="boot__sub">Command reference</p>
+        </div>
+        <div class="boot__loader">
+          <div class="boot__progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div class="boot__progress-bar" id="bootProgress"></div>
+          </div>
+          <p class="boot__status" id="bootStatus">Loading commands…</p>
+        </div>
+      </div>
     </div>
     <div id="app"></div>
     <div id="toast" class="toast hidden" role="status"></div>
     <script src="js/admin-editor.js?v=4"></script>
-    <script src="js/app.js?v=19"></script>
+    <script src="js/app.js?v=20"></script>
   </body>
 </html>

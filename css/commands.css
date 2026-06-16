@@ -415,7 +415,7 @@ img {
   display: none;
 }
 
-/* instant logo boot (removed when app renders) */
+/* intro / loading screen */
 .boot {
   position: fixed;
   inset: 0;
@@ -423,10 +423,208 @@ img {
   display: grid;
   place-items: center;
   background: var(--bg);
-  transition: opacity 0.2s var(--ease), visibility 0.2s;
+  overflow: hidden;
+  transition: opacity 0.52s var(--ease), visibility 0.52s;
   -webkit-user-select: none;
   user-select: none;
   cursor: default;
+}
+
+.boot__bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.boot__glow {
+  position: absolute;
+  border-radius: 50%;
+  animation: boot-glow-drift 9s ease-in-out infinite;
+}
+
+.boot__glow--1 {
+  width: min(52vw, 420px);
+  height: min(52vw, 420px);
+  top: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(43, 127, 255, 0.22) 0%, transparent 68%);
+}
+
+.boot__glow--2 {
+  width: min(44vw, 360px);
+  height: min(44vw, 360px);
+  bottom: 12%;
+  right: 18%;
+  background: radial-gradient(circle, rgba(181, 107, 255, 0.16) 0%, transparent 70%);
+  animation-delay: -4s;
+}
+
+.boot__grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.35;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 45%, #000 20%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 45%, #000 20%, transparent 100%);
+}
+
+@keyframes boot-glow-drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(12px, -16px) scale(1.06); }
+}
+
+.boot__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  width: min(92vw, 360px);
+  padding: 24px;
+  text-align: center;
+  animation: boot-content-in 0.75s var(--ease) both;
+}
+
+@keyframes boot-content-in {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.boot__logo-wrap {
+  line-height: 0;
+  filter: drop-shadow(0 10px 28px rgba(43, 127, 255, 0.2));
+}
+
+.boot__logo {
+  width: 112px;
+  height: 112px;
+  object-fit: contain;
+  transform-origin: center center;
+  animation:
+    boot-logo-in 0.8s var(--ease) 0.1s both,
+    boot-logo-float 4.5s ease-in-out 0.95s infinite;
+}
+
+@keyframes boot-logo-in {
+  from { opacity: 0; transform: scale(0.82) rotate(-12deg); }
+  to { opacity: 1; transform: scale(1.35) rotate(0deg); }
+}
+
+@keyframes boot-logo-float {
+  0%, 100% { transform: scale(1.32) rotate(-8deg); }
+  50% { transform: scale(1.42) rotate(8deg); }
+}
+
+.boot__brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  animation: boot-content-in 0.75s var(--ease) 0.18s both;
+}
+
+.boot__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+
+.boot__eyebrow::before {
+  content: "";
+  width: 14px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--rgb-gradient);
+  background-size: 400% 100%;
+  animation: rgb-shift 3s linear infinite;
+}
+
+.boot__title {
+  font-size: clamp(2rem, 6vw, 2.6rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.boot__title span {
+  background: var(--rgb-gradient);
+  background-size: 400% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: rgb-shift 6s linear infinite;
+}
+
+.boot__sub {
+  font-size: 13px;
+  color: var(--dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.boot__loader {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+  animation: boot-content-in 0.75s var(--ease) 0.32s both;
+}
+
+.boot__progress {
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.boot__progress-bar {
+  width: 0%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--rgb-gradient);
+  background-size: 400% 100%;
+  animation: rgb-shift 4s linear infinite, boot-progress-fill 1.85s ease-out forwards;
+}
+
+@keyframes boot-progress-fill {
+  0% { width: 0%; }
+  55% { width: 62%; }
+  100% { width: 86%; }
+}
+
+.boot__status {
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+
+.boot.is-exiting .boot__content {
+  animation: boot-content-out 0.42s var(--ease) forwards;
+}
+
+.boot.is-exiting .boot__progress-bar {
+  animation: boot-progress-done 0.38s ease-out forwards;
+}
+
+@keyframes boot-content-out {
+  to { opacity: 0; transform: scale(1.03) translateY(-10px); }
+}
+
+@keyframes boot-progress-done {
+  to { width: 100%; }
 }
 
 .boot.is-done {
@@ -435,30 +633,19 @@ img {
   pointer-events: none;
 }
 
-.boot__logo {
-  width: 80px;
-  height: 80px;
-  object-fit: contain;
-  transform-origin: center center;
-  animation: logo-in 0.4s var(--ease) both;
-}
-
-@keyframes logo-in {
-  from { opacity: 0; transform: scale(1.15) rotate(-8deg); }
-  to { opacity: 1; transform: scale(1.35) rotate(0deg); }
-}
-
-@keyframes logo-sway {
-  0%, 100% { transform: scale(1.35) rotate(-6deg); }
-  50% { transform: scale(1.38) rotate(6deg); }
-}
-
-@keyframes logo-sway-sm {
-  0%, 100% { transform: scale(1.45) rotate(-4deg); }
-  50% { transform: scale(1.48) rotate(4deg); }
-}
-
 body.is-ready .boot { display: none; }
+
+@media (max-width: 860px) {
+  .boot__logo {
+    width: 96px;
+    height: 96px;
+  }
+
+  @keyframes boot-logo-float {
+    0%, 100% { transform: scale(1.28) rotate(-7deg); }
+    50% { transform: scale(1.36) rotate(7deg); }
+  }
+}
 
 /* layout */
 .shell {
@@ -1441,6 +1628,11 @@ body.is-ready .boot { display: none; }
   }
 
   .boot__logo,
+  .boot__title span,
+  .boot__eyebrow::before,
+  .boot__progress-bar,
+  .boot__glow,
+  .boot__content,
   .hero__logo,
   .sidebar__logo img,
   .sidebar__logo-img,
@@ -1487,6 +1679,17 @@ body.is-ready .boot { display: none; }
 
   .hero__logo {
     transform: scale(1.35) rotate(0deg);
+  }
+
+  .boot__logo {
+    transform: scale(1.35) rotate(0deg);
+  }
+
+  .boot__title span {
+    background: none;
+    color: var(--accent);
+    -webkit-background-clip: unset;
+    background-clip: unset;
   }
 
   .cmd-name--prefix,

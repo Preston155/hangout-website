@@ -15,6 +15,8 @@ const ADMIN_SESSION_KEY = "vx_admin";
 const ADMIN_PASS = "COARP";
 
 const LOGO_V = 8;
+const BOOT_MIN_MS = 1800;
+const bootStart = performance.now();
 
 function logoPicture(className, w, h, alt = "") {
   const q = `?v=${LOGO_V}`;
@@ -24,12 +26,45 @@ function logoPicture(className, w, h, alt = "") {
   </picture>`;
 }
 
+function setBootProgress(pct) {
+  const bar = document.getElementById("bootProgress");
+  const boot = document.getElementById("boot");
+  const rounded = Math.round(pct);
+  if (bar) bar.style.width = `${rounded}%`;
+  const progress = boot?.querySelector(".boot__progress");
+  progress?.setAttribute("aria-valuenow", String(rounded));
+}
+
 function dismissBoot() {
   const boot = document.getElementById("boot");
-  if (!boot) return;
-  boot.classList.add("is-done");
-  document.body.classList.add("is-ready");
-  setTimeout(() => boot.remove(), 220);
+  if (!boot || boot.dataset.dismissed === "1") return;
+
+  const finish = () => {
+    boot.dataset.dismissed = "1";
+    sessionStorage.setItem("vx_boot_done", "1");
+    setBootProgress(100);
+    const status = document.getElementById("bootStatus");
+    if (status) status.textContent = "Ready";
+    boot.classList.add("is-exiting");
+    boot.setAttribute("aria-busy", "false");
+    setTimeout(() => {
+      boot.classList.add("is-done");
+      document.body.classList.add("is-ready");
+      setTimeout(() => boot.remove(), 520);
+    }, 420);
+  };
+
+  if (sessionStorage.getItem("vx_boot_done") === "1") {
+    boot.dataset.dismissed = "1";
+    boot.classList.add("is-done");
+    document.body.classList.add("is-ready");
+    boot.remove();
+    return;
+  }
+
+  const elapsed = performance.now() - bootStart;
+  const wait = Math.max(0, BOOT_MIN_MS - elapsed);
+  setTimeout(finish, wait);
 }
 let revealObserver = null;
 let toolbarScrollHandler = null;
