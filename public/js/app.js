@@ -41,7 +41,6 @@ function dismissBoot() {
 
   const finish = () => {
     boot.dataset.dismissed = "1";
-    sessionStorage.setItem("vx_boot_done", "1");
     setBootProgress(100);
     boot.classList.add("is-exiting");
     boot.setAttribute("aria-busy", "false");
@@ -51,14 +50,6 @@ function dismissBoot() {
       setTimeout(() => boot.remove(), 380);
     }, 320);
   };
-
-  if (sessionStorage.getItem("vx_boot_done") === "1") {
-    boot.dataset.dismissed = "1";
-    boot.classList.add("is-done");
-    document.body.classList.add("is-ready");
-    boot.remove();
-    return;
-  }
 
   const elapsed = performance.now() - bootStart;
   const wait = Math.max(0, BOOT_MIN_MS - elapsed);
