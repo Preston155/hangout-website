@@ -643,6 +643,7 @@ body.is-ready .boot { display: none; }
 .hero__logo-wrap {
   flex-shrink: 0;
   line-height: 0;
+  filter: drop-shadow(0 8px 20px rgba(43, 127, 255, 0.12));
 }
 
 .hero__logo {
@@ -652,12 +653,19 @@ body.is-ready .boot { display: none; }
   transform-origin: center center;
   pointer-events: none;
   user-select: none;
-  animation: hero-logo-in 0.55s var(--ease) 0.05s both;
+  animation:
+    hero-logo-in 0.55s var(--ease) 0.05s both,
+    hero-logo-float 5.5s ease-in-out 0.65s infinite;
 }
 
 @keyframes hero-logo-in {
   from { opacity: 0; transform: scale(1.1) rotate(-10deg); }
   to { opacity: 1; transform: scale(1.35) rotate(0deg); }
+}
+
+@keyframes hero-logo-float {
+  0%, 100% { transform: scale(1.32) rotate(-9deg); }
+  50% { transform: scale(1.42) rotate(9deg); }
 }
 
 .hero__label {
@@ -1376,11 +1384,14 @@ body.is-ready .boot { display: none; }
   .hero__logo {
     width: 72px;
     height: 72px;
+    animation:
+      hero-logo-in 0.55s var(--ease) 0.05s both,
+      hero-logo-float-sm 5.5s ease-in-out 0.65s infinite;
   }
 
-  @keyframes logo-sway {
-    0%, 100% { transform: scale(1.3) rotate(-5deg); }
-    50% { transform: scale(1.33) rotate(5deg); }
+  @keyframes hero-logo-float-sm {
+    0%, 100% { transform: scale(1.26) rotate(-8deg); }
+    50% { transform: scale(1.36) rotate(8deg); }
   }
 
   @keyframes hero-logo-in {
@@ -1472,6 +1483,10 @@ body.is-ready .boot { display: none; }
 
   .announce-bar__track {
     transform: none;
+  }
+
+  .hero__logo {
+    transform: scale(1.35) rotate(0deg);
   }
 
   .cmd-name--prefix,
