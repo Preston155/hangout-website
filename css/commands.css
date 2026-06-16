@@ -120,13 +120,10 @@ img {
   user-select: none;
 }
 
-/* Animated RGB / holographic text */
+/* Animated RGB — hero/sidebar/modal only (not every card) */
 .text-rgb,
 .hero h1 span,
 .sidebar__title,
-.stat__val,
-.cmd-name--slash,
-.cmd-name--prefix,
 .modal__cmd--slash,
 .modal__cmd--prefix {
   background: var(--rgb-gradient);
@@ -134,11 +131,9 @@ img {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: rgb-shift 5s linear infinite;
+  animation: rgb-shift 8s linear infinite;
 }
 
-.cmd-name--slash::before,
-.cmd-name--prefix::before,
 .modal__cmd--slash::before,
 .modal__cmd--prefix::before {
   background: var(--rgb-gradient);
@@ -146,31 +141,50 @@ img {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: rgb-shift 5s linear infinite;
+  animation: rgb-shift 8s linear infinite;
 }
 
-.hero h1 span {
-  animation: rgb-shift 4s linear infinite, rgb-glow 4s ease-in-out infinite;
-  filter: drop-shadow(0 0 12px rgba(43, 127, 255, 0.15));
+/* Static colors on cards — avoids 50+ simultaneous animations */
+.card .cmd-name--slash,
+.card .cmd-name--slash::before {
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  color: var(--cat-slash);
+  animation: none;
+  filter: none;
 }
 
-.sidebar__title {
-  animation-duration: 7s;
+.card .cmd-name--prefix,
+.card .cmd-name--prefix::before {
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  color: var(--cat-prefix);
+  animation: none;
+  filter: none;
 }
 
 .stat__val {
-  animation-duration: 6s;
+  font-size: 22px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--text);
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  animation: none;
 }
 
-.stat:hover .stat__val {
-  animation-duration: 2.5s;
+.hero h1 span {
+  animation: rgb-shift 6s linear infinite;
+  filter: none;
 }
 
-.card:hover .cmd-name--slash,
-.card:hover .cmd-name--prefix,
-.card:hover .cmd-name--slash::before,
-.card:hover .cmd-name--prefix::before {
-  animation-duration: 2.5s;
+.sidebar__title {
+  animation-duration: 10s;
 }
 
 @keyframes rgb-shift {
@@ -205,14 +219,7 @@ img {
 }
 
 .chip.active::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--rgb-gradient);
-  background-size: 400% 100%;
-  opacity: 0.12;
-  animation: rgb-shift 4s linear infinite;
-  pointer-events: none;
+  display: none;
 }
 
 /* instant logo boot (removed when app renders) */
@@ -240,9 +247,7 @@ img {
   height: 80px;
   object-fit: contain;
   transform-origin: center center;
-  animation:
-    logo-in 0.4s var(--ease) both,
-    logo-sway 4.5s ease-in-out 0.4s infinite;
+  animation: logo-in 0.4s var(--ease) both;
 }
 
 @keyframes logo-in {
@@ -309,7 +314,6 @@ body.is-ready .boot { display: none; }
   object-fit: contain;
   transform-origin: center center;
   display: block;
-  animation: logo-sway-sm 5.5s ease-in-out infinite;
 }
 
 .sidebar__title {
@@ -446,12 +450,6 @@ body.is-ready .boot { display: none; }
 .hero__logo-wrap {
   flex-shrink: 0;
   line-height: 0;
-  animation: logo-glow 3s ease-in-out infinite;
-}
-
-@keyframes logo-glow {
-  0%, 100% { filter: drop-shadow(0 0 0 transparent); }
-  50% { filter: drop-shadow(0 0 14px rgba(43, 127, 255, 0.35)); }
 }
 
 .hero__logo {
@@ -461,9 +459,7 @@ body.is-ready .boot { display: none; }
   transform-origin: center center;
   pointer-events: none;
   user-select: none;
-  animation:
-    hero-logo-in 0.55s var(--ease) 0.05s both,
-    logo-sway 4s ease-in-out 0.6s infinite;
+  animation: hero-logo-in 0.55s var(--ease) 0.05s both;
 }
 
 @keyframes hero-logo-in {
@@ -548,15 +544,6 @@ body.is-ready .boot { display: none; }
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(43, 127, 255, 0.08);
 }
 
-.stat__val {
-  font-size: 22px;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
-  line-height: 1;
-  animation-duration: 6s;
-}
-
 .stat__label {
   font-size: 11px;
   color: var(--dim);
@@ -574,9 +561,7 @@ body.is-ready .boot { display: none; }
   align-items: center;
   padding: 14px 16px;
   margin-bottom: 28px;
-  background: rgba(14, 14, 16, 0.88);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(14, 14, 16, 0.95);
   border: 1px solid transparent;
   border-radius: calc(var(--radius) + 2px);
   transition: border-color 0.2s, box-shadow 0.2s;
@@ -660,6 +645,8 @@ body.is-ready .boot { display: none; }
 .section {
   margin-bottom: 40px;
   scroll-margin-top: 80px;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 320px;
 }
 
 .section__head {
@@ -713,44 +700,28 @@ body.is-ready .boot { display: none; }
   cursor: pointer;
   overflow: hidden;
   transition:
-    border-color 0.25s var(--ease),
-    background 0.25s var(--ease),
-    transform 0.28s var(--ease),
-    box-shadow 0.28s var(--ease);
+    border-color 0.2s var(--ease),
+    background 0.2s var(--ease),
+    transform 0.2s var(--ease),
+    box-shadow 0.2s var(--ease);
   border-left-width: 3px;
-}
-
-.card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  opacity: 0;
-  background: radial-gradient(ellipse at top left, rgba(43, 127, 255, 0.08), transparent 55%);
-  transition: opacity 0.28s var(--ease);
-  pointer-events: none;
 }
 
 .card--slash { border-left-color: var(--cat-slash); }
 .card--prefix { border-left-color: var(--cat-prefix); }
 .card--system { border-left-color: var(--cat-systems); }
-.card--cat-slash { --card-glow: rgba(43, 127, 255, 0.2); }
-.card--cat-prefix { --card-glow: rgba(232, 184, 74, 0.2); }
-.card--cat-session { border-left-color: var(--cat-session); --card-glow: rgba(181, 107, 255, 0.2); }
-.card--cat-systems { border-left-color: var(--cat-systems); --card-glow: rgba(59, 165, 93, 0.2); }
+.card--cat-session { border-left-color: var(--cat-session); }
+.card--cat-systems { border-left-color: var(--cat-systems); }
+
+.card::before {
+  display: none;
+}
 
 .card:hover {
   border-color: rgba(255, 255, 255, 0.1);
   background: linear-gradient(160deg, rgba(32, 32, 38, 0.98), rgba(26, 26, 30, 0.99));
-  transform: translateY(-4px);
-  box-shadow:
-    0 12px 32px rgba(0, 0, 0, 0.32),
-    0 0 0 1px rgba(255, 255, 255, 0.04),
-    0 0 24px var(--card-glow, rgba(43, 127, 255, 0.12));
-}
-
-.card:hover::before {
-  opacity: 1;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
 }
 
 .card:active {
@@ -932,14 +903,12 @@ body.is-ready .boot { display: none; }
   position: fixed;
   inset: 0;
   z-index: 200;
-  background: rgba(0, 0, 0, 0.65);
+  background: rgba(0, 0, 0, 0.6);
   display: grid;
   place-items: center;
   padding: 20px;
   animation: fade-in 0.2s ease;
   cursor: default;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
 }
 
 @keyframes fade-in {

@@ -33,6 +33,8 @@ function dismissBoot() {
 }
 let revealObserver = null;
 let toolbarScrollHandler = null;
+let shellReady = false;
+let searchDebounce = null;
 
 function esc(s) {
   return String(s ?? "")
@@ -337,7 +339,7 @@ function renderCard(cmd, catId) {
       ? `<span class="pill">${esc((cmd.aliases || []).slice(0, 2).map((a) => aliasLabel(a, type)).join(", "))}${cmd.aliases.length > 2 ? " +" + (cmd.aliases.length - 2) : ""}</span>`
       : "";
 
-  return `<article class="card card--${type} card--cat-${esc(catId)} reveal" data-cmd="${esc(key)}">
+  return `<article class="card card--${type} card--cat-${esc(catId)}" data-cmd="${esc(key)}">
     <div class="card__top">
       <div class="${nameClass}">${esc(displayName)}</div>
       <div class="card__actions">
@@ -438,28 +440,31 @@ function closeModal() {
   document.getElementById("cmdModal")?.remove();
 }
 
-function render() {
-  const app = document.getElementById("app");
-  if (!state.data) {
-    app.innerHTML = `<div class="loading"><div class="loader"></div></div>`;
-    return;
-  }
+function buildToolbarHtml() {
+  return `<div class="toolbar" id="toolbar">
+    <div class="search">
+      <span class="search__icon"></span>
+      <input id="searchInput" type="search" placeholder="Search commands…" value="${esc(state.query)}" autocomplete="off" />
+    </div>
+    <div class="filters">
+      ${[["all", "All"], ["slash", "Slash"], ["prefix", "Prefix"], ["session", "Session"], ["systems", "Systems"]]
+        .map(
+          ([id, label]) =>
+            `<button class="chip${state.filter === id ? " active" : ""}" data-filter="${esc(id)}" type="button">${label}</button>`,
+        )
+        .join("")}
+    </div>
+  </div>`;
+}
 
+function buildSectionsHtml() {
   const q = state.query.trim().toLowerCase();
-  const counts = countCommands(state.data);
-  const prefix = state.data.prefix || ".";
-
-  const navLinks = [
-    ["all", "All", counts.total],
-    ...state.data.categories.map((c) => [c.id, navLabel(c), c.commands.length]),
-  ];
-
-  const sections = state.data.categories
+  return state.data.categories
     .filter((cat) => state.filter === "all" || state.filter === cat.id)
     .map((cat) => {
       const cmds = cat.commands.filter((c) => matches(c, q));
       if (!cmds.length) return "";
-      return `<section class="section reveal" id="cat-${esc(cat.id)}">
+      return `<section class="section" id="cat-${esc(cat.id)}">
         <div class="section__head">
           <h2>${esc(cat.label)}</h2>
           <span class="section__count">${cmds.length}</span>
@@ -469,6 +474,62 @@ function render() {
       </section>`;
     })
     .join("");
+}
+
+function buildCommandViewHtml() {
+  if (state.view === "admin" && state.adminAuth) {
+    return renderAdminMain();
+  }
+  const sections = buildSectionsHtml();
+  return `${buildToolbarHtml()}${sections || `<div class="empty"><p>No commands match that search.</p></div>`}`;
+}
+
+function syncNavActive() {
+  document.querySelectorAll(".nav-link[data-filter]").forEach((btn) => {
+    btn.classList.toggle("active", state.view === "commands" && state.filter === btn.dataset.filter);
+  });
+  document.getElementById("adminNavBtn")?.classList.toggle("active", state.view === "admin");
+}
+
+function updateCommandView() {
+  const root = document.getElementById("commandView");
+  if (!root) {
+    render({ force: true });
+    return;
+  }
+  const hadSearchFocus = document.activeElement?.id === "searchInput";
+  root.innerHTML = buildCommandViewHtml();
+  syncNavActive();
+  if (state.view === "admin" && state.adminAuth && typeof wireAdminEditor === "function") {
+    wireAdminEditor();
+  }
+  if (!toolbarScrollHandler) initToolbarStick();
+  if (hadSearchFocus) document.getElementById("searchInput")?.focus();
+}
+
+function render(opts = {}) {
+  const app = document.getElementById("app");
+  if (!state.data) {
+    app.innerHTML = `<div class="loading"><div class="loader"></div></div>`;
+    shellReady = false;
+    return;
+  }
+
+  if (shellReady && !opts.force) {
+    updateCommandView();
+    renderModal();
+    return;
+  }
+
+  const counts = countCommands(state.data);
+  const prefix = state.data.prefix || ".";
+
+  const navLinks = [
+    ["all", "All", counts.total],
+    ...state.data.categories.map((c) => [c.id, navLabel(c), c.commands.length]),
+  ];
+
+  const sections = buildSectionsHtml();
 
   app.innerHTML = `
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -507,7 +568,7 @@ function render() {
       </aside>
       <main class="main">
         <div class="main__inner">
-        <header class="hero reveal">
+        <header class="hero">
           <div class="hero__row">
             <div class="hero__brand">
               ${logoPicture("hero__logo", 96, 96)}
@@ -528,61 +589,25 @@ function render() {
           </div>
         </header>
 
-        ${state.view === "admin" && state.adminAuth ? "" : `<div class="toolbar" id="toolbar">
-          <div class="search">
-            <span class="search__icon"></span>
-            <input id="searchInput" type="search" placeholder="Search commands…" value="${esc(state.query)}" autocomplete="off" />
-          </div>
-          <div class="filters">
-            ${[["all", "All"], ["slash", "Slash"], ["prefix", "Prefix"], ["session", "Session"], ["systems", "Systems"]]
-              .map(
-                ([id, label]) =>
-                  `<button class="chip${state.filter === id ? " active" : ""}" data-filter="${esc(id)}" type="button">${label}</button>`,
-              )
-              .join("")}
-          </div>
-        </div>`}
-
-        ${state.view === "admin" && state.adminAuth ? renderAdminMain() : sections || `<div class="empty reveal"><p>No commands match that search.</p></div>`}
+        <div id="commandView">
+        ${state.view === "admin" && state.adminAuth ? renderAdminMain() : `${buildToolbarHtml()}${sections || `<div class="empty"><p>No commands match that search.</p></div>`}`}
+        </div>
 
         <footer class="footer">Updated ${esc(state.data.updatedAt)} · Veltrix · City of Angels</footer>
         </div>
       </main>
     </div>`;
 
-  wireEvents();
+  shellReady = true;
+  wireShellEvents();
   renderModal();
   renderAdminGate();
-  initReveal();
   initToolbarStick();
   dismissBoot();
 }
 
 function initReveal() {
-  if (revealObserver) revealObserver.disconnect();
-
-  revealObserver = new IntersectionObserver(
-    (entries) => {
-      for (const entry of entries) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("is-visible");
-          revealObserver.unobserve(entry.target);
-        }
-      }
-    },
-    { threshold: 0.06, rootMargin: "0px 0px -20px 0px" },
-  );
-
-  document.querySelector(".hero.reveal")?.classList.add("is-visible");
-
-  document.querySelectorAll(".section.reveal, .empty.reveal").forEach((el) => {
-    revealObserver.observe(el);
-  });
-
-  document.querySelectorAll(".card.reveal").forEach((el, i) => {
-    el.style.transitionDelay = `${Math.min((i % 8) * 30, 210)}ms`;
-    revealObserver.observe(el);
-  });
+  /* scroll reveal removed for performance — sections use content-visibility in CSS */
 }
 
 function initToolbarStick() {
@@ -598,93 +623,100 @@ function initToolbarStick() {
   window.addEventListener("scroll", toolbarScrollHandler, { passive: true });
 }
 
-function wireEvents() {
-  const search = document.getElementById("searchInput");
-  search?.addEventListener("input", (e) => {
+function applyFilter(filterId, scrollToCategory) {
+  state.view = "commands";
+  state.filter = filterId;
+  closeSidebar();
+  updateCommandView();
+  if (scrollToCategory && filterId !== "all") {
+    document.getElementById(`cat-${filterId}`)?.scrollIntoView({ behavior: "smooth" });
+  }
+}
+
+function wireShellEvents() {
+  const app = document.getElementById("app");
+  if (!app || app.dataset.wired === "1") return;
+  app.dataset.wired = "1";
+
+  app.addEventListener("input", (e) => {
+    if (e.target.id !== "searchInput") return;
     state.query = e.target.value;
-    const selStart = search.selectionStart;
-    const selEnd = search.selectionEnd;
-    render();
-    const next = document.getElementById("searchInput");
-    if (next) {
-      next.focus();
-      next.setSelectionRange(selStart, selEnd);
-    }
+    clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(updateCommandView, 100);
   });
 
-  document.querySelectorAll("[data-filter]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      state.view = "commands";
-      state.filter = btn.dataset.filter;
-      closeSidebar();
-      render();
-      if (state.filter !== "all") {
-        document.getElementById(`cat-${state.filter}`)?.scrollIntoView({ behavior: "smooth" });
-      }
-    });
-  });
-
-  document.getElementById("adminNavBtn")?.addEventListener("click", () => {
-    if (state.adminAuth) {
-      state.view = "admin";
-      closeSidebar();
-      render();
+  app.addEventListener("click", (e) => {
+    const copyBtn = e.target.closest("[data-copy]");
+    if (copyBtn) {
+      e.stopPropagation();
+      copyText(copyBtn.dataset.copy);
       return;
     }
-    openAdminGate();
-  });
 
-  document.getElementById("adminBackBtn")?.addEventListener("click", () => {
-    state.view = "commands";
-    render();
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  });
+    const chip = e.target.closest(".chip[data-filter]");
+    if (chip) {
+      applyFilter(chip.dataset.filter, false);
+      return;
+    }
 
-  document.getElementById("adminLogoutBtn")?.addEventListener("click", () => {
-    setAdminAuthed(false);
-    sessionStorage.removeItem("vx_admin_pass");
-    state.view = "commands";
-    render();
-    showToast("Signed out");
-  });
+    const navFilter = e.target.closest(".nav-link[data-filter]");
+    if (navFilter) {
+      applyFilter(navFilter.dataset.filter, true);
+      return;
+    }
 
-  if (state.view === "admin" && state.adminAuth && typeof wireAdminEditor === "function") {
-    wireAdminEditor();
-  }
+    if (e.target.closest("#adminNavBtn")) {
+      if (state.adminAuth) {
+        state.view = "admin";
+        closeSidebar();
+        updateCommandView();
+        syncNavActive();
+        if (typeof wireAdminEditor === "function") wireAdminEditor();
+      } else {
+        openAdminGate();
+      }
+      return;
+    }
 
-  document.querySelectorAll("[data-copy]").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      copyText(btn.dataset.copy);
-    });
-  });
+    if (e.target.closest("#adminBackBtn")) {
+      state.view = "commands";
+      updateCommandView();
+      syncNavActive();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
 
-  document.querySelectorAll(".card[data-cmd]").forEach((card) => {
-    card.addEventListener("click", (e) => {
-      if (e.target.closest("[data-copy]")) return;
-      const found = findCommand(card.dataset.cmd);
+    if (e.target.closest("#adminLogoutBtn")) {
+      setAdminAuthed(false);
+      sessionStorage.removeItem("vx_admin_pass");
+      state.view = "commands";
+      updateCommandView();
+      syncNavActive();
+      showToast("Signed out");
+      return;
+    }
+
+    const moreBtn = e.target.closest(".card__more");
+    const card = e.target.closest(".card[data-cmd]");
+    if (moreBtn || card) {
+      const target = moreBtn ? moreBtn.closest(".card[data-cmd]") : card;
+      if (!target) return;
+      if (moreBtn) e.stopPropagation();
+      const found = findCommand(target.dataset.cmd);
       if (found) {
         state.modalCmd = found;
         renderModal();
       }
-    });
-  });
+      return;
+    }
 
-  document.querySelectorAll(".card__more").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const card = btn.closest(".card[data-cmd]");
-      if (!card) return;
-      const found = findCommand(card.dataset.cmd);
-      if (found) {
-        state.modalCmd = found;
-        renderModal();
-      }
-    });
+    if (e.target.id === "navToggle") toggleSidebar();
+    if (e.target.id === "sidebarOverlay") closeSidebar();
   });
+}
 
-  document.getElementById("navToggle")?.addEventListener("click", toggleSidebar);
-  document.getElementById("sidebarOverlay")?.addEventListener("click", closeSidebar);
+function wireEvents() {
+  /* legacy — shell uses delegated events */
 }
 
 function toggleSidebar() {
