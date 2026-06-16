@@ -1,64 +1,205 @@
 {
   "botName": "Bot3",
-  "package": "veltrix-lcrp-bot",
-  "prefix": "!",
-  "slashCommands": [
+  "subtitle": "Veltrix LCRP Bot",
+  "prefix": ".",
+  "updatedAt": "2026-06-16",
+  "categories": [
     {
-      "file": "src/commands/purge.js",
-      "name": "purge",
-      "description": "",
-      "options": [],
-      "subcommands": []
+      "id": "slash",
+      "label": "Slash Commands",
+      "icon": "⚡",
+      "description": "Discord application commands — type / in chat.",
+      "commands": [
+        {
+          "name": "setup",
+          "type": "slash",
+          "description": "Manage the Veltrix server setup system (channels, roles, permissions).",
+          "permission": "Administrator",
+          "subcommands": [
+            { "name": "channels", "description": "Create or update the safe Veltrix channel layout." },
+            { "name": "roles", "description": "Create or update Veltrix setup roles." },
+            { "name": "permissions", "description": "Reapply safe Veltrix channel permissions." },
+            { "name": "audit", "description": "Audit risky setup channel permissions." },
+            { "name": "delete-channels", "description": "Delete all Veltrix setup-created channels and categories." },
+            { "name": "delete-roles", "description": "Delete all safe Veltrix setup-created roles." },
+            { "name": "reset-server", "description": "Delete setup items and rebuild the safe layout." }
+          ]
+        },
+        {
+          "name": "setup-erlc-roles",
+          "type": "slash",
+          "description": "Create or sync only the ERLC role hierarchy.",
+          "permission": "Administrator"
+        },
+        {
+          "name": "fix-erlc-role-order",
+          "type": "slash",
+          "description": "Reapply the ERLC role hierarchy order without touching channels.",
+          "permission": "Administrator"
+        },
+        {
+          "name": "fix-erlc-channel-permissions",
+          "type": "slash",
+          "description": "Fix only existing ERLC category and channel permission overwrites.",
+          "permission": "Administrator"
+        },
+        {
+          "name": "server-status",
+          "type": "slash",
+          "description": "Live Discord server overview embed. Auto-refreshes every 30 seconds.",
+          "permission": "Everyone"
+        },
+        {
+          "name": "server-roles",
+          "type": "slash",
+          "description": "Paginated list of every role in the server.",
+          "permission": "Manage Roles",
+          "options": [
+            { "name": "page", "description": "Page number to view." }
+          ]
+        },
+        {
+          "name": "ticket-panel",
+          "type": "slash",
+          "description": "Send the City of Angels support ticket panel to a channel.",
+          "permission": "Manage Server"
+        }
+      ]
     },
     {
-      "file": "src/commands/server-roles.js",
-      "name": "server-roles",
-      "description": "Show the roles in this server.",
-      "options": [],
-      "subcommands": []
+      "id": "prefix",
+      "label": "Prefix Commands",
+      "icon": "💬",
+      "description": "Message commands using the . prefix.",
+      "commands": [
+        {
+          "name": "status",
+          "type": "prefix",
+          "usage": ".status",
+          "aliases": ["serverstatus", "server-status", "server"],
+          "description": "Live Discord server status overview (same as /server-status).",
+          "permission": "Everyone"
+        },
+        {
+          "name": "purge",
+          "type": "prefix",
+          "usage": ".purge <amount>",
+          "aliases": ["clear"],
+          "description": "Bulk-delete messages in the current channel (skips pinned).",
+          "permission": "Manage Messages"
+        },
+        {
+          "name": "roles",
+          "type": "prefix",
+          "usage": ".roles [page]",
+          "aliases": ["serverroles", "server-roles"],
+          "description": "Show server roles list (prefix version of /server-roles).",
+          "permission": "Manage Roles"
+        },
+        {
+          "name": "level",
+          "type": "prefix",
+          "usage": ".level [@user]",
+          "aliases": ["rank"],
+          "description": "Check your or another member's XP level and rank.",
+          "permission": "Everyone"
+        },
+        {
+          "name": "levels",
+          "type": "prefix",
+          "usage": ".levels",
+          "aliases": ["leaderboard", "lb"],
+          "description": "Show the server XP leaderboard.",
+          "permission": "Everyone"
+        },
+        {
+          "name": "addxp",
+          "type": "prefix",
+          "usage": ".addxp @user <amount>",
+          "aliases": ["givexp"],
+          "description": "Grant XP to a member manually.",
+          "permission": "Manage Server"
+        },
+        {
+          "name": "setuproles",
+          "type": "prefix",
+          "usage": ".setuproles",
+          "aliases": ["reactionroles"],
+          "description": "Post the reaction-role setup panel in the current channel.",
+          "permission": "Manage Server"
+        },
+        {
+          "name": "testwelcome",
+          "type": "prefix",
+          "usage": ".testwelcome",
+          "aliases": ["welcometest"],
+          "description": "Preview the welcome message for yourself in the current channel.",
+          "permission": "Manage Server"
+        }
+      ]
     },
     {
-      "file": "src/commands/server-status.js",
-      "name": "server-status",
-      "description": "Live Discord server overview. Refreshes every **30 seconds**.",
-      "options": [],
-      "subcommands": []
+      "id": "session",
+      "label": "Session Commands",
+      "icon": "🎮",
+      "description": "ER:LC session vote, start, and end controls.",
+      "commands": [
+        {
+          "name": "session",
+          "type": "prefix",
+          "usage": ".session <action>",
+          "aliases": ["sv", "ss", "se"],
+          "description": "Manage in-game session votes and roster.",
+          "permission": "Manage Server (vote/start/end)",
+          "notes": "Aliases: .sv = vote, .ss = start, .se = end",
+          "subcommands": [
+            { "name": "help", "description": "Show session command help." },
+            { "name": "vote", "description": "Open a session vote with Ready / Out buttons." },
+            { "name": "start", "description": "Start the active session." },
+            { "name": "end", "description": "End the current session." },
+            { "name": "status", "description": "Show current session status and readiness." },
+            { "name": "list", "description": "Show who is Ready vs Out." }
+          ]
+        }
+      ]
     },
     {
-      "file": "src/commands/ticket-panel.js",
-      "name": "ticket-panel",
-      "description": "Send the City of Angels ticket panel.",
-      "options": [],
-      "subcommands": []
-    },
-    {
-      "file": "src/commands/admin/fix-erlc-channel-permissions.js",
-      "name": "fix-erlc-channel-permissions",
-      "description": "Only existing categories/channels were updated. No channels or roles were created/deleted/renamed.",
-      "options": [],
-      "subcommands": []
-    },
-    {
-      "file": "src/commands/admin/fix-erlc-role-order.js",
-      "name": "fix-erlc-role-order",
-      "description": "Reapply the ERLC role hierarchy order without touching channels.",
-      "options": [],
-      "subcommands": []
-    },
-    {
-      "file": "src/commands/admin/setup-erlc-roles.js",
-      "name": "setup-erlc-roles",
-      "description": "Create or sync only the ERLC role hierarchy.",
-      "options": [],
-      "subcommands": []
-    },
-    {
-      "file": "src/commands/admin/setup.js",
-      "name": "setup",
-      "description": "Manage the Veltrix setup system.",
-      "options": [],
-      "subcommands": []
+      "id": "systems",
+      "label": "Automatic Systems",
+      "icon": "🤖",
+      "description": "Features that run without a direct command.",
+      "commands": [
+        {
+          "name": "Welcome System",
+          "type": "system",
+          "description": "Sends a branded welcome embed when a member joins the server."
+        },
+        {
+          "name": "Leveling System",
+          "type": "system",
+          "description": "Members earn XP from messages. Use .level and .levels to view progress."
+        },
+        {
+          "name": "Ticket System",
+          "type": "system",
+          "description": "Support tickets via the /ticket-panel and button interactions."
+        },
+        {
+          "name": "Reaction Roles",
+          "type": "system",
+          "description": "Self-assign roles using reaction-role panel buttons."
+        },
+        {
+          "name": "Mention Responder",
+          "type": "system",
+          "description": "Bot responds when @mentioned with helpful info."
+        },
+        {
+          "name": "ERLC Session Logs",
+          "type": "system",
+          "description": "Session activity logging for staff channels."
+        }
+      ]
     }
-  ],
-  "prefixCommands": []
+  ]
 }
