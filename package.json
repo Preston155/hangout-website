@@ -4,7 +4,7 @@
   "private": true,
   "description": "Veltrix Discord command reference — City of Angels",
   "scripts": {
-    "build": "node scripts/generate-og-image.js && node scripts/build-httpdocs.js",
+    "build": "node scripts/build-httpdocs.js",
     "build:httpdocs": "node scripts/build-httpdocs.js",
     "sync:commands": "node scripts/sync-bot-commands.js",
     "sync:watch": "node scripts/sync-bot-commands.js --watch",
@@ -14,8 +14,5 @@
   },
   "dependencies": {
     "ssh2": "^1.16.0"
-  },
-  "devDependencies": {
-    "@resvg/resvg-js": "^2.6.2"
   }
 }
