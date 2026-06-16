@@ -1,4 +1,4 @@
-# Discord Remake - Plesk httpdocs (PHP)
+# Bot3 Commands — static site
 DirectoryIndex index.html
 
 <IfModule mod_headers.c>
@@ -7,19 +7,4 @@ DirectoryIndex index.html
     Header set Pragma "no-cache"
     Header set Expires "0"
   </FilesMatch>
-</IfModule>
-
-<IfModule mod_rewrite.c>
-RewriteEngine On
-RewriteRule ^api/install-cad-db(.php)?/?$ api/install-cad-db.php [L,QSA]
-RewriteRule ^api/health(.php)?/?$ api/health.php [L,QSA]
-# ER:LC CAD API (PHP — works on Plesk without Node.js)
-RewriteCond %{REQUEST_URI} ^/api/
-RewriteCond %{REQUEST_URI} !^/api/health
-RewriteCond %{REQUEST_URI} !^/api/install-cad-db
-RewriteRule ^api/(.*)$ api/cad/router.php [L,QSA]
-RewriteRule ^data(/|$) - [F,L]
-RewriteRule ^node_modules(/|$) - [F,L]
-RewriteRule ^(server|app)\.js$ - [F,L]
-RewriteRule ^package\.json$ - [F,L]
 </IfModule>
