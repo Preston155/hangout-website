@@ -36,10 +36,66 @@ html, body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   cursor: default;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 #app { min-height: 100vh; }
 .hidden { display: none !important; }
+
+/* Search is the only place users type */
+input,
+textarea {
+  -webkit-user-select: text;
+  user-select: text;
+  cursor: text;
+}
+
+button,
+[role="button"],
+.card,
+.chip,
+.nav-link,
+.mobile-nav-toggle,
+.icon-btn,
+.btn {
+  cursor: pointer;
+}
+
+#app .card,
+#app .card * {
+  cursor: pointer;
+}
+
+#app .modal {
+  cursor: default;
+}
+
+#app .modal * {
+  cursor: default;
+}
+
+#app .modal .btn,
+#app .modal .icon-btn {
+  cursor: pointer;
+}
+
+::selection {
+  background: transparent;
+  color: inherit;
+}
+
+input::selection,
+textarea::selection {
+  background: rgba(43, 127, 255, 0.35);
+  color: var(--text);
+}
+
+img {
+  -webkit-user-drag: none;
+  user-select: none;
+}
 
 /* instant logo boot (removed when app renders) */
 .boot {
@@ -50,6 +106,9 @@ html, body {
   place-items: center;
   background: var(--bg);
   transition: opacity 0.2s var(--ease), visibility 0.2s;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: default;
 }
 
 .boot.is-done {
@@ -460,8 +519,6 @@ body.is-ready .boot { display: none; }
   border-radius: var(--radius);
   padding: 14px 16px;
   cursor: pointer;
-  user-select: none;
-  -webkit-user-select: none;
   transition: border-color 0.15s var(--ease), background 0.15s var(--ease), transform 0.2s var(--ease);
   border-left-width: 3px;
 }
@@ -469,10 +526,6 @@ body.is-ready .boot { display: none; }
 .card--slash { border-left-color: var(--accent); }
 .card--prefix { border-left-color: var(--prefix); }
 .card--system { border-left-color: var(--green); }
-
-.card * {
-  cursor: inherit;
-}
 
 .card:hover {
   border-color: var(--border-light);
@@ -492,7 +545,6 @@ body.is-ready .boot { display: none; }
   font-family: var(--mono);
   font-size: 14px;
   font-weight: 500;
-  cursor: inherit;
 }
 
 .cmd-name--slash { color: var(--text); }
@@ -563,7 +615,6 @@ body.is-ready .boot { display: none; }
   -webkit-box-orient: vertical;
   overflow: hidden;
   line-height: 1.45;
-  cursor: inherit;
 }
 
 .meta { display: flex; flex-wrap: wrap; gap: 5px; }
@@ -577,7 +628,6 @@ body.is-ready .boot { display: none; }
   background: var(--bg);
   font-family: var(--mono);
   color: var(--dim);
-  cursor: inherit;
   pointer-events: none;
 }
 
@@ -632,7 +682,6 @@ body.is-ready .boot { display: none; }
   border-radius: calc(var(--radius) + 2px);
   animation: slide-up 0.22s var(--ease);
   cursor: default;
-  user-select: text;
 }
 
 @keyframes slide-up {
