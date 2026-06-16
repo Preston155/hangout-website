@@ -19,7 +19,7 @@ function log(msg) {
   console.log(`[admin-publish] ${msg}`);
 }
 
-function main() {
+async function main() {
   if (!fs.existsSync(BOT_JSON)) {
     console.error("Missing bot-commands.json");
     process.exit(1);
@@ -49,6 +49,20 @@ function main() {
 
   log("Merged overrides into bot-commands.json and command-previews.json");
 
+  try {
+    const { syncToBot } = require("./sync-to-bot");
+    log("Pushing command edits to live bot...");
+    const botResult = await syncToBot();
+    if (botResult.changed) {
+      log(`Bot updated: ${botResult.changedFiles.join(", ")}`);
+    } else {
+      log("Bot source unchanged (no mappable patches).");
+    }
+  } catch (err) {
+    console.error(`[admin-publish] Bot sync failed: ${err.message}`);
+    console.error("Site publish will continue. Run npm run sync:to-bot manually.");
+  }
+
   const build = spawnSync(process.platform === "win32" ? "npm.cmd" : "npm", ["run", "build"], {
     cwd: ROOT,
     stdio: "inherit",
@@ -63,7 +77,7 @@ function main() {
     GIT_COMMITTER_EMAIL: process.env.GIT_COMMITTER_EMAIL || "Preston155@users.noreply.github.com",
   };
 
-  spawnSync("git", ["add", "public/data/bot-commands.json", "public/data/command-previews.json", "public/data/admin-overrides.json", "scripts/bot-commands.meta.json", "data/bot-commands.json", "data/command-previews.json", "data/admin-overrides.json", "api", "index.html", "js/app.js", "js/admin-editor.js", "css/commands.css"], {
+  spawnSync("git", ["add", "public/data/bot-commands.json", "public/data/command-previews.json", "public/data/admin-overrides.json", "scripts/bot-commands.meta.json", "scripts/command-sources.json", "data/bot-commands.json", "data/command-previews.json", "data/admin-overrides.json", "api", "index.html", "js/app.js", "js/admin-editor.js", "css/commands.css"], {
     cwd: ROOT,
     stdio: "inherit",
     env,
@@ -88,4 +102,7 @@ function main() {
   log("Pushed to GitHub — Plesk will deploy shortly.");
 }
 
-main();
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

@@ -53,8 +53,41 @@ function authed(array $body, string $password): bool {
 }
 
 function mergeCmd(array $base, array $patch): array {
-    $out = array_merge($base, $patch);
-    return $out;
+    return array_merge($base, $patch);
+}
+
+function pushOverridesToBot(array $config, array $overrides): ?array {
+    $url = trim((string) ($config['bot_apply_url'] ?? ''));
+    $secret = (string) ($config['bot_apply_secret'] ?? '');
+    if ($url === '') {
+        return null;
+    }
+
+    $payload = json_encode(['overrides' => $overrides]);
+    if (!function_exists('curl_init')) {
+        throw new RuntimeException('cURL not available — run npm run sync:to-bot on your PC');
+    }
+
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_POST => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => 45,
+        CURLOPT_HTTPHEADER => [
+            'Content-Type: application/json',
+            'X-Admin-Secret: ' . $secret,
+        ],
+        CURLOPT_POSTFIELDS => $payload,
+    ]);
+    $body = curl_exec($ch);
+    $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    $data = json_decode((string) $body, true);
+    if ($code >= 200 && $code < 300 && is_array($data) && !empty($data['ok'])) {
+        return $data;
+    }
+    $err = is_array($data) ? ($data['error'] ?? $body) : $body;
+    throw new RuntimeException('Bot apply failed: ' . (string) $err);
 }
 
 function applyOverrides(array $bot, array $overrides): array {
@@ -174,7 +207,30 @@ if ($action === 'publish') {
         $gitMsg = trim(($commit ?? '') . "\n" . ($push ?? ''));
     }
 
-    respond(['ok' => true, 'publishedAt' => $overrides['publishedAt'], 'git' => $gitMsg]);
+    $botMsg = null;
+    try {
+        $botResult = pushOverridesToBot($config, $overrides);
+        if ($botResult !== null) {
+            $botMsg = 'Bot updated';
+        }
+    } catch (Throwable $e) {
+        $botMsg = $e->getMessage();
+    }
+
+    respond(['ok' => true, 'publishedAt' => $overrides['publishedAt'], 'git' => $gitMsg, 'bot' => $botMsg]);
+}
+
+if ($action === 'apply-bot') {
+    $overrides = readJson($overridesPath, ['commands' => [], 'previews' => [], 'systems' => [], 'meta' => [], 'hiddenKeys' => []]);
+    try {
+        $botResult = pushOverridesToBot($config, $overrides);
+        if ($botResult === null) {
+            respond(['ok' => false, 'error' => 'Bot apply URL not configured in api/config.php'], 503);
+        }
+        respond(['ok' => true, 'bot' => $botResult]);
+    } catch (Throwable $e) {
+        respond(['ok' => false, 'error' => $e->getMessage()], 500);
+    }
 }
 
 respond(['ok' => false, 'error' => 'Unknown action'], 400);

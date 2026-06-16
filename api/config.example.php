@@ -11,4 +11,8 @@ return [
 
     // Optional: absolute path to git repo on server for auto-push on publish
     'git_repo' => '',
+
+    // Optional: bot VPS listener (scripts/bot-apply-listener.js) for live dashboard → bot updates
+    'bot_apply_url' => '',
+    'bot_apply_secret' => '',
 ];

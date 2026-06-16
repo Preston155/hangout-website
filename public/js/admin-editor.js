@@ -93,13 +93,14 @@ function renderAdminEditor() {
   return `
     <div class="admin-toolbar reveal is-visible">
       <input class="admin-search" id="adminSearch" type="search" placeholder="Filter commands…" value="${esc(state.adminQuery || "")}" />
-      <button class="btn" id="adminPublishBtn" type="button">Publish to site</button>
+      <button class="btn" id="adminPublishBtn" type="button">Publish to site &amp; bot</button>
+      <button class="btn btn--ghost" id="adminBotOnlyBtn" type="button">Apply to bot only</button>
       <button class="btn btn--ghost" id="adminSyncHelpBtn" type="button">Sync help</button>
     </div>
 
     <div class="admin-panel reveal is-visible">
       <h3>Edit commands (${filtered.length})</h3>
-      <p class="modal__desc">Changes save to the server and merge into the live command list. <strong>Publish</strong> writes merged JSON for everyone.</p>
+      <p class="modal__desc">Edits update the <strong>live bot</strong> (slash descriptions, prefix aliases) and the <strong>website</strong>. Save first, then publish.</p>
       <div class="admin-cmd-list">${list || "<p class=\"modal__desc\">No commands match.</p>"}</div>
     </div>
 
@@ -164,11 +165,19 @@ async function saveAdminEditor(e) {
     notes: document.getElementById("admNotes").value.trim() || undefined,
   };
 
+  const found = typeof findCommand === "function" ? findCommand(key) : null;
+  if (found?.cmd?.subcommands?.length) {
+    patch.subcommands = found.cmd.subcommands.map((s) => ({
+      name: s.name,
+      description: s.description || "",
+    }));
+  }
+
   try {
     await adminApi("save-command", { key, patch });
     await loadAdminOverrides();
     mergeAdminIntoState();
-    showToast("Saved — publish to push live for everyone");
+    showToast("Saved — publish to push to site & bot");
     closeAdminEditor();
     render();
   } catch (err) {
@@ -181,10 +190,20 @@ async function publishAdminChanges() {
     const res = await adminApi("publish");
     await loadAdminOverrides();
     mergeAdminIntoState();
-    showToast("Published to site" + (res.git ? " (+ git)" : ""));
+    const botNote = res.bot ? ` · Bot: ${res.bot}` : "";
+    showToast("Published to site" + botNote);
     render();
   } catch (err) {
     showToast(err.message || "Publish failed — run npm run admin:publish on your PC");
+  }
+}
+
+async function applyBotOnly() {
+  try {
+    const res = await adminApi("apply-bot");
+    showToast("Applied to live bot" + (res.bot ? "" : ""));
+  } catch (err) {
+    showToast(err.message || "Bot apply failed — run npm run sync:to-bot on your PC");
   }
 }
 
@@ -219,8 +238,9 @@ function wireAdminEditor() {
   document.getElementById("adminEditorCancel")?.addEventListener("click", closeAdminEditor);
   document.getElementById("adminHideCmd")?.addEventListener("click", hideAdminCommand);
   document.getElementById("adminPublishBtn")?.addEventListener("click", publishAdminChanges);
+  document.getElementById("adminBotOnlyBtn")?.addEventListener("click", applyBotOnly);
   document.getElementById("adminSyncHelpBtn")?.addEventListener("click", () => {
-    showToast("Bot code: npm run sync:commands · Site: Publish or npm run admin:publish");
+    showToast("PC: npm run admin:publish · Bot only: npm run sync:to-bot");
   });
 }
 
