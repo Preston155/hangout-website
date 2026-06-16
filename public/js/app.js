@@ -137,7 +137,7 @@ function renderCard(cmd, catId) {
     <div class="card__top">
       <div class="${nameClass}">${esc(displayName)}</div>
       <div class="card__actions">
-        <button class="icon-btn" data-copy="${esc(cmdCopyText(cmd))}" title="Copy" type="button" aria-label="Copy command">⎘</button>
+        <button class="icon-btn icon-btn--copy" data-copy="${esc(cmdCopyText(cmd))}" title="Copy" type="button" aria-label="Copy command"></button>
         <span class="tag">${esc(type)}</span>
       </div>
     </div>
@@ -194,7 +194,7 @@ function renderModal() {
             <div class="${modalNameClass}" id="modalTitle">${esc(displayName)}</div>
             <span class="tag">${esc(type)}</span>
           </div>
-          <button class="icon-btn" id="modalClose" type="button" aria-label="Close">✕</button>
+          <button class="icon-btn" id="modalClose" type="button" aria-label="Close">&times;</button>
         </div>
         <div class="modal__body">
           <p class="modal__desc">${esc(cmd.description || "")}</p>
@@ -381,8 +381,14 @@ function wireEvents() {
   const search = document.getElementById("searchInput");
   search?.addEventListener("input", (e) => {
     state.query = e.target.value;
+    const selStart = search.selectionStart;
+    const selEnd = search.selectionEnd;
     render();
-    search?.focus();
+    const next = document.getElementById("searchInput");
+    if (next) {
+      next.focus();
+      next.setSelectionRange(selStart, selEnd);
+    }
   });
 
   document.querySelectorAll("[data-filter]").forEach((btn) => {
