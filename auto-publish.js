@@ -53,6 +53,7 @@ const IGNORE_FILE_PATTERNS = [
 let debounceTimer = null;
 let publishing = false;
 let watchers = [];
+let syncInterval = null;
 
 function writeLog(line) {
   try {
@@ -129,6 +130,55 @@ async function ensureGitReady() {
   await runGit(["branch", "-M", BRANCH]);
 }
 
+async function runSyncCommands() {
+  if (process.env.BOT3_AUTO_SYNC !== "1" && process.env.BOT3_AUTO_SYNC !== "true") {
+    return { changed: false };
+  }
+
+  log("Syncing Veltrix commands from source (BOT3_AUTO_SYNC)...");
+  loadEnvFile();
+  const { syncOnce } = require("./scripts/sync-bot-commands");
+  try {
+    const result = await syncOnce({ build: false });
+    if (result.changed) log("Bot commands updated from source.");
+    return result;
+  } catch (err) {
+    warn(`Command sync failed: ${err.message}`);
+    warn("Continuing with existing bot-commands.json...");
+    return { changed: false };
+  }
+}
+
+function loadEnvFile() {
+  const envPath = path.join(ROOT, ".env");
+  if (!fs.existsSync(envPath)) return;
+  for (const line of fs.readFileSync(envPath, "utf8").split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const eq = trimmed.indexOf("=");
+    if (eq === -1) continue;
+    const key = trimmed.slice(0, eq).trim();
+    let val = trimmed.slice(eq + 1).trim();
+    if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+      val = val.slice(1, -1);
+    }
+    if (process.env[key] === undefined) process.env[key] = val;
+  }
+}
+
+function startBotSyncWatcher() {
+  if (process.env.BOT3_AUTO_SYNC !== "1" && process.env.BOT3_AUTO_SYNC !== "true") return;
+
+  const ms = Number(process.env.BOT3_SYNC_INTERVAL_MS || 120_000);
+  log(`Bot command sync watcher: every ${ms / 1000}s`);
+
+  syncInterval = setInterval(async () => {
+    if (publishing) return;
+    const result = await runSyncCommands();
+    if (result.changed) schedulePublish("bot source changed");
+  }, ms);
+}
+
 async function runBuild() {
   log("Building httpdocs-ready (npm run build:httpdocs)...");
   await new Promise((resolve, reject) => {
@@ -189,6 +239,7 @@ async function publish() {
     }
 
     try {
+      await runSyncCommands();
       await runBuild();
     } catch (err) {
       warn(`Build step failed: ${err.message}`);
@@ -306,6 +357,7 @@ function removePidFile() {
 function shutdown() {
   log("Stopping auto-publish watcher...");
   if (debounceTimer) clearTimeout(debounceTimer);
+  if (syncInterval) clearInterval(syncInterval);
   watchers.forEach((w) => {
     try {
       w.close();
@@ -342,7 +394,11 @@ async function main() {
   log("Edit files in Cursor and save — publishing is automatic.");
   log("Press Ctrl+C in this window to stop.\n");
 
+  loadEnvFile();
   await ensureGitReady();
+
+  await runSyncCommands();
+  startBotSyncWatcher();
 
   watchPath(ROOT);
 

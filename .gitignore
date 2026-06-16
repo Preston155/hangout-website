@@ -37,6 +37,7 @@ electron/
 
 # Auto-publish watcher (local PID only)
 .auto-publish.pid
+.bot3-source-hash
 
 # Generic build/cache folders (not deployed)
 logs/

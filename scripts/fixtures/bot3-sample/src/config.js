@@ -1,0 +1,1 @@
+PREFIX = process.env.PREFIX || ".";

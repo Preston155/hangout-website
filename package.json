@@ -1,10 +1,16 @@
 {
-  "name": "bot3-commands-site",
+  "name": "veltrix-commands-site",
   "version": "1.0.0",
   "private": true,
-  "description": "Bot3 Discord command reference website",
+  "description": "Veltrix Discord command reference — City of Angels",
   "scripts": {
     "build": "node scripts/build-httpdocs.js",
-    "build:httpdocs": "node scripts/build-httpdocs.js"
+    "build:httpdocs": "node scripts/build-httpdocs.js",
+    "sync:commands": "node scripts/sync-bot-commands.js",
+    "sync:watch": "node scripts/sync-bot-commands.js --watch",
+    "auto-publish": "node auto-publish.js"
+  },
+  "dependencies": {
+    "ssh2": "^1.16.0"
   }
 }

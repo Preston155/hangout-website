@@ -1,8 +1,8 @@
 {
-  "botName": "Bot3",
-  "subtitle": "Veltrix LCRP Bot",
+  "botName": "Veltrix",
+  "subtitle": "City of Angels",
   "prefix": ".",
-  "package": "veltrix-lcrp-bot",
+  "package": "veltrix",
   "updatedAt": "2026-06-16",
   "categories": [
     {
@@ -14,34 +14,34 @@
         {
           "name": "setup",
           "type": "slash",
-          "description": "Manage the Veltrix server setup system (channels, roles, permissions).",
+          "description": "Manage the City of Angels server setup system (channels, roles, permissions).",
           "permission": "Administrator",
           "subcommands": [
-            { "name": "channels", "description": "Create or update the safe Veltrix channel layout." },
-            { "name": "roles", "description": "Create or update Veltrix setup roles." },
-            { "name": "permissions", "description": "Reapply safe Veltrix channel permissions." },
+            { "name": "channels", "description": "Create or update the City of Angels channel layout." },
+            { "name": "roles", "description": "Create or update City of Angels setup roles." },
+            { "name": "permissions", "description": "Reapply City of Angels channel permissions." },
             { "name": "audit", "description": "Audit risky setup channel permissions." },
-            { "name": "delete-channels", "description": "Delete all Veltrix setup-created channels and categories." },
-            { "name": "delete-roles", "description": "Delete all safe Veltrix setup-created roles." },
+            { "name": "delete-channels", "description": "Delete all setup-created channels and categories." },
+            { "name": "delete-roles", "description": "Delete all setup-created roles." },
             { "name": "reset-server", "description": "Delete setup items and rebuild the safe layout." }
           ]
         },
         {
           "name": "setup-erlc-roles",
           "type": "slash",
-          "description": "Create or sync only the ERLC role hierarchy.",
+          "description": "Create or sync the in-game role hierarchy.",
           "permission": "Administrator"
         },
         {
           "name": "fix-erlc-role-order",
           "type": "slash",
-          "description": "Reapply the ERLC role hierarchy order without touching channels.",
+          "description": "Reapply the role hierarchy order without touching channels.",
           "permission": "Administrator"
         },
         {
           "name": "fix-erlc-channel-permissions",
           "type": "slash",
-          "description": "Fix only existing ERLC category and channel permission overwrites.",
+          "description": "Fix existing category and channel permission overwrites.",
           "permission": "Administrator"
         },
         {
@@ -143,7 +143,7 @@
       "id": "session",
       "label": "Session Commands",
       "icon": "🎮",
-      "description": "ER:LC session vote, start, and end controls.",
+      "description": "In-game session vote, start, and end controls.",
       "commands": [
         {
           "name": "session",
@@ -167,13 +167,13 @@
     {
       "id": "systems",
       "label": "Automatic Systems",
-      "icon": "🤖",
+      "icon": "⚙️",
       "description": "Features that run without a direct command.",
       "commands": [
         {
           "name": "Welcome System",
           "type": "system",
-          "description": "Sends a branded welcome embed when a member joins the server."
+          "description": "Sends a branded welcome embed when a member joins City of Angels."
         },
         {
           "name": "Leveling System",
@@ -193,10 +193,10 @@
         {
           "name": "Mention Responder",
           "type": "system",
-          "description": "Bot responds when @mentioned with helpful info."
+          "description": "Veltrix responds when @mentioned with helpful info."
         },
         {
-          "name": "ERLC Session Logs",
+          "name": "Session Logs",
           "type": "system",
           "description": "Session activity logging for staff channels."
         }

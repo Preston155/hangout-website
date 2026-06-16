@@ -6,7 +6,7 @@ const ROOT = path.join(__dirname, "..");
 const OUT = path.join(ROOT, "httpdocs-ready");
 const PUBLIC = path.join(ROOT, "public");
 
-const HTACCESS = `# Bot3 Commands — static site
+const HTACCESS = `# Veltrix · City of Angels — static site
 DirectoryIndex index.html
 
 <IfModule mod_headers.c>
@@ -39,7 +39,7 @@ function copyDir(src, dest) {
 }
 
 function main() {
-  console.log("Building httpdocs-ready (Bot3 commands site)...");
+  console.log("Building httpdocs-ready (Veltrix command site)...");
   rimraf(OUT);
   fs.mkdirSync(OUT, { recursive: true });
   copyDir(PUBLIC, OUT);

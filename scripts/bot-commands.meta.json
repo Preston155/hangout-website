@@ -1,0 +1,131 @@
+{
+  "botName": "Veltrix",
+  "subtitle": "City of Angels",
+  "package": "veltrix",
+  "categories": {
+    "slash": {
+      "label": "Slash Commands",
+      "icon": "⚡",
+      "description": "Discord application commands — type / in chat."
+    },
+    "prefix": {
+      "label": "Prefix Commands",
+      "icon": "💬",
+      "description": "Message commands using the . prefix."
+    },
+    "session": {
+      "label": "Session Commands",
+      "icon": "🎮",
+      "description": "In-game session vote, start, and end controls."
+    },
+    "systems": {
+      "label": "Automatic Systems",
+      "icon": "⚙️",
+      "description": "Features that run without a direct command."
+    }
+  },
+  "overrides": {
+    "slash:setup": {
+      "permission": "Administrator",
+      "description": "Manage the City of Angels server setup system (channels, roles, permissions).",
+      "subcommands": [
+        { "name": "channels", "description": "Create or update the City of Angels channel layout." },
+        { "name": "roles", "description": "Create or update City of Angels setup roles." },
+        { "name": "permissions", "description": "Reapply City of Angels channel permissions." },
+        { "name": "audit", "description": "Audit risky setup channel permissions." },
+        { "name": "delete-channels", "description": "Delete all setup-created channels and categories." },
+        { "name": "delete-roles", "description": "Delete all setup-created roles." },
+        { "name": "reset-server", "description": "Delete setup items and rebuild the safe layout." }
+      ]
+    },
+    "slash:setup-erlc-roles": {
+      "permission": "Administrator",
+      "description": "Create or sync the in-game role hierarchy."
+    },
+    "slash:fix-erlc-role-order": {
+      "permission": "Administrator",
+      "description": "Reapply the role hierarchy order without touching channels."
+    },
+    "slash:fix-erlc-channel-permissions": {
+      "permission": "Administrator",
+      "description": "Fix existing category and channel permission overwrites."
+    },
+    "slash:server-status": {
+      "permission": "Everyone"
+    },
+    "slash:server-roles": {
+      "permission": "Manage Roles"
+    },
+    "slash:ticket-panel": {
+      "permission": "Manage Server",
+      "description": "Send the City of Angels support ticket panel to a channel."
+    },
+    "prefix:status": {
+      "permission": "Everyone",
+      "aliases": ["serverstatus", "server-status", "server"]
+    },
+    "prefix:purge": {
+      "permission": "Manage Messages",
+      "aliases": ["clear"],
+      "usage": ".purge <amount>"
+    },
+    "prefix:roles": {
+      "permission": "Manage Roles",
+      "aliases": ["serverroles", "server-roles"],
+      "usage": ".roles [page]"
+    },
+    "prefix:level": {
+      "permission": "Everyone",
+      "aliases": ["rank"],
+      "usage": ".level [@user]"
+    },
+    "prefix:levels": {
+      "permission": "Everyone",
+      "aliases": ["leaderboard", "lb"]
+    },
+    "prefix:addxp": {
+      "permission": "Manage Server",
+      "aliases": ["givexp"],
+      "usage": ".addxp @user <amount>"
+    },
+    "prefix:setuproles": {
+      "permission": "Manage Server",
+      "aliases": ["reactionroles"]
+    },
+    "prefix:testwelcome": {
+      "permission": "Manage Server",
+      "aliases": ["welcometest"]
+    },
+    "session:session": {
+      "permission": "Manage Server (vote/start/end)",
+      "aliases": ["sv", "ss", "se"],
+      "notes": "Aliases: .sv = vote, .ss = start, .se = end"
+    }
+  },
+  "systems": [
+    {
+      "name": "Welcome System",
+      "description": "Sends a branded welcome embed when a member joins City of Angels."
+    },
+    {
+      "name": "Leveling System",
+      "description": "Members earn XP from messages. Use .level and .levels to view progress."
+    },
+    {
+      "name": "Ticket System",
+      "description": "Support tickets via the /ticket-panel and button interactions."
+    },
+    {
+      "name": "Reaction Roles",
+      "description": "Self-assign roles using reaction-role panel buttons."
+    },
+    {
+      "name": "Mention Responder",
+      "description": "Veltrix responds when @mentioned with helpful info."
+    },
+    {
+      "name": "Session Logs",
+      "description": "Session activity logging for staff channels."
+    }
+  ]
+}

@@ -11,6 +11,7 @@ const DEPLOY_ENTRIES = [
   "css",
   "js",
   "data",
+  "assets",
 ];
 
 function rimraf(dir) {
