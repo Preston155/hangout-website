@@ -269,7 +269,7 @@ function render() {
       <aside class="sidebar" id="sidebar">
         <div class="sidebar__brand">
           <div class="sidebar__logo">
-            <img src="assets/veltrix-logo.png" alt="Veltrix" width="40" height="40" />
+            <img src="assets/veltrix-logo.png?v=6" alt="Veltrix" width="52" height="52" />
           </div>
           <div>
             <div class="sidebar__title">${esc(state.data.botName)}</div>
@@ -294,13 +294,16 @@ function render() {
       <main class="main">
         <header class="hero reveal">
           <div class="hero__row">
-            <div>
-              <p class="hero__label">City of Angels</p>
-              <h1><span>Veltrix</span> commands</h1>
-              <p class="hero__desc">
-                Slash commands, prefix commands, and automated features.
-                Prefix is <code>${esc(prefix)}</code>
-              </p>
+            <div class="hero__brand">
+              <img class="hero__logo" src="assets/veltrix-logo.png?v=6" alt="" width="96" height="96" />
+              <div>
+                <p class="hero__label">City of Angels</p>
+                <h1><span>Veltrix</span> commands</h1>
+                <p class="hero__desc">
+                  Slash commands, prefix commands, and automated features.
+                  Prefix is <code>${esc(prefix)}</code>
+                </p>
+              </div>
             </div>
             <div class="stats">
               <div class="stat"><div class="stat__val">${counts.total}</div><div class="stat__label">commands</div></div>

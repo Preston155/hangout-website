@@ -72,19 +72,22 @@ html, body {
 }
 
 .sidebar__logo {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius);
-  overflow: hidden;
+  width: 52px;
+  height: 52px;
   flex-shrink: 0;
-  background: #000;
+  background: none;
+  overflow: visible;
+  display: grid;
+  place-items: center;
 }
 
 .sidebar__logo img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  transform: scale(1.45);
   display: block;
+  background: none;
 }
 
 .sidebar__title {
@@ -186,10 +189,27 @@ html, body {
 
 .hero__row {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   gap: 24px;
   flex-wrap: wrap;
+}
+
+.hero__brand {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.hero__logo {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  transform: scale(1.35);
+  flex-shrink: 0;
+  background: none;
+  pointer-events: none;
+  user-select: none;
 }
 
 .hero__label {
@@ -757,6 +777,14 @@ html, body {
   .main { padding: 20px 16px 72px; }
 
   .hero__row { flex-direction: column; align-items: flex-start; }
+
+  .hero__brand { gap: 16px; }
+
+  .hero__logo {
+    width: 72px;
+    height: 72px;
+    transform: scale(1.3);
+  }
 
   .stats { gap: 16px; }
 
