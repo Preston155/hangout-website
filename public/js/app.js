@@ -337,17 +337,17 @@ function renderCard(cmd, catId) {
       ? `<span class="pill">${esc((cmd.aliases || []).slice(0, 2).map((a) => aliasLabel(a, type)).join(", "))}${cmd.aliases.length > 2 ? " +" + (cmd.aliases.length - 2) : ""}</span>`
       : "";
 
-  return `<article class="card card--${type} reveal" data-cmd="${esc(key)}">
+  return `<article class="card card--${type} card--cat-${esc(catId)} reveal" data-cmd="${esc(key)}">
     <div class="card__top">
       <div class="${nameClass}">${esc(displayName)}</div>
       <div class="card__actions">
-        <button class="icon-btn icon-btn--copy" data-copy="${esc(cmdCopyText(cmd))}" title="Copy" type="button" aria-label="Copy command"></button>
+        <button class="icon-btn icon-btn--copy" data-copy="${esc(cmdCopyText(cmd))}" title="Copy command" type="button" aria-label="Copy command"></button>
         <span class="tag">${esc(type)}</span>
       </div>
     </div>
     <p class="card__desc">${esc(cmd.description || "")}</p>
     <div class="meta">${perm}${aliasPill}${cmd.usage ? `<span class="pill">${esc(cmd.usage)}</span>` : ""}</div>
-    ${hasMore ? `<div class="card__more">Details</div>` : ""}
+    ${hasMore ? `<button class="card__more" type="button">Details</button>` : ""}
   </article>`;
 }
 
@@ -506,6 +506,7 @@ function render() {
         </div>
       </aside>
       <main class="main">
+        <div class="main__inner">
         <header class="hero reveal">
           <div class="hero__row">
             <div class="hero__brand">
@@ -515,7 +516,7 @@ function render() {
                 <h1><span>Veltrix</span> commands</h1>
                 <p class="hero__desc">
                   Slash commands, prefix commands, and automated features.
-                  Prefix is <code>${esc(prefix)}</code>
+                  <span class="hero__prefix-wrap">Prefix <span class="hero__prefix-badge">${esc(prefix)}</span></span>
                 </p>
               </div>
             </div>
@@ -545,6 +546,7 @@ function render() {
         ${state.view === "admin" && state.adminAuth ? renderAdminMain() : sections || `<div class="empty reveal"><p>No commands match that search.</p></div>`}
 
         <footer class="footer">Updated ${esc(state.data.updatedAt)} · Veltrix · City of Angels</footer>
+        </div>
       </main>
     </div>`;
 
@@ -660,6 +662,19 @@ function wireEvents() {
   document.querySelectorAll(".card[data-cmd]").forEach((card) => {
     card.addEventListener("click", (e) => {
       if (e.target.closest("[data-copy]")) return;
+      const found = findCommand(card.dataset.cmd);
+      if (found) {
+        state.modalCmd = found;
+        renderModal();
+      }
+    });
+  });
+
+  document.querySelectorAll(".card__more").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const card = btn.closest(".card[data-cmd]");
+      if (!card) return;
       const found = findCommand(card.dataset.cmd);
       if (found) {
         state.modalCmd = found;
