@@ -759,7 +759,7 @@ async function init() {
 
   try {
     const [cmdRes, embedRes] = await Promise.all([
-      fetch("data/bot-commands.json?v=10", { cache: "no-store" }),
+      fetch("data/bot-commands.json?v=11", { cache: "no-store" }),
       fetch("data/embed-previews.json?v=2", { cache: "no-store" }),
     ]);
     if (!cmdRes.ok) throw new Error("Failed to load commands");

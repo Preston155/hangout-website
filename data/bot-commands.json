@@ -12,24 +12,38 @@
       "description": "Discord application commands — type / in chat.",
       "commands": [
         {
-          "name": "setup",
+          "name": "counting",
           "type": "slash",
-          "description": "Manage the City of Angels server setup system (channels, roles, permissions).",
-          "permission": "Administrator",
+          "description": "Manage the premium counting system (channel, reset, status).",
+          "permission": "Manage Server",
           "subcommands": [
-            { "name": "channels", "description": "Create or update the City of Angels channel layout." },
-            { "name": "roles", "description": "Create or update City of Angels setup roles." },
-            { "name": "permissions", "description": "Reapply City of Angels channel permissions." },
-            { "name": "audit", "description": "Audit risky setup channel permissions." },
-            { "name": "delete-channels", "description": "Delete all setup-created channels and categories." },
-            { "name": "delete-roles", "description": "Delete all setup-created roles." },
-            { "name": "reset-server", "description": "Delete setup items and rebuild the safe layout." }
+            {
+              "name": "setup",
+              "description": "Set the counting channel and optional start number."
+            },
+            {
+              "name": "status",
+              "description": "Show counting status, next number, and record."
+            },
+            {
+              "name": "reset",
+              "description": "Reset counting to a start number."
+            },
+            {
+              "name": "disable",
+              "description": "Turn off the counting system."
+            }
           ]
         },
         {
-          "name": "setup-erlc-roles",
+          "name": "delete-lcrp-channels",
           "type": "slash",
-          "description": "Create or sync the in-game role hierarchy.",
+          "description": "Safely delete one selected LCRP channel after confirmation."
+        },
+        {
+          "name": "fix-erlc-channel-permissions",
+          "type": "slash",
+          "description": "Fix existing category and channel permission overwrites.",
           "permission": "Administrator"
         },
         {
@@ -39,43 +53,68 @@
           "permission": "Administrator"
         },
         {
-          "name": "fix-erlc-channel-permissions",
+          "name": "server-roles",
           "type": "slash",
-          "description": "Fix existing category and channel permission overwrites.",
+          "description": "Show the roles in this server.",
+          "permission": "Manage Roles"
+        },
+        {
+          "name": "setup",
+          "type": "slash",
+          "description": "Manage the City of Angels server setup system (channels, roles, permissions).",
+          "permission": "Administrator",
+          "subcommands": [
+            {
+              "name": "channels",
+              "description": "Create or update the City of Angels channel layout."
+            },
+            {
+              "name": "roles",
+              "description": "Create or update City of Angels setup roles."
+            },
+            {
+              "name": "permissions",
+              "description": "Reapply City of Angels channel permissions."
+            },
+            {
+              "name": "audit",
+              "description": "Audit risky setup channel permissions."
+            },
+            {
+              "name": "delete-channels",
+              "description": "Delete all setup-created channels and categories."
+            },
+            {
+              "name": "delete-roles",
+              "description": "Delete all setup-created roles."
+            },
+            {
+              "name": "reset-server",
+              "description": "Delete setup items and rebuild the safe layout."
+            }
+          ]
+        },
+        {
+          "name": "setup-erlc-roles",
+          "type": "slash",
+          "description": "Create or sync the in-game role hierarchy.",
           "permission": "Administrator"
         },
         {
-          "name": "server-status",
+          "name": "setup-lcrp-channels",
           "type": "slash",
-          "description": "Live Discord server overview embed. Auto-refreshes every 30 seconds.",
-          "permission": "Everyone"
+          "description": "Create or update the safe Veltrix ERLC channel/permission layout."
         },
         {
-          "name": "server-roles",
+          "name": "setup-lcrp-roles",
           "type": "slash",
-          "description": "Paginated list of every role in the server.",
-          "permission": "Manage Roles",
-          "options": [
-            { "name": "page", "description": "Page number to view." }
-          ]
+          "description": "Create or update the City of Angels role structure."
         },
         {
           "name": "ticket-panel",
           "type": "slash",
           "description": "Send the City of Angels support ticket panel to a channel.",
           "permission": "Manage Server"
-        },
-        {
-          "name": "counting",
-          "type": "slash",
-          "description": "Manage the premium counting system (channel, reset, status).",
-          "permission": "Manage Server",
-          "subcommands": [
-            { "name": "setup", "description": "Set the counting channel and optional start number." },
-            { "name": "status", "description": "Show counting status, next number, and record." },
-            { "name": "reset", "description": "Reset counting to a start number." },
-            { "name": "disable", "description": "Turn off the counting system." }
-          ]
         }
       ]
     },
@@ -86,82 +125,87 @@
       "description": "Message commands using the . prefix.",
       "commands": [
         {
-          "name": "status",
+          "name": "╭──・",
           "type": "prefix",
-          "usage": ".status",
-          "aliases": ["serverstatus", "server-status", "server"],
-          "description": "Live Discord server status overview (same as /server-status).",
-          "permission": "Everyone"
+          "description": "",
+          "usage": ".╭──・"
         },
         {
-          "name": "purge",
+          "name": "📌 INFORMATION",
           "type": "prefix",
-          "usage": ".purge <amount>",
-          "aliases": ["clear"],
-          "description": "Bulk-delete messages in the current channel (skips pinned).",
-          "permission": "Manage Messages"
+          "description": "",
+          "usage": ".📌 INFORMATION",
+          "aliases": [
+            "📢・announcements"
+          ]
         },
         {
-          "name": "roles",
+          "name": "config",
           "type": "prefix",
-          "usage": ".roles [page]",
-          "aliases": ["serverroles", "server-roles"],
-          "description": "Show server roles list (prefix version of /server-roles).",
-          "permission": "Manage Roles"
-        },
-        {
-          "name": "level",
-          "type": "prefix",
-          "usage": ".level [@user]",
-          "aliases": ["rank"],
-          "description": "Check your or another member's XP level and rank.",
-          "permission": "Everyone"
-        },
-        {
-          "name": "levels",
-          "type": "prefix",
-          "usage": ".levels",
-          "aliases": ["leaderboard", "lb"],
-          "description": "Show the server XP leaderboard.",
-          "permission": "Everyone"
-        },
-        {
-          "name": "addxp",
-          "type": "prefix",
-          "usage": ".addxp @user <amount>",
-          "aliases": ["givexp"],
-          "description": "Grant XP to a member manually.",
-          "permission": "Manage Server"
-        },
-        {
-          "name": "setuproles",
-          "type": "prefix",
-          "usage": ".setuproles",
-          "aliases": ["reactionroles"],
-          "description": "Post the reaction-role setup panel in the current channel.",
-          "permission": "Manage Server"
-        },
-        {
-          "name": "testwelcome",
-          "type": "prefix",
-          "usage": ".testwelcome",
-          "aliases": ["welcometest"],
-          "description": "Preview the welcome message for yourself in the current channel.",
-          "permission": "Manage Server"
+          "description": "",
+          "usage": ".config"
         },
         {
           "name": "counting",
           "type": "prefix",
           "usage": ".counting <action>",
-          "aliases": ["count"],
+          "aliases": [
+            "count"
+          ],
           "description": "Manage the counting system — setup, status, reset, or disable.",
           "permission": "Manage Server",
           "subcommands": [
-            { "name": "setup", "description": "Set counting channel and optional start (`.counting setup #channel 0`)." },
-            { "name": "status", "description": "Show current counting status embed." },
-            { "name": "reset", "description": "Reset the count (optional start number)." },
-            { "name": "disable", "description": "Turn off counting." }
+            {
+              "name": "setup",
+              "description": "Set counting channel and optional start (`.counting setup #channel 0`)."
+            },
+            {
+              "name": "status",
+              "description": "Show current counting status embed."
+            },
+            {
+              "name": "reset",
+              "description": "Reset the count (optional start number)."
+            },
+            {
+              "name": "disable",
+              "description": "Turn off counting."
+            }
           ]
+        },
+        {
+          "name": "counting-system",
+          "type": "prefix",
+          "description": "",
+          "usage": ".counting-system"
+        },
+        {
+          "name": "index",
+          "type": "prefix",
+          "description": "",
+          "usage": ".index"
+        },
+        {
+          "name": "purge",
+          "type": "prefix",
+          "description": "",
+          "usage": ".purge <amount>",
+          "aliases": [
+            "clear"
+          ],
+          "permission": "Manage Messages"
+        },
+        {
+          "name": "status",
+          "type": "prefix",
+          "description": "",
+          "usage": ".status",
+          "aliases": [
+            "serverstatus",
+            "server-status",
+            "server"
+          ],
+          "permission": "Everyone"
         }
       ]
     },
@@ -176,20 +220,47 @@
           "type": "prefix",
           "usage": ".session <action>",
           "aliases": [
-            { "name": "sv", "description": "Session Vote" },
-            { "name": "ss", "description": "Session Start" },
-            { "name": "se", "description": "Session End" }
+            {
+              "name": "sv",
+              "description": "Session Vote"
+            },
+            {
+              "name": "ss",
+              "description": "Session Start"
+            },
+            {
+              "name": "se",
+              "description": "Session End"
+            }
           ],
           "description": "Manage in-game session votes and roster.",
-          "permission": "Manage Server (vote/start/end)",
           "subcommands": [
-            { "name": "help", "description": "Show session command help." },
-            { "name": "vote", "description": "Open a session vote with Ready / Out buttons." },
-            { "name": "start", "description": "Start the active session." },
-            { "name": "end", "description": "End the current session." },
-            { "name": "status", "description": "Show current session status and readiness." },
-            { "name": "list", "description": "Show who is Ready vs Out." }
-          ]
+            {
+              "name": "help",
+              "description": "Show session command help."
+            },
+            {
+              "name": "vote",
+              "description": "Open a session vote with Ready / Out buttons."
+            },
+            {
+              "name": "start",
+              "description": "Start the active session."
+            },
+            {
+              "name": "end",
+              "description": "End the current session."
+            },
+            {
+              "name": "status",
+              "description": "Show current session status and readiness."
+            },
+            {
+              "name": "list",
+              "description": "Show who is Ready vs Out."
+            }
+          ],
+          "permission": "Manage Server (vote/start/end)"
         }
       ]
     },
@@ -201,38 +272,38 @@
       "commands": [
         {
           "name": "Welcome System",
-          "type": "system",
-          "description": "Sends a branded welcome embed when a member joins City of Angels."
+          "description": "Sends a branded welcome embed when a member joins City of Angels.",
+          "type": "system"
         },
         {
           "name": "Leveling System",
-          "type": "system",
-          "description": "Members earn XP from messages. Use .level and .levels to view progress."
+          "description": "Members earn XP from messages. Use .level and .levels to view progress.",
+          "type": "system"
         },
         {
           "name": "Ticket System",
-          "type": "system",
-          "description": "Support tickets via the /ticket-panel and button interactions."
+          "description": "Support tickets via the /ticket-panel and button interactions.",
+          "type": "system"
         },
         {
           "name": "Counting System",
-          "type": "system",
-          "description": "Members count up in a dedicated channel — wrong numbers or double-counts reset to 1. Use /counting or .counting to manage."
+          "description": "Members count up in a dedicated channel — wrong numbers or double-counts reset to 1. Use /counting or .counting to manage.",
+          "type": "system"
         },
         {
           "name": "Reaction Roles",
-          "type": "system",
-          "description": "Self-assign roles using reaction-role panel buttons."
+          "description": "Self-assign roles using reaction-role panel buttons.",
+          "type": "system"
         },
         {
           "name": "Mention Responder",
-          "type": "system",
-          "description": "Veltrix responds when @mentioned with helpful info."
+          "description": "Veltrix responds when @mentioned with helpful info.",
+          "type": "system"
         },
         {
           "name": "Session Logs",
-          "type": "system",
-          "description": "Session activity logging for staff channels."
+          "description": "Session activity logging for staff channels.",
+          "type": "system"
         }
       ]
     }
