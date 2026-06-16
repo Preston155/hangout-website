@@ -93,14 +93,13 @@ function renderAdminEditor() {
   return `
     <div class="admin-toolbar reveal is-visible">
       <input class="admin-search" id="adminSearch" type="search" placeholder="Filter commands…" value="${esc(state.adminQuery || "")}" />
-      <button class="btn" id="adminPublishBtn" type="button">Publish to site &amp; bot</button>
-      <button class="btn btn--ghost" id="adminBotOnlyBtn" type="button">Apply to bot only</button>
-      <button class="btn btn--ghost" id="adminSyncHelpBtn" type="button">Sync help</button>
+      <button class="btn" id="adminPublishBtn" type="button">Publish</button>
+      <button class="btn btn--ghost" id="adminSyncHelpBtn" type="button">Help</button>
     </div>
 
     <div class="admin-panel reveal is-visible">
       <h3>Edit commands (${filtered.length})</h3>
-      <p class="modal__desc">Edits update the <strong>live bot</strong> (slash descriptions, prefix aliases) and the <strong>website</strong>. Save first, then publish.</p>
+      <p class="modal__desc">Edit how commands appear on this site. Save, then <strong>Publish</strong> when you’re done.</p>
       <div class="admin-cmd-list">${list || "<p class=\"modal__desc\">No commands match.</p>"}</div>
     </div>
 
@@ -177,7 +176,7 @@ async function saveAdminEditor(e) {
     await adminApi("save-command", { key, patch });
     await loadAdminOverrides();
     mergeAdminIntoState();
-    showToast("Saved — publish to push to site & bot");
+    showToast("Saved");
     closeAdminEditor();
     render();
   } catch (err) {
@@ -187,23 +186,13 @@ async function saveAdminEditor(e) {
 
 async function publishAdminChanges() {
   try {
-    const res = await adminApi("publish");
+    await adminApi("publish");
     await loadAdminOverrides();
     mergeAdminIntoState();
-    const botNote = res.bot ? ` · Bot: ${res.bot}` : "";
-    showToast("Published to site" + botNote);
+    showToast("Published");
     render();
   } catch (err) {
-    showToast(err.message || "Publish failed — run npm run admin:publish on your PC");
-  }
-}
-
-async function applyBotOnly() {
-  try {
-    const res = await adminApi("apply-bot");
-    showToast("Applied to live bot" + (res.bot ? "" : ""));
-  } catch (err) {
-    showToast(err.message || "Bot apply failed — run npm run sync:to-bot on your PC");
+    showToast(err.message || "Publish failed");
   }
 }
 
@@ -238,9 +227,8 @@ function wireAdminEditor() {
   document.getElementById("adminEditorCancel")?.addEventListener("click", closeAdminEditor);
   document.getElementById("adminHideCmd")?.addEventListener("click", hideAdminCommand);
   document.getElementById("adminPublishBtn")?.addEventListener("click", publishAdminChanges);
-  document.getElementById("adminBotOnlyBtn")?.addEventListener("click", applyBotOnly);
   document.getElementById("adminSyncHelpBtn")?.addEventListener("click", () => {
-    showToast("PC: npm run admin:publish · Bot only: npm run sync:to-bot");
+    showToast("Save edits, then Publish. Changes show on this site only.");
   });
 }
 

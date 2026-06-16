@@ -19,7 +19,7 @@ function log(msg) {
   console.log(`[admin-publish] ${msg}`);
 }
 
-async function main() {
+function main() {
   if (!fs.existsSync(BOT_JSON)) {
     console.error("Missing bot-commands.json");
     process.exit(1);
@@ -48,20 +48,6 @@ async function main() {
   fs.writeFileSync(OVERRIDES_JSON, JSON.stringify(adminOverrides, null, 2) + "\n", "utf8");
 
   log("Merged overrides into bot-commands.json and command-previews.json");
-
-  try {
-    const { syncToBot } = require("./sync-to-bot");
-    log("Pushing command edits to live bot...");
-    const botResult = await syncToBot();
-    if (botResult.changed) {
-      log(`Bot updated: ${botResult.changedFiles.join(", ")}`);
-    } else {
-      log("Bot source unchanged (no mappable patches).");
-    }
-  } catch (err) {
-    console.error(`[admin-publish] Bot sync failed: ${err.message}`);
-    console.error("Site publish will continue. Run npm run sync:to-bot manually.");
-  }
 
   const build = spawnSync(process.platform === "win32" ? "npm.cmd" : "npm", ["run", "build"], {
     cwd: ROOT,
@@ -102,7 +88,4 @@ async function main() {
   log("Pushed to GitHub — Plesk will deploy shortly.");
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+main();

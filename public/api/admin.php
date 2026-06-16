@@ -207,30 +207,7 @@ if ($action === 'publish') {
         $gitMsg = trim(($commit ?? '') . "\n" . ($push ?? ''));
     }
 
-    $botMsg = null;
-    try {
-        $botResult = pushOverridesToBot($config, $overrides);
-        if ($botResult !== null) {
-            $botMsg = 'Bot updated';
-        }
-    } catch (Throwable $e) {
-        $botMsg = $e->getMessage();
-    }
-
-    respond(['ok' => true, 'publishedAt' => $overrides['publishedAt'], 'git' => $gitMsg, 'bot' => $botMsg]);
-}
-
-if ($action === 'apply-bot') {
-    $overrides = readJson($overridesPath, ['commands' => [], 'previews' => [], 'systems' => [], 'meta' => [], 'hiddenKeys' => []]);
-    try {
-        $botResult = pushOverridesToBot($config, $overrides);
-        if ($botResult === null) {
-            respond(['ok' => false, 'error' => 'Bot apply URL not configured in api/config.php'], 503);
-        }
-        respond(['ok' => true, 'bot' => $botResult]);
-    } catch (Throwable $e) {
-        respond(['ok' => false, 'error' => $e->getMessage()], 500);
-    }
+    respond(['ok' => true, 'publishedAt' => $overrides['publishedAt'], 'git' => $gitMsg]);
 }
 
 respond(['ok' => false, 'error' => 'Unknown action'], 400);
