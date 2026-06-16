@@ -63,7 +63,7 @@ function main() {
     GIT_COMMITTER_EMAIL: process.env.GIT_COMMITTER_EMAIL || "Preston155@users.noreply.github.com",
   };
 
-  spawnSync("git", ["add", "public/data/bot-commands.json", "public/data/command-previews.json", "public/data/admin-overrides.json", "scripts/bot-commands.meta.json", "data/bot-commands.json", "data/command-previews.json", "data/admin-overrides.json", "api", "index.html", "js/app.js", "js/admin-editor.js", "js/preview-renderer.js", "css/commands.css"], {
+  spawnSync("git", ["add", "public/data/bot-commands.json", "public/data/command-previews.json", "public/data/admin-overrides.json", "scripts/bot-commands.meta.json", "data/bot-commands.json", "data/command-previews.json", "data/admin-overrides.json", "api", "index.html", "js/app.js", "js/admin-editor.js", "css/commands.css"], {
     cwd: ROOT,
     stdio: "inherit",
     env,

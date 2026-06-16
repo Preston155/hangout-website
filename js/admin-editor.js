@@ -38,13 +38,6 @@ async function loadAdminOverrides() {
 
 function mergeAdminIntoState() {
   if (!adminEditor.overrides || !state.data) return;
-  const { mergeAll } = window.AdminMerge || {};
-  if (mergeAll) {
-    const { data, previews } = mergeAll(state.data, state.previews, adminEditor.overrides);
-    state.data = data;
-    state.previews = previews;
-    return;
-  }
   applyClientOverrides();
 }
 
@@ -61,9 +54,6 @@ function applyClientOverrides() {
         const patch = o.commands?.[key] || o.commands?.[alt];
         return patch ? { ...cmd, ...patch } : cmd;
       });
-  }
-  if (o.previews && state.previews) {
-    state.previews = { ...state.previews, ...o.previews };
   }
 }
 
@@ -121,7 +111,6 @@ function renderAdminEditor() {
         <label class="admin-field"><span>Usage</span><input id="admUsage" type="text" placeholder=".command or /command" /></label>
         <label class="admin-field"><span>Aliases (comma-separated)</span><input id="admAliases" type="text" /></label>
         <label class="admin-field"><span>Notes</span><textarea id="admNotes" rows="2"></textarea></label>
-        <label class="admin-field"><span>Preview summary</span><textarea id="admPreviewSummary" rows="2" placeholder="What this command does (shown in modal)"></textarea></label>
         <div class="admin-form__actions">
           <button class="btn" type="submit">Save changes</button>
           <button class="btn btn--ghost" id="adminEditorCancel" type="button">Cancel</button>
@@ -137,7 +126,6 @@ function openAdminEditor(key) {
   adminEditor.editingKey = key;
   const { cmd } = found;
   const patch = adminEditor.overrides?.commands?.[key] || {};
-  const preview = state.previews?.[key] || state.previews?.[`${cmd.type}:${cmd.name}`] || {};
 
   document.getElementById("adminEditorPanel")?.removeAttribute("hidden");
   document.getElementById("adminEditorTitle").textContent = `Edit ${cmdCopyText(cmd)}`;
@@ -149,7 +137,6 @@ function openAdminEditor(key) {
     .map((a) => (typeof a === "string" ? a : a.name))
     .join(", ");
   document.getElementById("admNotes").value = patch.notes ?? cmd.notes ?? "";
-  document.getElementById("admPreviewSummary").value = preview.summary ?? "";
 }
 
 function closeAdminEditor() {
@@ -177,12 +164,8 @@ async function saveAdminEditor(e) {
     notes: document.getElementById("admNotes").value.trim() || undefined,
   };
 
-  const previewSummary = document.getElementById("admPreviewSummary").value.trim();
-  const previewPatch = previewSummary ? { summary: previewSummary } : null;
-
   try {
     await adminApi("save-command", { key, patch });
-    if (previewPatch) await adminApi("save-preview", { key, patch: { ...(state.previews?.[key] || {}), ...previewPatch } });
     await loadAdminOverrides();
     mergeAdminIntoState();
     showToast("Saved — publish to push live for everyone");

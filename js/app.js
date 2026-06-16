@@ -2,7 +2,6 @@
 
 const state = {
   data: null,
-  previews: null,
   query: "",
   filter: "all",
   view: "commands",
@@ -101,17 +100,6 @@ function cmdCopyText(cmd) {
 
 function cmdKey(cmd, catId) {
   return `${catId}:${cmd.name}:${cmd.type || "system"}`;
-}
-
-function hasCustomPreview(cmd, catId) {
-  if (!state.previews) return false;
-  const key = previewKey(cmd, catId);
-  const alt = previewLookupKey(cmd, catId);
-  return Boolean(state.previews[key] || state.previews[alt]);
-}
-
-function getCommandPreview(cmd, catId) {
-  return resolveCommandPreview(cmd, catId, state.previews);
 }
 
 function isAdminAuthed() {
@@ -229,31 +217,15 @@ function permissionStats(data) {
   return [...map.entries()].sort((a, b) => b[1] - a[1]);
 }
 
-function embedCoverage(data) {
-  const rows = collectAllCommands(data);
-  const slashPrefix = rows.filter(({ cmd }) => isPreviewableCommand(cmd));
-  const custom = slashPrefix.filter(({ cmd, cat }) => hasCustomPreview(cmd, cat.id));
-  return { total: slashPrefix.length, withEmbed: slashPrefix.length, custom: custom.length, items: slashPrefix };
-}
-
 function renderAdminMain() {
   const counts = countCommands(state.data);
   const perms = permissionStats(state.data);
-  const embeds = embedCoverage(state.data);
 
   const permRows = perms
     .map(
       ([perm, n]) =>
         `<tr><td>${esc(perm)}</td><td>${n}</td></tr>`,
     )
-    .join("");
-
-  const embedItems = embeds.items
-    .map(({ cmd, cat }) => {
-      const label = cmdCopyText(cmd);
-      const isCustom = hasCustomPreview(cmd, cat.id);
-      return `<div class="admin-embed-item"><code>${esc(label)}</code><span class="admin-badge${isCustom ? "" : " admin-badge--auto"}">${isCustom ? "Custom" : "Auto"}</span></div>`;
-    })
     .join("");
 
   return `
@@ -266,7 +238,7 @@ function renderAdminMain() {
       <div class="admin-card"><div class="admin-card__val">${counts.total}</div><div class="admin-card__label">Total commands</div></div>
       <div class="admin-card"><div class="admin-card__val">${counts.slash}</div><div class="admin-card__label">Slash</div></div>
       <div class="admin-card"><div class="admin-card__val">${counts.prefix}</div><div class="admin-card__label">Prefix</div></div>
-      <div class="admin-card"><div class="admin-card__val">${embeds.withEmbed}</div><div class="admin-card__label">Embed previews (/ & .)</div></div>
+      <div class="admin-card"><div class="admin-card__val">${state.data.categories.length}</div><div class="admin-card__label">Categories</div></div>
     </div>
 
     <div class="admin-panel reveal is-visible">
@@ -286,11 +258,6 @@ function renderAdminMain() {
         <tr><th>Permission</th><th>Commands</th></tr>
         ${permRows}
       </table>
-    </div>
-
-    <div class="admin-panel reveal is-visible">
-      <h3>Slash &amp; prefix embed previews (${embeds.custom} custom · ${embeds.withEmbed} total)</h3>
-      <div class="admin-embed-list">${embedItems || "<p class=\"modal__desc\">No embed previews configured yet.</p>"}</div>
     </div>
 
     <div class="admin-actions reveal is-visible">
@@ -360,8 +327,6 @@ function renderCard(cmd, catId) {
   const displayName = type === "system" ? cmd.name : cmdDisplayName(cmd);
   const key = cmdKey(cmd, catId);
   const hasMore = (cmd.subcommands || []).length || (cmd.options || []).length || cmd.notes;
-  const preview = isPreviewableCommand(cmd) ? getCommandPreview(cmd, catId) : null;
-  const previewHtml = preview ? renderCommandPreview(preview, true) : "";
 
   const perm = cmd.permission
     ? `<span class="pill ${permClass(cmd.permission)}">${esc(cmd.permission)}</span>`
@@ -381,7 +346,6 @@ function renderCard(cmd, catId) {
       </div>
     </div>
     <p class="card__desc">${esc(cmd.description || "")}</p>
-    ${previewHtml}
     <div class="meta">${perm}${aliasPill}${cmd.usage ? `<span class="pill">${esc(cmd.usage)}</span>` : ""}</div>
     ${hasMore ? `<div class="card__more">Details</div>` : ""}
   </article>`;
@@ -425,15 +389,6 @@ function renderModal() {
     ? `<div class="modal__block"><div class="modal__block-title">Notes</div><p class="modal__desc">${esc(cmd.notes)}</p></div>`
     : "";
 
-  const preview =
-    state.modalCmd && isPreviewableCommand(cmd) ? getCommandPreview(cmd, state.modalCmd.cat.id) : null;
-  const previewBlock = preview
-    ? `<div class="modal__block">
-        <div class="modal__embed-label">What this command does</div>
-        <div class="modal__preview-wrap">${renderCommandPreview(preview)}</div>
-      </div>`
-    : "";
-
   const perm = cmd.permission
     ? `<div class="modal__block"><div class="modal__block-title">Permission</div><span class="pill ${permClass(cmd.permission)}">${esc(cmd.permission)}</span></div>`
     : "";
@@ -458,7 +413,6 @@ function renderModal() {
               <button class="btn" data-copy="${esc(copyVal)}" type="button">Copy</button>
             </div>
           </div>
-          ${previewBlock}
           ${perm}${aliases}${subs}${opts}${notes}
           <button class="btn btn--ghost" id="modalClose2" type="button" style="width:100%;margin-top:6px">Close</button>
         </div>
@@ -747,14 +701,12 @@ async function init() {
   }
 
   try {
-    const [cmdRes, previewRes, overrideRes] = await Promise.all([
+    const [cmdRes, overrideRes] = await Promise.all([
       fetch("data/bot-commands.json?v=14", { cache: "no-store" }),
-      fetch("data/command-previews.json?v=3", { cache: "no-store" }),
       fetch("data/admin-overrides.json?v=1", { cache: "no-store" }),
     ]);
     if (!cmdRes.ok) throw new Error("Failed to load commands");
     state.data = await cmdRes.json();
-    if (previewRes.ok) state.previews = await previewRes.json();
     if (overrideRes.ok) adminEditor.overrides = await overrideRes.json();
     else if (typeof loadAdminOverrides === "function") await loadAdminOverrides();
     if (typeof mergeAdminIntoState === "function") mergeAdminIntoState();
