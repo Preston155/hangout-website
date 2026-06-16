@@ -374,11 +374,11 @@ function renderCard(cmd, catId) {
       <div class="${nameClass}">${esc(displayName)}</div>
       <div class="card__actions">
         <button class="icon-btn icon-btn--copy" data-copy="${esc(cmdCopyText(cmd))}" title="Copy command" type="button" aria-label="Copy command"></button>
-        <span class="tag">${esc(type)}</span>
+        <span class="tag tag--${esc(type)}">${esc(type)}</span>
       </div>
     </div>
     <p class="card__desc">${esc(cmd.description || "")}</p>
-    <div class="meta">${perm}${aliasPill}${cmd.usage ? `<span class="pill">${esc(cmd.usage)}</span>` : ""}</div>
+    <div class="meta">${perm}${aliasPill}${cmd.usage ? `<span class="pill pill--usage">${esc(cmd.usage)}</span>` : ""}</div>
     ${hasMore ? `<button class="card__more" type="button">Details</button>` : ""}
   </article>`;
 }
@@ -432,7 +432,7 @@ function renderModal() {
         <div class="modal__head">
           <div>
             <div class="${modalNameClass}" id="modalTitle">${esc(displayName)}</div>
-            <span class="tag">${esc(type)}</span>
+            <span class="tag tag--${esc(type)}">${esc(type)}</span>
           </div>
           <button class="icon-btn" id="modalClose" type="button" aria-label="Close">&times;</button>
         </div>
@@ -637,7 +637,21 @@ function render(opts = {}) {
   renderModal();
   renderAdminGate();
   initToolbarStick();
+  initScrollTop();
   dismissBoot();
+}
+
+function initScrollTop() {
+  const btn = document.getElementById("scrollTop");
+  if (!btn || btn.dataset.wired === "1") return;
+  btn.dataset.wired = "1";
+
+  const onScroll = () => {
+    btn.classList.toggle("hidden", window.scrollY < 480);
+  };
+  onScroll();
+  window.addEventListener("scroll", onScroll, { passive: true });
+  btn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 }
 
 function initReveal() {
