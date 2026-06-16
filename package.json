@@ -8,7 +8,8 @@
     "build:httpdocs": "node scripts/build-httpdocs.js",
     "sync:commands": "node scripts/sync-bot-commands.js",
     "sync:watch": "node scripts/sync-bot-commands.js --watch",
-    "auto-publish": "node auto-publish.js"
+    "auto-publish": "node auto-publish.js",
+    "admin:publish": "node scripts/admin-publish.js"
   },
   "dependencies": {
     "ssh2": "^1.16.0"

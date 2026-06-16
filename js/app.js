@@ -9,6 +9,7 @@ const state = {
   adminAuth: false,
   modalCmd: null,
   adminGateOpen: false,
+  adminQuery: "",
 };
 
 const ADMIN_SESSION_KEY = "vx_admin";
@@ -185,6 +186,7 @@ function renderAdminGate() {
 
     if (val === ADMIN_PASS) {
       setAdminAuthed(true);
+      if (typeof setAdminPassword === "function") setAdminPassword(val);
       closeAdminGate();
       state.view = "admin";
       closeSidebar();
@@ -294,7 +296,9 @@ function renderAdminMain() {
     <div class="admin-actions reveal is-visible">
       <button class="btn" id="adminBackBtn" type="button">← Back to commands</button>
       <button class="btn btn--ghost" id="adminLogoutBtn" type="button">Sign out</button>
-    </div>`;
+    </div>
+
+    ${typeof renderAdminEditor === "function" ? renderAdminEditor() : ""}`;
 }
 
 function findCommand(key) {
@@ -682,10 +686,15 @@ function wireEvents() {
 
   document.getElementById("adminLogoutBtn")?.addEventListener("click", () => {
     setAdminAuthed(false);
+    sessionStorage.removeItem("vx_admin_pass");
     state.view = "commands";
     render();
     showToast("Signed out");
   });
+
+  if (state.view === "admin" && state.adminAuth && typeof wireAdminEditor === "function") {
+    wireAdminEditor();
+  }
 
   document.querySelectorAll("[data-copy]").forEach((btn) => {
     btn.addEventListener("click", (e) => {
@@ -732,15 +741,23 @@ document.addEventListener("keydown", (e) => {
 
 async function init() {
   state.adminAuth = isAdminAuthed();
+  if (typeof getStoredAdminPassword === "function") {
+    const p = getStoredAdminPassword();
+    if (p) adminEditor.password = p;
+  }
 
   try {
-    const [cmdRes, previewRes] = await Promise.all([
-      fetch("data/bot-commands.json?v=13", { cache: "no-store" }),
-      fetch("data/command-previews.json?v=2", { cache: "no-store" }),
+    const [cmdRes, previewRes, overrideRes] = await Promise.all([
+      fetch("data/bot-commands.json?v=14", { cache: "no-store" }),
+      fetch("data/command-previews.json?v=3", { cache: "no-store" }),
+      fetch("data/admin-overrides.json?v=1", { cache: "no-store" }),
     ]);
     if (!cmdRes.ok) throw new Error("Failed to load commands");
     state.data = await cmdRes.json();
     if (previewRes.ok) state.previews = await previewRes.json();
+    if (overrideRes.ok) adminEditor.overrides = await overrideRes.json();
+    else if (typeof loadAdminOverrides === "function") await loadAdminOverrides();
+    if (typeof mergeAdminIntoState === "function") mergeAdminIntoState();
   } catch (err) {
     dismissBoot();
     document.getElementById("app").innerHTML = `<div class="empty" style="min-height:100vh;display:grid;place-items:center"><p>Couldn't load commands. ${esc(err.message)}</p></div>`;

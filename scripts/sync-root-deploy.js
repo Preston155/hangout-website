@@ -12,6 +12,7 @@ const DEPLOY_ENTRIES = [
   "js",
   "data",
   "assets",
+  "api",
 ];
 
 function rimraf(dir) {

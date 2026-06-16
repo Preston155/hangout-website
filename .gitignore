@@ -10,6 +10,8 @@ desktop/node_modules/
 # Live user data (never commit production DB or uploads)
 data/*.json
 !data/bot-commands.json
+!data/admin-overrides.json
+!data/command-previews.json
 !data/.htaccess
 uploads/**
 !uploads/.htaccess
@@ -61,4 +63,6 @@ scripts/ssh-*.py
 scripts/fetch-bot3*.py
 bot3-*.txt
 
-# httpdocs-ready/
+# Admin API (server-only)
+public/api/config.php
+api/config.php
