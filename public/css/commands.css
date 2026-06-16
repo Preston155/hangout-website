@@ -87,7 +87,6 @@ html, body {
   object-fit: contain;
   transform: scale(1.45);
   display: block;
-  background: none;
 }
 
 .sidebar__title {
@@ -207,7 +206,6 @@ html, body {
   object-fit: contain;
   transform: scale(1.35);
   flex-shrink: 0;
-  background: none;
   pointer-events: none;
   user-select: none;
 }

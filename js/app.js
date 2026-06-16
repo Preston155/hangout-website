@@ -269,7 +269,7 @@ function render() {
       <aside class="sidebar" id="sidebar">
         <div class="sidebar__brand">
           <div class="sidebar__logo">
-            <img src="assets/veltrix-logo.png?v=6" alt="Veltrix" width="52" height="52" />
+            <img src="assets/veltrix-logo.png?v=7" alt="Veltrix" width="52" height="52" />
           </div>
           <div>
             <div class="sidebar__title">${esc(state.data.botName)}</div>
@@ -295,7 +295,7 @@ function render() {
         <header class="hero reveal">
           <div class="hero__row">
             <div class="hero__brand">
-              <img class="hero__logo" src="assets/veltrix-logo.png?v=6" alt="" width="96" height="96" />
+              <img class="hero__logo" src="assets/veltrix-logo.png?v=7" alt="" width="96" height="96" />
               <div>
                 <p class="hero__label">City of Angels</p>
                 <h1><span>Veltrix</span> commands</h1>
