@@ -15,7 +15,7 @@ const ADMIN_SESSION_KEY = "vx_admin";
 const ADMIN_PASS = "COARP";
 
 const LOGO_V = 8;
-const BOOT_MIN_MS = 1800;
+const BOOT_MIN_MS = 1400;
 const bootStart = performance.now();
 
 function logoPicture(className, w, h, alt = "") {
@@ -43,15 +43,13 @@ function dismissBoot() {
     boot.dataset.dismissed = "1";
     sessionStorage.setItem("vx_boot_done", "1");
     setBootProgress(100);
-    const status = document.getElementById("bootStatus");
-    if (status) status.textContent = "Ready";
     boot.classList.add("is-exiting");
     boot.setAttribute("aria-busy", "false");
     setTimeout(() => {
       boot.classList.add("is-done");
       document.body.classList.add("is-ready");
-      setTimeout(() => boot.remove(), 520);
-    }, 420);
+      setTimeout(() => boot.remove(), 380);
+    }, 320);
   };
 
   if (sessionStorage.getItem("vx_boot_done") === "1") {
