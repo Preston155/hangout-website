@@ -17,7 +17,7 @@ const ADMIN_SESSION_KEY = "vx_admin";
 const ADMIN_PASS = "COARP";
 
 const LOGO_V = 8;
-const BOOT_MIN_MS = 1400;
+const BOOT_MIN_MS = 120;
 const bootStart = performance.now();
 
 function logoPicture(className, w, h, alt = "") {
@@ -885,9 +885,9 @@ async function init() {
 
   try {
     const [cmdRes, overrideRes, ecrpRes] = await Promise.all([
-      fetch("data/bot-commands.json?v=15", { cache: "no-store" }),
-      fetch("data/admin-overrides.json?v=1", { cache: "no-store" }),
-      fetch("data/ecrp-commands.json?v=1", { cache: "no-store" }),
+      fetch("data/bot-commands.json?v=16", { cache: "force-cache" }),
+      fetch("data/admin-overrides.json?v=2", { cache: "force-cache" }),
+      fetch("data/ecrp-commands.json?v=2", { cache: "force-cache" }),
     ]);
     if (!cmdRes.ok) throw new Error("Failed to load commands");
     const veltrixData = await cmdRes.json();
