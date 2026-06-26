@@ -4,6 +4,10 @@ const state = {
   data: null,
   bots: [],
   activeBot: "veltrix",
+  giveaways: null,
+  giveawaysLoading: false,
+  giveawaysError: "",
+  giveawaysTimer: null,
   query: "",
   filter: "all",
   view: "commands",
@@ -114,6 +118,116 @@ function renderBotTabs() {
       </button>`;
     })
     .join("")}</div>`;
+}
+
+
+function formatGiveawayTime(ms) {
+  if (!ms) return "Unknown";
+  try {
+    return new Date(Number(ms)).toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+  } catch {
+    return "Unknown";
+  }
+}
+
+function giveawayTimeLeft(giveaway) {
+  if (giveaway.status === "paused") return "Paused";
+  const end = Number(giveaway.endTime || 0);
+  if (!end) return "No end time";
+  const diff = end - Date.now();
+  if (diff <= 0) return "Ending soon";
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins}m left`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 48) return `${hours}h ${mins % 60}m left`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ${hours % 24}h left`;
+}
+
+function renderEntrants(giveaway) {
+  const entrants = giveaway.entries?.visible || [];
+  if (!entrants.length) return `<div class="giveaway-entrants giveaway-entrants--empty">No entries yet.</div>`;
+  return `<div class="giveaway-entrants">${entrants.slice(0, 12).map((entry) => {
+    const user = entry.user || {};
+    const label = user.displayName || user.username || entry.userId;
+    return `<span class="entrant" title="${esc(user.tag || entry.userId)}">${user.avatarUrl ? `<img src="${esc(user.avatarUrl)}" alt="" loading="lazy" />` : ""}<span>${esc(label)}</span>${entry.weight > 1 ? `<b>×${entry.weight}</b>` : ""}</span>`;
+  }).join("")}${entrants.length > 12 ? `<span class="entrant entrant--more">+${entrants.length - 12} more</span>` : ""}</div>`;
+}
+
+function renderGiveawaysView() {
+  if (state.giveawaysLoading && !state.giveaways) {
+    return `<div class="toolbar"><div class="toolbar__hint">Loading active giveaways…</div></div><div class="giveaway-loading"><div class="loader"></div></div>`;
+  }
+  if (state.giveawaysError) {
+    return `<div class="empty"><div class="empty__icon" aria-hidden="true">!</div><p class="empty__title">Couldn\'t load giveaways</p><p class="empty__hint">${esc(state.giveawaysError)}</p><button class="btn" id="giveawaysRetryBtn" type="button">Retry</button></div>`;
+  }
+  const payload = state.giveaways || { giveaways: [], updatedAt: null };
+  const giveaways = payload.giveaways || [];
+  const updated = payload.updatedAt ? new Date(payload.updatedAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) : "just now";
+  const cards = giveaways.map((giveaway) => `<article class="giveaway-card giveaway-card--${esc(giveaway.status)}">
+    <div class="giveaway-card__top">
+      <div>
+        <span class="giveaway-bot">${esc(giveaway.botName || "Unknown bot")}</span>
+        <h2>${esc(giveaway.prize || "Untitled giveaway")}</h2>
+      </div>
+      <span class="giveaway-status">${esc(giveaway.status || "active")}</span>
+    </div>
+    ${giveaway.description ? `<p class="giveaway-desc">${esc(giveaway.description)}</p>` : ""}
+    <div class="giveaway-stats">
+      <span><b>${Number(giveaway.entries?.users || 0)}</b> users entered</span>
+      <span><b>${Number(giveaway.entries?.weighted || 0)}</b> weighted entries</span>
+      <span><b>${Number(giveaway.winnerCount || 0)}</b> winner${Number(giveaway.winnerCount || 0) === 1 ? "" : "s"}</span>
+    </div>
+    <div class="giveaway-meta">
+      <span>Hosted by <b>${esc(giveaway.hostName || "Unknown")}</b></span>
+      <span>${esc(giveawayTimeLeft(giveaway))} · Ends ${esc(formatGiveawayTime(giveaway.endTime))}</span>
+    </div>
+    <div class="giveaway-section-title">Entered users</div>
+    ${renderEntrants(giveaway)}
+  </article>`).join("");
+  return `<div class="giveaway-head">
+    <div><p class="hero__label">Live giveaway tracker</p><h1><span>Active</span> giveaways</h1><p class="hero__desc">Shows active giveaways across connected bots, who entered, and which bot started/hosts it.</p></div>
+    <button class="btn" id="giveawaysRefreshBtn" type="button">Refresh</button>
+  </div>
+  <div class="toolbar"><div class="toolbar__hint">${giveaways.length} active/paused giveaway${giveaways.length === 1 ? "" : "s"} · Updated ${esc(updated)} · Auto-refreshes every 30s</div></div>
+  ${cards || `<div class="empty"><div class="empty__icon" aria-hidden="true">🎁</div><p class="empty__title">No active giveaways right now</p><p class="empty__hint">When ECRP or Veltrix starts one, it will show here.</p></div>`}`;
+}
+
+async function loadGiveaways({ silent = false } = {}) {
+  if (state.giveawaysLoading) return;
+  state.giveawaysLoading = true;
+  if (!silent) {
+    state.giveawaysError = "";
+    updateCommandView();
+  }
+  try {
+    const res = await fetch("https://api.prestonhq.com/api/giveaways/active", { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    if (!json.ok) throw new Error(json.error || "API returned an error");
+    state.giveaways = json.data;
+    state.giveawaysError = "";
+  } catch (error) {
+    state.giveawaysError = error.message || "Unknown error";
+  } finally {
+    state.giveawaysLoading = false;
+    if (state.view === "giveaways") updateCommandView();
+  }
+}
+
+function startGiveawayRefresh() {
+  clearInterval(state.giveawaysTimer);
+  state.giveawaysTimer = setInterval(() => {
+    if (state.view === "giveaways") loadGiveaways({ silent: true });
+  }, 30000);
+}
+
+function openGiveawaysView() {
+  state.view = "giveaways";
+  closeSidebar();
+  updateCommandView();
+  loadGiveaways({ silent: !!state.giveaways });
+  startGiveawayRefresh();
 }
 
 function countCommands(data) {
@@ -594,6 +708,9 @@ function buildCommandViewHtml() {
   if (state.view === "admin" && state.adminAuth) {
     return renderAdminMain();
   }
+  if (state.view === "giveaways") {
+    return renderGiveawaysView();
+  }
   const sections = buildSectionsHtml();
   return `${buildToolbarHtml()}${sections || `<div class="empty"><div class="empty__icon" aria-hidden="true">⌕</div><p class="empty__title">No commands found</p><p class="empty__hint">Try another search term or switch the category filter.</p></div>`}`;
 }
@@ -603,6 +720,7 @@ function syncNavActive() {
     btn.classList.toggle("active", state.view === "commands" && state.filter === btn.dataset.filter);
   });
   document.getElementById("adminNavBtn")?.classList.toggle("active", state.view === "admin");
+  document.getElementById("giveawaysNavBtn")?.classList.toggle("active", state.view === "giveaways");
 }
 
 function updateCommandView() {
@@ -671,6 +789,11 @@ function render(opts = {}) {
             )
             .join("")}
           <div class="sidebar__divider"></div>
+          <button class="nav-link nav-link--giveaways${state.view === "giveaways" ? " active" : ""}" id="giveawaysNavBtn" type="button">
+            <span class="nav-link__icon" aria-hidden="true">🎁</span>
+            Active Giveaways
+            <span class="nav-link__count">Live</span>
+          </button>
           <button class="nav-link nav-link--admin${state.view === "admin" ? " active" : ""}" id="adminNavBtn" type="button">
             <span class="nav-link__icon nav-link__icon--lock"></span>
             Admin Dashboard
@@ -798,6 +921,16 @@ function wireShellEvents() {
     const navFilter = e.target.closest(".nav-link[data-filter]");
     if (navFilter) {
       applyFilter(navFilter.dataset.filter, true);
+      return;
+    }
+
+    if (e.target.closest("#giveawaysNavBtn")) {
+      openGiveawaysView();
+      return;
+    }
+
+    if (e.target.closest("#giveawaysRefreshBtn") || e.target.closest("#giveawaysRetryBtn")) {
+      loadGiveaways();
       return;
     }
 
