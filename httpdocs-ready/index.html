@@ -6,13 +6,2795 @@
     <meta name="theme-color" content="#0e0e10" />
     <meta name="description" content="Command reference for Veltrix — City of Angels Discord bot." />
     <title>Veltrix · City of Angels</title>
-    <link rel="preload" href="assets/veltrix-logo-256.webp?v=8" as="image" type="image/webp" fetchpriority="high" />
-    <link rel="preload" href="data/bot-commands.json?v=16" as="fetch" crossorigin />
-    <link rel="preload" href="data/ecrp-commands.json?v=2" as="fetch" crossorigin />
-    <link rel="icon" href="assets/favicon-32.png?v=8" type="image/png" sizes="32x32" />
+<link rel="icon" href="assets/favicon-32.png?v=8" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="assets/veltrix-logo-256.webp?v=8" />
-    <link rel="stylesheet" href="css/commands.css?v=37" />
-  </head>
+    <style id="inlineCommandsCss">/* Veltrix · City of Angels */
+
+:root {
+  --bg: #0e0e10;
+  --surface: #18181b;
+  --surface-hover: #1e1e22;
+  --border: #2a2a30;
+  --border-light: #35353d;
+  --text: #efeff1;
+  --muted: #8b8b96;
+  --dim: #5c5c66;
+  --accent: #2b7fff;
+  --accent-hover: #4d94ff;
+  --prefix: #e8b84a;
+  --green: #3ba55d;
+  --red: #ed4245;
+  --sidebar-w: 260px;
+  --main-max: 1280px;
+  --cat-slash: #2b7fff;
+  --cat-prefix: #e8b84a;
+  --cat-session: #b56bff;
+  --cat-systems: #3ba55d;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --font: "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono: "Cascadia Code", "Consolas", monospace;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --announce-h: 42px;
+  --rgb-gradient: linear-gradient(
+    90deg,
+    #ff3b5c 0%,
+    #ff8a3d 18%,
+    #ffe14d 36%,
+    #3dff9a 54%,
+    #2b7fff 72%,
+    #b56bff 88%,
+    #ff3b5c 100%
+  );
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--announce-h) + 72px);
+}
+
+html, body {
+  min-height: 100%;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  cursor: default;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  padding-top: var(--announce-h);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse 90% 60% at 10% -20%, rgba(43, 127, 255, 0.09), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 100% 0%, rgba(181, 107, 255, 0.06), transparent 50%);
+  background-attachment: fixed;
+}
+
+/* top announcement */
+.announce-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  height: var(--announce-h);
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(16, 16, 20, 0.98) 0%, rgba(10, 10, 12, 0.96) 100%);
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.35);
+}
+
+.announce-bar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--rgb-gradient);
+  background-size: 400% 100%;
+  animation: rgb-shift 12s linear infinite;
+  opacity: 0.14;
+  pointer-events: none;
+}
+
+.announce-bar__line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--rgb-gradient);
+  background-size: 400% 100%;
+  animation: rgb-shift 5s linear infinite;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.announce-bar__badge {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 0 16px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text);
+  background: rgba(8, 8, 10, 0.72);
+  border-right: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.announce-bar__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 10px rgba(59, 165, 93, 0.65);
+  animation: announce-pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes announce-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(0.82); }
+}
+
+.announce-bar__marquee {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 56px,
+    #000 calc(100% - 56px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 56px,
+    #000 calc(100% - 56px),
+    transparent 100%
+  );
+}
+
+.announce-bar__track {
+  display: flex;
+  width: max-content;
+  animation: announce-marquee 32s linear infinite;
+}
+
+.announce-bar:hover .announce-bar__track {
+  animation-play-state: paused;
+}
+
+.announce-bar__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.75rem;
+  padding: 0 1.75rem;
+}
+
+.announce-bar__text {
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  background: var(--rgb-gradient);
+  background-size: 400% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: rgb-shift 6s linear infinite;
+  text-shadow: none;
+}
+
+.announce-bar__sep {
+  flex-shrink: 0;
+  font-size: 9px;
+  line-height: 1;
+  color: rgba(43, 127, 255, 0.45);
+  opacity: 0.9;
+}
+
+@keyframes announce-marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.announce-bar__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 860px) {
+  :root { --announce-h: 38px; }
+
+  .announce-bar__badge {
+    padding: 0 12px;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+  }
+
+  .announce-bar__marquee {
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent 0,
+      #000 28px,
+      #000 calc(100% - 28px),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      90deg,
+      transparent 0,
+      #000 28px,
+      #000 calc(100% - 28px),
+      transparent 100%
+    );
+  }
+
+  .announce-bar__text {
+    font-size: 10.5px;
+    letter-spacing: 0.11em;
+  }
+
+  .announce-bar__item {
+    gap: 1.25rem;
+    padding: 0 1.25rem;
+  }
+}
+
+#app { min-height: 100vh; }
+.hidden { display: none !important; }
+
+/* Search is the only place users type */
+input,
+textarea {
+  -webkit-user-select: text;
+  user-select: text;
+  cursor: text;
+}
+
+button,
+[role="button"],
+.card,
+.chip,
+.nav-link,
+.mobile-nav-toggle,
+.icon-btn,
+.btn {
+  cursor: pointer;
+}
+
+#app .card .card__more {
+  cursor: pointer;
+}
+
+#app .card,
+#app .card *:not(.icon-btn) {
+  cursor: pointer;
+}
+
+#app .card .icon-btn {
+  cursor: pointer;
+}
+
+#app .modal {
+  cursor: default;
+}
+
+#app .modal * {
+  cursor: default;
+}
+
+#app .modal .btn,
+#app .modal .icon-btn {
+  cursor: pointer;
+}
+
+::selection {
+  background: transparent;
+  color: inherit;
+}
+
+input::selection,
+textarea::selection {
+  background: rgba(43, 127, 255, 0.35);
+  color: var(--text);
+}
+
+img {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/* Animated RGB — hero/sidebar/modal only (not every card) */
+.text-rgb,
+.hero h1 span,
+.sidebar__title,
+.modal__cmd--slash,
+.modal__cmd--prefix {
+  background: var(--rgb-gradient);
+  background-size: 400% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: rgb-shift 8s linear infinite;
+}
+
+.modal__cmd--slash::before,
+.modal__cmd--prefix::before {
+  background: var(--rgb-gradient);
+  background-size: 400% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: rgb-shift 8s linear infinite;
+}
+
+/* Static colors on cards — avoids 50+ simultaneous animations */
+.card .cmd-name--slash,
+.card .cmd-name--slash::before {
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  color: var(--cat-slash);
+  animation: none;
+  filter: none;
+}
+
+.card .cmd-name--prefix,
+.card .cmd-name--prefix::before {
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  color: var(--cat-prefix);
+  animation: none;
+  filter: none;
+}
+
+.stat__val {
+  font-size: 22px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--text);
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  animation: none;
+}
+
+.hero h1 span {
+  animation: rgb-shift 6s linear infinite;
+  filter: none;
+}
+
+.sidebar__title {
+  animation-duration: 10s;
+}
+
+@keyframes rgb-shift {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 400% 50%; }
+}
+
+@keyframes rgb-glow {
+  0%, 100% { filter: drop-shadow(0 0 8px rgba(255, 59, 92, 0.2)); }
+  33% { filter: drop-shadow(0 0 10px rgba(43, 127, 255, 0.35)); }
+  66% { filter: drop-shadow(0 0 10px rgba(61, 255, 154, 0.25)); }
+}
+
+.hero__label::before {
+  content: "";
+  width: 14px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--rgb-gradient);
+  background-size: 400% 100%;
+  animation: rgb-shift 3s linear infinite;
+  opacity: 1;
+}
+
+.chip.active {
+  background: rgba(43, 127, 255, 0.12);
+  border-color: rgba(43, 127, 255, 0.4);
+  color: var(--text);
+  box-shadow: 0 0 0 1px rgba(43, 127, 255, 0.08);
+}
+
+.chip--slash.active { background: rgba(43, 127, 255, 0.14); border-color: rgba(43, 127, 255, 0.45); color: #9ec5ff; }
+.chip--prefix.active { background: rgba(232, 184, 74, 0.12); border-color: rgba(232, 184, 74, 0.45); color: #f0d48a; box-shadow: 0 0 0 1px rgba(232, 184, 74, 0.08); }
+.chip--session.active { background: rgba(181, 107, 255, 0.12); border-color: rgba(181, 107, 255, 0.45); color: #d4b0ff; box-shadow: 0 0 0 1px rgba(181, 107, 255, 0.08); }
+.chip--systems.active { background: rgba(59, 165, 93, 0.12); border-color: rgba(59, 165, 93, 0.45); color: #8ee4ad; box-shadow: 0 0 0 1px rgba(59, 165, 93, 0.08); }
+.chip--all.active { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.18); color: var(--text); box-shadow: none; }
+
+.chip.active::after {
+  display: none;
+}
+
+/* intro / loading screen */
+.boot {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  background: var(--bg);
+  overflow: hidden;
+  transition: opacity 0.38s var(--ease), visibility 0.38s;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: default;
+}
+
+.boot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 50% 42% at 50% 44%, rgba(43, 127, 255, 0.08) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.boot__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: min(88vw, 220px);
+  animation: boot-in 0.55s var(--ease) both;
+}
+
+@keyframes boot-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.boot__logo-wrap {
+  line-height: 0;
+}
+
+.boot__logo {
+  width: 88px;
+  height: 88px;
+  object-fit: contain;
+  transform-origin: center center;
+  animation: boot-logo-in 0.6s var(--ease) 0.05s both;
+}
+
+@keyframes boot-logo-in {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.boot__title {
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.boot__progress {
+  width: 100%;
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.boot__progress-bar {
+  width: 0%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  animation: boot-progress-fill 1.4s ease-out forwards;
+}
+
+@keyframes boot-progress-fill {
+  0% { width: 0%; }
+  100% { width: 82%; }
+}
+
+.boot.is-exiting {
+  animation: boot-out 0.36s var(--ease) forwards;
+}
+
+.boot.is-exiting .boot__progress-bar {
+  animation: boot-progress-done 0.3s ease-out forwards;
+}
+
+@keyframes boot-out {
+  to { opacity: 0; }
+}
+
+@keyframes boot-progress-done {
+  to { width: 100%; }
+}
+
+.boot.is-done {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+body.is-ready .boot { display: none; }
+
+@media (max-width: 860px) {
+  .boot__logo {
+    width: 76px;
+    height: 76px;
+  }
+
+  .boot__title {
+    font-size: 1.2rem;
+  }
+}
+
+/* layout */
+.shell {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  min-height: 100vh;
+}
+
+/* sidebar */
+.sidebar {
+  position: sticky;
+  top: var(--announce-h);
+  height: calc(100vh - var(--announce-h));
+  padding: 18px 14px;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(16, 16, 20, 0.82);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  overflow-y: auto;
+}
+
+.sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 10px 14px;
+  margin-bottom: 2px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.22);
+  border-bottom: none;
+}
+
+.sidebar__logo {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  background: none;
+  overflow: visible;
+  display: grid;
+  place-items: center;
+}
+
+.sidebar__logo img,
+.sidebar__logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform-origin: center center;
+  display: block;
+}
+
+.sidebar__title {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  animation-duration: 7s;
+}
+
+.sidebar__sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 1px;
+}
+
+.sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 11px;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s var(--ease), color 0.15s var(--ease), border-color 0.15s var(--ease);
+  width: 100%;
+}
+
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  border-color: rgba(255, 255, 255, 0.04);
+}
+
+.nav-link.active {
+  background: rgba(43, 127, 255, 0.1);
+  color: var(--text);
+  border-color: rgba(43, 127, 255, 0.22);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.nav-link.active:hover {
+  background: rgba(43, 127, 255, 0.14);
+}
+
+.nav-link__icon {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  font-size: 12px;
+  line-height: 1;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.nav-link--slash .nav-link__icon { background: rgba(43, 127, 255, 0.1); border-color: rgba(43, 127, 255, 0.2); }
+.nav-link--prefix .nav-link__icon { background: rgba(232, 184, 74, 0.1); border-color: rgba(232, 184, 74, 0.22); }
+.nav-link--session .nav-link__icon { background: rgba(181, 107, 255, 0.1); border-color: rgba(181, 107, 255, 0.22); }
+.nav-link--systems .nav-link__icon { background: rgba(59, 165, 93, 0.1); border-color: rgba(59, 165, 93, 0.22); }
+
+.nav-link.active .nav-link__icon {
+  background: rgba(43, 127, 255, 0.16);
+  border-color: rgba(43, 127, 255, 0.35);
+}
+
+.nav-link--slash.active {
+  background: rgba(43, 127, 255, 0.1);
+  border-color: rgba(43, 127, 255, 0.22);
+  box-shadow: inset 3px 0 0 var(--cat-slash);
+}
+
+.nav-link--prefix.active {
+  background: rgba(232, 184, 74, 0.1);
+  border-color: rgba(232, 184, 74, 0.22);
+  box-shadow: inset 3px 0 0 var(--cat-prefix);
+}
+
+.nav-link--session.active {
+  background: rgba(181, 107, 255, 0.1);
+  border-color: rgba(181, 107, 255, 0.22);
+  box-shadow: inset 3px 0 0 var(--cat-session);
+}
+
+.nav-link--systems.active {
+  background: rgba(59, 165, 93, 0.1);
+  border-color: rgba(59, 165, 93, 0.22);
+  box-shadow: inset 3px 0 0 var(--cat-systems);
+}
+
+.nav-link.active .nav-link__count {
+  color: var(--accent);
+  font-weight: 600;
+  background: rgba(43, 127, 255, 0.12);
+  border-color: rgba(43, 127, 255, 0.25);
+}
+
+.nav-link__count {
+  margin-left: auto;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--dim);
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.sidebar__meta {
+  margin-top: auto;
+  padding: 12px 12px;
+  border-radius: var(--radius);
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 12px;
+  color: var(--dim);
+  line-height: 1.55;
+}
+
+.sidebar__meta kbd {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+/* main */
+.main {
+  padding: 28px clamp(20px, 3.5vw, 48px) 56px;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+}
+
+.main__inner {
+  max-width: var(--main-max);
+  margin: 0 auto;
+}
+
+/* hero */
+.hero {
+  margin-bottom: 28px;
+  padding: 28px 30px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: linear-gradient(145deg, rgba(26, 26, 32, 0.92), rgba(18, 18, 22, 0.96));
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.22);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(43, 127, 255, 0.45), rgba(181, 107, 255, 0.25), transparent);
+  pointer-events: none;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  top: -40%;
+  right: -10%;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(43, 127, 255, 0.12), transparent 68%);
+  pointer-events: none;
+}
+
+.hero__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+
+.hero__brand {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.hero__logo-wrap {
+  flex-shrink: 0;
+  line-height: 0;
+  filter: drop-shadow(0 8px 20px rgba(43, 127, 255, 0.12));
+}
+
+.hero__logo {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  transform-origin: center center;
+  pointer-events: none;
+  user-select: none;
+  animation:
+    hero-logo-in 0.55s var(--ease) 0.05s both,
+    hero-logo-float 5.5s ease-in-out 0.65s infinite;
+}
+
+@keyframes hero-logo-in {
+  from { opacity: 0; transform: scale(1.1) rotate(-10deg); }
+  to { opacity: 1; transform: scale(1.35) rotate(0deg); }
+}
+
+@keyframes hero-logo-float {
+  0%, 100% { transform: scale(1.32) rotate(-9deg); }
+  50% { transform: scale(1.42) rotate(9deg); }
+}
+
+.hero__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-bottom: 8px;
+  letter-spacing: 0.02em;
+}
+
+.hero h1 {
+  font-size: clamp(1.75rem, 3.5vw, 2.25rem);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.hero__desc {
+  color: var(--muted);
+  font-size: 14px;
+  max-width: 440px;
+  margin-top: 10px;
+}
+
+.hero__desc code {
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+.hero__prefix-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 4px;
+  color: var(--muted);
+}
+
+.hero__prefix-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--prefix);
+  background: rgba(232, 184, 74, 0.1);
+  border: 1px solid rgba(232, 184, 74, 0.35);
+  box-shadow: 0 0 20px rgba(232, 184, 74, 0.08);
+}
+
+.stats {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.stat {
+  text-align: center;
+  padding: 14px 18px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(10, 10, 12, 0.45);
+  min-width: 88px;
+  transition:
+    border-color 0.2s var(--ease),
+    transform 0.2s var(--ease),
+    box-shadow 0.25s var(--ease);
+}
+
+.stat--slash { border-top: 2px solid var(--cat-slash); }
+.stat--prefix { border-top: 2px solid var(--cat-prefix); }
+.stat--total { border-top: 2px solid rgba(255, 255, 255, 0.2); }
+
+.stat--systems { border-top: 2px solid var(--cat-systems); }
+.stat--systems .stat__val { color: var(--cat-systems); }
+
+.stat--slash .stat__val { color: var(--cat-slash); }
+.stat--prefix .stat__val { color: var(--cat-prefix); }
+.stat--total .stat__val { color: var(--text); }
+
+.stat:hover {
+  border-color: rgba(43, 127, 255, 0.35);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(43, 127, 255, 0.08);
+}
+
+.stat__label {
+  font-size: 11px;
+  color: var(--dim);
+  margin-top: 4px;
+}
+
+/* toolbar */
+.toolbar {
+  position: sticky;
+  top: var(--announce-h);
+  z-index: 40;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 12px 14px;
+  margin-bottom: 28px;
+  background: rgba(14, 14, 18, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.toolbar.is-stuck {
+  border-color: rgba(43, 127, 255, 0.18);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.28);
+}
+
+.search {
+  flex: 1;
+  min-width: 180px;
+  position: relative;
+}
+
+.search input {
+  width: 100%;
+  padding: 11px 14px 11px 40px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(8, 8, 10, 0.55);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.search input:focus {
+  outline: none;
+  border-color: rgba(43, 127, 255, 0.5);
+  background: rgba(8, 8, 10, 0.75);
+  box-shadow: 0 0 0 3px rgba(43, 127, 255, 0.1);
+}
+
+.search input::placeholder { color: var(--dim); }
+
+.search__icon {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 14px;
+  opacity: 0.4;
+  pointer-events: none;
+  background: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'%3E%3Cpath stroke='%23fff' stroke-width='2' d='M11 4a7 7 0 100 14 7 7 0 000-14zm8 16l-4-4'/%3E%3C/svg%3E") center/contain no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'%3E%3Cpath stroke='%23fff' stroke-width='2' d='M11 4a7 7 0 100 14 7 7 0 000-14zm8 16l-4-4'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.filters { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.toolbar__right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.toolbar__count {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(43, 127, 255, 0.1);
+  border: 1px solid rgba(43, 127, 255, 0.22);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.toolbar__hint {
+  font-size: 12px;
+  color: var(--dim);
+  white-space: nowrap;
+}
+
+.toolbar__hint kbd {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 2px 6px;
+  margin: 0 2px;
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--muted);
+}
+
+.chip__icon {
+  font-size: 11px;
+  line-height: 1;
+  opacity: 0.9;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(24, 24, 27, 0.85);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    color 0.2s,
+    transform 0.2s var(--ease),
+    box-shadow 0.2s;
+}
+
+.chip:hover {
+  color: var(--text);
+  border-color: var(--border-light);
+  transform: translateY(-1px);
+}
+
+.chip:active {
+  transform: translateY(0) scale(0.97);
+}
+
+/* sections */
+.section {
+  margin-bottom: 44px;
+  scroll-margin-top: 80px;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 320px;
+}
+
+.section__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.section__icon {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  font-size: 18px;
+  line-height: 1;
+  border-radius: 11px;
+  background: rgba(43, 127, 255, 0.1);
+  border: 1px solid rgba(43, 127, 255, 0.2);
+}
+
+.section--prefix .section__icon { background: rgba(232, 184, 74, 0.1); border-color: rgba(232, 184, 74, 0.22); }
+.section--session .section__icon { background: rgba(181, 107, 255, 0.1); border-color: rgba(181, 107, 255, 0.22); }
+.section--systems .section__icon { background: rgba(59, 165, 93, 0.1); border-color: rgba(59, 165, 93, 0.22); }
+
+.section__titles {
+  flex: 1;
+  min-width: 0;
+}
+
+.section__head h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.section__count {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  align-self: flex-start;
+  font-variant-numeric: tabular-nums;
+}
+
+.section__desc {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 4px;
+  line-height: 1.45;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+@media (min-width: 1200px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+/* cards */
+.card {
+  position: relative;
+  background: linear-gradient(160deg, rgba(28, 28, 34, 0.96), rgba(20, 20, 24, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    border-color 0.2s var(--ease),
+    background 0.2s var(--ease),
+    transform 0.2s var(--ease),
+    box-shadow 0.2s var(--ease);
+  border-left-width: 3px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.card--slash { border-left-color: var(--cat-slash); }
+.card--prefix { border-left-color: var(--cat-prefix); }
+.card--system { border-left-color: var(--cat-systems); }
+.card--cat-session { border-left-color: var(--cat-session); }
+.card--cat-systems { border-left-color: var(--cat-systems); }
+
+.card::before {
+  display: none;
+}
+
+.card:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: linear-gradient(160deg, rgba(34, 34, 40, 0.98), rgba(24, 24, 28, 0.99));
+  transform: translateY(-3px);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.28);
+}
+
+.card:active {
+  transform: translateY(-1px) scale(0.995);
+  transition-duration: 0.08s;
+}
+
+.card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.cmd-name {
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.cmd-name--slash::before { content: "/"; }
+.cmd-name--prefix::before { content: var(--cmd-prefix, "."); }
+.cmd-name--system { color: var(--text); font-family: var(--font); font-size: 14px; font-weight: 600; }
+
+.card__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+
+.card:hover .card__actions,
+.card:focus-within .card__actions {
+  opacity: 1;
+}
+
+.card__actions .icon-btn {
+  cursor: pointer;
+}
+
+.icon-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(14, 14, 16, 0.8);
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.15s;
+  flex-shrink: 0;
+}
+
+.icon-btn:hover {
+  color: var(--text);
+  border-color: rgba(43, 127, 255, 0.4);
+  background: rgba(43, 127, 255, 0.1);
+  transform: scale(1.05);
+}
+
+.icon-btn:active {
+  transform: scale(0.96);
+}
+
+.icon-btn--copy {
+  font-size: 0;
+  background: var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%238b8b96' stroke-width='1.75' viewBox='0 0 24 24'%3E%3Crect x='9' y='9' width='11' height='11' rx='2'/%3E%3Cpath d='M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1'/%3E%3C/svg%3E") center/14px no-repeat;
+}
+
+.icon-btn--copy:hover {
+  background-color: rgba(43, 127, 255, 0.12);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%23efeff1' stroke-width='1.75' viewBox='0 0 24 24'%3E%3Crect x='9' y='9' width='11' height='11' rx='2'/%3E%3Cpath d='M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1'/%3E%3C/svg%3E");
+}
+
+.tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--dim);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+}
+
+.tag--slash {
+  color: #9ec5ff;
+  border-color: rgba(43, 127, 255, 0.35);
+  background: rgba(43, 127, 255, 0.1);
+}
+
+.tag--prefix {
+  color: #f0d48a;
+  border-color: rgba(232, 184, 74, 0.35);
+  background: rgba(232, 184, 74, 0.1);
+}
+
+.tag--system {
+  color: #8ee4ad;
+  border-color: rgba(59, 165, 93, 0.35);
+  background: rgba(59, 165, 93, 0.1);
+}
+
+.tag--session {
+  color: #d4b0ff;
+  border-color: rgba(181, 107, 255, 0.35);
+  background: rgba(181, 107, 255, 0.1);
+}
+
+.hi {
+  background: rgba(43, 127, 255, 0.28);
+  color: var(--text);
+  border-radius: 3px;
+  padding: 0 2px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.pill--alias {
+  color: var(--muted);
+  border-color: rgba(255, 255, 255, 0.08);
+  font-family: var(--mono);
+  font-size: 10px;
+}
+
+.pill--usage {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.card__desc {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.45;
+}
+
+.meta { display: flex; flex-wrap: wrap; gap: 5px; }
+
+.pill {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(14, 14, 16, 0.65);
+  font-family: var(--font);
+  color: var(--dim);
+  pointer-events: none;
+  letter-spacing: 0.02em;
+}
+
+.pill--perm-everyone {
+  color: #6ee7a0;
+  border-color: rgba(59, 165, 93, 0.35);
+  background: rgba(59, 165, 93, 0.08);
+}
+.pill--perm-admin {
+  color: #fca5a5;
+  border-color: rgba(237, 66, 69, 0.35);
+  background: rgba(237, 66, 69, 0.08);
+}
+.pill--perm-mod {
+  color: #fcd34d;
+  border-color: rgba(232, 184, 74, 0.35);
+  background: rgba(232, 184, 74, 0.08);
+}
+
+.card__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(43, 127, 255, 0.2);
+  background: rgba(43, 127, 255, 0.06);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--accent);
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s, border-color 0.2s, gap 0.2s;
+}
+
+.card__more::after {
+  content: "→";
+  transition: transform 0.2s var(--ease);
+}
+
+.card:hover .card__more {
+  background: rgba(43, 127, 255, 0.1);
+  border-color: rgba(43, 127, 255, 0.3);
+}
+
+.card:hover .card__more::after {
+  transform: translateX(3px);
+}
+
+.card__more:hover {
+  color: var(--accent-hover);
+}
+
+/* scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.45s var(--ease), transform 0.45s var(--ease);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* modal — side drawer on wide screens */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.6);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  animation: fade-in 0.2s ease;
+  cursor: default;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal {
+  width: min(480px, 100%);
+  max-height: 85vh;
+  overflow-y: auto;
+  background: linear-gradient(180deg, rgba(30, 30, 36, 0.99), rgba(20, 20, 24, 1));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg);
+  animation: modal-in 0.28s var(--ease);
+  cursor: default;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+}
+
+@media (min-width: 900px) {
+  .modal-backdrop {
+    place-items: stretch;
+    justify-items: end;
+    padding: 0;
+  }
+
+  .modal {
+    width: min(440px, 42vw);
+    max-height: 100vh;
+    height: 100%;
+    border-radius: 0;
+    border-top: none;
+    border-bottom: none;
+    border-right: none;
+    border-left: 3px solid var(--accent);
+    box-shadow: -16px 0 48px rgba(0, 0, 0, 0.45);
+    animation: modal-slide-in 0.3s var(--ease);
+  }
+
+  .modal--slash { border-left-color: var(--cat-slash); }
+  .modal--prefix { border-left-color: var(--cat-prefix); }
+  .modal--system { border-left-color: var(--cat-systems); }
+  .modal--session { border-left-color: var(--cat-session); }
+
+  @keyframes modal-slide-in {
+    from { opacity: 0; transform: translateX(24px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+}
+
+@keyframes modal-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal__head {
+  padding: 22px 22px 16px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.modal__cmd {
+  font-family: var(--mono);
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.modal__cmd--slash::before { content: "/"; }
+.modal__cmd--prefix::before { content: var(--cmd-prefix, "."); }
+
+.modal__body { padding: 12px 20px 20px; }
+
+.modal__desc {
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 18px;
+  line-height: 1.55;
+}
+
+.modal__block { margin-bottom: 16px; }
+
+.modal__block-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 8px;
+}
+
+.modal__list { display: flex; flex-direction: column; gap: 6px; }
+
+.modal__row {
+  display: flex;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 13px;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.modal__row:hover {
+  border-color: rgba(43, 127, 255, 0.2);
+  background: rgba(43, 127, 255, 0.04);
+}
+
+.modal__row code {
+  font-family: var(--mono);
+  color: var(--accent);
+  flex-shrink: 0;
+  min-width: 48px;
+  font-size: 12px;
+}
+
+.modal__row--alias code {
+  min-width: 36px;
+}
+
+.modal__row--alias span::before {
+  content: "—";
+  margin: 0 10px;
+  color: var(--dim);
+}
+
+.modal__row span { color: var(--muted); }
+
+.modal__copy-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(43, 127, 255, 0.25);
+  font-family: var(--mono);
+  font-size: 14px;
+  box-shadow: inset 0 0 0 1px rgba(43, 127, 255, 0.06);
+}
+
+.modal__copy-row span { flex: 1; color: var(--text); }
+
+.btn {
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  border: none;
+  background: linear-gradient(180deg, #3d8fff, var(--accent));
+  color: #fff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.12s, box-shadow 0.15s;
+  box-shadow: 0 2px 8px rgba(43, 127, 255, 0.25);
+}
+
+.btn:hover {
+  background: linear-gradient(180deg, #5aa0ff, var(--accent-hover));
+  box-shadow: 0 4px 12px rgba(43, 127, 255, 0.3);
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn--ghost {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--muted);
+  box-shadow: none;
+}
+
+.btn--ghost:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: none;
+}
+
+/* toast */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 300;
+  padding: 12px 20px;
+  border-radius: 999px;
+  background: rgba(18, 22, 20, 0.96);
+  border: 1px solid rgba(59, 165, 93, 0.4);
+  color: #d8f5e4;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45), 0 0 24px rgba(59, 165, 93, 0.08);
+  animation: toast-in 0.28s var(--ease);
+}
+
+.scroll-top {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 90;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(20, 20, 24, 0.92);
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  transition: transform 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.scroll-top:hover {
+  transform: translateY(-2px);
+  border-color: rgba(43, 127, 255, 0.35);
+  background: rgba(28, 28, 34, 0.98);
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(6px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.empty {
+  text-align: center;
+  padding: 56px 28px;
+  border-radius: var(--radius-lg);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.empty__icon {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 16px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  font-size: 22px;
+  color: var(--dim);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.empty__title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.empty__hint {
+  font-size: 13px;
+  color: var(--muted);
+  max-width: 280px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+.footer {
+  margin-top: 48px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 12px;
+  color: var(--dim);
+  text-align: center;
+}
+
+.footer__brand {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.loading {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+}
+
+.loader {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.07);
+  border-top-color: var(--accent);
+  border-right-color: rgba(181, 107, 255, 0.45);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.mobile-nav-toggle {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 100;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(20, 20, 24, 0.94);
+  color: var(--text);
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.mobile-nav-toggle:hover {
+  border-color: rgba(43, 127, 255, 0.35);
+  transform: scale(1.04);
+}
+
+.sidebar-overlay {
+  display: none;
+}
+
+@media (max-width: 860px) {
+  .shell { grid-template-columns: 1fr; }
+
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: var(--announce-h);
+    z-index: 90;
+    width: min(var(--sidebar-w), 82vw);
+    transform: translateX(-100%);
+    transition: transform 0.25s var(--ease);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
+  }
+
+  .sidebar.open { transform: translateX(0); }
+
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    background: rgba(0, 0, 0, 0.55);
+  }
+
+  .sidebar-overlay.open { display: block; }
+
+  .mobile-nav-toggle { display: grid; place-items: center; }
+
+  .main { padding: 20px 16px 72px; }
+
+  .toolbar {
+    padding: 12px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .toolbar__right {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .filters {
+    width: 100%;
+  }
+
+  .toolbar__count,
+  .toolbar__hint {
+    text-align: center;
+  }
+
+  .hero__row { flex-direction: column; align-items: flex-start; }
+
+  .hero__brand { gap: 16px; }
+
+  .hero__logo {
+    width: 72px;
+    height: 72px;
+    animation:
+      hero-logo-in 0.55s var(--ease) 0.05s both,
+      hero-logo-float-sm 5.5s ease-in-out 0.65s infinite;
+  }
+
+  @keyframes hero-logo-float-sm {
+    0%, 100% { transform: scale(1.26) rotate(-8deg); }
+    50% { transform: scale(1.36) rotate(8deg); }
+  }
+
+  @keyframes hero-logo-in {
+    to { transform: scale(1.3) rotate(0deg); }
+  }
+
+  .stats { gap: 8px; flex-wrap: wrap; }
+
+  .stat { text-align: left; }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .modal-backdrop {
+    place-items: end center;
+    padding: 0;
+    align-items: stretch;
+  }
+
+  .modal {
+    width: 100%;
+    max-height: 88vh;
+    border-radius: 16px 16px 0 0;
+    animation: modal-sheet-in 0.3s var(--ease);
+  }
+
+  .card__actions { opacity: 1; }
+
+  @keyframes modal-sheet-in {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  .boot__logo,
+  .boot__content,
+  .boot__progress-bar,
+  .boot.is-exiting {
+  .hero__logo,
+  .sidebar__logo img,
+  .sidebar__logo-img,
+  .hero__logo-wrap,
+  .hero h1 span,
+  .sidebar__title,
+  .stat__val,
+  .cmd-name--slash,
+  .cmd-name--prefix,
+  .cmd-name--slash::before,
+  .cmd-name--prefix::before,
+  .modal__cmd--slash,
+  .modal__cmd--prefix,
+  .modal__cmd--slash::before,
+  .modal__cmd--prefix::before,
+  .hero__label::before,
+  .announce-bar::before,
+  .announce-bar__line,
+  .announce-bar__dot,
+  .announce-bar__track,
+  .announce-bar__text,
+  .chip.active::after {
+    animation: none !important;
+  }
+
+  .hero h1 span,
+  .sidebar__title,
+  .stat__val,
+  .cmd-name--slash,
+  .cmd-name--prefix,
+  .modal__cmd--slash,
+  .modal__cmd--prefix,
+  .announce-bar__text {
+    background: none;
+    color: var(--accent);
+    -webkit-background-clip: unset;
+    background-clip: unset;
+    filter: none;
+  }
+
+  .announce-bar__track {
+    transform: none;
+  }
+
+  .hero__logo {
+    transform: scale(1.35) rotate(0deg);
+  }
+
+  .boot__logo {
+    transform: none;
+  }
+
+  .cmd-name--prefix,
+  .modal__cmd--prefix {
+    color: var(--prefix);
+  }
+
+  .stat__val {
+    color: var(--text);
+  }
+}
+
+
+/* ── Sidebar admin link ── */
+.sidebar__divider {
+  height: 1px;
+  margin: 10px 4px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.nav-link--admin {
+  width: 100%;
+  margin-top: 2px;
+}
+
+.nav-link__icon--lock {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  opacity: 0.9;
+  border-radius: 6px;
+  background: rgba(88, 101, 242, 0.1);
+  border: 1px solid rgba(88, 101, 242, 0.22);
+}
+
+.nav-link__icon--lock::before { content: "🔒"; }
+
+.nav-link--admin.active .nav-link__icon--lock::before { content: "🔓"; }
+
+.nav-link__lock {
+  margin-left: auto;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* ── Admin gate ── */
+.admin-gate-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(6, 6, 8, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: fade-in 0.2s ease;
+}
+
+.admin-gate {
+  width: min(400px, 100%);
+  padding: 28px 26px 24px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(165deg, rgba(28, 28, 32, 0.98), rgba(18, 18, 22, 0.99));
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(88, 101, 242, 0.12);
+  animation: gate-rise 0.35s var(--ease);
+}
+
+.admin-gate.is-shake { animation: gate-shake 0.45s ease; }
+
+@keyframes gate-rise {
+  from { opacity: 0; transform: translateY(16px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes gate-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+}
+
+.admin-gate__icon {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 16px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  background: linear-gradient(135deg, rgba(88, 101, 242, 0.25), rgba(43, 127, 255, 0.15));
+  border: 1px solid rgba(88, 101, 242, 0.35);
+  box-shadow: 0 0 24px rgba(88, 101, 242, 0.2);
+}
+
+.admin-gate__title {
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.admin-gate__sub {
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 22px;
+}
+
+.admin-gate__field {
+  position: relative;
+  margin-bottom: 14px;
+}
+
+.admin-gate__field input {
+  width: 100%;
+  padding: 14px 44px 14px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--text);
+  font-size: 15px;
+  letter-spacing: 0.12em;
+  font-family: ui-monospace, "Cascadia Code", monospace;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.admin-gate__field input:focus {
+  outline: none;
+  border-color: rgba(88, 101, 242, 0.6);
+  box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.15);
+}
+
+.admin-gate__field input.is-error {
+  border-color: #ed4245;
+  box-shadow: 0 0 0 3px rgba(237, 66, 69, 0.15);
+}
+
+.admin-gate__toggle {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.admin-gate__toggle:hover { color: var(--text); background: rgba(255, 255, 255, 0.05); }
+
+.admin-gate__error {
+  min-height: 18px;
+  font-size: 12px;
+  color: #ed4245;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.admin-gate__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.admin-gate__actions .btn { flex: 1; padding: 12px; }
+
+.admin-gate__actions .btn--ghost {
+  flex: 0 0 auto;
+  padding: 12px 18px;
+}
+
+/* ── Admin dashboard ── */
+.admin-hero {
+  margin-bottom: 24px;
+  padding: 26px 28px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(88, 101, 242, 0.2);
+  background: linear-gradient(135deg, rgba(88, 101, 242, 0.1), rgba(43, 127, 255, 0.05));
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.admin-hero h1 {
+  font-size: 1.5rem;
+  margin-bottom: 6px;
+}
+
+.admin-hero p {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.admin-card {
+  padding: 16px 18px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(0, 0, 0, 0.2);
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.admin-card:hover {
+  border-color: rgba(88, 101, 242, 0.25);
+  transform: translateY(-2px);
+}
+
+.admin-card__val {
+  font-size: 1.75rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #5865f2, #2b7fff, #a855f7);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: rgb-shift 4s linear infinite;
+}
+
+.admin-card__label {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.admin-panel {
+  margin-bottom: 20px;
+  padding: 18px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.admin-panel h3 {
+  font-size: 14px;
+  margin-bottom: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.admin-table th,
+.admin-table td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.admin-table th {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.admin-table tr:last-child td { border-bottom: none; }
+
+.admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+
+
+/* ── Admin command editor ── */
+.admin-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+  align-items: center;
+}
+
+.admin-search {
+  flex: 1 1 200px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--text);
+  font-size: 14px;
+}
+
+.admin-cmd-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 420px;
+  overflow-y: auto;
+  margin-top: 12px;
+}
+
+.admin-cmd-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.25);
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.admin-cmd-row:hover {
+  border-color: rgba(88, 101, 242, 0.45);
+  background: rgba(88, 101, 242, 0.08);
+}
+
+.admin-cmd-row__name {
+  font-weight: 600;
+  font-family: ui-monospace, monospace;
+  color: var(--accent);
+}
+
+.admin-cmd-row__meta {
+  font-size: 12px;
+  color: var(--muted);
+  flex: 1;
+}
+
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.admin-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.admin-field input,
+.admin-field textarea {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.admin-field textarea { resize: vertical; min-height: 60px; }
+
+.admin-form__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.admin-btn-danger { color: #ed4245 !important; border-color: rgba(237, 66, 69, 0.35) !important; }
+
+/* Multi-bot command tabs */
+.bot-tabs {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 16px;
+}
+.bot-tab {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.035);
+  cursor: pointer;
+  text-align: left;
+  transition: transform .18s ease, border-color .18s ease, background .18s ease, color .18s ease;
+}
+.bot-tab:hover,
+.bot-tab.active {
+  color: var(--text);
+  border-color: rgba(96, 165, 250, 0.45);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.22), rgba(14, 165, 233, 0.10));
+  transform: translateY(-1px);
+}
+.bot-tab__mark {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: -0.04em;
+  background: linear-gradient(135deg, #2563eb, #22d3ee);
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.28);
+}
+.bot-tab span:last-child {
+  min-width: 0;
+}
+.bot-tab strong,
+.bot-tab small {
+  display: block;
+}
+.bot-tab strong {
+  font-size: 13px;
+  line-height: 1.1;
+}
+.bot-tab small {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+
+/* Active giveaways view */
+.giveaway-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+.giveaway-head h1 { margin-bottom: 8px; }
+.giveaway-loading { min-height: 220px; display: grid; place-items: center; }
+.giveaway-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 18px;
+}
+.giveaway-summary div {
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(145deg, rgba(24, 24, 27, .92), rgba(14, 14, 16, .94));
+}
+.giveaway-summary strong { display: block; font-size: 24px; letter-spacing: -0.04em; }
+.giveaway-summary span { color: var(--muted); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
+.giveaway-card {
+  margin: 18px 0;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at top left, rgba(43,127,255,.16), transparent 36%),
+    linear-gradient(145deg, rgba(19,19,23,.98), rgba(9,9,12,.96));
+  box-shadow: 0 22px 70px rgba(0,0,0,.35);
+  overflow: hidden;
+}
+.giveaway-card__main {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(300px, .75fr);
+  gap: 16px;
+  padding: 18px;
+}
+.giveaway-embed {
+  position: relative;
+  display: grid;
+  grid-template-columns: 5px minmax(0, 1fr);
+  overflow: hidden;
+  min-height: 260px;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 18px;
+  background: #111318;
+}
+.giveaway-embed__bar { background: linear-gradient(180deg, #fbbf24, #2b7fff 56%, #b56bff); }
+.giveaway-card--paused .giveaway-embed__bar { background: linear-gradient(180deg, #f97316, #fbbf24); }
+.giveaway-embed__body { padding: 18px; }
+.giveaway-embed__header,
+.giveaway-embed__stats,
+.giveaway-embed__footer,
+.giveaway-join-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.giveaway-embed__bot {
+  color: #bfdbfe;
+  font-size: 12px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+.giveaway-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 999px;
+  color: #dcfce7;
+  background: rgba(59,165,93,.16);
+  font-size: 12px;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+.giveaway-status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 16px rgba(59,165,93,.8); }
+.giveaway-status--paused { color: #fed7aa; background: rgba(249,115,22,.14); }
+.giveaway-status--paused::before { background: #f97316; box-shadow: 0 0 16px rgba(249,115,22,.8); }
+.giveaway-embed h2 {
+  margin: 14px 0 8px;
+  font-size: clamp(24px, 4vw, 42px);
+  line-height: .98;
+  letter-spacing: -0.055em;
+}
+.giveaway-desc { color: #d9dce5; margin-bottom: 16px; user-select: text; }
+.giveaway-desc--muted { color: var(--muted); }
+.giveaway-embed__fields {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin: 14px 0;
+}
+.giveaway-embed__fields div,
+.giveaway-embed__stats span,
+.giveaway-join-panel {
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.045);
+}
+.giveaway-embed__fields div { padding: 10px; border-radius: 12px; min-width: 0; }
+.giveaway-embed__fields small { display: block; color: var(--muted); font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: .08em; }
+.giveaway-embed__fields strong { display: block; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.giveaway-embed__stats { justify-content: flex-start; }
+.giveaway-embed__stats span { padding: 8px 10px; border-radius: 999px; color: var(--muted); font-size: 13px; }
+.giveaway-embed__stats b { color: var(--text); }
+.giveaway-embed__image { display: block; max-width: 100%; max-height: 280px; margin-top: 14px; border: 1px solid rgba(255,255,255,.1); border-radius: 14px; object-fit: cover; }
+.giveaway-embed__footer { margin-top: 16px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.08); color: var(--dim); font-size: 12px; }
+.giveaway-embed__footer a { color: #93c5fd; font-weight: 900; }
+.giveaway-join-panel { padding: 16px; border-radius: 18px; background: rgba(10,10,14,.72); }
+.giveaway-section-title { display: block; color: var(--muted); font-size: 11px; font-weight: 950; text-transform: uppercase; letter-spacing: .12em; }
+.giveaway-join-panel__head strong { display: block; margin-top: 3px; font-size: 20px; letter-spacing: -0.03em; }
+.giveaway-join-panel__badge { padding: 7px 10px; border-radius: 999px; color: #fde68a; background: rgba(251,191,36,.12); font-size: 12px; font-weight: 950; }
+.giveaway-entrants { display: grid; gap: 8px; margin-top: 14px; max-height: 440px; overflow: auto; padding-right: 4px; }
+.giveaway-entrants--empty { display: block; color: var(--muted); padding: 18px; border: 1px dashed rgba(255,255,255,.12); border-radius: 14px; text-align: center; }
+.entrant {
+  display: grid;
+  grid-template-columns: 38px 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  padding: 8px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 14px;
+  background: rgba(255,255,255,.045);
+}
+.entrant__rank { color: var(--dim); font-family: var(--mono); font-size: 12px; font-weight: 900; }
+.entrant img,
+.entrant__avatar { width: 34px; height: 34px; border-radius: 50%; }
+.entrant__avatar { display: grid; place-items: center; background: rgba(43,127,255,.22); color: #bfdbfe; font-weight: 950; }
+.entrant__name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 850; }
+.entrant__weight { padding: 4px 7px; border-radius: 999px; color: #fde68a; background: rgba(251,191,36,.12); }
+.entrant--more { display: block; padding: 10px; color: var(--muted); text-align: center; font-weight: 900; }
+@media (max-width: 980px) {
+  .giveaway-card__main { grid-template-columns: 1fr; }
+  .giveaway-embed__fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  .giveaway-head { flex-direction: column; align-items: stretch; }
+  .giveaway-summary { grid-template-columns: 1fr; }
+  .giveaway-embed__fields { grid-template-columns: 1fr; }
+}
+
+/* Discord-style pfp viewer for giveaway entrants */
+.giveaway-entrants {
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+.entrant {
+  width: 100%;
+  border: 1px solid rgba(255,255,255,.09);
+  color: var(--text);
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: transform .16s var(--ease), border-color .16s var(--ease), background .16s var(--ease);
+}
+.entrant:hover {
+  transform: translateY(-1px);
+  border-color: rgba(43,127,255,.48);
+  background: rgba(43,127,255,.10);
+}
+.entrant__pfp-wrap {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+}
+.entrant__pfp,
+.entrant__avatar {
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 50% !important;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,.16);
+  box-shadow: 0 0 0 3px rgba(43,127,255,.12);
+}
+.entrant__pfp-wrap::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 1px;
+  width: 10px;
+  height: 10px;
+  border: 2px solid #111318;
+  border-radius: 50%;
+  background: var(--green);
+}
+.entrant__info { min-width: 0; display: grid; gap: 1px; }
+.entrant__info small { overflow: hidden; color: var(--muted); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.avatar-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(0,0,0,.72);
+  backdrop-filter: blur(12px);
+}
+.avatar-viewer__card {
+  position: relative;
+  width: min(420px, 100%);
+  padding: 28px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top, rgba(43,127,255,.24), transparent 45%),
+    #111318;
+  text-align: center;
+  box-shadow: 0 30px 100px rgba(0,0,0,.55);
+}
+.avatar-viewer__close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 50%;
+  color: var(--text);
+  background: rgba(255,255,255,.06);
+  cursor: pointer;
+  font-size: 22px;
+}
+.avatar-viewer__ring {
+  display: grid;
+  place-items: center;
+  width: 190px;
+  height: 190px;
+  margin: 10px auto 18px;
+  border-radius: 50%;
+  background: conic-gradient(from 180deg, #2b7fff, #b56bff, #3ba55d, #2b7fff);
+  padding: 5px;
+}
+.avatar-viewer__ring img,
+.avatar-viewer__ring span {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #0e0e10;
+}
+.avatar-viewer__ring span { display: grid; place-items: center; font-size: 60px; font-weight: 950; }
+.avatar-viewer h3 { margin-bottom: 4px; font-size: 28px; letter-spacing: -.04em; }
+.avatar-viewer p { margin-bottom: 18px; color: var(--muted); }
+
+/* Better bot switcher cards */
+.bot-tabs {
+  display: grid !important;
+  gap: 10px !important;
+  margin: 0 0 14px !important;
+}
+.bot-tab {
+  appearance: none;
+  display: grid !important;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 78px;
+  padding: 13px 14px;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 12px;
+  color: var(--text);
+  background: linear-gradient(145deg, rgba(18,18,21,.95), rgba(10,10,12,.96));
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
+  transition: transform .16s var(--ease), border-color .16s var(--ease), background .16s var(--ease);
+}
+.bot-tab:hover,
+.bot-tab.active {
+  transform: translateY(-1px);
+  border-color: rgba(43,127,255,.45);
+  background:
+    radial-gradient(circle at 8% 0%, rgba(43,127,255,.18), transparent 38%),
+    linear-gradient(145deg, rgba(20,24,34,.98), rgba(10,10,12,.96));
+}
+.bot-tab.active { box-shadow: 0 0 0 1px rgba(43,127,255,.28), inset 0 1px 0 rgba(255,255,255,.04); }
+.bot-tab__mark {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.035);
+  overflow: hidden;
+}
+.bot-tab__mark img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+.bot-tab__text { min-width: 0; }
+.bot-tab__text strong {
+  display: block;
+  color: #f7c948;
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.15;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bot-tab.active .bot-tab__text strong { color: #ffcf4d; }
+.bot-tab__text small {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.2;
+}
+.bot-tab__count {
+  align-self: start;
+  min-width: 24px;
+  padding: 3px 7px;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 999px;
+  color: var(--muted);
+  background: rgba(0,0,0,.22);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+/* Bot switcher hard reset */
+.sidebar .bot-tabs,
+.shell .sidebar .bot-tabs {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 10px !important;
+  width: 100% !important;
+  margin: 0 0 14px !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  background: transparent !important;
+}
+.sidebar .bot-tab,
+.shell .sidebar .bot-tab {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  display: grid !important;
+  grid-template-columns: 42px minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  gap: 12px !important;
+  width: 100% !important;
+  min-height: 76px !important;
+  max-height: 90px !important;
+  padding: 13px 14px !important;
+  margin: 0 !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+  border-radius: 12px !important;
+  color: var(--text) !important;
+  background: linear-gradient(145deg, rgba(18,18,21,.96), rgba(10,10,12,.97)) !important;
+  font: inherit !important;
+  text-align: left !important;
+  line-height: 1.2 !important;
+  cursor: pointer !important;
+  overflow: hidden !important;
+}
+.sidebar .bot-tab:hover,
+.sidebar .bot-tab.active {
+  border-color: rgba(43,127,255,.5) !important;
+  background: radial-gradient(circle at 12% 0%, rgba(43,127,255,.20), transparent 42%), linear-gradient(145deg, rgba(20,24,34,.98), rgba(10,10,12,.97)) !important;
+}
+.sidebar .bot-tab__mark {
+  display: grid !important;
+  place-items: center !important;
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  max-width: 42px !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
+  border-radius: 12px !important;
+  background: rgba(255,255,255,.04) !important;
+  overflow: hidden !important;
+}
+.sidebar .bot-tab__logo,
+.sidebar .bot-tab__mark img {
+  display: block !important;
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  max-width: 28px !important;
+  min-height: 28px !important;
+  max-height: 28px !important;
+  object-fit: contain !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+.sidebar .bot-tab__text {
+  display: block !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+}
+.sidebar .bot-tab__text strong {
+  display: block !important;
+  color: #f7c948 !important;
+  font-size: 14px !important;
+  font-weight: 900 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+.sidebar .bot-tab__text small {
+  display: block !important;
+  margin-top: 4px !important;
+  color: var(--muted) !important;
+  font-size: 12px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: normal !important;
+}
+.sidebar .bot-tab__count {
+  align-self: start !important;
+  min-width: 24px !important;
+  padding: 3px 7px !important;
+  border: 1px solid rgba(255,255,255,.09) !important;
+  border-radius: 999px !important;
+  color: var(--muted) !important;
+  background: rgba(0,0,0,.22) !important;
+  font-size: 11px !important;
+  font-weight: 900 !important;
+}
+
+</style>
+</head>
   <body>
     <div class="announce-bar" role="status">
       <span class="announce-bar__sr">THIS IS ALL COMMANDS FOR THE VELTRIX BOT!</span>
@@ -717,7 +3499,1409 @@
   "publishedAt": null
 }
 </script>
-    <script defer src="js/admin-editor.js?v=5"></script>
-    <script defer src="js/app.js?v=32"></script>
-  </body>
+    <script id="inlineAdminEditorJs">/* Admin command editor — Veltrix */
+
+const adminEditor = {
+  overrides: null,
+  editingKey: null,
+  apiBase: "api/admin.php",
+  password: null,
+};
+
+function adminApi(action, payload = {}) {
+  return fetch(adminEditor.apiBase, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "same-origin",
+    body: JSON.stringify({ action, password: adminEditor.password, ...payload }),
+  }).then(async (res) => {
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.ok) throw new Error(data.error || "Request failed");
+    return data;
+  });
+}
+
+async function loadAdminOverrides() {
+  try {
+    const data = await adminApi("get");
+    adminEditor.overrides = data.overrides || { commands: {}, previews: {}, systems: {}, meta: {} };
+    return adminEditor.overrides;
+  } catch {
+    try {
+      const res = await fetch("data/admin-overrides.json?v=" + Date.now(), { cache: "no-store" });
+      if (res.ok) adminEditor.overrides = await res.json();
+    } catch {
+      adminEditor.overrides = { commands: {}, previews: {}, systems: {}, meta: {}, hiddenKeys: [] };
+    }
+    return adminEditor.overrides;
+  }
+}
+
+function mergeAdminIntoState() {
+  if (!adminEditor.overrides || !state.data) return;
+  applyClientOverrides();
+}
+
+function applyClientOverrides() {
+  const o = adminEditor.overrides;
+  if (!o || !state.data) return;
+  const hidden = new Set(o.hiddenKeys || []);
+  for (const cat of state.data.categories) {
+    cat.commands = cat.commands
+      .filter((cmd) => !hidden.has(`${cat.id}:${cmd.name}:${cmd.type || "system"}`))
+      .map((cmd) => {
+        const key = `${cat.id}:${cmd.name}:${cmd.type || "system"}`;
+        const alt = `${cmd.type || "prefix"}:${cmd.name}`;
+        const patch = o.commands?.[key] || o.commands?.[alt];
+        return patch ? { ...cmd, ...patch } : cmd;
+      });
+  }
+}
+
+function collectEditableCommands(data) {
+  const rows = [];
+  for (const cat of data.categories) {
+    for (const cmd of cat.commands) {
+      rows.push({ cmd, cat, key: `${cat.id}:${cmd.name}:${cmd.type || "system"}` });
+    }
+  }
+  return rows;
+}
+
+function renderAdminEditor() {
+  const rows = collectEditableCommands(state.data);
+  const q = (state.adminQuery || "").trim().toLowerCase();
+
+  const filtered = q
+    ? rows.filter(({ cmd, cat }) => {
+        const hay = [cmd.name, cmd.description, cat.label, cmd.type].join(" ").toLowerCase();
+        return hay.includes(q);
+      })
+    : rows;
+
+  const list = filtered
+    .map(({ cmd, cat, key }) => {
+      const label = cmd.type === "system" ? cmd.name : typeof cmdCopyText === "function" ? cmdCopyText(cmd) : cmd.name;
+      const hasOverride = adminEditor.overrides?.commands?.[key];
+      return `<button type="button" class="admin-cmd-row" data-edit-key="${esc(key)}">
+        <span class="admin-cmd-row__name">${esc(label)}</span>
+        <span class="admin-cmd-row__meta">${esc(cat.label)} · ${esc(cmd.type || "system")}</span>
+        ${hasOverride ? '<span class="admin-badge">Edited</span>' : ""}
+      </button>`;
+    })
+    .join("");
+
+  return `
+    <div class="admin-toolbar reveal is-visible">
+      <input class="admin-search" id="adminSearch" type="search" placeholder="Filter commands…" value="${esc(state.adminQuery || "")}" />
+      <button class="btn" id="adminPublishBtn" type="button">Publish</button>
+      <button class="btn btn--ghost" id="adminSyncHelpBtn" type="button">Help</button>
+    </div>
+
+    <div class="admin-panel reveal is-visible">
+      <h3>Edit commands (${filtered.length})</h3>
+      <p class="modal__desc">Edit how commands appear on this site. Save, then <strong>Publish</strong> when you’re done.</p>
+      <div class="admin-cmd-list">${list || "<p class=\"modal__desc\">No commands match.</p>"}</div>
+    </div>
+
+    <div class="admin-panel reveal is-visible" id="adminEditorPanel" hidden>
+      <h3 id="adminEditorTitle">Edit command</h3>
+      <form id="adminEditorForm" class="admin-form">
+        <label class="admin-field"><span>Description</span><textarea id="admDesc" rows="3"></textarea></label>
+        <label class="admin-field"><span>Permission</span><input id="admPerm" type="text" placeholder="Everyone, Manage Server…" /></label>
+        <label class="admin-field"><span>Usage</span><input id="admUsage" type="text" placeholder=".command or /command" /></label>
+        <label class="admin-field"><span>Aliases (comma-separated)</span><input id="admAliases" type="text" /></label>
+        <label class="admin-field"><span>Notes</span><textarea id="admNotes" rows="2"></textarea></label>
+        <div class="admin-form__actions">
+          <button class="btn" type="submit">Save changes</button>
+          <button class="btn btn--ghost" id="adminEditorCancel" type="button">Cancel</button>
+          <button class="btn btn--ghost admin-btn-danger" id="adminHideCmd" type="button">Hide from site</button>
+        </div>
+      </form>
+    </div>`;
+}
+
+function openAdminEditor(key) {
+  const found = typeof findCommand === "function" ? findCommand(key) : null;
+  if (!found) return;
+  adminEditor.editingKey = key;
+  const { cmd } = found;
+  const patch = adminEditor.overrides?.commands?.[key] || {};
+
+  document.getElementById("adminEditorPanel")?.removeAttribute("hidden");
+  document.getElementById("adminEditorTitle").textContent = `Edit ${cmdCopyText(cmd)}`;
+
+  document.getElementById("admDesc").value = patch.description ?? cmd.description ?? "";
+  document.getElementById("admPerm").value = patch.permission ?? cmd.permission ?? "";
+  document.getElementById("admUsage").value = patch.usage ?? cmd.usage ?? "";
+  document.getElementById("admAliases").value = (patch.aliases || cmd.aliases || [])
+    .map((a) => (typeof a === "string" ? a : a.name))
+    .join(", ");
+  document.getElementById("admNotes").value = patch.notes ?? cmd.notes ?? "";
+}
+
+function closeAdminEditor() {
+  adminEditor.editingKey = null;
+  document.getElementById("adminEditorPanel")?.setAttribute("hidden", "");
+}
+
+function parseAliases(raw) {
+  return raw
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+async function saveAdminEditor(e) {
+  e?.preventDefault();
+  const key = adminEditor.editingKey;
+  if (!key) return;
+
+  const patch = {
+    description: document.getElementById("admDesc").value.trim(),
+    permission: document.getElementById("admPerm").value.trim() || undefined,
+    usage: document.getElementById("admUsage").value.trim() || undefined,
+    aliases: parseAliases(document.getElementById("admAliases").value),
+    notes: document.getElementById("admNotes").value.trim() || undefined,
+  };
+
+  const found = typeof findCommand === "function" ? findCommand(key) : null;
+  if (found?.cmd?.subcommands?.length) {
+    patch.subcommands = found.cmd.subcommands.map((s) => ({
+      name: s.name,
+      description: s.description || "",
+    }));
+  }
+
+  try {
+    await adminApi("save-command", { key, patch });
+    await loadAdminOverrides();
+    mergeAdminIntoState();
+    showToast("Saved");
+    closeAdminEditor();
+    render();
+  } catch (err) {
+    showToast(err.message || "Save failed");
+  }
+}
+
+async function publishAdminChanges() {
+  try {
+    await adminApi("publish");
+    await loadAdminOverrides();
+    mergeAdminIntoState();
+    showToast("Published");
+    render();
+  } catch (err) {
+    showToast(err.message || "Publish failed");
+  }
+}
+
+async function hideAdminCommand() {
+  const key = adminEditor.editingKey;
+  if (!key || !confirm("Hide this command from the public site?")) return;
+  const o = { ...(adminEditor.overrides || {}), hiddenKeys: [...(adminEditor.overrides?.hiddenKeys || [])] };
+  if (!o.hiddenKeys.includes(key)) o.hiddenKeys.push(key);
+  try {
+    await adminApi("save-overrides", { overrides: o });
+    await loadAdminOverrides();
+    mergeAdminIntoState();
+    closeAdminEditor();
+    render();
+    showToast("Command hidden");
+  } catch (err) {
+    showToast(err.message || "Failed");
+  }
+}
+
+function wireAdminEditor() {
+  document.getElementById("adminSearch")?.addEventListener("input", (e) => {
+    state.adminQuery = e.target.value;
+    render();
+  });
+
+  document.querySelectorAll("[data-edit-key]").forEach((btn) => {
+    btn.addEventListener("click", () => openAdminEditor(btn.dataset.editKey));
+  });
+
+  document.getElementById("adminEditorForm")?.addEventListener("submit", saveAdminEditor);
+  document.getElementById("adminEditorCancel")?.addEventListener("click", closeAdminEditor);
+  document.getElementById("adminHideCmd")?.addEventListener("click", hideAdminCommand);
+  document.getElementById("adminPublishBtn")?.addEventListener("click", publishAdminChanges);
+  document.getElementById("adminSyncHelpBtn")?.addEventListener("click", () => {
+    showToast("Save edits, then Publish. Changes show on this site only.");
+  });
+}
+
+function setAdminPassword(pass) {
+  adminEditor.password = pass;
+  sessionStorage.setItem("vx_admin_pass", pass);
+}
+
+function getStoredAdminPassword() {
+  return sessionStorage.getItem("vx_admin_pass") || null;
+}
+</script>
+    <script id="inlineAppJs">/* Veltrix · City of Angels */
+
+const state = {
+  data: null,
+  bots: [],
+  activeBot: "veltrix",
+  giveaways: null,
+  giveawaysLoading: false,
+  giveawaysError: "",
+  giveawaysTimer: null,
+  query: "",
+  filter: "all",
+  view: "commands",
+  adminAuth: false,
+  modalCmd: null,
+  adminGateOpen: false,
+  adminQuery: "",
+};
+
+const ADMIN_SESSION_KEY = "vx_admin";
+const ADMIN_PASS = "COARP";
+
+const LOGO_V = 8;
+const BOOT_MIN_MS = 120;
+const bootStart = performance.now();
+
+function logoPicture(className, w, h, alt = "") {
+  const q = `?v=${LOGO_V}`;
+  return `<picture class="${className}-wrap">
+    <source srcset="assets/veltrix-logo-256.webp${q}" type="image/webp" />
+    <img class="${className}" src="assets/veltrix-logo.png${q}" alt="${esc(alt)}" width="${w}" height="${h}" decoding="async" />
+  </picture>`;
+}
+
+function setBootProgress(pct) {
+  const bar = document.getElementById("bootProgress");
+  const boot = document.getElementById("boot");
+  const rounded = Math.round(pct);
+  if (bar) bar.style.width = `${rounded}%`;
+  const progress = boot?.querySelector(".boot__progress");
+  progress?.setAttribute("aria-valuenow", String(rounded));
+}
+
+function dismissBoot() {
+  const boot = document.getElementById("boot");
+  if (!boot || boot.dataset.dismissed === "1") return;
+
+  const finish = () => {
+    boot.dataset.dismissed = "1";
+    setBootProgress(100);
+    boot.classList.add("is-exiting");
+    boot.setAttribute("aria-busy", "false");
+    setTimeout(() => {
+      boot.classList.add("is-done");
+      document.body.classList.add("is-ready");
+      setTimeout(() => boot.remove(), 380);
+    }, 320);
+  };
+
+  const elapsed = performance.now() - bootStart;
+  const wait = Math.max(0, BOOT_MIN_MS - elapsed);
+  setTimeout(finish, wait);
+}
+let revealObserver = null;
+let toolbarScrollHandler = null;
+let shellReady = false;
+let searchDebounce = null;
+
+function esc(s) {
+  return String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function permClass(perm) {
+  if (!perm || perm === "Everyone") return "pill--perm-everyone";
+  if (/admin/i.test(perm)) return "pill--perm-admin";
+  return "pill--perm-mod";
+}
+
+function activeBotData() {
+  return state.data;
+}
+
+function switchBot(botId) {
+  const next = state.bots.find((bot) => bot.id === botId);
+  if (!next) return;
+  state.activeBot = botId;
+  state.data = next.data;
+  state.filter = "all";
+  state.view = "commands";
+  state.modalCmd = null;
+  closeSidebar();
+  render({ force: true });
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function botInitials(name) {
+  return String(name || "Bot")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() || "")
+    .join("") || "B";
+}
+
+function renderBotTabs() {
+  if (!state.bots.length) return "";
+  return `<div class="bot-tabs" aria-label="Bot command tabs">${state.bots
+    .map((bot) => {
+      const counts = countCommands(bot.data);
+      const active = bot.id === state.activeBot;
+      return `<button class="bot-tab${active ? " active" : ""}" data-bot="${esc(bot.id)}" type="button" aria-label="Show ${esc(bot.data.botName)} commands">
+        <span class="bot-tab__mark"><img class="bot-tab__logo" src="assets/veltrix-logo-256.webp?v=8" alt="" width="28" height="28" /></span>
+        <span class="bot-tab__text"><strong>${esc(bot.data.botName)}</strong><small>${esc(bot.data.subtitle || `${counts.total} commands`)}</small></span>
+        <span class="bot-tab__count">${counts.total}</span>
+      </button>`;
+    })
+    .join("")}</div>`;
+}
+
+
+function formatGiveawayTime(ms) {
+  if (!ms) return "Unknown";
+  try {
+    return new Date(Number(ms)).toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+  } catch {
+    return "Unknown";
+  }
+}
+
+function giveawayTimeLeft(giveaway) {
+  if (giveaway.status === "paused") return "Paused";
+  const end = Number(giveaway.endTime || 0);
+  if (!end) return "No end time";
+  const diff = end - Date.now();
+  if (diff <= 0) return "Ending soon";
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins}m left`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 48) return `${hours}h ${mins % 60}m left`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ${hours % 24}h left`;
+}
+
+function renderEntrants(giveaway) {
+  const entrants = giveaway.entries?.visible || [];
+  if (!entrants.length) return `<div class="giveaway-entrants giveaway-entrants--empty">No one has joined yet.</div>`;
+  return `<div class="giveaway-entrants">${entrants.slice(0, 24).map((entry, index) => {
+    const user = entry.user || {};
+    const label = user.displayName || user.username || entry.userId;
+    const avatar = user.avatarUrl || "";
+    return `<button class="entrant" type="button" data-avatar="${esc(avatar)}" data-name="${esc(label)}" data-tag="${esc(user.tag || entry.userId)}" title="View ${esc(label)}'s profile picture">
+      <span class="entrant__rank">#${index + 1}</span>
+      <span class="entrant__pfp-wrap">${avatar ? `<img class="entrant__pfp" src="${esc(avatar)}" alt="" loading="lazy" />` : `<span class="entrant__avatar">?</span>`}</span>
+      <span class="entrant__info"><span class="entrant__name">${esc(label)}</span><small>${esc(user.tag || entry.userId)}</small></span>
+      ${entry.weight > 1 ? `<b class="entrant__weight">×${entry.weight}</b>` : ""}
+    </button>`;
+  }).join("")}${entrants.length > 24 ? `<div class="entrant entrant--more">+${entrants.length - 24} more joined</div>` : ""}</div>`;
+}
+
+function openAvatarViewer({ avatar, name, tag }) {
+  document.getElementById("avatarViewer")?.remove();
+  const safeName = esc(name || "Discord User");
+  const safeTag = esc(tag || "");
+  const safeAvatar = esc(avatar || "");
+  document.body.insertAdjacentHTML("beforeend", `<div class="avatar-viewer" id="avatarViewer" role="dialog" aria-modal="true" aria-label="Discord profile picture viewer">
+    <div class="avatar-viewer__card">
+      <button class="avatar-viewer__close" id="avatarViewerClose" type="button" aria-label="Close">×</button>
+      <div class="avatar-viewer__ring">
+        ${safeAvatar ? `<img src="${safeAvatar}" alt="${safeName} profile picture" />` : `<span>?</span>`}
+      </div>
+      <h3>${safeName}</h3>
+      ${safeTag ? `<p>${safeTag}</p>` : ""}
+      ${safeAvatar ? `<a class="btn" href="${safeAvatar}" target="_blank" rel="noreferrer">Open full size</a>` : ""}
+    </div>
+  </div>`);
+  document.getElementById("avatarViewerClose")?.addEventListener("click", closeAvatarViewer);
+  document.getElementById("avatarViewer")?.addEventListener("click", (event) => {
+    if (event.target.id === "avatarViewer") closeAvatarViewer();
+  });
+}
+
+function closeAvatarViewer() {
+  document.getElementById("avatarViewer")?.remove();
+}
+
+function giveawayMessageUrl(giveaway) {
+  if (!giveaway.guildId || !giveaway.channelId || !giveaway.messageId) return "";
+  return `https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId}`;
+}
+
+function renderGiveawayEmbedPreview(giveaway) {
+  const entries = Number(giveaway.entries?.users || 0);
+  const weighted = Number(giveaway.entries?.weighted || 0);
+  const winners = Number(giveaway.winnerCount || 0);
+  const messageUrl = giveawayMessageUrl(giveaway);
+  const image = giveaway.imageUrl ? `<img class="giveaway-embed__image" src="${esc(giveaway.imageUrl)}" alt="Giveaway image" loading="lazy" />` : "";
+  return `<div class="giveaway-embed" role="group" aria-label="Giveaway embed preview">
+    <div class="giveaway-embed__bar"></div>
+    <div class="giveaway-embed__body">
+      <div class="giveaway-embed__header">
+        <span class="giveaway-embed__bot">${esc(giveaway.botName || "Unknown bot")}</span>
+        <span class="giveaway-status giveaway-status--${esc(giveaway.status || "active")}">${esc(giveaway.status || "active")}</span>
+      </div>
+      <h2>🎉 ${esc(giveaway.prize || "Untitled giveaway")}</h2>
+      ${giveaway.description ? `<p class="giveaway-desc">${esc(giveaway.description)}</p>` : `<p class="giveaway-desc giveaway-desc--muted">No extra description set.</p>`}
+      <div class="giveaway-embed__fields">
+        <div><small>Hosted by</small><strong>${esc(giveaway.hostName || "Unknown")}</strong></div>
+        <div><small>Ends</small><strong>${esc(formatGiveawayTime(giveaway.endTime))}</strong></div>
+        <div><small>Time left</small><strong>${esc(giveawayTimeLeft(giveaway))}</strong></div>
+        <div><small>Winners</small><strong>${winners}</strong></div>
+      </div>
+      <div class="giveaway-embed__stats">
+        <span>🎟️ <b>${entries}</b> joined</span>
+        <span>✨ <b>${weighted}</b> entries</span>
+        <span>🤖 <b>${esc(giveaway.botName || "Bot")}</b></span>
+      </div>
+      ${image}
+      <div class="giveaway-embed__footer">
+        <span>ID: ${esc(giveaway.id || "unknown")}</span>
+        ${messageUrl ? `<a href="${esc(messageUrl)}" target="_blank" rel="noreferrer">Open Discord message ↗</a>` : ""}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderGiveawaysView() {
+  if (state.giveawaysLoading && !state.giveaways) {
+    return `<div class="toolbar"><div class="toolbar__hint">Loading active giveaways…</div></div><div class="giveaway-loading"><div class="loader"></div></div>`;
+  }
+  if (state.giveawaysError) {
+    return `<div class="empty"><div class="empty__icon" aria-hidden="true">!</div><p class="empty__title">Couldn\'t load giveaways</p><p class="empty__hint">${esc(state.giveawaysError)}</p><button class="btn" id="giveawaysRetryBtn" type="button">Retry</button></div>`;
+  }
+  const payload = state.giveaways || { giveaways: [], updatedAt: null };
+  const giveaways = payload.giveaways || [];
+  const updated = payload.updatedAt ? new Date(payload.updatedAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) : "just now";
+  const totalJoined = giveaways.reduce((sum, giveaway) => sum + Number(giveaway.entries?.users || 0), 0);
+  const cards = giveaways.map((giveaway) => `<article class="giveaway-card giveaway-card--${esc(giveaway.status)}">
+    <div class="giveaway-card__main">
+      ${renderGiveawayEmbedPreview(giveaway)}
+      <aside class="giveaway-join-panel">
+        <div class="giveaway-join-panel__head">
+          <div>
+            <span class="giveaway-section-title">Joined users</span>
+            <strong>${Number(giveaway.entries?.users || 0)} member${Number(giveaway.entries?.users || 0) === 1 ? "" : "s"}</strong>
+          </div>
+          <span class="giveaway-join-panel__badge">${Number(giveaway.entries?.weighted || 0)} entries</span>
+        </div>
+        ${renderEntrants(giveaway)}
+      </aside>
+    </div>
+  </article>`).join("");
+  return `<div class="giveaway-head">
+    <div><p class="hero__label">Live giveaway tracker</p><h1><span>Active</span> giveaways</h1><p class="hero__desc">Discord-style giveaway previews, joined users, hosts, and the bot running each giveaway.</p></div>
+    <button class="btn" id="giveawaysRefreshBtn" type="button">Refresh</button>
+  </div>
+  <div class="giveaway-summary">
+    <div><strong>${giveaways.length}</strong><span>active/paused</span></div>
+    <div><strong>${totalJoined}</strong><span>joined users</span></div>
+    <div><strong>${esc(updated)}</strong><span>last update</span></div>
+  </div>
+  ${cards || `<div class="empty"><div class="empty__icon" aria-hidden="true">🎁</div><p class="empty__title">No active giveaways right now</p><p class="empty__hint">When ECRP or Veltrix starts one, it will show here.</p></div>`}`;
+}
+
+async function loadGiveaways({ silent = false } = {}) {
+  if (state.giveawaysLoading) return;
+  state.giveawaysLoading = true;
+  if (!silent) {
+    state.giveawaysError = "";
+    updateCommandView();
+  }
+  try {
+    const res = await fetch("https://api.prestonhq.com/api/giveaways/active", { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    if (!json.ok) throw new Error(json.error || "API returned an error");
+    state.giveaways = json.data;
+    state.giveawaysError = "";
+  } catch (error) {
+    state.giveawaysError = error.message || "Unknown error";
+  } finally {
+    state.giveawaysLoading = false;
+    if (state.view === "giveaways") updateCommandView();
+  }
+}
+
+function startGiveawayRefresh() {
+  clearInterval(state.giveawaysTimer);
+  state.giveawaysTimer = setInterval(() => {
+    if (state.view === "giveaways") loadGiveaways({ silent: true });
+  }, 30000);
+}
+
+function openGiveawaysView() {
+  state.view = "giveaways";
+  closeSidebar();
+  updateCommandView();
+  loadGiveaways({ silent: !!state.giveaways });
+  startGiveawayRefresh();
+}
+
+function countCommands(data) {
+  let slash = 0;
+  let prefix = 0;
+  let systems = 0;
+  let total = 0;
+  for (const cat of data.categories) {
+    for (const cmd of cat.commands) {
+      total++;
+      if (cmd.type === "slash") slash++;
+      if (cmd.type === "prefix") prefix++;
+    }
+    if (cat.id === "systems") systems += cat.commands.length;
+  }
+  return { total, slash, prefix, systems };
+}
+
+function matches(cmd, q) {
+  if (!q) return true;
+  const hay = [
+    cmd.name,
+    cmd.description,
+    cmd.usage,
+    cmd.permission,
+    cmd.notes,
+    ...(cmd.aliases || []).map(aliasHaystack),
+    ...(cmd.subcommands || []).map((s) => s.name + " " + s.description),
+    ...(cmd.options || []).map((o) => o.name + " " + o.description),
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+  return hay.includes(q);
+}
+
+function highlightText(text, query) {
+  const raw = String(text ?? "");
+  if (!query) return esc(raw);
+  const q = query.trim();
+  if (!q) return esc(raw);
+  const lower = raw.toLowerCase();
+  const needle = q.toLowerCase();
+  const idx = lower.indexOf(needle);
+  if (idx === -1) return esc(raw);
+  const before = raw.slice(0, idx);
+  const match = raw.slice(idx, idx + q.length);
+  const after = raw.slice(idx + q.length);
+  return `${esc(before)}<mark class="hi">${esc(match)}</mark>${highlightText(after, q)}`;
+}
+
+function visibleCommandCount() {
+  if (!state.data) return 0;
+  const q = state.query.trim().toLowerCase();
+  let n = 0;
+  for (const cat of state.data.categories) {
+    if (state.filter !== "all" && state.filter !== cat.id) continue;
+    n += cat.commands.filter((c) => matches(c, q)).length;
+  }
+  return n;
+}
+
+function cmdDisplayName(cmd) {
+  const type = cmd.type || "system";
+  if (type === "prefix") {
+    const base = cmd.usage ? cmd.usage.split(" ")[0] : cmd.name;
+    return String(base).replace(/^[.!?/$-]/, "");
+  }
+  return cmd.name;
+}
+
+function cmdCopyText(cmd) {
+  const type = cmd.type || "system";
+  if (type === "slash") return `/${cmd.name}`;
+  if (type === "prefix") {
+    const base = cmd.usage ? cmd.usage.split(" ")[0] : `.${cmd.name}`;
+    return /^[.!?/$-]/.test(base) ? base : `${state.data?.prefix || "."}${base}`;
+  }
+  return cmd.name;
+}
+
+function cmdKey(cmd, catId) {
+  return `${catId}:${cmd.name}:${cmd.type || "system"}`;
+}
+
+function isAdminAuthed() {
+  return sessionStorage.getItem(ADMIN_SESSION_KEY) === "1";
+}
+
+function setAdminAuthed(on) {
+  if (on) sessionStorage.setItem(ADMIN_SESSION_KEY, "1");
+  else sessionStorage.removeItem(ADMIN_SESSION_KEY);
+  state.adminAuth = on;
+}
+
+function openAdminGate() {
+  state.adminGateOpen = true;
+  renderAdminGate();
+}
+
+function closeAdminGate() {
+  state.adminGateOpen = false;
+  document.getElementById("adminGate")?.remove();
+}
+
+function renderAdminGate() {
+  document.getElementById("adminGate")?.remove();
+  if (!state.adminGateOpen) return;
+
+  document.body.insertAdjacentHTML(
+    "beforeend",
+    `<div class="admin-gate-backdrop" id="adminGate">
+      <div class="admin-gate" role="dialog" aria-modal="true" aria-labelledby="adminGateTitle">
+        <div class="admin-gate__icon" aria-hidden="true">🔐</div>
+        <h2 class="admin-gate__title" id="adminGateTitle">Admin Dashboard</h2>
+        <p class="admin-gate__sub">Enter your access code to continue.</p>
+        <form id="adminGateForm" autocomplete="off">
+          <div class="admin-gate__field">
+            <input id="adminPassInput" type="password" placeholder="Access code" spellcheck="false" autocapitalize="off" />
+            <button class="admin-gate__toggle" id="adminPassToggle" type="button" aria-label="Show password">👁</button>
+          </div>
+          <div class="admin-gate__error" id="adminGateError" aria-live="polite"></div>
+          <div class="admin-gate__actions">
+            <button class="btn btn--ghost" id="adminGateCancel" type="button">Cancel</button>
+            <button class="btn" type="submit">Unlock</button>
+          </div>
+        </form>
+      </div>
+    </div>`,
+  );
+
+  const input = document.getElementById("adminPassInput");
+  const form = document.getElementById("adminGateForm");
+  const toggle = document.getElementById("adminPassToggle");
+
+  input?.focus();
+
+  toggle?.addEventListener("click", () => {
+    const show = input.type === "password";
+    input.type = show ? "text" : "password";
+    toggle.textContent = show ? "🙈" : "👁";
+    toggle.setAttribute("aria-label", show ? "Hide password" : "Show password");
+  });
+
+  document.getElementById("adminGateCancel")?.addEventListener("click", closeAdminGate);
+  document.getElementById("adminGate")?.addEventListener("click", (e) => {
+    if (e.target.id === "adminGate") closeAdminGate();
+  });
+
+  form?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const val = input?.value.trim() || "";
+    const gate = document.querySelector(".admin-gate");
+    const err = document.getElementById("adminGateError");
+
+    if (val === ADMIN_PASS) {
+      setAdminAuthed(true);
+      if (typeof setAdminPassword === "function") setAdminPassword(val);
+      closeAdminGate();
+      state.view = "admin";
+      closeSidebar();
+      render();
+      showToast("Admin access granted");
+      return;
+    }
+
+    input?.classList.add("is-error");
+    if (err) err.textContent = "Incorrect access code";
+    gate?.classList.remove("is-shake");
+    void gate?.offsetWidth;
+    gate?.classList.add("is-shake");
+    input?.select();
+  });
+
+  input?.addEventListener("input", () => {
+    input.classList.remove("is-error");
+    const err = document.getElementById("adminGateError");
+    if (err) err.textContent = "";
+  });
+}
+
+function collectAllCommands(data) {
+  const rows = [];
+  for (const cat of data.categories) {
+    for (const cmd of cat.commands) {
+      rows.push({ cmd, cat });
+    }
+  }
+  return rows;
+}
+
+function permissionStats(data) {
+  const map = new Map();
+  for (const { cmd } of collectAllCommands(data)) {
+    const key = cmd.permission || "—";
+    map.set(key, (map.get(key) || 0) + 1);
+  }
+  return [...map.entries()].sort((a, b) => b[1] - a[1]);
+}
+
+function renderAdminMain() {
+  const counts = countCommands(state.data);
+  const perms = permissionStats(state.data);
+
+  const permRows = perms
+    .map(
+      ([perm, n]) =>
+        `<tr><td>${esc(perm)}</td><td>${n}</td></tr>`,
+    )
+    .join("");
+
+  return `
+    <div class="admin-hero reveal is-visible">
+      <h1>Admin Dashboard</h1>
+      <p>Command reference overview for Veltrix · City of Angels. Session active until you sign out.</p>
+    </div>
+
+    <div class="admin-grid reveal is-visible">
+      <div class="admin-card"><div class="admin-card__val">${counts.total}</div><div class="admin-card__label">Total commands</div></div>
+      <div class="admin-card"><div class="admin-card__val">${counts.slash}</div><div class="admin-card__label">Slash</div></div>
+      <div class="admin-card"><div class="admin-card__val">${counts.prefix}</div><div class="admin-card__label">Prefix</div></div>
+      <div class="admin-card"><div class="admin-card__val">${state.data.categories.length}</div><div class="admin-card__label">Categories</div></div>
+    </div>
+
+    <div class="admin-panel reveal is-visible">
+      <h3>Sync &amp; data</h3>
+      <table class="admin-table">
+        <tr><th>Field</th><th>Value</th></tr>
+        <tr><td>Last updated</td><td>${esc(state.data.updatedAt)}</td></tr>
+        <tr><td>Package</td><td>${esc(state.data.package || "—")}</td></tr>
+        <tr><td>Prefix</td><td><code>${esc(state.data.prefix)}</code></td></tr>
+        <tr><td>Categories</td><td>${state.data.categories.length}</td></tr>
+      </table>
+    </div>
+
+    <div class="admin-panel reveal is-visible">
+      <h3>Permissions breakdown</h3>
+      <table class="admin-table">
+        <tr><th>Permission</th><th>Commands</th></tr>
+        ${permRows}
+      </table>
+    </div>
+
+    <div class="admin-actions reveal is-visible">
+      <button class="btn" id="adminBackBtn" type="button">← Back to commands</button>
+      <button class="btn btn--ghost" id="adminLogoutBtn" type="button">Sign out</button>
+    </div>
+
+    ${typeof renderAdminEditor === "function" ? renderAdminEditor() : ""}`;
+}
+
+function findCommand(key) {
+  if (!state.data || !key) return null;
+  for (const cat of state.data.categories) {
+    for (const cmd of cat.commands) {
+      if (cmdKey(cmd, cat.id) === key) return { cmd, cat };
+    }
+  }
+  return null;
+}
+
+function showToast(msg) {
+  const el = document.getElementById("toast");
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.remove("hidden");
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => el.classList.add("hidden"), 2000);
+}
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast(`Copied ${text}`);
+  } catch {
+    showToast("Couldn't copy");
+  }
+}
+
+function aliasName(a) {
+  return typeof a === "string" ? a : a.name;
+}
+
+function aliasLabel(a, type) {
+  const name = aliasName(a);
+  return type === "prefix" ? `.${name}` : name;
+}
+
+function aliasHaystack(a) {
+  if (typeof a === "string") return a;
+  return `${a.name} ${a.description || ""}`;
+}
+
+function navLabel(cat) {
+  return cat.label
+    .replace(" Commands", "")
+    .replace("Automatic ", "");
+}
+
+function catIcon(id) {
+  if (id === "all") return "◈";
+  const cat = state.data?.categories.find((c) => c.id === id);
+  return cat?.icon || "•";
+}
+
+function renderCard(cmd, catId) {
+  const type = cmd.type || "system";
+  const nameClass =
+    type === "slash"
+      ? "cmd-name cmd-name--slash"
+      : type === "prefix"
+        ? "cmd-name cmd-name--prefix"
+        : "cmd-name cmd-name--system";
+  const displayName = type === "system" ? cmd.name : cmdDisplayName(cmd);
+  const key = cmdKey(cmd, catId);
+  const hasMore = (cmd.subcommands || []).length || (cmd.options || []).length || cmd.notes;
+
+  const perm = cmd.permission
+    ? `<span class="pill ${permClass(cmd.permission)}">${esc(cmd.permission)}</span>`
+    : "";
+
+  const aliasPill =
+    (cmd.aliases || []).length > 0
+      ? `<span class="pill pill--alias">${esc((cmd.aliases || []).slice(0, 2).map((a) => aliasLabel(a, type)).join(", "))}${cmd.aliases.length > 2 ? " +" + (cmd.aliases.length - 2) : ""}</span>`
+      : "";
+
+  const q = state.query.trim();
+
+  return `<article class="card card--${type} card--cat-${esc(catId)}" data-cmd="${esc(key)}">
+    <div class="card__top">
+      <div class="${nameClass}" style="--cmd-prefix: '${esc(state.data?.prefix || ".")}'">${highlightText(displayName, q)}</div>
+      <div class="card__actions">
+        <button class="icon-btn icon-btn--copy" data-copy="${esc(cmdCopyText(cmd))}" title="Copy command" type="button" aria-label="Copy command"></button>
+        <span class="tag tag--${esc(type)}">${esc(type)}</span>
+      </div>
+    </div>
+    <p class="card__desc">${highlightText(cmd.description || "", q)}</p>
+    <div class="meta">${perm}${aliasPill}${cmd.usage ? `<span class="pill pill--usage">${esc(cmd.usage)}</span>` : ""}</div>
+    ${hasMore ? `<button class="card__more" type="button">Details</button>` : ""}
+  </article>`;
+}
+
+function renderModal() {
+  const existing = document.getElementById("cmdModal");
+  if (existing) existing.remove();
+  if (!state.modalCmd) return;
+
+  const { cmd } = state.modalCmd;
+  const type = cmd.type || "system";
+  const displayName = type === "system" ? cmd.name : cmdDisplayName(cmd);
+  const copyVal = cmdCopyText(cmd);
+  const modalNameClass =
+    type === "slash" ? "modal__cmd modal__cmd--slash" : type === "prefix" ? "modal__cmd modal__cmd--prefix" : "modal__cmd";
+
+  const subs = (cmd.subcommands || []).length
+    ? `<div class="modal__block"><div class="modal__block-title">Subcommands</div><div class="modal__list">${cmd.subcommands
+        .map((s) => `<div class="modal__row"><code>${esc(s.name)}</code><span>${esc(s.description)}</span></div>`)
+        .join("")}</div></div>`
+    : "";
+
+  const opts = (cmd.options || []).length
+    ? `<div class="modal__block"><div class="modal__block-title">Options</div><div class="modal__list">${cmd.options
+        .map((o) => `<div class="modal__row"><code>${esc(o.name)}</code><span>${esc(o.description)}</span></div>`)
+        .join("")}</div></div>`
+    : "";
+
+  const aliases = (cmd.aliases || []).length
+    ? `<div class="modal__block"><div class="modal__block-title">Aliases</div><div class="modal__list">${cmd.aliases
+        .map((a) => {
+          const label = aliasLabel(a, type);
+          const desc = typeof a === "object" && a.description ? a.description : "";
+          return `<div class="modal__row modal__row--alias"><code>${esc(label)}</code>${desc ? `<span>${esc(desc)}</span>` : ""}</div>`;
+        })
+        .join("")}</div></div>`
+    : "";
+
+  const notes = cmd.notes
+    ? `<div class="modal__block"><div class="modal__block-title">Notes</div><p class="modal__desc">${esc(cmd.notes)}</p></div>`
+    : "";
+
+  const perm = cmd.permission
+    ? `<div class="modal__block"><div class="modal__block-title">Permission</div><span class="pill ${permClass(cmd.permission)}">${esc(cmd.permission)}</span></div>`
+    : "";
+
+  document.body.insertAdjacentHTML(
+    "beforeend",
+    `<div class="modal-backdrop" id="cmdModal">
+      <div class="modal modal--${esc(type)}" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal__head">
+          <div>
+            <div class="${modalNameClass}" id="modalTitle" style="--cmd-prefix: '${esc(state.data?.prefix || ".")}'">${esc(displayName)}</div>
+            <span class="tag tag--${esc(type)}">${esc(type)}</span>
+          </div>
+          <button class="icon-btn" id="modalClose" type="button" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal__body">
+          <p class="modal__desc">${esc(cmd.description || "")}</p>
+          <div class="modal__block">
+            <div class="modal__block-title">Command</div>
+            <div class="modal__copy-row">
+              <span>${esc(copyVal)}</span>
+              <button class="btn" data-copy="${esc(copyVal)}" type="button">Copy</button>
+            </div>
+          </div>
+          ${perm}${aliases}${subs}${opts}${notes}
+          <button class="btn btn--ghost" id="modalClose2" type="button" style="width:100%;margin-top:6px">Close</button>
+        </div>
+      </div>
+    </div>`,
+  );
+
+  document.getElementById("modalClose")?.addEventListener("click", closeModal);
+  document.getElementById("modalClose2")?.addEventListener("click", closeModal);
+  document.getElementById("cmdModal")?.addEventListener("click", (e) => {
+    if (e.target.id === "cmdModal") closeModal();
+  });
+  document.querySelectorAll("#cmdModal [data-copy]").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      copyText(btn.dataset.copy);
+    });
+  });
+}
+
+function closeModal() {
+  state.modalCmd = null;
+  document.getElementById("cmdModal")?.remove();
+}
+
+function buildToolbarHtml() {
+  const visible = visibleCommandCount();
+  const filtering = state.query.trim() || state.filter !== "all";
+  const countLabel = filtering
+    ? `<span class="toolbar__count">${visible} command${visible === 1 ? "" : "s"}</span>`
+    : `<span class="toolbar__hint">Press <kbd>/</kbd> to search</span>`;
+
+  return `<div class="toolbar" id="toolbar">
+    <div class="search">
+      <span class="search__icon"></span>
+      <input id="searchInput" type="search" placeholder="Search commands…" value="${esc(state.query)}" autocomplete="off" />
+    </div>
+    <div class="toolbar__right">
+      <div class="filters">
+      ${[["all", "All"], ["slash", "Slash"], ["prefix", "Prefix"], ["session", "Session"], ["systems", "Systems"]]
+        .map(
+          ([id, label]) =>
+            `<button class="chip chip--${esc(id)}${state.filter === id ? " active" : ""}" data-filter="${esc(id)}" type="button"><span class="chip__icon" aria-hidden="true">${esc(catIcon(id))}</span>${label}</button>`,
+        )
+        .join("")}
+      </div>
+      ${countLabel}
+    </div>
+  </div>`;
+}
+
+function buildSectionsHtml() {
+  const q = state.query.trim().toLowerCase();
+  return state.data.categories
+    .filter((cat) => state.filter === "all" || state.filter === cat.id)
+    .map((cat) => {
+      const cmds = cat.commands.filter((c) => matches(c, q));
+      if (!cmds.length) return "";
+      return `<section class="section section--${esc(cat.id)}" id="cat-${esc(cat.id)}">
+        <div class="section__head">
+          <span class="section__icon" aria-hidden="true">${esc(cat.icon || "•")}</span>
+          <div class="section__titles">
+            <h2>${esc(cat.label)}</h2>
+            <p class="section__desc">${esc(cat.description)}</p>
+          </div>
+          <span class="section__count">${cmds.length}</span>
+        </div>
+        <div class="grid">${cmds.map((c) => renderCard(c, cat.id)).join("")}</div>
+      </section>`;
+    })
+    .join("");
+}
+
+function buildCommandViewHtml() {
+  if (state.view === "admin" && state.adminAuth) {
+    return renderAdminMain();
+  }
+  if (state.view === "giveaways") {
+    return renderGiveawaysView();
+  }
+  const sections = buildSectionsHtml();
+  return `${buildToolbarHtml()}${sections || `<div class="empty"><div class="empty__icon" aria-hidden="true">⌕</div><p class="empty__title">No commands found</p><p class="empty__hint">Try another search term or switch the category filter.</p></div>`}`;
+}
+
+function syncNavActive() {
+  document.querySelectorAll(".nav-link[data-filter]").forEach((btn) => {
+    btn.classList.toggle("active", state.view === "commands" && state.filter === btn.dataset.filter);
+  });
+  document.getElementById("adminNavBtn")?.classList.toggle("active", state.view === "admin");
+  document.getElementById("giveawaysNavBtn")?.classList.toggle("active", state.view === "giveaways");
+}
+
+function updateCommandView() {
+  const root = document.getElementById("commandView");
+  if (!root) {
+    render({ force: true });
+    return;
+  }
+  const hadSearchFocus = document.activeElement?.id === "searchInput";
+  root.innerHTML = buildCommandViewHtml();
+  syncNavActive();
+  if (state.view === "admin" && state.adminAuth && typeof wireAdminEditor === "function") {
+    wireAdminEditor();
+  }
+  if (!toolbarScrollHandler) initToolbarStick();
+  if (hadSearchFocus) document.getElementById("searchInput")?.focus();
+}
+
+function render(opts = {}) {
+  const app = document.getElementById("app");
+  if (!state.data) {
+    app.innerHTML = `<div class="loading"><div class="loader"></div></div>`;
+    shellReady = false;
+    return;
+  }
+
+  if (shellReady && !opts.force) {
+    updateCommandView();
+    renderModal();
+    return;
+  }
+
+  const counts = countCommands(state.data);
+  const prefix = state.data.prefix || ".";
+
+  const navLinks = [
+    ["all", "All", counts.total],
+    ...state.data.categories.map((c) => [c.id, navLabel(c), c.commands.length]),
+  ];
+
+  const sections = buildSectionsHtml();
+
+  app.innerHTML = `
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <button class="mobile-nav-toggle" id="navToggle" type="button" aria-label="Open menu">☰</button>
+    <div class="shell">
+      <aside class="sidebar" id="sidebar">
+        ${renderBotTabs()}
+        <div class="sidebar__brand">
+          <div class="sidebar__logo">
+            ${logoPicture("sidebar__logo-img", 52, 52, "Veltrix")}
+          </div>
+          <div>
+            <div class="sidebar__title">${esc(state.data.botName)}</div>
+            <div class="sidebar__sub">${esc(state.data.subtitle)}</div>
+          </div>
+        </div>
+        <nav class="sidebar__nav">
+          ${navLinks
+            .map(
+              ([id, label, count]) =>
+                `<button class="nav-link nav-link--${esc(id)}${state.view === "commands" && state.filter === id ? " active" : ""}" data-filter="${esc(id)}" type="button">
+                  <span class="nav-link__icon" aria-hidden="true">${esc(catIcon(id))}</span>
+                  ${esc(label)}
+                  <span class="nav-link__count">${count}</span>
+                </button>`,
+            )
+            .join("")}
+          <div class="sidebar__divider"></div>
+          <button class="nav-link nav-link--giveaways${state.view === "giveaways" ? " active" : ""}" id="giveawaysNavBtn" type="button">
+            <span class="nav-link__icon" aria-hidden="true">🎁</span>
+            Active Giveaways
+            <span class="nav-link__count">Live</span>
+          </button>
+          <button class="nav-link nav-link--admin${state.view === "admin" ? " active" : ""}" id="adminNavBtn" type="button">
+            <span class="nav-link__icon nav-link__icon--lock"></span>
+            Admin Dashboard
+            ${state.adminAuth ? "" : `<span class="nav-link__lock">Locked</span>`}
+          </button>
+        </nav>
+        <div class="sidebar__meta">
+          Press <kbd>/</kbd> to search. Click a command for the full breakdown.
+        </div>
+      </aside>
+      <main class="main">
+        <div class="main__inner">
+        <header class="hero">
+          <div class="hero__row">
+            <div class="hero__brand">
+              ${logoPicture("hero__logo", 96, 96)}
+              <div>
+                <p class="hero__label">${esc(state.data.subtitle || "Bot commands")}</p>
+                <h1><span>${esc(state.data.botName)}</span> commands</h1>
+                <p class="hero__desc">
+                  Slash commands, prefix commands, and automated features for ${esc(state.data.botName)}.
+                  <span class="hero__prefix-wrap">Prefix <span class="hero__prefix-badge">${esc(prefix)}</span></span>
+                </p>
+              </div>
+            </div>
+            <div class="stats">
+              <div class="stat stat--total"><div class="stat__val">${counts.total}</div><div class="stat__label">commands</div></div>
+              <div class="stat stat--slash"><div class="stat__val">${counts.slash}</div><div class="stat__label">slash</div></div>
+              <div class="stat stat--prefix"><div class="stat__val">${counts.prefix}</div><div class="stat__label">prefix</div></div>
+              <div class="stat stat--systems"><div class="stat__val">${counts.systems}</div><div class="stat__label">auto</div></div>
+            </div>
+          </div>
+        </header>
+
+        <div id="commandView">
+        ${state.view === "admin" && state.adminAuth ? renderAdminMain() : `${buildToolbarHtml()}${sections || `<div class="empty"><div class="empty__icon" aria-hidden="true">⌕</div><p class="empty__title">No commands found</p><p class="empty__hint">Try another search term or switch the category filter.</p></div>`}`}
+        </div>
+
+        <footer class="footer"><span class="footer__brand">${esc(state.data.botName)}</span> · Command center · Updated ${esc(state.data.updatedAt)}</footer>
+        </div>
+      </main>
+    </div>`;
+
+  shellReady = true;
+  wireShellEvents();
+  renderModal();
+  renderAdminGate();
+  initToolbarStick();
+  initScrollTop();
+  dismissBoot();
+}
+
+function initScrollTop() {
+  const btn = document.getElementById("scrollTop");
+  if (!btn || btn.dataset.wired === "1") return;
+  btn.dataset.wired = "1";
+
+  const onScroll = () => {
+    btn.classList.toggle("hidden", window.scrollY < 480);
+  };
+  onScroll();
+  window.addEventListener("scroll", onScroll, { passive: true });
+  btn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+}
+
+function initReveal() {
+  /* scroll reveal removed for performance — sections use content-visibility in CSS */
+}
+
+function initToolbarStick() {
+  const toolbar = document.getElementById("toolbar");
+  if (!toolbar) return;
+
+  if (toolbarScrollHandler) window.removeEventListener("scroll", toolbarScrollHandler);
+
+  toolbarScrollHandler = () => {
+    toolbar.classList.toggle("is-stuck", window.scrollY > 100);
+  };
+  toolbarScrollHandler();
+  window.addEventListener("scroll", toolbarScrollHandler, { passive: true });
+}
+
+function applyFilter(filterId, scrollToCategory) {
+  state.view = "commands";
+  state.filter = filterId;
+  closeSidebar();
+  updateCommandView();
+  if (scrollToCategory && filterId !== "all") {
+    document.getElementById(`cat-${filterId}`)?.scrollIntoView({ behavior: "smooth" });
+  }
+}
+
+function wireShellEvents() {
+  const app = document.getElementById("app");
+  if (!app || app.dataset.wired === "1") return;
+  app.dataset.wired = "1";
+
+  app.addEventListener("input", (e) => {
+    if (e.target.id !== "searchInput") return;
+    state.query = e.target.value;
+    clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(updateCommandView, 100);
+  });
+
+  app.addEventListener("click", (e) => {
+    const avatarBtn = e.target.closest(".entrant[data-avatar]");
+    if (avatarBtn) {
+      openAvatarViewer({ avatar: avatarBtn.dataset.avatar, name: avatarBtn.dataset.name, tag: avatarBtn.dataset.tag });
+      return;
+    }
+
+    const botTab = e.target.closest(".bot-tab[data-bot]");
+    if (botTab) {
+      switchBot(botTab.dataset.bot);
+      return;
+    }
+
+    const copyBtn = e.target.closest("[data-copy]");
+    if (copyBtn) {
+      e.stopPropagation();
+      copyText(copyBtn.dataset.copy);
+      return;
+    }
+
+    const chip = e.target.closest(".chip[data-filter]");
+    if (chip) {
+      applyFilter(chip.dataset.filter, false);
+      return;
+    }
+
+    const navFilter = e.target.closest(".nav-link[data-filter]");
+    if (navFilter) {
+      applyFilter(navFilter.dataset.filter, true);
+      return;
+    }
+
+    if (e.target.closest("#giveawaysNavBtn")) {
+      openGiveawaysView();
+      return;
+    }
+
+    if (e.target.closest("#giveawaysRefreshBtn") || e.target.closest("#giveawaysRetryBtn")) {
+      loadGiveaways();
+      return;
+    }
+
+    if (e.target.closest("#adminNavBtn")) {
+      if (state.adminAuth) {
+        state.view = "admin";
+        closeSidebar();
+        updateCommandView();
+        syncNavActive();
+        if (typeof wireAdminEditor === "function") wireAdminEditor();
+      } else {
+        openAdminGate();
+      }
+      return;
+    }
+
+    if (e.target.closest("#adminBackBtn")) {
+      state.view = "commands";
+      updateCommandView();
+      syncNavActive();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
+    if (e.target.closest("#adminLogoutBtn")) {
+      setAdminAuthed(false);
+      sessionStorage.removeItem("vx_admin_pass");
+      state.view = "commands";
+      updateCommandView();
+      syncNavActive();
+      showToast("Signed out");
+      return;
+    }
+
+    const moreBtn = e.target.closest(".card__more");
+    const card = e.target.closest(".card[data-cmd]");
+    if (moreBtn || card) {
+      const target = moreBtn ? moreBtn.closest(".card[data-cmd]") : card;
+      if (!target) return;
+      if (moreBtn) e.stopPropagation();
+      const found = findCommand(target.dataset.cmd);
+      if (found) {
+        state.modalCmd = found;
+        renderModal();
+      }
+      return;
+    }
+
+    if (e.target.id === "navToggle") toggleSidebar();
+    if (e.target.id === "sidebarOverlay") closeSidebar();
+  });
+}
+
+function wireEvents() {
+  /* legacy — shell uses delegated events */
+}
+
+function toggleSidebar() {
+  document.getElementById("sidebar")?.classList.toggle("open");
+  document.getElementById("sidebarOverlay")?.classList.toggle("open");
+}
+
+function closeSidebar() {
+  document.getElementById("sidebar")?.classList.remove("open");
+  document.getElementById("sidebarOverlay")?.classList.remove("open");
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    closeAvatarViewer();
+    if (state.adminGateOpen) closeAdminGate();
+    else closeModal();
+  }
+  if (e.key === "/" && document.activeElement?.tagName !== "INPUT" && !state.adminGateOpen) {
+    e.preventDefault();
+    document.getElementById("searchInput")?.focus();
+  }
+});
+
+function getEmbeddedJson(id) {
+  const el = document.getElementById(id);
+  if (!el?.textContent) return null;
+  try { return JSON.parse(el.textContent); } catch { return null; }
+}
+
+async function fetchJsonFast(url, fallback) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 1200);
+  try {
+    const res = await fetch(url, { cache: "force-cache", signal: controller.signal });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch {
+    return fallback;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function init() {
+  state.adminAuth = isAdminAuthed();
+  if (typeof getStoredAdminPassword === "function") {
+    const p = getStoredAdminPassword();
+    if (p) adminEditor.password = p;
+  }
+
+  try {
+    const embeddedVeltrix = getEmbeddedJson("embeddedVeltrixCommands");
+    const embeddedEcrp = getEmbeddedJson("embeddedEcrpCommands");
+    const embeddedOverrides = getEmbeddedJson("embeddedAdminOverrides") || {};
+
+    if (!embeddedVeltrix) throw new Error("Embedded command data is missing");
+
+    state.bots = [
+      { id: "veltrix", data: embeddedVeltrix },
+      ...(embeddedEcrp ? [{ id: "ecrp", data: embeddedEcrp }] : []),
+    ];
+    state.activeBot = state.bots[0]?.id || "veltrix";
+    state.data = state.bots[0]?.data || embeddedVeltrix;
+    adminEditor.overrides = embeddedOverrides;
+    if (typeof mergeAdminIntoState === "function") mergeAdminIntoState();
+    render();
+
+    Promise.all([
+      fetchJsonFast("data/bot-commands.json?v=17", embeddedVeltrix),
+      fetchJsonFast("data/admin-overrides.json?v=3", embeddedOverrides),
+      fetchJsonFast("data/ecrp-commands.json?v=3", embeddedEcrp),
+    ]).then(([veltrixData, overrides, ecrpData]) => {
+      state.bots = [
+        { id: "veltrix", data: veltrixData || embeddedVeltrix },
+        ...(ecrpData ? [{ id: "ecrp", data: ecrpData }] : []),
+      ];
+      const active = state.bots.find((bot) => bot.id === state.activeBot) || state.bots[0];
+      state.activeBot = active?.id || "veltrix";
+      state.data = active?.data || veltrixData || embeddedVeltrix;
+      adminEditor.overrides = overrides || {};
+      if (typeof mergeAdminIntoState === "function") mergeAdminIntoState();
+      render({ force: true });
+    });
+  } catch (err) {
+    dismissBoot();
+    document.getElementById("app").innerHTML = `<div class="empty" style="min-height:100vh;display:grid;place-items:center"><p>Couldn't load commands. ${esc(err.message)}</p></div>`;
+    return;
+  }
+}
+
+init();
+</script>
+</body>
 </html>
