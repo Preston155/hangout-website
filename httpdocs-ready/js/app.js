@@ -150,13 +150,40 @@ function renderEntrants(giveaway) {
   return `<div class="giveaway-entrants">${entrants.slice(0, 24).map((entry, index) => {
     const user = entry.user || {};
     const label = user.displayName || user.username || entry.userId;
-    return `<div class="entrant" title="${esc(user.tag || entry.userId)}">
+    const avatar = user.avatarUrl || "";
+    return `<button class="entrant" type="button" data-avatar="${esc(avatar)}" data-name="${esc(label)}" data-tag="${esc(user.tag || entry.userId)}" title="View ${esc(label)}'s profile picture">
       <span class="entrant__rank">#${index + 1}</span>
-      ${user.avatarUrl ? `<img src="${esc(user.avatarUrl)}" alt="" loading="lazy" />` : `<span class="entrant__avatar">?</span>`}
-      <span class="entrant__name">${esc(label)}</span>
+      <span class="entrant__pfp-wrap">${avatar ? `<img class="entrant__pfp" src="${esc(avatar)}" alt="" loading="lazy" />` : `<span class="entrant__avatar">?</span>`}</span>
+      <span class="entrant__info"><span class="entrant__name">${esc(label)}</span><small>${esc(user.tag || entry.userId)}</small></span>
       ${entry.weight > 1 ? `<b class="entrant__weight">×${entry.weight}</b>` : ""}
-    </div>`;
+    </button>`;
   }).join("")}${entrants.length > 24 ? `<div class="entrant entrant--more">+${entrants.length - 24} more joined</div>` : ""}</div>`;
+}
+
+function openAvatarViewer({ avatar, name, tag }) {
+  document.getElementById("avatarViewer")?.remove();
+  const safeName = esc(name || "Discord User");
+  const safeTag = esc(tag || "");
+  const safeAvatar = esc(avatar || "");
+  document.body.insertAdjacentHTML("beforeend", `<div class="avatar-viewer" id="avatarViewer" role="dialog" aria-modal="true" aria-label="Discord profile picture viewer">
+    <div class="avatar-viewer__card">
+      <button class="avatar-viewer__close" id="avatarViewerClose" type="button" aria-label="Close">×</button>
+      <div class="avatar-viewer__ring">
+        ${safeAvatar ? `<img src="${safeAvatar}" alt="${safeName} profile picture" />` : `<span>?</span>`}
+      </div>
+      <h3>${safeName}</h3>
+      ${safeTag ? `<p>${safeTag}</p>` : ""}
+      ${safeAvatar ? `<a class="btn" href="${safeAvatar}" target="_blank" rel="noreferrer">Open full size</a>` : ""}
+    </div>
+  </div>`);
+  document.getElementById("avatarViewerClose")?.addEventListener("click", closeAvatarViewer);
+  document.getElementById("avatarViewer")?.addEventListener("click", (event) => {
+    if (event.target.id === "avatarViewer") closeAvatarViewer();
+  });
+}
+
+function closeAvatarViewer() {
+  document.getElementById("avatarViewer")?.remove();
 }
 
 function giveawayMessageUrl(giveaway) {
@@ -944,6 +971,12 @@ function wireShellEvents() {
   });
 
   app.addEventListener("click", (e) => {
+    const avatarBtn = e.target.closest(".entrant[data-avatar]");
+    if (avatarBtn) {
+      openAvatarViewer({ avatar: avatarBtn.dataset.avatar, name: avatarBtn.dataset.name, tag: avatarBtn.dataset.tag });
+      return;
+    }
+
     const botTab = e.target.closest(".bot-tab[data-bot]");
     if (botTab) {
       switchBot(botTab.dataset.bot);
@@ -1045,6 +1078,7 @@ function closeSidebar() {
 
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
+    closeAvatarViewer();
     if (state.adminGateOpen) closeAdminGate();
     else closeModal();
   }
