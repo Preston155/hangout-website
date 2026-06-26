@@ -1373,6 +1373,7 @@ async function init() {
   try {
     const embeddedVeltrix = getEmbeddedJson("embeddedVeltrixCommands");
     const embeddedEcrp = getEmbeddedJson("embeddedEcrpCommands");
+    const embeddedIceSway = getEmbeddedJson("embeddedIceSwayCommands");
     const embeddedOverrides = getEmbeddedJson("embeddedAdminOverrides") || {};
 
     if (!embeddedVeltrix) throw new Error("Embedded command data is missing");
@@ -1380,6 +1381,7 @@ async function init() {
     state.bots = [
       { id: "veltrix", data: embeddedVeltrix },
       ...(embeddedEcrp ? [{ id: "ecrp", data: embeddedEcrp }] : []),
+      ...(embeddedIceSway ? [{ id: "icesway", data: embeddedIceSway }] : []),
     ];
     state.activeBot = state.bots[0]?.id || "veltrix";
     state.data = state.bots[0]?.data || embeddedVeltrix;
@@ -1390,11 +1392,13 @@ async function init() {
     Promise.all([
       fetchJsonFast("data/bot-commands.json?v=17", embeddedVeltrix),
       fetchJsonFast("data/admin-overrides.json?v=3", embeddedOverrides),
-      fetchJsonFast("data/ecrp-commands.json?v=3", embeddedEcrp),
-    ]).then(([veltrixData, overrides, ecrpData]) => {
+      fetchJsonFast("data/ecrp-commands.json?v=4", embeddedEcrp),
+      fetchJsonFast("data/icesway-commands.json?v=1", embeddedIceSway),
+    ]).then(([veltrixData, overrides, ecrpData, iceSwayData]) => {
       state.bots = [
         { id: "veltrix", data: veltrixData || embeddedVeltrix },
         ...(ecrpData ? [{ id: "ecrp", data: ecrpData }] : []),
+        ...(iceSwayData ? [{ id: "icesway", data: iceSwayData }] : []),
       ];
       const active = state.bots.find((bot) => bot.id === state.activeBot) || state.bots[0];
       state.activeBot = active?.id || "veltrix";
