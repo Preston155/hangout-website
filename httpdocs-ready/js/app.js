@@ -128,6 +128,187 @@ function renderBotTabs() {
 }
 
 
+
+function formatGiveawayTime(ms) {
+  if (!ms) return "Unknown";
+  try {
+    return new Date(Number(ms)).toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+  } catch {
+    return "Unknown";
+  }
+}
+
+function giveawayTimeLeft(giveaway) {
+  if (giveaway.status === "paused") return "Paused";
+  const end = Number(giveaway.endTime || 0);
+  if (!end) return "No end time";
+  const diff = end - Date.now();
+  if (diff <= 0) return "Ending soon";
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins}m left`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 48) return `${hours}h ${mins % 60}m left`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ${hours % 24}h left`;
+}
+
+function renderEntrants(giveaway) {
+  const entrants = giveaway.entries?.visible || [];
+  if (!entrants.length) return `<div class="giveaway-entrants giveaway-entrants--empty">No one has joined yet.</div>`;
+  return `<div class="giveaway-entrants">${entrants.slice(0, 24).map((entry, index) => {
+    const user = entry.user || {};
+    const label = user.displayName || user.username || entry.userId;
+    const avatar = user.avatarUrl || "";
+    return `<button class="entrant" type="button" data-avatar="${esc(avatar)}" data-name="${esc(label)}" data-tag="${esc(user.tag || entry.userId)}" title="View ${esc(label)}'s profile picture">
+      <span class="entrant__rank">#${index + 1}</span>
+      <span class="entrant__pfp-wrap">${avatar ? `<img class="entrant__pfp" src="${esc(avatar)}" alt="" loading="lazy" />` : `<span class="entrant__avatar">?</span>`}</span>
+      <span class="entrant__info"><span class="entrant__name">${esc(label)}</span><small>${esc(user.tag || entry.userId)}</small></span>
+      ${entry.weight > 1 ? `<b class="entrant__weight">×${entry.weight}</b>` : ""}
+    </button>`;
+  }).join("")}${entrants.length > 24 ? `<div class="entrant entrant--more">+${entrants.length - 24} more joined</div>` : ""}</div>`;
+}
+
+function openAvatarViewer({ avatar, name, tag }) {
+  document.getElementById("avatarViewer")?.remove();
+  const safeName = esc(name || "Discord User");
+  const safeTag = esc(tag || "");
+  const safeAvatar = esc(avatar || "");
+  document.body.insertAdjacentHTML("beforeend", `<div class="avatar-viewer" id="avatarViewer" role="dialog" aria-modal="true" aria-label="Discord profile picture viewer">
+    <div class="avatar-viewer__card">
+      <button class="avatar-viewer__close" id="avatarViewerClose" type="button" aria-label="Close">×</button>
+      <div class="avatar-viewer__ring">
+        ${safeAvatar ? `<img src="${safeAvatar}" alt="${safeName} profile picture" />` : `<span>?</span>`}
+      </div>
+      <h3>${safeName}</h3>
+      ${safeTag ? `<p>${safeTag}</p>` : ""}
+      ${safeAvatar ? `<a class="btn" href="${safeAvatar}" target="_blank" rel="noreferrer">Open full size</a>` : ""}
+    </div>
+  </div>`);
+  document.getElementById("avatarViewerClose")?.addEventListener("click", closeAvatarViewer);
+  document.getElementById("avatarViewer")?.addEventListener("click", (event) => {
+    if (event.target.id === "avatarViewer") closeAvatarViewer();
+  });
+}
+
+function closeAvatarViewer() {
+  document.getElementById("avatarViewer")?.remove();
+}
+
+function giveawayMessageUrl(giveaway) {
+  if (!giveaway.guildId || !giveaway.channelId || !giveaway.messageId) return "";
+  return `https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId}`;
+}
+
+function renderGiveawayEmbedPreview(giveaway) {
+  const entries = Number(giveaway.entries?.users || 0);
+  const weighted = Number(giveaway.entries?.weighted || 0);
+  const winners = Number(giveaway.winnerCount || 0);
+  const messageUrl = giveawayMessageUrl(giveaway);
+  const image = giveaway.imageUrl ? `<img class="giveaway-embed__image" src="${esc(giveaway.imageUrl)}" alt="Giveaway image" loading="lazy" />` : "";
+  return `<div class="giveaway-embed" role="group" aria-label="Giveaway embed preview">
+    <div class="giveaway-embed__bar"></div>
+    <div class="giveaway-embed__body">
+      <div class="giveaway-embed__header">
+        <span class="giveaway-embed__bot">${esc(giveaway.botName || "Unknown bot")}</span>
+        <span class="giveaway-status giveaway-status--${esc(giveaway.status || "active")}">${esc(giveaway.status || "active")}</span>
+      </div>
+      <h2>🎉 ${esc(giveaway.prize || "Untitled giveaway")}</h2>
+      ${giveaway.description ? `<p class="giveaway-desc">${esc(giveaway.description)}</p>` : `<p class="giveaway-desc giveaway-desc--muted">No extra description set.</p>`}
+      <div class="giveaway-embed__fields">
+        <div><small>Hosted by</small><strong>${esc(giveaway.hostName || "Unknown")}</strong></div>
+        <div><small>Ends</small><strong>${esc(formatGiveawayTime(giveaway.endTime))}</strong></div>
+        <div><small>Time left</small><strong>${esc(giveawayTimeLeft(giveaway))}</strong></div>
+        <div><small>Winners</small><strong>${winners}</strong></div>
+      </div>
+      <div class="giveaway-embed__stats">
+        <span>🎟️ <b>${entries}</b> joined</span>
+        <span>✨ <b>${weighted}</b> entries</span>
+        <span>🤖 <b>${esc(giveaway.botName || "Bot")}</b></span>
+      </div>
+      ${image}
+      <div class="giveaway-embed__footer">
+        <span>ID: ${esc(giveaway.id || "unknown")}</span>
+        ${messageUrl ? `<a href="${esc(messageUrl)}" target="_blank" rel="noreferrer">Open Discord message ↗</a>` : ""}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderGiveawaysView() {
+  if (state.giveawaysLoading && !state.giveaways) {
+    return `<div class="toolbar"><div class="toolbar__hint">Loading active giveaways…</div></div><div class="giveaway-loading"><div class="loader"></div></div>`;
+  }
+  if (state.giveawaysError) {
+    return `<div class="empty"><div class="empty__icon" aria-hidden="true">!</div><p class="empty__title">Couldn't load giveaways</p><p class="empty__hint">${esc(state.giveawaysError)}</p><button class="btn" id="giveawaysRetryBtn" type="button">Retry</button></div>`;
+  }
+  const payload = state.giveaways || { giveaways: [], updatedAt: null };
+  const giveaways = payload.giveaways || [];
+  const updated = payload.updatedAt ? new Date(payload.updatedAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) : "just now";
+  const totalJoined = giveaways.reduce((sum, giveaway) => sum + Number(giveaway.entries?.users || 0), 0);
+  const cards = giveaways.map((giveaway) => `<article class="giveaway-card giveaway-card--${esc(giveaway.status || "active")}">
+    <div class="giveaway-card__main">
+      ${renderGiveawayEmbedPreview(giveaway)}
+      <aside class="giveaway-join-panel">
+        <div class="giveaway-join-panel__head">
+          <div>
+            <span class="giveaway-section-title">Joined users</span>
+            <strong>${Number(giveaway.entries?.users || 0)} member${Number(giveaway.entries?.users || 0) === 1 ? "" : "s"}</strong>
+          </div>
+          <span class="giveaway-join-panel__badge">${Number(giveaway.entries?.weighted || 0)} entries</span>
+        </div>
+        ${renderEntrants(giveaway)}
+      </aside>
+    </div>
+  </article>`).join("");
+  return `<div class="giveaway-head">
+    <div><p class="hero__label">Live giveaway tracker</p><h1><span>Active</span> giveaways</h1><p class="hero__desc">Discord-style giveaway previews, joined users, hosts, and the bot running each giveaway.</p></div>
+    <button class="btn" id="giveawaysRefreshBtn" type="button">Refresh</button>
+  </div>
+  <div class="giveaway-summary">
+    <div><strong>${giveaways.length}</strong><span>active/paused</span></div>
+    <div><strong>${totalJoined}</strong><span>joined users</span></div>
+    <div><strong>${esc(updated)}</strong><span>last update</span></div>
+  </div>
+  ${cards || `<div class="empty"><div class="empty__icon" aria-hidden="true">🎁</div><p class="empty__title">No active giveaways right now</p><p class="empty__hint">When ECRP or Veltrix starts one, it will show here.</p></div>`}`;
+}
+
+async function loadGiveaways({ silent = false } = {}) {
+  if (state.giveawaysLoading) return;
+  state.giveawaysLoading = true;
+  if (!silent) {
+    state.giveawaysError = "";
+    updateCommandView();
+  }
+  try {
+    const res = await fetch("https://api.prestonhq.com/api/giveaways/active", { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    if (!json.ok) throw new Error(json.error || "API returned an error");
+    state.giveaways = json.data;
+    state.giveawaysError = "";
+  } catch (error) {
+    state.giveawaysError = error.message || "Unknown error";
+  } finally {
+    state.giveawaysLoading = false;
+    if (state.view === "giveaways") updateCommandView();
+  }
+}
+
+function startGiveawayRefresh() {
+  clearInterval(state.giveawaysTimer);
+  state.giveawaysTimer = setInterval(() => {
+    if (state.view === "giveaways") loadGiveaways({ silent: true });
+  }, 30000);
+}
+
+function openGiveawaysView() {
+  state.view = "giveaways";
+  closeSidebar();
+  updateCommandView();
+  loadGiveaways({ silent: !!state.giveaways });
+  startGiveawayRefresh();
+}
+
 function countCommands(data) {
   let slash = 0;
   let prefix = 0;
