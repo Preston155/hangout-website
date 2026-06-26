@@ -371,22 +371,46 @@
         {
           "name": "giveaway",
           "type": "slash",
-          "description": "Giveaway controls",
+          "description": "Advanced giveaway controls with requirements, proof, pausing, rerolls, and hosted images.",
           "subcommands": [
             {
               "name": "start",
-              "description": "Start giveaway"
+              "description": "Start an advanced giveaway with prize, duration, winners, requirements, bonus entries, and image."
             },
             {
               "name": "end",
-              "description": "End giveaway"
+              "description": "End a giveaway early and pick winners."
             },
             {
               "name": "reroll",
-              "description": "Reroll giveaway"
+              "description": "Reroll winners for a giveaway."
+            },
+            {
+              "name": "list",
+              "description": "View active, paused, or recent giveaways."
+            },
+            {
+              "name": "edit",
+              "description": "Update giveaway prize, duration, winners, requirements, image, or notes."
+            },
+            {
+              "name": "delete",
+              "description": "Delete/cancel a giveaway record."
+            },
+            {
+              "name": "pause",
+              "description": "Pause giveaway entries without deleting it."
+            },
+            {
+              "name": "resume",
+              "description": "Resume a paused giveaway."
+            },
+            {
+              "name": "proof",
+              "description": "Post or view giveaway winner proof."
             }
           ],
-          "usage": "/giveaway"
+          "usage": "/giveaway start prize:<text> duration:<time> winners:<number>"
         }
       ]
     },
@@ -547,7 +571,7 @@
         {
           "name": "Giveaways",
           "type": "system",
-          "description": "Scheduled giveaway tracking with entries and automatic ending."
+          "description": "Advanced persistent giveaways with embed-style cards, Enter/Leave/Requirements buttons, weighted entries, role/server requirements, hosted images, auto ending, rerolls, and proof logs."
         },
         {
           "name": "Leveling",
