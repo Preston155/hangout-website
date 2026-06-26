@@ -2783,3 +2783,84 @@ body.is-ready .boot { display: none; }
   font-weight: 900 !important;
 }
 
+/* Bot switcher same UI as sidebar brand cards */
+.sidebar .bot-tabs--brand {
+  display: grid !important;
+  gap: 10px !important;
+  margin: 0 0 18px !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+.sidebar .bot-brand-tab {
+  position: relative !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  width: 100% !important;
+  min-height: 78px !important;
+  padding: 16px !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+  background: linear-gradient(145deg, rgba(18,18,21,.96), rgba(10,10,12,.98)) !important;
+  color: var(--text) !important;
+  text-align: left !important;
+  font: inherit !important;
+  cursor: pointer !important;
+  overflow: hidden !important;
+}
+.sidebar .bot-brand-tab:hover,
+.sidebar .bot-brand-tab.active {
+  border-color: rgba(43,127,255,.45) !important;
+  background: radial-gradient(circle at 8% 0%, rgba(43,127,255,.18), transparent 40%), linear-gradient(145deg, rgba(18,18,21,.98), rgba(10,10,12,.98)) !important;
+}
+.sidebar .bot-brand-tab.active::before {
+  content: "";
+  position: absolute;
+  inset: 10px auto 10px 0;
+  width: 3px;
+  border-radius: 99px;
+  background: var(--accent);
+}
+.sidebar .bot-brand-tab .sidebar__logo,
+.sidebar .bot-brand-tab .sidebar__logo-img-wrap,
+.sidebar .bot-brand-tab .sidebar__logo-img {
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  max-width: 38px !important;
+  min-height: 38px !important;
+  max-height: 38px !important;
+}
+.sidebar .bot-brand-tab .sidebar__logo-img {
+  object-fit: contain !important;
+}
+.sidebar .bot-brand-tab__copy {
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+}
+.sidebar .bot-brand-tab .sidebar__title {
+  color: #f7c948 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+.sidebar .bot-brand-tab .sidebar__sub {
+  white-space: normal !important;
+  line-height: 1.25 !important;
+}
+.sidebar .bot-brand-tab__count {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  min-width: 24px;
+  padding: 3px 7px;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 999px;
+  color: var(--muted);
+  background: rgba(0,0,0,.24);
+  font-size: 11px;
+  font-weight: 900;
+}
+
