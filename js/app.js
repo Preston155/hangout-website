@@ -204,34 +204,54 @@ function renderGiveawayEmbedPreview(giveaway) {
   const weighted = Number(giveaway.entries?.weighted || 0);
   const winners = Number(giveaway.winnerCount || 0);
   const messageUrl = giveawayMessageUrl(giveaway);
-  const image = giveaway.imageUrl ? `<img class="giveaway-embed__image" src="${esc(giveaway.imageUrl)}" alt="Giveaway image" loading="lazy" />` : "";
-  return `<div class="giveaway-embed" role="group" aria-label="Giveaway embed preview">
-    <div class="giveaway-embed__bar"></div>
-    <div class="giveaway-embed__body">
-      <div class="giveaway-embed__header">
-        <span class="giveaway-embed__bot">${esc(giveaway.botName || "Unknown bot")}</span>
-        <span class="giveaway-status giveaway-status--${esc(giveaway.status || "active")}">${esc(giveaway.status || "active")}</span>
-      </div>
-      <h2>🎉 ${esc(giveaway.prize || "Untitled giveaway")}</h2>
-      ${giveaway.description ? `<p class="giveaway-desc">${esc(giveaway.description)}</p>` : `<p class="giveaway-desc giveaway-desc--muted">No extra description set.</p>`}
-      <div class="giveaway-embed__fields">
-        <div><small>Hosted by</small><strong>${esc(giveaway.hostName || "Unknown")}</strong></div>
-        <div><small>Ends</small><strong>${esc(formatGiveawayTime(giveaway.endTime))}</strong></div>
-        <div><small>Time left</small><strong>${esc(giveawayTimeLeft(giveaway))}</strong></div>
-        <div><small>Winners</small><strong>${winners}</strong></div>
-      </div>
-      <div class="giveaway-embed__stats">
-        <span>🎟️ <b>${entries}</b> joined</span>
-        <span>✨ <b>${weighted}</b> entries</span>
-        <span>🤖 <b>${esc(giveaway.botName || "Bot")}</b></span>
-      </div>
-      ${image}
-      <div class="giveaway-embed__footer">
-        <span>ID: ${esc(giveaway.id || "unknown")}</span>
-        ${messageUrl ? `<a href="${esc(messageUrl)}" target="_blank" rel="noreferrer">Open Discord message ↗</a>` : ""}
+  const image = giveaway.imageUrl ? `<figure class="giveaway-embed__media"><img class="giveaway-embed__image" src="${esc(giveaway.imageUrl)}" alt="Giveaway image" loading="lazy" /></figure>` : "";
+  const requirements = giveaway.description || "No special requirements.";
+  const botInitial = (giveaway.botName || "Bot").trim().charAt(0).toUpperCase() || "B";
+  return `<section class="giveaway-message" aria-label="Discord giveaway message preview">
+    <div class="giveaway-message__header">
+      <div class="giveaway-message__avatar" aria-hidden="true">${esc(botInitial)}</div>
+      <div>
+        <div class="giveaway-message__name">${esc(giveaway.botName || "Unknown bot")} <span>APP</span></div>
+        <div class="giveaway-message__sub">Live Discord giveaway embed preview</div>
       </div>
     </div>
-  </div>`;
+    <div class="giveaway-embed" role="group" aria-label="Giveaway embed preview">
+      <div class="giveaway-embed__bar"></div>
+      <div class="giveaway-embed__body">
+        <div class="giveaway-embed__header">
+          <span class="giveaway-embed__bot">🎉 Giveaway</span>
+          <span class="giveaway-status giveaway-status--${esc(giveaway.status || "active")}">${esc(giveaway.status || "active")}</span>
+        </div>
+        <h2>${esc(giveaway.prize || "Untitled giveaway")}</h2>
+        <p class="giveaway-desc">Enter below for your chance to win.</p>
+        <div class="giveaway-embed__fields giveaway-embed__fields--discord">
+          <div><small>Hosted by</small><strong>${esc(giveaway.hostName || "Unknown")}</strong></div>
+          <div><small>Ends</small><strong>${esc(formatGiveawayTime(giveaway.endTime))}</strong></div>
+          <div><small>Time left</small><strong>${esc(giveawayTimeLeft(giveaway))}</strong></div>
+          <div><small>Status</small><strong>${esc(giveaway.status || "active")}</strong></div>
+        </div>
+        <div class="giveaway-requirements">
+          <strong>Requirements</strong>
+          <span>${esc(requirements)}</span>
+        </div>
+        <div class="giveaway-embed__stats giveaway-embed__stats--buttons">
+          <span>🎟️ <b>${entries}</b> entries</span>
+          <span>⏰ <b>${esc(giveawayTimeLeft(giveaway))}</b></span>
+          <span>🏆 <b>${winners}</b> winner${winners === 1 ? "" : "s"}</span>
+        </div>
+        ${image}
+        <div class="giveaway-actions-preview" aria-hidden="true">
+          <span class="giveaway-actions-preview__enter">🎉 Enter Giveaway</span>
+          <span>📋 Leave</span>
+          <span>ℹ️ Requirements</span>
+        </div>
+        <div class="giveaway-embed__footer">
+          <span>ID: ${esc(giveaway.id || "unknown")}</span>
+          ${messageUrl ? `<a href="${esc(messageUrl)}" target="_blank" rel="noreferrer">Open Discord message ↗</a>` : ""}
+        </div>
+      </div>
+    </div>
+  </section>`;
 }
 
 function renderGiveawaysView() {
