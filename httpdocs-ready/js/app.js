@@ -812,6 +812,7 @@ function render(opts = {}) {
     <button class="mobile-nav-toggle" id="navToggle" type="button" aria-label="Open menu">☰</button>
     <div class="shell">
       <aside class="sidebar" id="sidebar">
+        ${renderBotTabs()}
         <div class="sidebar__brand">
           <div class="sidebar__logo">
             ${logoPicture("sidebar__logo-img", 52, 52, "Veltrix")}
