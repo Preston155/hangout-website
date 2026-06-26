@@ -796,7 +796,7 @@ function wireShellEvents() {
       return;
     }
 
-    const botTab = e.target.closest(".bot-tab[data-bot]");
+    const botTab = e.target.closest("[data-bot]");
     if (botTab) {
       switchBot(botTab.dataset.bot);
       return;
@@ -821,7 +821,7 @@ function wireShellEvents() {
       return;
     }
 
-    if (e.target.closest("#giveawaysNavBtn")) {
+    if (e.target.closest("#giveawaysNavBtn, .nav-link--giveaways")) {
       openGiveawaysView();
       return;
     }
@@ -831,7 +831,7 @@ function wireShellEvents() {
       return;
     }
 
-    if (e.target.closest("#adminNavBtn")) {
+    if (e.target.closest("#adminNavBtn, .nav-link--admin")) {
       if (state.adminAuth) {
         state.view = "admin";
         closeSidebar();
