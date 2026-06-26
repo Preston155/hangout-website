@@ -113,8 +113,9 @@ function renderBotTabs() {
       const counts = countCommands(bot.data);
       const active = bot.id === state.activeBot;
       return `<button class="bot-tab${active ? " active" : ""}" data-bot="${esc(bot.id)}" type="button">
-        <span class="bot-tab__mark">${esc(botInitials(bot.data.botName))}</span>
-        <span><strong>${esc(bot.data.botName)}</strong><small>${counts.total} commands</small></span>
+        <span class="bot-tab__mark">${bot.id === "ecrp" ? "<img src=\"assets/veltrix-logo-256.webp?v=8\" alt=\"\" />" : "<img src=\"assets/veltrix-logo-256.webp?v=8\" alt=\"\" />"}</span>
+        <span class="bot-tab__text"><strong>${esc(bot.data.botName)}</strong><small>${esc(bot.data.subtitle || `${counts.total} commands`)}</small></span>
+        <span class="bot-tab__count">${counts.total}</span>
       </button>`;
     })
     .join("")}</div>`;
@@ -364,7 +365,8 @@ function visibleCommandCount() {
 function cmdDisplayName(cmd) {
   const type = cmd.type || "system";
   if (type === "prefix") {
-    return cmd.usage ? cmd.usage.split(" ")[0].replace(/^\./, "") : cmd.name;
+    const base = cmd.usage ? cmd.usage.split(" ")[0] : cmd.name;
+    return String(base).replace(/^[.!?/$-]/, "");
   }
   return cmd.name;
 }
@@ -374,7 +376,7 @@ function cmdCopyText(cmd) {
   if (type === "slash") return `/${cmd.name}`;
   if (type === "prefix") {
     const base = cmd.usage ? cmd.usage.split(" ")[0] : `.${cmd.name}`;
-    return base.startsWith(".") ? base : `.${base}`;
+    return /^[.!?/$-]/.test(base) ? base : `${state.data?.prefix || "."}${base}`;
   }
   return cmd.name;
 }
@@ -628,7 +630,7 @@ function renderCard(cmd, catId) {
 
   return `<article class="card card--${type} card--cat-${esc(catId)}" data-cmd="${esc(key)}">
     <div class="card__top">
-      <div class="${nameClass}">${highlightText(displayName, q)}</div>
+      <div class="${nameClass}" style="--cmd-prefix: '${esc(state.data?.prefix || ".")}'">${highlightText(displayName, q)}</div>
       <div class="card__actions">
         <button class="icon-btn icon-btn--copy" data-copy="${esc(cmdCopyText(cmd))}" title="Copy command" type="button" aria-label="Copy command"></button>
         <span class="tag tag--${esc(type)}">${esc(type)}</span>
@@ -688,7 +690,7 @@ function renderModal() {
       <div class="modal modal--${esc(type)}" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
         <div class="modal__head">
           <div>
-            <div class="${modalNameClass}" id="modalTitle">${esc(displayName)}</div>
+            <div class="${modalNameClass}" id="modalTitle" style="--cmd-prefix: '${esc(state.data?.prefix || ".")}'">${esc(displayName)}</div>
             <span class="tag tag--${esc(type)}">${esc(type)}</span>
           </div>
           <button class="icon-btn" id="modalClose" type="button" aria-label="Close">&times;</button>
