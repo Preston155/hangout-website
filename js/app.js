@@ -112,8 +112,8 @@ function renderBotTabs() {
     .map((bot) => {
       const counts = countCommands(bot.data);
       const active = bot.id === state.activeBot;
-      return `<button class="bot-tab${active ? " active" : ""}" data-bot="${esc(bot.id)}" type="button">
-        <span class="bot-tab__mark">${bot.id === "ecrp" ? "<img src=\"assets/veltrix-logo-256.webp?v=8\" alt=\"\" />" : "<img src=\"assets/veltrix-logo-256.webp?v=8\" alt=\"\" />"}</span>
+      return `<button class="bot-tab${active ? " active" : ""}" data-bot="${esc(bot.id)}" type="button" aria-label="Show ${esc(bot.data.botName)} commands">
+        <span class="bot-tab__mark"><img class="bot-tab__logo" src="assets/veltrix-logo-256.webp?v=8" alt="" width="28" height="28" /></span>
         <span class="bot-tab__text"><strong>${esc(bot.data.botName)}</strong><small>${esc(bot.data.subtitle || `${counts.total} commands`)}</small></span>
         <span class="bot-tab__count">${counts.total}</span>
       </button>`;

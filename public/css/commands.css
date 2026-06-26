@@ -2682,3 +2682,104 @@ body.is-ready .boot { display: none; }
   font-weight: 900;
 }
 
+/* Bot switcher hard reset */
+.sidebar .bot-tabs,
+.shell .sidebar .bot-tabs {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 10px !important;
+  width: 100% !important;
+  margin: 0 0 14px !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  background: transparent !important;
+}
+.sidebar .bot-tab,
+.shell .sidebar .bot-tab {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  display: grid !important;
+  grid-template-columns: 42px minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  gap: 12px !important;
+  width: 100% !important;
+  min-height: 76px !important;
+  max-height: 90px !important;
+  padding: 13px 14px !important;
+  margin: 0 !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+  border-radius: 12px !important;
+  color: var(--text) !important;
+  background: linear-gradient(145deg, rgba(18,18,21,.96), rgba(10,10,12,.97)) !important;
+  font: inherit !important;
+  text-align: left !important;
+  line-height: 1.2 !important;
+  cursor: pointer !important;
+  overflow: hidden !important;
+}
+.sidebar .bot-tab:hover,
+.sidebar .bot-tab.active {
+  border-color: rgba(43,127,255,.5) !important;
+  background: radial-gradient(circle at 12% 0%, rgba(43,127,255,.20), transparent 42%), linear-gradient(145deg, rgba(20,24,34,.98), rgba(10,10,12,.97)) !important;
+}
+.sidebar .bot-tab__mark {
+  display: grid !important;
+  place-items: center !important;
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  max-width: 42px !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
+  border-radius: 12px !important;
+  background: rgba(255,255,255,.04) !important;
+  overflow: hidden !important;
+}
+.sidebar .bot-tab__logo,
+.sidebar .bot-tab__mark img {
+  display: block !important;
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  max-width: 28px !important;
+  min-height: 28px !important;
+  max-height: 28px !important;
+  object-fit: contain !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+.sidebar .bot-tab__text {
+  display: block !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+}
+.sidebar .bot-tab__text strong {
+  display: block !important;
+  color: #f7c948 !important;
+  font-size: 14px !important;
+  font-weight: 900 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+.sidebar .bot-tab__text small {
+  display: block !important;
+  margin-top: 4px !important;
+  color: var(--muted) !important;
+  font-size: 12px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: normal !important;
+}
+.sidebar .bot-tab__count {
+  align-self: start !important;
+  min-width: 24px !important;
+  padding: 3px 7px !important;
+  border: 1px solid rgba(255,255,255,.09) !important;
+  border-radius: 999px !important;
+  color: var(--muted) !important;
+  background: rgba(0,0,0,.22) !important;
+  font-size: 11px !important;
+  font-weight: 900 !important;
+}
+
