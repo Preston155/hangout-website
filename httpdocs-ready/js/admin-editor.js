@@ -91,7 +91,7 @@ function renderAdminEditor() {
     .join("");
 
   return `
-    <div class="admin-toolbar reveal is-visible">
+    <div class="admin-toolbar reveal is-visible" id="adminCommandEditor">
       <input class="admin-search" id="adminSearch" type="search" placeholder="Filter commands…" value="${esc(state.adminQuery || "")}" />
       <button class="btn" id="adminPublishBtn" type="button">Publish</button>
       <button class="btn btn--ghost" id="adminSyncHelpBtn" type="button">Help</button>

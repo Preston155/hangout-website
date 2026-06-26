@@ -527,48 +527,167 @@ function permissionStats(data) {
   return [...map.entries()].sort((a, b) => b[1] - a[1]);
 }
 
-function renderAdminMain() {
-  const counts = countCommands(state.data);
-  const perms = permissionStats(state.data);
 
-  const permRows = perms
-    .map(
-      ([perm, n]) =>
-        `<tr><td>${esc(perm)}</td><td>${n}</td></tr>`,
-    )
+function botSummary(bot) {
+  const data = bot?.data || state.data || { categories: [] };
+  const counts = countCommands(data);
+  const categories = data.categories || [];
+  const permissionCount = permissionStats(data).length;
+  const features = categories.map((cat) => cat.label).slice(0, 6);
+  return {
+    id: bot?.id || state.activeBot,
+    name: data.botName || bot?.label || 'Bot',
+    subtitle: data.subtitle || '',
+    prefix: data.prefix || '.',
+    package: data.package || '—',
+    updatedAt: data.updatedAt || '—',
+    counts,
+    categories,
+    permissionCount,
+    features,
+  };
+}
+
+function allBotSummaries() {
+  const bots = state.bots?.length ? state.bots : [{ id: state.activeBot, data: state.data }];
+  return bots.map(botSummary);
+}
+
+function aggregateAdminStats(summaries) {
+  return summaries.reduce((acc, bot) => {
+    acc.commands += bot.counts.total;
+    acc.slash += bot.counts.slash;
+    acc.prefix += bot.counts.prefix;
+    acc.systems += bot.counts.systems;
+    acc.categories += bot.categories.length;
+    return acc;
+  }, { commands: 0, slash: 0, prefix: 0, systems: 0, categories: 0 });
+}
+
+function renderAdminFeatureMatrix(summaries) {
+  const featureRows = [
+    { icon: '🎁', name: 'Giveaways', detail: 'Live tracking, entrants, proofs, active cards', bots: ['ECRP Assistant', 'Veltrix'] },
+    { icon: '🎫', name: 'Tickets', detail: 'Panels, transcripts, reviews, logs, claim flow', bots: ['ECRP Assistant'] },
+    { icon: '🛡️', name: 'Verification', detail: 'Roblox username linking, role + display name updates', bots: ['ECRP Assistant'] },
+    { icon: '💡', name: 'Suggestions', detail: 'Community suggestions with vote persistence', bots: ['ECRP Assistant'] },
+    { icon: '🔢', name: 'Counting', detail: 'Advanced counting setup and status tools', bots: ['ECRP Assistant', 'Veltrix'] },
+    { icon: '📡', name: 'Sessions / Status', detail: 'Session votes, host pings, synced live bot status', bots: ['ECRP Assistant', 'Veltrix'] },
+  ];
+  return featureRows.map((feature) => `<article class="admin-feature-card">
+    <div class="admin-feature-card__icon">${feature.icon}</div>
+    <div class="admin-feature-card__body">
+      <strong>${esc(feature.name)}</strong>
+      <span>${esc(feature.detail)}</span>
+      <div class="admin-feature-card__bots">${feature.bots.map((bot) => `<em>${esc(bot)}</em>`).join('')}</div>
+    </div>
+  </article>`).join('');
+}
+
+function renderAdminBotCards(summaries) {
+  return summaries.map((bot) => `<article class="admin-bot-card${bot.id === state.activeBot ? ' is-active' : ''}">
+    <div class="admin-bot-card__top">
+      ${logoPicture('admin-bot-card__logo', 44, 44, bot.name)}
+      <div>
+        <h3>${esc(bot.name)}</h3>
+        <p>${esc(bot.subtitle || 'Connected bot')}</p>
+      </div>
+      <span class="admin-live-pill"><i></i> Connected</span>
+    </div>
+    <div class="admin-bot-card__stats">
+      <span><b>${bot.counts.total}</b> commands</span>
+      <span><b>${bot.counts.slash}</b> slash</span>
+      <span><b>${bot.counts.prefix}</b> prefix</span>
+      <span><b>${bot.categories.length}</b> categories</span>
+    </div>
+    <div class="admin-bot-card__features">
+      ${bot.features.map((feature) => `<em>${esc(feature)}</em>`).join('') || '<em>No features listed</em>'}
+    </div>
+    <button class="btn btn--ghost admin-bot-card__btn" data-admin-bot="${esc(bot.id)}" type="button">Open ${esc(bot.name)}</button>
+  </article>`).join('');
+}
+
+function renderAdminQuickActions() {
+  const actions = [
+    ['🎁', 'Active giveaways', 'View live giveaways, entrants, and Discord message links.', 'admin-open-giveaways'],
+    ['📋', 'Command center', 'Jump back to public commands for the selected bot.', 'admin-back-commands'],
+    ['✍️', 'Edit command copy', 'Use the editor below to polish descriptions and usage.', 'admin-scroll-editor'],
+    ['🚀', 'Publish updates', 'Push saved dashboard edits to the website repo.', 'admin-publish-shortcut'],
+  ];
+  return actions.map(([icon, title, desc, id]) => `<button class="admin-action-card" id="${id}" type="button">
+    <span>${icon}</span>
+    <strong>${esc(title)}</strong>
+    <small>${esc(desc)}</small>
+  </button>`).join('');
+}
+
+function renderAdminMain() {
+  const summaries = allBotSummaries();
+  const activeSummary = summaries.find((bot) => bot.id === state.activeBot) || summaries[0];
+  const totals = aggregateAdminStats(summaries);
+  const activePerms = permissionStats(state.data || activeSummary?.data || { categories: [] });
+
+  const permRows = activePerms
+    .map(([perm, n]) => `<tr><td>${esc(perm)}</td><td>${n}</td></tr>`)
     .join("");
 
   return `
-    <div class="admin-hero reveal is-visible">
-      <h1>Admin Dashboard</h1>
-      <p>Command reference overview for Veltrix · City of Angels. Session active until you sign out.</p>
-    </div>
+    <section class="admin-hero admin-hero--revamp reveal is-visible">
+      <div class="admin-hero__copy">
+        <p class="hero__label">Connected control center</p>
+        <h1>Admin Dashboard</h1>
+        <p>Manage PrestonHQ command data, connected bot features, live systems, and site publishing from one cleaner dashboard.</p>
+      </div>
+      <div class="admin-hero__status">
+        <span><i></i>${summaries.length} bots connected</span>
+        <span>Session unlocked</span>
+      </div>
+    </section>
 
-    <div class="admin-grid reveal is-visible">
-      <div class="admin-card"><div class="admin-card__val">${counts.total}</div><div class="admin-card__label">Total commands</div></div>
-      <div class="admin-card"><div class="admin-card__val">${counts.slash}</div><div class="admin-card__label">Slash</div></div>
-      <div class="admin-card"><div class="admin-card__val">${counts.prefix}</div><div class="admin-card__label">Prefix</div></div>
-      <div class="admin-card"><div class="admin-card__val">${state.data.categories.length}</div><div class="admin-card__label">Categories</div></div>
-    </div>
+    <section class="admin-grid admin-grid--overview reveal is-visible" aria-label="Dashboard overview">
+      <div class="admin-card admin-card--big"><div class="admin-card__val">${totals.commands}</div><div class="admin-card__label">Total commands</div></div>
+      <div class="admin-card"><div class="admin-card__val">${totals.slash}</div><div class="admin-card__label">Slash commands</div></div>
+      <div class="admin-card"><div class="admin-card__val">${totals.prefix}</div><div class="admin-card__label">Prefix commands</div></div>
+      <div class="admin-card"><div class="admin-card__val">${totals.systems}</div><div class="admin-card__label">Automations</div></div>
+      <div class="admin-card"><div class="admin-card__val">${totals.categories}</div><div class="admin-card__label">Feature groups</div></div>
+    </section>
 
-    <div class="admin-panel reveal is-visible">
-      <h3>Sync &amp; data</h3>
-      <table class="admin-table">
-        <tr><th>Field</th><th>Value</th></tr>
-        <tr><td>Last updated</td><td>${esc(state.data.updatedAt)}</td></tr>
-        <tr><td>Package</td><td>${esc(state.data.package || "—")}</td></tr>
-        <tr><td>Prefix</td><td><code>${esc(state.data.prefix)}</code></td></tr>
-        <tr><td>Categories</td><td>${state.data.categories.length}</td></tr>
-      </table>
-    </div>
+    <section class="admin-section reveal is-visible">
+      <div class="admin-section__head">
+        <div><h2>Connected bots</h2><p>Veltrix and ECRP share the same command center style, with separate command datasets.</p></div>
+      </div>
+      <div class="admin-bot-grid">${renderAdminBotCards(summaries)}</div>
+    </section>
 
-    <div class="admin-panel reveal is-visible">
-      <h3>Permissions breakdown</h3>
+    <section class="admin-section admin-section--split reveal is-visible">
+      <div>
+        <div class="admin-section__head"><div><h2>Feature modules</h2><p>High-level systems currently wired into the PrestonHQ ecosystem.</p></div></div>
+        <div class="admin-feature-grid">${renderAdminFeatureMatrix(summaries)}</div>
+      </div>
+      <aside class="admin-panel admin-panel--live">
+        <h3>Active dataset</h3>
+        <table class="admin-table">
+          <tr><th>Field</th><th>Value</th></tr>
+          <tr><td>Bot</td><td>${esc(activeSummary.name)}</td></tr>
+          <tr><td>Last updated</td><td>${esc(activeSummary.updatedAt)}</td></tr>
+          <tr><td>Package</td><td>${esc(activeSummary.package || "—")}</td></tr>
+          <tr><td>Prefix</td><td><code>${esc(activeSummary.prefix)}</code></td></tr>
+          <tr><td>Categories</td><td>${activeSummary.categories.length}</td></tr>
+        </table>
+      </aside>
+    </section>
+
+    <section class="admin-section reveal is-visible">
+      <div class="admin-section__head"><div><h2>Quick actions</h2><p>Fast jumps for the stuff you keep touching.</p></div></div>
+      <div class="admin-action-grid">${renderAdminQuickActions()}</div>
+    </section>
+
+    <section class="admin-panel reveal is-visible">
+      <h3>${esc(activeSummary.name)} permission breakdown</h3>
       <table class="admin-table">
         <tr><th>Permission</th><th>Commands</th></tr>
-        ${permRows}
+        ${permRows || '<tr><td>—</td><td>0</td></tr>'}
       </table>
-    </div>
+    </section>
 
     <div class="admin-actions reveal is-visible">
       <button class="btn" id="adminBackBtn" type="button">← Back to commands</button>
@@ -1000,6 +1119,47 @@ function wireShellEvents() {
     const botTab = e.target.closest("[data-bot]");
     if (botTab) {
       switchBot(botTab.dataset.bot);
+      return;
+    }
+
+
+    const adminBotBtn = e.target.closest('[data-admin-bot]');
+    if (adminBotBtn) {
+      switchBot(adminBotBtn.dataset.adminBot);
+      state.view = 'admin';
+      updateCommandView();
+      syncNavActive();
+      if (typeof wireAdminEditor === 'function') wireAdminEditor();
+      showToast(`Opened ${state.data?.botName || 'bot'} in admin`);
+      return;
+    }
+
+    if (e.target.closest('#admin-open-giveaways')) {
+      openGiveawaysView();
+      return;
+    }
+
+    if (e.target.closest('#admin-back-commands')) {
+      state.view = 'commands';
+      updateCommandView();
+      syncNavActive();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    if (e.target.closest('#admin-scroll-editor')) {
+      document.getElementById('adminCommandEditor')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+
+    if (e.target.closest('#admin-publish-shortcut')) {
+      const publish = document.getElementById('adminPublishBtn');
+      if (publish) {
+        publish.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        publish.click();
+      } else {
+        showToast('Command editor is not ready yet');
+      }
       return;
     }
 
