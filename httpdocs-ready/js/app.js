@@ -2,6 +2,8 @@
 
 const state = {
   data: null,
+  bots: [],
+  activeBot: "veltrix",
   query: "",
   filter: "all",
   view: "commands",
@@ -74,9 +76,50 @@ function permClass(perm) {
   return "pill--perm-mod";
 }
 
+function activeBotData() {
+  return state.data;
+}
+
+function switchBot(botId) {
+  const next = state.bots.find((bot) => bot.id === botId);
+  if (!next) return;
+  state.activeBot = botId;
+  state.data = next.data;
+  state.filter = "all";
+  state.view = "commands";
+  state.modalCmd = null;
+  closeSidebar();
+  render({ force: true });
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function botInitials(name) {
+  return String(name || "Bot")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() || "")
+    .join("") || "B";
+}
+
+function renderBotTabs() {
+  if (!state.bots.length) return "";
+  return `<div class="bot-tabs" aria-label="Bot command tabs">${state.bots
+    .map((bot) => {
+      const counts = countCommands(bot.data);
+      const active = bot.id === state.activeBot;
+      return `<button class="bot-tab${active ? " active" : ""}" data-bot="${esc(bot.id)}" type="button">
+        <span class="bot-tab__mark">${esc(botInitials(bot.data.botName))}</span>
+        <span><strong>${esc(bot.data.botName)}</strong><small>${counts.total} commands</small></span>
+      </button>`;
+    })
+    .join("")}</div>`;
+}
+
 function countCommands(data) {
   let slash = 0;
   let prefix = 0;
+  let systems = 0;
   let total = 0;
   for (const cat of data.categories) {
     for (const cmd of cat.commands) {
@@ -84,8 +127,9 @@ function countCommands(data) {
       if (cmd.type === "slash") slash++;
       if (cmd.type === "prefix") prefix++;
     }
+    if (cat.id === "systems") systems += cat.commands.length;
   }
-  return { total, slash, prefix };
+  return { total, slash, prefix, systems };
 }
 
 function matches(cmd, q) {
@@ -104,6 +148,32 @@ function matches(cmd, q) {
     .join(" ")
     .toLowerCase();
   return hay.includes(q);
+}
+
+function highlightText(text, query) {
+  const raw = String(text ?? "");
+  if (!query) return esc(raw);
+  const q = query.trim();
+  if (!q) return esc(raw);
+  const lower = raw.toLowerCase();
+  const needle = q.toLowerCase();
+  const idx = lower.indexOf(needle);
+  if (idx === -1) return esc(raw);
+  const before = raw.slice(0, idx);
+  const match = raw.slice(idx, idx + q.length);
+  const after = raw.slice(idx + q.length);
+  return `${esc(before)}<mark class="hi">${esc(match)}</mark>${highlightText(after, q)}`;
+}
+
+function visibleCommandCount() {
+  if (!state.data) return 0;
+  const q = state.query.trim().toLowerCase();
+  let n = 0;
+  for (const cat of state.data.categories) {
+    if (state.filter !== "all" && state.filter !== cat.id) continue;
+    n += cat.commands.filter((c) => matches(c, q)).length;
+  }
+  return n;
 }
 
 function cmdDisplayName(cmd) {
@@ -342,6 +412,12 @@ function navLabel(cat) {
     .replace("Automatic ", "");
 }
 
+function catIcon(id) {
+  if (id === "all") return "◈";
+  const cat = state.data?.categories.find((c) => c.id === id);
+  return cat?.icon || "•";
+}
+
 function renderCard(cmd, catId) {
   const type = cmd.type || "system";
   const nameClass =
@@ -360,19 +436,21 @@ function renderCard(cmd, catId) {
 
   const aliasPill =
     (cmd.aliases || []).length > 0
-      ? `<span class="pill">${esc((cmd.aliases || []).slice(0, 2).map((a) => aliasLabel(a, type)).join(", "))}${cmd.aliases.length > 2 ? " +" + (cmd.aliases.length - 2) : ""}</span>`
+      ? `<span class="pill pill--alias">${esc((cmd.aliases || []).slice(0, 2).map((a) => aliasLabel(a, type)).join(", "))}${cmd.aliases.length > 2 ? " +" + (cmd.aliases.length - 2) : ""}</span>`
       : "";
+
+  const q = state.query.trim();
 
   return `<article class="card card--${type} card--cat-${esc(catId)}" data-cmd="${esc(key)}">
     <div class="card__top">
-      <div class="${nameClass}">${esc(displayName)}</div>
+      <div class="${nameClass}">${highlightText(displayName, q)}</div>
       <div class="card__actions">
         <button class="icon-btn icon-btn--copy" data-copy="${esc(cmdCopyText(cmd))}" title="Copy command" type="button" aria-label="Copy command"></button>
-        <span class="tag">${esc(type)}</span>
+        <span class="tag tag--${esc(type)}">${esc(type)}</span>
       </div>
     </div>
-    <p class="card__desc">${esc(cmd.description || "")}</p>
-    <div class="meta">${perm}${aliasPill}${cmd.usage ? `<span class="pill">${esc(cmd.usage)}</span>` : ""}</div>
+    <p class="card__desc">${highlightText(cmd.description || "", q)}</p>
+    <div class="meta">${perm}${aliasPill}${cmd.usage ? `<span class="pill pill--usage">${esc(cmd.usage)}</span>` : ""}</div>
     ${hasMore ? `<button class="card__more" type="button">Details</button>` : ""}
   </article>`;
 }
@@ -422,11 +500,11 @@ function renderModal() {
   document.body.insertAdjacentHTML(
     "beforeend",
     `<div class="modal-backdrop" id="cmdModal">
-      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal modal--${esc(type)}" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
         <div class="modal__head">
           <div>
             <div class="${modalNameClass}" id="modalTitle">${esc(displayName)}</div>
-            <span class="tag">${esc(type)}</span>
+            <span class="tag tag--${esc(type)}">${esc(type)}</span>
           </div>
           <button class="icon-btn" id="modalClose" type="button" aria-label="Close">&times;</button>
         </div>
@@ -465,18 +543,27 @@ function closeModal() {
 }
 
 function buildToolbarHtml() {
+  const visible = visibleCommandCount();
+  const filtering = state.query.trim() || state.filter !== "all";
+  const countLabel = filtering
+    ? `<span class="toolbar__count">${visible} command${visible === 1 ? "" : "s"}</span>`
+    : `<span class="toolbar__hint">Press <kbd>/</kbd> to search</span>`;
+
   return `<div class="toolbar" id="toolbar">
     <div class="search">
       <span class="search__icon"></span>
       <input id="searchInput" type="search" placeholder="Search commands…" value="${esc(state.query)}" autocomplete="off" />
     </div>
-    <div class="filters">
+    <div class="toolbar__right">
+      <div class="filters">
       ${[["all", "All"], ["slash", "Slash"], ["prefix", "Prefix"], ["session", "Session"], ["systems", "Systems"]]
         .map(
           ([id, label]) =>
-            `<button class="chip${state.filter === id ? " active" : ""}" data-filter="${esc(id)}" type="button">${label}</button>`,
+            `<button class="chip chip--${esc(id)}${state.filter === id ? " active" : ""}" data-filter="${esc(id)}" type="button"><span class="chip__icon" aria-hidden="true">${esc(catIcon(id))}</span>${label}</button>`,
         )
         .join("")}
+      </div>
+      ${countLabel}
     </div>
   </div>`;
 }
@@ -488,12 +575,15 @@ function buildSectionsHtml() {
     .map((cat) => {
       const cmds = cat.commands.filter((c) => matches(c, q));
       if (!cmds.length) return "";
-      return `<section class="section" id="cat-${esc(cat.id)}">
+      return `<section class="section section--${esc(cat.id)}" id="cat-${esc(cat.id)}">
         <div class="section__head">
-          <h2>${esc(cat.label)}</h2>
+          <span class="section__icon" aria-hidden="true">${esc(cat.icon || "•")}</span>
+          <div class="section__titles">
+            <h2>${esc(cat.label)}</h2>
+            <p class="section__desc">${esc(cat.description)}</p>
+          </div>
           <span class="section__count">${cmds.length}</span>
         </div>
-        <p class="section__desc">${esc(cat.description)}</p>
         <div class="grid">${cmds.map((c) => renderCard(c, cat.id)).join("")}</div>
       </section>`;
     })
@@ -505,7 +595,7 @@ function buildCommandViewHtml() {
     return renderAdminMain();
   }
   const sections = buildSectionsHtml();
-  return `${buildToolbarHtml()}${sections || `<div class="empty"><p>No commands match that search.</p></div>`}`;
+  return `${buildToolbarHtml()}${sections || `<div class="empty"><div class="empty__icon" aria-hidden="true">⌕</div><p class="empty__title">No commands found</p><p class="empty__hint">Try another search term or switch the category filter.</p></div>`}`;
 }
 
 function syncNavActive() {
@@ -573,8 +663,9 @@ function render(opts = {}) {
           ${navLinks
             .map(
               ([id, label, count]) =>
-                `<button class="nav-link${state.view === "commands" && state.filter === id ? " active" : ""}" data-filter="${esc(id)}" type="button">
-                  <span class="nav-link__dot"></span>${esc(label)}
+                `<button class="nav-link nav-link--${esc(id)}${state.view === "commands" && state.filter === id ? " active" : ""}" data-filter="${esc(id)}" type="button">
+                  <span class="nav-link__icon" aria-hidden="true">${esc(catIcon(id))}</span>
+                  ${esc(label)}
                   <span class="nav-link__count">${count}</span>
                 </button>`,
             )
@@ -597,27 +688,28 @@ function render(opts = {}) {
             <div class="hero__brand">
               ${logoPicture("hero__logo", 96, 96)}
               <div>
-                <p class="hero__label">City of Angels</p>
-                <h1><span>Veltrix</span> commands</h1>
+                <p class="hero__label">${esc(state.data.subtitle || "Bot commands")}</p>
+                <h1><span>${esc(state.data.botName)}</span> commands</h1>
                 <p class="hero__desc">
-                  Slash commands, prefix commands, and automated features.
+                  Slash commands, prefix commands, and automated features for ${esc(state.data.botName)}.
                   <span class="hero__prefix-wrap">Prefix <span class="hero__prefix-badge">${esc(prefix)}</span></span>
                 </p>
               </div>
             </div>
             <div class="stats">
-              <div class="stat"><div class="stat__val">${counts.total}</div><div class="stat__label">commands</div></div>
-              <div class="stat"><div class="stat__val">${counts.slash}</div><div class="stat__label">slash</div></div>
-              <div class="stat"><div class="stat__val">${counts.prefix}</div><div class="stat__label">prefix</div></div>
+              <div class="stat stat--total"><div class="stat__val">${counts.total}</div><div class="stat__label">commands</div></div>
+              <div class="stat stat--slash"><div class="stat__val">${counts.slash}</div><div class="stat__label">slash</div></div>
+              <div class="stat stat--prefix"><div class="stat__val">${counts.prefix}</div><div class="stat__label">prefix</div></div>
+              <div class="stat stat--systems"><div class="stat__val">${counts.systems}</div><div class="stat__label">auto</div></div>
             </div>
           </div>
         </header>
 
         <div id="commandView">
-        ${state.view === "admin" && state.adminAuth ? renderAdminMain() : `${buildToolbarHtml()}${sections || `<div class="empty"><p>No commands match that search.</p></div>`}`}
+        ${state.view === "admin" && state.adminAuth ? renderAdminMain() : `${buildToolbarHtml()}${sections || `<div class="empty"><div class="empty__icon" aria-hidden="true">⌕</div><p class="empty__title">No commands found</p><p class="empty__hint">Try another search term or switch the category filter.</p></div>`}`}
         </div>
 
-        <footer class="footer">Updated ${esc(state.data.updatedAt)} · Veltrix · City of Angels</footer>
+        <footer class="footer"><span class="footer__brand">${esc(state.data.botName)}</span> · Command center · Updated ${esc(state.data.updatedAt)}</footer>
         </div>
       </main>
     </div>`;
@@ -627,7 +719,21 @@ function render(opts = {}) {
   renderModal();
   renderAdminGate();
   initToolbarStick();
+  initScrollTop();
   dismissBoot();
+}
+
+function initScrollTop() {
+  const btn = document.getElementById("scrollTop");
+  if (!btn || btn.dataset.wired === "1") return;
+  btn.dataset.wired = "1";
+
+  const onScroll = () => {
+    btn.classList.toggle("hidden", window.scrollY < 480);
+  };
+  onScroll();
+  window.addEventListener("scroll", onScroll, { passive: true });
+  btn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 }
 
 function initReveal() {
@@ -670,6 +776,12 @@ function wireShellEvents() {
   });
 
   app.addEventListener("click", (e) => {
+    const botTab = e.target.closest(".bot-tab[data-bot]");
+    if (botTab) {
+      switchBot(botTab.dataset.bot);
+      return;
+    }
+
     const copyBtn = e.target.closest("[data-copy]");
     if (copyBtn) {
       e.stopPropagation();
@@ -772,12 +884,20 @@ async function init() {
   }
 
   try {
-    const [cmdRes, overrideRes] = await Promise.all([
-      fetch("data/bot-commands.json?v=14", { cache: "no-store" }),
+    const [cmdRes, overrideRes, ecrpRes] = await Promise.all([
+      fetch("data/bot-commands.json?v=15", { cache: "no-store" }),
       fetch("data/admin-overrides.json?v=1", { cache: "no-store" }),
+      fetch("data/ecrp-commands.json?v=1", { cache: "no-store" }),
     ]);
     if (!cmdRes.ok) throw new Error("Failed to load commands");
-    state.data = await cmdRes.json();
+    const veltrixData = await cmdRes.json();
+    const ecrpData = ecrpRes.ok ? await ecrpRes.json() : null;
+    state.bots = [
+      { id: "veltrix", data: veltrixData },
+      ...(ecrpData ? [{ id: "ecrp", data: ecrpData }] : []),
+    ];
+    state.activeBot = state.bots[0]?.id || "veltrix";
+    state.data = state.bots[0]?.data || veltrixData;
     if (overrideRes.ok) adminEditor.overrides = await overrideRes.json();
     else if (typeof loadAdminOverrides === "function") await loadAdminOverrides();
     if (typeof mergeAdminIntoState === "function") mergeAdminIntoState();

@@ -2,6 +2,8 @@
 
 const state = {
   data: null,
+  bots: [],
+  activeBot: "veltrix",
   query: "",
   filter: "all",
   view: "commands",
@@ -72,6 +74,46 @@ function permClass(perm) {
   if (!perm || perm === "Everyone") return "pill--perm-everyone";
   if (/admin/i.test(perm)) return "pill--perm-admin";
   return "pill--perm-mod";
+}
+
+function activeBotData() {
+  return state.data;
+}
+
+function switchBot(botId) {
+  const next = state.bots.find((bot) => bot.id === botId);
+  if (!next) return;
+  state.activeBot = botId;
+  state.data = next.data;
+  state.filter = "all";
+  state.view = "commands";
+  state.modalCmd = null;
+  closeSidebar();
+  render({ force: true });
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function botInitials(name) {
+  return String(name || "Bot")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() || "")
+    .join("") || "B";
+}
+
+function renderBotTabs() {
+  if (!state.bots.length) return "";
+  return `<div class="bot-tabs" aria-label="Bot command tabs">${state.bots
+    .map((bot) => {
+      const counts = countCommands(bot.data);
+      const active = bot.id === state.activeBot;
+      return `<button class="bot-tab${active ? " active" : ""}" data-bot="${esc(bot.id)}" type="button">
+        <span class="bot-tab__mark">${esc(botInitials(bot.data.botName))}</span>
+        <span><strong>${esc(bot.data.botName)}</strong><small>${counts.total} commands</small></span>
+      </button>`;
+    })
+    .join("")}</div>`;
 }
 
 function countCommands(data) {
@@ -646,10 +688,10 @@ function render(opts = {}) {
             <div class="hero__brand">
               ${logoPicture("hero__logo", 96, 96)}
               <div>
-                <p class="hero__label">City of Angels</p>
-                <h1><span>Veltrix</span> commands</h1>
+                <p class="hero__label">${esc(state.data.subtitle || "Bot commands")}</p>
+                <h1><span>${esc(state.data.botName)}</span> commands</h1>
                 <p class="hero__desc">
-                  Slash commands, prefix commands, and automated features.
+                  Slash commands, prefix commands, and automated features for ${esc(state.data.botName)}.
                   <span class="hero__prefix-wrap">Prefix <span class="hero__prefix-badge">${esc(prefix)}</span></span>
                 </p>
               </div>
@@ -667,7 +709,7 @@ function render(opts = {}) {
         ${state.view === "admin" && state.adminAuth ? renderAdminMain() : `${buildToolbarHtml()}${sections || `<div class="empty"><div class="empty__icon" aria-hidden="true">⌕</div><p class="empty__title">No commands found</p><p class="empty__hint">Try another search term or switch the category filter.</p></div>`}`}
         </div>
 
-        <footer class="footer"><span class="footer__brand">Veltrix</span> · City of Angels · Updated ${esc(state.data.updatedAt)}</footer>
+        <footer class="footer"><span class="footer__brand">${esc(state.data.botName)}</span> · Command center · Updated ${esc(state.data.updatedAt)}</footer>
         </div>
       </main>
     </div>`;
@@ -734,6 +776,12 @@ function wireShellEvents() {
   });
 
   app.addEventListener("click", (e) => {
+    const botTab = e.target.closest(".bot-tab[data-bot]");
+    if (botTab) {
+      switchBot(botTab.dataset.bot);
+      return;
+    }
+
     const copyBtn = e.target.closest("[data-copy]");
     if (copyBtn) {
       e.stopPropagation();
@@ -836,12 +884,20 @@ async function init() {
   }
 
   try {
-    const [cmdRes, overrideRes] = await Promise.all([
-      fetch("data/bot-commands.json?v=14", { cache: "no-store" }),
+    const [cmdRes, overrideRes, ecrpRes] = await Promise.all([
+      fetch("data/bot-commands.json?v=15", { cache: "no-store" }),
       fetch("data/admin-overrides.json?v=1", { cache: "no-store" }),
+      fetch("data/ecrp-commands.json?v=1", { cache: "no-store" }),
     ]);
     if (!cmdRes.ok) throw new Error("Failed to load commands");
-    state.data = await cmdRes.json();
+    const veltrixData = await cmdRes.json();
+    const ecrpData = ecrpRes.ok ? await ecrpRes.json() : null;
+    state.bots = [
+      { id: "veltrix", data: veltrixData },
+      ...(ecrpData ? [{ id: "ecrp", data: ecrpData }] : []),
+    ];
+    state.activeBot = state.bots[0]?.id || "veltrix";
+    state.data = state.bots[0]?.data || veltrixData;
     if (overrideRes.ok) adminEditor.overrides = await overrideRes.json();
     else if (typeof loadAdminOverrides === "function") await loadAdminOverrides();
     if (typeof mergeAdminIntoState === "function") mergeAdminIntoState();
