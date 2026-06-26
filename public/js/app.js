@@ -1090,6 +1090,26 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
+function getEmbeddedJson(id) {
+  const el = document.getElementById(id);
+  if (!el?.textContent) return null;
+  try { return JSON.parse(el.textContent); } catch { return null; }
+}
+
+async function fetchJsonFast(url, fallback) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 1200);
+  try {
+    const res = await fetch(url, { cache: "force-cache", signal: controller.signal });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch {
+    return fallback;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function init() {
   state.adminAuth = isAdminAuthed();
   if (typeof getStoredAdminPassword === "function") {
@@ -1098,29 +1118,43 @@ async function init() {
   }
 
   try {
-    const [cmdRes, overrideRes, ecrpRes] = await Promise.all([
-      fetch("data/bot-commands.json?v=16", { cache: "force-cache" }),
-      fetch("data/admin-overrides.json?v=2", { cache: "force-cache" }),
-      fetch("data/ecrp-commands.json?v=2", { cache: "force-cache" }),
-    ]);
-    if (!cmdRes.ok) throw new Error("Failed to load commands");
-    const veltrixData = await cmdRes.json();
-    const ecrpData = ecrpRes.ok ? await ecrpRes.json() : null;
+    const embeddedVeltrix = getEmbeddedJson("embeddedVeltrixCommands");
+    const embeddedEcrp = getEmbeddedJson("embeddedEcrpCommands");
+    const embeddedOverrides = getEmbeddedJson("embeddedAdminOverrides") || {};
+
+    if (!embeddedVeltrix) throw new Error("Embedded command data is missing");
+
     state.bots = [
-      { id: "veltrix", data: veltrixData },
-      ...(ecrpData ? [{ id: "ecrp", data: ecrpData }] : []),
+      { id: "veltrix", data: embeddedVeltrix },
+      ...(embeddedEcrp ? [{ id: "ecrp", data: embeddedEcrp }] : []),
     ];
     state.activeBot = state.bots[0]?.id || "veltrix";
-    state.data = state.bots[0]?.data || veltrixData;
-    if (overrideRes.ok) adminEditor.overrides = await overrideRes.json();
-    else if (typeof loadAdminOverrides === "function") await loadAdminOverrides();
+    state.data = state.bots[0]?.data || embeddedVeltrix;
+    adminEditor.overrides = embeddedOverrides;
     if (typeof mergeAdminIntoState === "function") mergeAdminIntoState();
+    render();
+
+    Promise.all([
+      fetchJsonFast("data/bot-commands.json?v=17", embeddedVeltrix),
+      fetchJsonFast("data/admin-overrides.json?v=3", embeddedOverrides),
+      fetchJsonFast("data/ecrp-commands.json?v=3", embeddedEcrp),
+    ]).then(([veltrixData, overrides, ecrpData]) => {
+      state.bots = [
+        { id: "veltrix", data: veltrixData || embeddedVeltrix },
+        ...(ecrpData ? [{ id: "ecrp", data: ecrpData }] : []),
+      ];
+      const active = state.bots.find((bot) => bot.id === state.activeBot) || state.bots[0];
+      state.activeBot = active?.id || "veltrix";
+      state.data = active?.data || veltrixData || embeddedVeltrix;
+      adminEditor.overrides = overrides || {};
+      if (typeof mergeAdminIntoState === "function") mergeAdminIntoState();
+      render({ force: true });
+    });
   } catch (err) {
     dismissBoot();
     document.getElementById("app").innerHTML = `<div class="empty" style="min-height:100vh;display:grid;place-items:center"><p>Couldn't load commands. ${esc(err.message)}</p></div>`;
     return;
   }
-  render();
 }
 
 init();
