@@ -1856,7 +1856,7 @@ body.is-ready .boot { display: none; }
   .boot__logo,
   .boot__content,
   .boot__progress-bar,
-  .boot.is-exiting {
+  .boot.is-exiting,
   .hero__logo,
   .sidebar__logo img,
   .sidebar__logo-img,
