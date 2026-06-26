@@ -146,12 +146,57 @@ function giveawayTimeLeft(giveaway) {
 
 function renderEntrants(giveaway) {
   const entrants = giveaway.entries?.visible || [];
-  if (!entrants.length) return `<div class="giveaway-entrants giveaway-entrants--empty">No entries yet.</div>`;
-  return `<div class="giveaway-entrants">${entrants.slice(0, 12).map((entry) => {
+  if (!entrants.length) return `<div class="giveaway-entrants giveaway-entrants--empty">No one has joined yet.</div>`;
+  return `<div class="giveaway-entrants">${entrants.slice(0, 24).map((entry, index) => {
     const user = entry.user || {};
     const label = user.displayName || user.username || entry.userId;
-    return `<span class="entrant" title="${esc(user.tag || entry.userId)}">${user.avatarUrl ? `<img src="${esc(user.avatarUrl)}" alt="" loading="lazy" />` : ""}<span>${esc(label)}</span>${entry.weight > 1 ? `<b>×${entry.weight}</b>` : ""}</span>`;
-  }).join("")}${entrants.length > 12 ? `<span class="entrant entrant--more">+${entrants.length - 12} more</span>` : ""}</div>`;
+    return `<div class="entrant" title="${esc(user.tag || entry.userId)}">
+      <span class="entrant__rank">#${index + 1}</span>
+      ${user.avatarUrl ? `<img src="${esc(user.avatarUrl)}" alt="" loading="lazy" />` : `<span class="entrant__avatar">?</span>`}
+      <span class="entrant__name">${esc(label)}</span>
+      ${entry.weight > 1 ? `<b class="entrant__weight">×${entry.weight}</b>` : ""}
+    </div>`;
+  }).join("")}${entrants.length > 24 ? `<div class="entrant entrant--more">+${entrants.length - 24} more joined</div>` : ""}</div>`;
+}
+
+function giveawayMessageUrl(giveaway) {
+  if (!giveaway.guildId || !giveaway.channelId || !giveaway.messageId) return "";
+  return `https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId}`;
+}
+
+function renderGiveawayEmbedPreview(giveaway) {
+  const entries = Number(giveaway.entries?.users || 0);
+  const weighted = Number(giveaway.entries?.weighted || 0);
+  const winners = Number(giveaway.winnerCount || 0);
+  const messageUrl = giveawayMessageUrl(giveaway);
+  const image = giveaway.imageUrl ? `<img class="giveaway-embed__image" src="${esc(giveaway.imageUrl)}" alt="Giveaway image" loading="lazy" />` : "";
+  return `<div class="giveaway-embed" role="group" aria-label="Giveaway embed preview">
+    <div class="giveaway-embed__bar"></div>
+    <div class="giveaway-embed__body">
+      <div class="giveaway-embed__header">
+        <span class="giveaway-embed__bot">${esc(giveaway.botName || "Unknown bot")}</span>
+        <span class="giveaway-status giveaway-status--${esc(giveaway.status || "active")}">${esc(giveaway.status || "active")}</span>
+      </div>
+      <h2>🎉 ${esc(giveaway.prize || "Untitled giveaway")}</h2>
+      ${giveaway.description ? `<p class="giveaway-desc">${esc(giveaway.description)}</p>` : `<p class="giveaway-desc giveaway-desc--muted">No extra description set.</p>`}
+      <div class="giveaway-embed__fields">
+        <div><small>Hosted by</small><strong>${esc(giveaway.hostName || "Unknown")}</strong></div>
+        <div><small>Ends</small><strong>${esc(formatGiveawayTime(giveaway.endTime))}</strong></div>
+        <div><small>Time left</small><strong>${esc(giveawayTimeLeft(giveaway))}</strong></div>
+        <div><small>Winners</small><strong>${winners}</strong></div>
+      </div>
+      <div class="giveaway-embed__stats">
+        <span>🎟️ <b>${entries}</b> joined</span>
+        <span>✨ <b>${weighted}</b> entries</span>
+        <span>🤖 <b>${esc(giveaway.botName || "Bot")}</b></span>
+      </div>
+      ${image}
+      <div class="giveaway-embed__footer">
+        <span>ID: ${esc(giveaway.id || "unknown")}</span>
+        ${messageUrl ? `<a href="${esc(messageUrl)}" target="_blank" rel="noreferrer">Open Discord message ↗</a>` : ""}
+      </div>
+    </div>
+  </div>`;
 }
 
 function renderGiveawaysView() {
@@ -164,32 +209,31 @@ function renderGiveawaysView() {
   const payload = state.giveaways || { giveaways: [], updatedAt: null };
   const giveaways = payload.giveaways || [];
   const updated = payload.updatedAt ? new Date(payload.updatedAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) : "just now";
+  const totalJoined = giveaways.reduce((sum, giveaway) => sum + Number(giveaway.entries?.users || 0), 0);
   const cards = giveaways.map((giveaway) => `<article class="giveaway-card giveaway-card--${esc(giveaway.status)}">
-    <div class="giveaway-card__top">
-      <div>
-        <span class="giveaway-bot">${esc(giveaway.botName || "Unknown bot")}</span>
-        <h2>${esc(giveaway.prize || "Untitled giveaway")}</h2>
-      </div>
-      <span class="giveaway-status">${esc(giveaway.status || "active")}</span>
+    <div class="giveaway-card__main">
+      ${renderGiveawayEmbedPreview(giveaway)}
+      <aside class="giveaway-join-panel">
+        <div class="giveaway-join-panel__head">
+          <div>
+            <span class="giveaway-section-title">Joined users</span>
+            <strong>${Number(giveaway.entries?.users || 0)} member${Number(giveaway.entries?.users || 0) === 1 ? "" : "s"}</strong>
+          </div>
+          <span class="giveaway-join-panel__badge">${Number(giveaway.entries?.weighted || 0)} entries</span>
+        </div>
+        ${renderEntrants(giveaway)}
+      </aside>
     </div>
-    ${giveaway.description ? `<p class="giveaway-desc">${esc(giveaway.description)}</p>` : ""}
-    <div class="giveaway-stats">
-      <span><b>${Number(giveaway.entries?.users || 0)}</b> users entered</span>
-      <span><b>${Number(giveaway.entries?.weighted || 0)}</b> weighted entries</span>
-      <span><b>${Number(giveaway.winnerCount || 0)}</b> winner${Number(giveaway.winnerCount || 0) === 1 ? "" : "s"}</span>
-    </div>
-    <div class="giveaway-meta">
-      <span>Hosted by <b>${esc(giveaway.hostName || "Unknown")}</b></span>
-      <span>${esc(giveawayTimeLeft(giveaway))} · Ends ${esc(formatGiveawayTime(giveaway.endTime))}</span>
-    </div>
-    <div class="giveaway-section-title">Entered users</div>
-    ${renderEntrants(giveaway)}
   </article>`).join("");
   return `<div class="giveaway-head">
-    <div><p class="hero__label">Live giveaway tracker</p><h1><span>Active</span> giveaways</h1><p class="hero__desc">Shows active giveaways across connected bots, who entered, and which bot started/hosts it.</p></div>
+    <div><p class="hero__label">Live giveaway tracker</p><h1><span>Active</span> giveaways</h1><p class="hero__desc">Discord-style giveaway previews, joined users, hosts, and the bot running each giveaway.</p></div>
     <button class="btn" id="giveawaysRefreshBtn" type="button">Refresh</button>
   </div>
-  <div class="toolbar"><div class="toolbar__hint">${giveaways.length} active/paused giveaway${giveaways.length === 1 ? "" : "s"} · Updated ${esc(updated)} · Auto-refreshes every 30s</div></div>
+  <div class="giveaway-summary">
+    <div><strong>${giveaways.length}</strong><span>active/paused</span></div>
+    <div><strong>${totalJoined}</strong><span>joined users</span></div>
+    <div><strong>${esc(updated)}</strong><span>last update</span></div>
+  </div>
   ${cards || `<div class="empty"><div class="empty__icon" aria-hidden="true">🎁</div><p class="empty__title">No active giveaways right now</p><p class="empty__hint">When ECRP or Veltrix starts one, it will show here.</p></div>`}`;
 }
 
