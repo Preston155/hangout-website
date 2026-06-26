@@ -3,57 +3,153 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0e0e10" />
-    <meta name="description" content="Command reference for Veltrix — City of Angels Discord bot." />
-    <title>Veltrix · City of Angels</title>
-    <link rel="preload" href="assets/veltrix-logo-256.webp?v=8" as="image" type="image/webp" fetchpriority="high" />
-    <link rel="preload" href="data/bot-commands.json?v=13" as="fetch" crossorigin />
-    <link rel="icon" href="assets/favicon-32.png?v=8" type="image/png" sizes="32x32" />
-    <link rel="apple-touch-icon" href="assets/veltrix-logo-256.webp?v=8" />
-    <link rel="stylesheet" href="css/commands.css?v=27" />
+    <meta name="theme-color" content="#07111f" />
+    <meta name="description" content="PrestonHQ is the home base for Preston's Discord bots, ERLC tools, logs, transcripts, and community systems." />
+    <meta property="og:title" content="PrestonHQ · Bot Network" />
+    <meta property="og:description" content="A cleaner hub for ECRP, Veltrix, bot systems, transcripts, logs, and future tools." />
+    <meta property="og:type" content="website" />
+    <title>PrestonHQ · Bot Network</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://api.prestonhq.com" />
+    <link rel="stylesheet" href="css/site.css?v=1" />
   </head>
   <body>
-    <div class="announce-bar" role="status">
-      <span class="announce-bar__sr">THIS IS ALL COMMANDS FOR THE VELTRIX BOT!</span>
-      <div class="announce-bar__badge" aria-hidden="true">
-        <span class="announce-bar__dot"></span>
-        Veltrix
-      </div>
-      <div class="announce-bar__marquee" aria-hidden="true">
-        <div class="announce-bar__track">
-          <span class="announce-bar__item"><span class="announce-bar__text">THIS IS ALL COMMANDS FOR THE VELTRIX BOT!</span><span class="announce-bar__sep">✦</span></span>
-          <span class="announce-bar__item"><span class="announce-bar__text">THIS IS ALL COMMANDS FOR THE VELTRIX BOT!</span><span class="announce-bar__sep">✦</span></span>
-          <span class="announce-bar__item"><span class="announce-bar__text">THIS IS ALL COMMANDS FOR THE VELTRIX BOT!</span><span class="announce-bar__sep">✦</span></span>
-          <span class="announce-bar__item"><span class="announce-bar__text">THIS IS ALL COMMANDS FOR THE VELTRIX BOT!</span><span class="announce-bar__sep">✦</span></span>
-        </div>
-      </div>
-      <div class="announce-bar__line" aria-hidden="true"></div>
+    <div class="page-shell">
+      <header class="site-header">
+        <a class="brand" href="#top" aria-label="PrestonHQ home">
+          <span class="brand-mark">PHQ</span>
+          <span>
+            <strong>PrestonHQ</strong>
+            <small>Bot Network</small>
+          </span>
+        </a>
+        <nav class="nav-links" aria-label="Main navigation">
+          <a href="#systems">Systems</a>
+          <a href="#bots">Bots</a>
+          <a href="#control">Control</a>
+          <a href="https://api.prestonhq.com" rel="noreferrer">API</a>
+        </nav>
+      </header>
+
+      <main id="top">
+        <section class="hero section-grid" aria-labelledby="hero-title">
+          <div class="hero-copy reveal">
+            <div class="eyebrow"><span class="pulse"></span> live community operations</div>
+            <h1 id="hero-title">One clean home for every PrestonHQ bot.</h1>
+            <p>
+              ECRP, Veltrix, ticket transcripts, developer logs, suggestions, sessions, and future bot tools — rebuilt into one fast dashboard-style website.
+            </p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="#control">Open control hub</a>
+              <a class="btn btn-ghost" href="https://api.prestonhq.com/api/health" rel="noreferrer">Check API health</a>
+            </div>
+          </div>
+
+          <aside class="status-card reveal" aria-label="Network status">
+            <div class="status-card__top">
+              <span class="status-orb" id="apiOrb"></span>
+              <span id="apiStatusText">Checking API...</span>
+            </div>
+            <div class="metric-grid">
+              <div>
+                <small>Network</small>
+                <strong>PrestonHQ</strong>
+              </div>
+              <div>
+                <small>Primary Bot</small>
+                <strong>ECRP</strong>
+              </div>
+              <div>
+                <small>Backend</small>
+                <strong id="backendLabel">Syncing</strong>
+              </div>
+              <div>
+                <small>Last Check</small>
+                <strong id="lastCheck">--</strong>
+              </div>
+            </div>
+          </aside>
+        </section>
+
+        <section class="quick-strip reveal" aria-label="Quick links">
+          <a href="https://api.prestonhq.com/bot-logs" rel="noreferrer">
+            <span>Developer Logs</span>
+            <small>Live VPS activity</small>
+          </a>
+          <a href="https://api.prestonhq.com" rel="noreferrer">
+            <span>Transcripts</span>
+            <small>Ticket history backend</small>
+          </a>
+          <a href="https://github.com/Preston155/ecrp-bot" rel="noreferrer">
+            <span>ECRP Repo</span>
+            <small>Bot source</small>
+          </a>
+          <a href="https://github.com/Preston155/prestonhq-api" rel="noreferrer">
+            <span>API Repo</span>
+            <small>Backend source</small>
+          </a>
+        </section>
+
+        <section class="section" id="systems">
+          <div class="section-heading reveal">
+            <span class="eyebrow">systems</span>
+            <h2>Built for the stuff your servers actually use.</h2>
+            <p>No random filler — tickets, sessions, logs, suggestions, counting, birthdays, and status panels all get a real place.</p>
+          </div>
+          <div class="feature-grid">
+            <article class="feature-card reveal"><span>🎟️</span><h3>Advanced Tickets</h3><p>Claim locking, transcripts, review flow, logs, rating channels, and category-specific formats.</p></article>
+            <article class="feature-card reveal"><span>📋</span><h3>Developer Logs</h3><p>Website log viewer, clear logs action, auto-refresh, console/error filters, and live publish hooks.</p></article>
+            <article class="feature-card reveal"><span>💡</span><h3>Suggestions</h3><p>Slash suggestions with cleaner embeds, persistent votes, and member-friendly controls.</p></article>
+            <article class="feature-card reveal"><span>🚦</span><h3>Sessions</h3><p>Session votes, host pings, ready counts, roster tools, and ECRP-ready server details.</p></article>
+            <article class="feature-card reveal"><span>🔢</span><h3>Counting</h3><p>Fast counting setup with channel configuration and restart-safe storage.</p></article>
+            <article class="feature-card reveal"><span>🎂</span><h3>Birthdays</h3><p>Midnight birthday posts that mention the user and keep community moments alive.</p></article>
+          </div>
+        </section>
+
+        <section class="section" id="bots">
+          <div class="section-heading reveal">
+            <span class="eyebrow">bots</span>
+            <h2>Bot lineup</h2>
+          </div>
+          <div class="bot-grid">
+            <article class="bot-card bot-card--hot reveal">
+              <div><span class="bot-icon">E</span><h3>ECRP Assistant</h3></div>
+              <p>Roleplay server operations, tickets, sessions, suggestions, updates, birthday posts, and logs.</p>
+              <strong>Primary production bot</strong>
+            </article>
+            <article class="bot-card reveal">
+              <div><span class="bot-icon">V</span><h3>Veltrix</h3></div>
+              <p>Community tooling, commands, staff utilities, and legacy systems being folded into PrestonHQ.</p>
+              <strong>Connected bot</strong>
+            </article>
+            <article class="bot-card reveal">
+              <div><span class="bot-icon">+</span><h3>More Soon</h3></div>
+              <p>The site is being rebuilt so every future bot can plug into the same dashboard.</p>
+              <strong>Expansion ready</strong>
+            </article>
+          </div>
+        </section>
+
+        <section class="control-panel reveal" id="control">
+          <div>
+            <span class="eyebrow">control hub</span>
+            <h2>Next step: connect the private dashboards.</h2>
+            <p>
+              Public visitors get the clean overview. Staff/dev panels can later require login and show private bot data without exposing tokens or internal files.
+            </p>
+          </div>
+          <div class="control-actions">
+            <a class="btn btn-primary" href="https://api.prestonhq.com" rel="noreferrer">Open backend</a>
+            <a class="btn btn-ghost" href="https://github.com/Preston155/hangout-website" rel="noreferrer">Website GitHub</a>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <span>© <span id="year"></span> PrestonHQ</span>
+        <span>Built for bots, servers, and clean control.</span>
+      </footer>
     </div>
-    <div id="boot" class="boot" aria-live="polite" aria-busy="true" aria-label="Loading Veltrix">
-      <div class="boot__content">
-        <div class="boot__logo-wrap">
-          <picture>
-            <source srcset="assets/veltrix-logo-256.webp?v=8" type="image/webp" />
-            <img
-              class="boot__logo"
-              src="assets/veltrix-logo.png?v=8"
-              alt=""
-              width="88"
-              height="88"
-              fetchpriority="high"
-              decoding="sync"
-            />
-          </picture>
-        </div>
-        <p class="boot__title">Veltrix</p>
-        <div class="boot__progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-          <div class="boot__progress-bar" id="bootProgress"></div>
-        </div>
-      </div>
-    </div>
-    <div id="app"></div>
-    <div id="toast" class="toast hidden" role="status"></div>
-    <script src="js/admin-editor.js?v=4"></script>
-    <script src="js/app.js?v=22"></script>
+    <script src="js/site.js?v=1"></script>
   </body>
 </html>
