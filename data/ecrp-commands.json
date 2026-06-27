@@ -145,6 +145,44 @@
           "usage": "-counting disable"
         },
         {
+          "name": "birthday set",
+          "type": "prefix",
+          "description": "Save or update your birthday for automatic birthday announcements.",
+          "usage": "-birthday set 06/24",
+          "notes": "You can also use a written date, such as -birthday set June 24."
+        },
+        {
+          "name": "birthday remove",
+          "type": "prefix",
+          "description": "Remove your saved birthday.",
+          "usage": "-birthday remove",
+          "aliases": [
+            "birthday delete"
+          ]
+        },
+        {
+          "name": "birthday list",
+          "type": "prefix",
+          "description": "View upcoming birthdays saved in the server.",
+          "usage": "-birthday list",
+          "aliases": [
+            "birthday upcoming"
+          ]
+        },
+        {
+          "name": "birthday",
+          "type": "prefix",
+          "description": "View your birthday profile or the saved birthday of a mentioned member.",
+          "usage": "-birthday [@member]"
+        },
+        {
+          "name": "birthday setup",
+          "type": "prefix",
+          "description": "Choose the channel used for birthday announcements and the live birthday calendar.",
+          "permission": "Manage Server",
+          "usage": "-birthday setup #channel"
+        },
+        {
           "name": "botupdates",
           "type": "prefix",
           "description": "Send the public ECRP Bot Updates embed.",
