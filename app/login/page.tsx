@@ -1,1 +1,9 @@
-import Link from 'next/link';export default function Login(){return <main className="grid min-h-screen place-items-center px-4"><form className="glass w-full max-w-md rounded-[2rem] p-8"><h1 className="text-3xl font-black">Login</h1><p className="mt-2 text-white/60">Use Auth.js credentials. Wire the submit to NextAuth on deploy.</p><input className="mt-6 w-full rounded-2xl border border-white/10 bg-black/30 p-4" placeholder="Email"/><input className="mt-3 w-full rounded-2xl border border-white/10 bg-black/30 p-4" placeholder="Password" type="password"/><button className="btn mt-5 w-full" type="button">Login</button><p className="mt-5 text-sm text-white/60">Need an account? <Link className="text-aqua" href="/signup">Sign up</Link></p></form></main>}
+import { AuthForm } from '@/components/auth-form';
+
+export default function Login() {
+  return (
+    <main className="grid min-h-screen place-items-center px-4 py-12">
+      <AuthForm mode="login" />
+    </main>
+  );
+}
