@@ -1,0 +1,1 @@
+import {NextRequest,NextResponse} from 'next/server';export function middleware(req:NextRequest){const path=req.nextUrl.pathname;if(/^\/@[a-zA-Z0-9_.-]+$/.test(path)){const username=path.slice(2);return NextResponse.rewrite(new URL(`/u/${username}`,req.url))}return NextResponse.next()}export const config={matcher:['/((?!api|_next/static|_next/image|favicon.ico).*)']};

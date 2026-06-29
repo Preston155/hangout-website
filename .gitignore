@@ -66,3 +66,6 @@ bot3-*.txt
 # Admin API (server-only)
 public/api/config.php
 api/config.php
+# Next.js build output
+.next/
+tsconfig.tsbuildinfo

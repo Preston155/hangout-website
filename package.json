@@ -1,18 +1,47 @@
 {
   "name": "prestonhq-profiles",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "PrestonHQ Profiles link-in-bio platform",
+  "description": "PrestonHQ Profiles production SaaS platform",
   "scripts": {
-    "build": "node scripts/build-httpdocs.js",
-    "build:httpdocs": "node scripts/build-httpdocs.js",
-    "sync:commands": "node scripts/sync-bot-commands.js",
-    "sync:watch": "node scripts/sync-bot-commands.js --watch",
-    "auto-publish": "node auto-publish.js",
-    "admin:publish": "node scripts/admin-publish.js",
-    "sync:to-bot": "node scripts/sync-to-bot.js"
+    "dev": "next dev",
+    "build": "prisma generate && next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate deploy",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio",
+    "legacy:build-static": "node scripts/build-httpdocs.js",
+    "auto-publish": "node auto-publish.js"
   },
   "dependencies": {
-    "ssh2": "^1.16.0"
+    "@auth/prisma-adapter": "latest",
+    "@prisma/client": "6.16.2",
+    "bcryptjs": "latest",
+    "clsx": "latest",
+    "date-fns": "latest",
+    "framer-motion": "latest",
+    "lucide-react": "latest",
+    "next": "^15.5.0",
+    "next-auth": "latest",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "stripe": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "latest",
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "autoprefixer": "^10.4.20",
+    "eslint": "latest",
+    "eslint-config-next": "latest",
+    "postcss": "^8.4.49",
+    "prisma": "6.16.2",
+    "tailwindcss": "^3.4.17",
+    "typescript": "latest"
   }
 }

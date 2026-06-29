@@ -1,0 +1,6 @@
+import crypto from 'crypto';import {z} from 'zod';
+export const usernameSchema=z.string().min(3).max(24).regex(/^[a-zA-Z0-9_.-]+$/).transform(v=>v.toLowerCase());export const passwordSchema=z.string().min(8).max(128);
+export function hashIp(ip?:string|null){return ip?crypto.createHash('sha256').update(`${ip}:${process.env.NEXTAUTH_SECRET??'dev'}`).digest('hex'):null}
+export function safeUrl(input?:string|null){try{if(!input)return null;const u=new URL(input);return ['https:','http:'].includes(u.protocol)?u.toString():null}catch{return null}}
+export function safeEmbed(input?:string|null){const url=safeUrl(input);if(!url)return null;const u=new URL(url);if(u.hostname.includes('youtube.com')&&u.searchParams.get('v'))return `https://www.youtube-nocookie.com/embed/${encodeURIComponent(u.searchParams.get('v')!)}`;if(u.hostname==='youtu.be')return `https://www.youtube-nocookie.com/embed/${encodeURIComponent(u.pathname.slice(1))}`;if(u.hostname.includes('tiktok.com')||u.hostname.includes('player.twitch.tv')||u.hostname.includes('open.spotify.com'))return url;return null}
+export const canUseCustomCss=(plan?:string)=>plan==='PRO'||plan==='ENTERPRISE';export const canUseCustomJs=(role?:string)=>role==='ADMIN'||role==='OWNER';

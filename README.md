@@ -1,30 +1,34 @@
-# Discord Remake
+# PrestonHQ Profiles
 
-Full Discord-style app with **live chat**, **server creation**, **channels**, and **custom profiles**.
+Production SaaS foundation for a multi-user link-in-bio/profile builder.
 
-## Plesk / httpdocs deploy
+## Stack
+
+- Next.js App Router
+- TypeScript
+- Tailwind CSS
+- Prisma + PostgreSQL
+- Auth.js / NextAuth credentials auth
+- Stripe-ready subscription model
+
+## Routes
+
+- `/` landing page
+- `/signup`, `/login`
+- `/dashboard`
+- `/explore`
+- `/@username` public profile URLs, rewritten internally to `/u/username`
+- `/admin`
+- `/api/*` future mobile-app-ready API routes
+
+## Setup
 
 ```bash
-cd guns
-npm run build:httpdocs
-```
-
-Upload everything inside **`httpdocs-ready/`** into your Plesk **httpdocs** folder.
-
-**GitHub auto-deploy:** see **`DEPLOY-GIT-PLESK.md`** for Plesk Git settings.
-
-Then in Plesk → **Node.js** (optional):
-- Enable Node.js
-- Startup file: `app.js`
-- Run **NPM Install** → **Restart App**
-
-See `httpdocs-ready/DEPLOY-PLESK.md` for full steps.
-
-## Local dev
-
-```bash
+cp .env.example .env
 npm install
-npm start
+npx prisma generate
+npx prisma db push
+npm run dev
 ```
 
-Open **http://localhost:3847**
+For production, set `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, SMTP, and Stripe env vars.

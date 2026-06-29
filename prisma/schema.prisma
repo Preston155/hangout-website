@@ -1,0 +1,278 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  MODERATOR
+  ADMIN
+  OWNER
+}
+
+enum Plan {
+  FREE
+  PRO
+  ENTERPRISE
+}
+
+enum ProfileStatus {
+  PUBLIC
+  PRIVATE
+  SUSPENDED
+}
+
+enum CardType {
+  LINK
+  TEXT
+  IMAGE
+  VIDEO
+  MUSIC
+  SPOTIFY
+  DISCORD
+  ROBLOX
+  YOUTUBE
+  TIKTOK
+  TWITCH
+  GALLERY
+  COUNTDOWN
+  FAQ
+  DONATE
+  CONTACT
+  SOCIALS
+  EMBED
+  HTML
+}
+
+enum ReportStatus {
+  OPEN
+  REVIEWING
+  RESOLVED
+  DISMISSED
+}
+
+enum NotificationType {
+  SYSTEM
+  PROFILE
+  REPORT
+  BILLING
+  MODERATION
+}
+
+model User {
+  id                String             @id @default(cuid())
+  email             String             @unique
+  emailVerified     DateTime?
+  passwordHash      String?
+  username          String             @unique
+  displayName       String?
+  role              Role               @default(USER)
+  plan              Plan               @default(FREE)
+  image             String?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  profile           Profile?
+  accounts          Account[]
+  sessions          Session[]
+  notifications     Notification[]
+  reportsMade       Report[]           @relation("Reporter")
+  reportsReceived   Report[]           @relation("ReportedUser")
+  moderationActions ModerationAction[] @relation("ModeratorActions")
+  subscription      Subscription?
+}
+
+model Profile {
+  id                 String          @id @default(cuid())
+  userId             String          @unique
+  user               User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  username           String          @unique
+  slug               String          @unique
+  status             ProfileStatus   @default(PUBLIC)
+  headline           String?
+  bio                String?
+  avatarUrl          String?
+  bannerUrl          String?
+  backgroundUrl      String?
+  backgroundVideoUrl String?
+  musicUrl           String?
+  musicAutoplay      Boolean         @default(false)
+  theme              Json
+  effects            Json
+  socials            Json
+  badges             Json
+  customCss          String?
+  customJs           String?
+  views              Int             @default(0)
+  lastViewedAt       DateTime?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  cards              Card[]
+  analytics          AnalyticsEvent[]
+  viewsLog           ProfileView[]
+}
+
+model Card {
+  id           String   @id @default(cuid())
+  profileId    String
+  profile      Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  type         CardType
+  title        String?
+  body         String?
+  url          String?
+  imageUrl     String?
+  metadata     Json
+  safeEmbedUrl String?
+  position     Int      @default(0)
+  enabled      Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([profileId, position])
+}
+
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  profileId String?
+  profile   Profile? @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  userId    String?
+  event     String
+  source    String?
+  country   String?
+  device    String?
+  referrer  String?
+  ipHash    String?
+  metadata  Json
+  createdAt DateTime @default(now())
+
+  @@index([profileId, createdAt])
+}
+
+model ProfileView {
+  id        String   @id @default(cuid())
+  profileId String
+  profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  ipHash    String?
+  userAgent String?
+  referrer  String?
+  createdAt DateTime @default(now())
+
+  @@index([profileId, createdAt])
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType @default(SYSTEM)
+  title     String
+  message   String
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+}
+
+model Report {
+  id             String       @id @default(cuid())
+  reporterId     String?
+  reportedUserId String?
+  profileId      String?
+  reason         String
+  details        String?
+  status         ReportStatus @default(OPEN)
+  reporter       User?        @relation("Reporter", fields: [reporterId], references: [id])
+  reportedUser   User?        @relation("ReportedUser", fields: [reportedUserId], references: [id])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model ModerationAction {
+  id           String   @id @default(cuid())
+  moderatorId  String
+  moderator    User     @relation("ModeratorActions", fields: [moderatorId], references: [id])
+  targetUserId String?
+  profileId    String?
+  action       String
+  reason       String?
+  metadata     Json
+  createdAt    DateTime @default(now())
+}
+
+model Theme {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  creatorId String?
+  isPremium Boolean  @default(false)
+  isPublic  Boolean  @default(true)
+  config    Json
+  installs  Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model SiteSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+model Subscription {
+  id                   String    @id @default(cuid())
+  userId               String    @unique
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  status               String?
+  currentPeriodEnd     DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+}
+
+model VerificationCode {
+  id         String    @id @default(cuid())
+  userId     String?
+  email      String
+  codeHash   String
+  purpose    String
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([email, purpose])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
