@@ -6,16 +6,25 @@ const ROOT = path.join(__dirname, "..");
 const OUT = path.join(ROOT, "httpdocs-ready");
 const PUBLIC = path.join(ROOT, "public");
 
-const HTACCESS = `# Veltrix · City of Angels — static site
-DirectoryIndex index.html
+const HTACCESS = `DirectoryIndex index.html
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule ^u/([A-Za-z0-9_.-]+)/?$ /index.html#/u/$1 [NE,L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
 
 <IfModule mod_headers.c>
-  <FilesMatch "^(index\.html)?$">
+  Header set X-Content-Type-Options "nosniff"
+  Header set Referrer-Policy "same-origin"
+  Header set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  <FilesMatch "^(index\\.html)?$">
     Header set Cache-Control "no-cache, no-store, must-revalidate"
-    Header set Pragma "no-cache"
-    Header set Expires "0"
   </FilesMatch>
-  <FilesMatch "\.(?:css|js|json|png|jpg|jpeg|gif|svg|webp|ico|woff2?)$">
+  <FilesMatch "\\.(?:css|js|json|png|jpg|jpeg|gif|svg|webp|ico|woff2?)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
 </IfModule>
@@ -24,6 +33,7 @@ DirectoryIndex index.html
   AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml
 </IfModule>
 `;
+
 
 function rimraf(dir) {
   if (!fs.existsSync(dir)) return;
@@ -46,7 +56,7 @@ function copyDir(src, dest) {
 }
 
 function main() {
-  console.log("Building httpdocs-ready (Veltrix command site)...");
+  console.log("Building httpdocs-ready (PrestonHQ Profiles)...");
   rimraf(OUT);
   fs.mkdirSync(OUT, { recursive: true });
   copyDir(PUBLIC, OUT);

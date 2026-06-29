@@ -1,8 +1,8 @@
 {
-  "name": "veltrix-commands-site",
+  "name": "prestonhq-profiles",
   "version": "1.0.0",
   "private": true,
-  "description": "Veltrix Discord command reference — City of Angels",
+  "description": "PrestonHQ Profiles link-in-bio platform",
   "scripts": {
     "build": "node scripts/build-httpdocs.js",
     "build:httpdocs": "node scripts/build-httpdocs.js",

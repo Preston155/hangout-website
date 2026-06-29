@@ -1,6 +1,5 @@
 DirectoryIndex index.html
 Options -Indexes
-
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteRule ^u/([A-Za-z0-9_.-]+)/?$ /index.html#/u/$1 [NE,L]
@@ -8,7 +7,6 @@ Options -Indexes
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteRule . /index.html [L]
 </IfModule>
-
 <IfModule mod_headers.c>
   Header set X-Content-Type-Options "nosniff"
   Header set Referrer-Policy "same-origin"
@@ -20,7 +18,6 @@ Options -Indexes
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
 </IfModule>
-
 <IfModule mod_deflate.c>
   AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml
 </IfModule>
