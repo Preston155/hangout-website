@@ -1,13 +1,16 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import { viteSingleFile } from "vite-plugin-singlefile";
 
 export default defineConfig({
-  base: "/",
-  plugins: [react()],
+  base: "./",
+  plugins: [react(), viteSingleFile()],
   build: {
     outDir: "dist",
-    assetsDir: "app-assets",
     emptyOutDir: true,
     sourcemap: false,
+    cssCodeSplit: false,
+    assetsInlineLimit: 100000000,
+    chunkSizeWarningLimit: 5000,
   },
 });
