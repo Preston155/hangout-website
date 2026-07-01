@@ -64,3 +64,36 @@ input[type="color"]::-webkit-color-swatch { border:1px solid rgba(255,255,255,.1
 }
 .command-hero:hover::after { animation: hero-sweep 1.6s cubic-bezier(.2,.8,.2,1); }
 @keyframes hero-sweep { from { transform: translateX(-18%); opacity: .18; } 45% { opacity: .52; } to { transform: translateX(18%); opacity: .28; } }
+
+/* Modern product pass */
+body {
+  background:
+    radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(99,102,241,.12), transparent 28rem),
+    linear-gradient(180deg, #05060a 0%, #080911 42%, #050507 100%);
+}
+body::before { opacity: .34; background-size: 88px 88px; }
+body::after { opacity: .13; }
+.panel {
+  background: linear-gradient(180deg, rgba(255,255,255,.052), rgba(255,255,255,.018));
+  border-color: rgba(255,255,255,.075);
+  box-shadow: 0 1px 0 rgba(255,255,255,.045) inset, 0 24px 70px -42px rgba(0,0,0,.9);
+}
+.panel::before { opacity: .26; }
+.modern-hero {
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.07), rgba(255,255,255,.025)),
+    radial-gradient(circle at 78% 18%, color-mix(in srgb, var(--accent, #818cf8) 23%, transparent), transparent 22rem);
+  box-shadow: 0 48px 130px -70px rgba(0,0,0,.98), 0 0 0 1px rgba(255,255,255,.03) inset;
+}
+.modern-hero::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(110deg, transparent 0 42%, rgba(255,255,255,.075) 48%, transparent 56% 100%);
+  opacity: .38;
+}
+@supports not (background: color-mix(in srgb, white, black)) {
+  .modern-hero { background: linear-gradient(135deg, rgba(255,255,255,.07), rgba(255,255,255,.025)); }
+}

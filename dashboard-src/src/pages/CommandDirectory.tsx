@@ -52,13 +52,13 @@ export function CommandDirectory() {
         <div className="flex flex-col gap-7 xl:flex-row xl:items-end xl:justify-between">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/20 px-3 py-1.5 text-[11px] font-black uppercase tracking-[.18em] text-zinc-400">
-              <Radar size={13} style={{ color: activeBot.accent }} /> PrestonHQ command center
+              <Radar size={13} style={{ color: activeBot.accent }} /> PrestonHQ command OS
             </div>
             <h1 className="mt-4 text-[clamp(34px,5vw,64px)] font-black leading-[.96] tracking-[-.055em] text-white">
-              One clean hub for every bot command.
+              Your bots, commands, and status — all in one polished console.
             </h1>
             <p className="mt-4 max-w-2xl text-[14px] leading-7 text-zinc-400 sm:text-[15px]">
-              Fast command lookup for IceSway, Veltrix, and ECRP — with live-style bot panels, categories, usage examples, permissions, and source info in a cleaner modern dashboard.
+              Switch between every connected bot, search commands instantly, and view usage, permissions, categories, and runtime context from a clean PrestonHQ command console.
             </p>
           </div>
           {featured && <CommandSpotlight command={featured} accent={activeBot.accent} botName={activeBot.name} />}
@@ -74,7 +74,7 @@ export function CommandDirectory() {
       <section className="grid gap-4 xl:grid-cols-[360px_1fr]">
         <aside className="space-y-4 xl:sticky xl:top-24 xl:self-start">
           <div className="rounded-[28px] border border-white/[.08] bg-black/20 p-2 backdrop-blur-xl">
-            <div className="px-3 pb-2 pt-2 text-[11px] font-black uppercase tracking-[.18em] text-zinc-600">Bot tabs</div>
+            <div className="px-3 pb-2 pt-2 text-[11px] font-black uppercase tracking-[.18em] text-zinc-600">Connected bots</div>
             <div className="space-y-2">
               {catalog.bots.map((bot, i) => {
                 const on = bot.id === activeBotId;
@@ -110,7 +110,7 @@ export function CommandDirectory() {
           </div>
 
           <div className="panel p-4">
-            <div className="flex items-center justify-between"><span className="text-[11px] font-black uppercase tracking-[.18em] text-zinc-500">Filters</span><Filter size={15} style={{ color: activeBot.accent }} /></div>
+            <div className="flex items-center justify-between"><span className="text-[11px] font-black uppercase tracking-[.18em] text-zinc-500">Command filters</span><Filter size={15} style={{ color: activeBot.accent }} /></div>
             <div className="mt-3 flex items-center gap-2 rounded-2xl border border-white/10 bg-black/24 px-3.5 py-3">
               <Search size={16} className="text-zinc-500" />
               <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search commands…" className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-600" />
