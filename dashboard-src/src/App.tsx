@@ -1,145 +1,75 @@
+﻿import { useEffect } from "react";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import { useRouter } from "./router";
-import { useHealth } from "./useHealth";
-import { Sidebar } from "./components/Sidebar";
-import { Topbar } from "./components/Topbar";
-import { setToastHandler } from "./components/ui";
-import { Landing } from "./pages/Landing";
-import { Login } from "./pages/Login";
-import { Overview } from "./pages/Overview";
-import { Commands } from "./pages/Commands";
-import { Builder } from "./pages/Builder";
-import { Templates } from "./pages/Templates";
-import { Permissions } from "./pages/Permissions";
-import { Logs } from "./pages/Logs";
-import { Settings } from "./pages/Settings";
-import { CheckCircle2 } from "lucide-react";
-
-function pageFor(path: string): { node: JSX.Element; key: string; active: string } {
-  if (path === "/dashboard") return { node: <Overview />, key: "overview", active: "overview" };
-  if (path === "/commands") return { node: <Commands />, key: "commands", active: "commands" };
-  if (path === "/builder" || path === "/embeds" || path === "/new") return { node: <Builder />, key: "builder", active: "builder" };
-  if (path === "/templates") return { node: <Templates />, key: "templates", active: "templates" };
-  if (path === "/permissions") return { node: <Permissions />, key: "permissions", active: "permissions" };
-  if (path === "/logs") return { node: <Logs />, key: "logs", active: "logs" };
-  if (path === "/settings") return { node: <Settings />, key: "settings", active: "settings" };
-  return { node: <Overview />, key: "overview", active: "overview" };
-}
-
-function Toaster() {
-  const [msg, setMsg] = useState<string | null>(null);
-  useEffect(() => {
-    setToastHandler((m) => {
-      setMsg(m);
-      window.clearTimeout((window as any).__toastT);
-      (window as any).__toastT = window.setTimeout(() => setMsg(null), 2600);
-    });
-  }, []);
-  if (!msg) return null;
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ type: "spring", stiffness: 380, damping: 28 }}
-      className="glass-strong fixed bottom-5 right-5 z-[70] flex items-center gap-2.5 rounded-2xl px-4 py-3 text-sm font-semibold shadow-card"
-    >
-      <CheckCircle2 size={18} className="text-emerald-400" />
-      {msg}
-    </motion.div>
-  );
-}
+import { Activity, Blocks, Bot, Sparkles } from "lucide-react";
+import { CommandDirectory } from "./pages/CommandDirectory";
 
 function Aurora() {
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-      <div className="absolute -left-40 -top-40 h-[480px] w-[480px] rounded-full bg-brand-500/20 blur-[120px] animate-aurora" />
-      <div className="absolute -right-32 top-10 h-[420px] w-[420px] rounded-full bg-brand-violet/15 blur-[120px] animate-aurora" style={{ animationDelay: "-6s" }} />
-      <div className="absolute bottom-[-180px] left-1/3 h-[420px] w-[420px] rounded-full bg-brand-fuchsia/10 blur-[130px] animate-aurora" style={{ animationDelay: "-12s" }} />
-      <div
-        className="absolute inset-0 opacity-[.5]"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px)",
-          backgroundSize: "64px 64px",
-          maskImage: "radial-gradient(ellipse at 50% 0%, black, transparent 75%)",
-        }}
-      />
+      <div className="absolute -left-44 -top-44 h-[560px] w-[560px] rounded-full bg-brand-500/20 blur-[130px] animate-aurora" />
+      <div className="absolute -right-36 top-8 h-[520px] w-[520px] rounded-full bg-brand-violet/18 blur-[130px] animate-aurora" style={{ animationDelay: "-6s" }} />
+      <div className="absolute bottom-[-210px] left-1/3 h-[520px] w-[520px] rounded-full bg-cyan-400/10 blur-[140px] animate-aurora" style={{ animationDelay: "-12s" }} />
+      <div className="absolute left-[8%] top-[18%] h-24 w-24 rounded-full border border-white/10 opacity-30" style={{ animation: "orbit 12s linear infinite" }} />
+      <div className="absolute right-[18%] top-[28%] h-16 w-16 rounded-full border border-brand-400/20 opacity-40" style={{ animation: "orbit 16s linear infinite reverse" }} />
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-400/70 to-transparent" />
+    </div>
+  );
+}
+
+function TopTicker() {
+  const items = ["Multi-bot command intelligence", "IceSway Utils online telemetry", "Veltrix command catalog", "ECRP Assistant command center", "Live PM2 status when API is reachable"];
+  return (
+    <div className="border-b border-white/[.07] bg-black/24 backdrop-blur-xl">
+      <div className="mx-auto flex max-w-[1500px] items-center overflow-hidden px-4 sm:px-6">
+        <div className="mr-4 hidden items-center gap-2 border-r border-white/10 py-2.5 pr-4 text-[11px] font-black uppercase tracking-[.18em] text-brand-300 sm:flex">
+          <Sparkles size={13} /> Live Console
+        </div>
+        <div className="no-scrollbar flex flex-1 gap-8 overflow-hidden whitespace-nowrap py-2.5 text-[11px] font-bold uppercase tracking-[.16em] text-zinc-500">
+          <motion.div className="flex gap-8" animate={{ x: [0, -520] }} transition={{ repeat: Infinity, duration: 22, ease: "linear" }}>
+            {[...items, ...items, ...items].map((item, i) => (
+              <span key={`${item}-${i}`} className="inline-flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_16px_rgba(52,211,153,.9)]" />{item}</span>
+            ))}
+          </motion.div>
+        </div>
+      </div>
     </div>
   );
 }
 
 export function App() {
-  const route = useRouter();
-  const health = useHealth();
-  const [mobileOpen, setMobileOpen] = useState(false);
-
   useEffect(() => {
-    setMobileOpen(false);
-  }, [route.path]);
-
-  if (route.path === "/login") {
-    return (
-      <>
-        <Aurora />
-        <Login />
-        <Toaster />
-      </>
-    );
-  }
-
-  if (route.path === "/" || route.path === "") {
-    return (
-      <>
-        <Aurora />
-        <Landing health={health} />
-        <Toaster />
-      </>
-    );
-  }
-
-  const { node, key, active } = pageFor(route.path);
+    const handler = (event: MouseEvent) => {
+      document.documentElement.style.setProperty("--mouse-x", `${event.clientX}px`);
+      document.documentElement.style.setProperty("--mouse-y", `${event.clientY}px`);
+    };
+    window.addEventListener("pointermove", handler, { passive: true });
+    return () => window.removeEventListener("pointermove", handler);
+  }, []);
 
   return (
     <>
       <Aurora />
-      <div className="flex min-h-screen">
-        {/* Desktop sidebar */}
-        <aside className="sticky top-0 hidden h-screen w-[264px] shrink-0 border-r border-white/[.06] bg-ink-900/40 backdrop-blur-xl lg:block">
-          <Sidebar active={active} />
-        </aside>
-
-        {/* Mobile sidebar */}
-        {mobileOpen && (
-          <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="fixed inset-0 z-40 bg-black/60 lg:hidden" onClick={() => setMobileOpen(false)} />
-            <motion.aside
-              initial={{ x: -300 }}
-              animate={{ x: 0 }}
-              transition={{ type: "spring", stiffness: 320, damping: 32 }}
-              className="glass-strong fixed inset-y-0 left-0 z-50 w-[280px] lg:hidden"
-            >
-              <Sidebar active={active} onNavigate={() => setMobileOpen(false)} />
-            </motion.aside>
-          </>
-        )}
-
-        <div className="flex min-w-0 flex-1 flex-col">
-          <Topbar health={health} onMenu={() => setMobileOpen(true)} />
-          <main className="flex-1 px-3 py-5 sm:px-5 lg:px-7">
-            <motion.div
-              key={key + route.query.toString()}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-              className="mx-auto w-full max-w-[1280px]"
-            >
-              {node}
-            </motion.div>
-          </main>
-        </div>
+      <div className="min-h-screen">
+        <TopTicker />
+        <header className="sticky top-0 z-30 border-b border-white/[.07] bg-ink-950/68 backdrop-blur-2xl">
+          <div className="mx-auto flex max-w-[1500px] items-center justify-between gap-4 px-4 py-4 sm:px-6">
+            <div className="flex items-center gap-3">
+              <div className="relative grid h-11 w-11 place-items-center rounded-2xl brand-grad text-sm font-black text-[#06060a] shadow-[0_16px_48px_-18px_rgba(129,140,248,.9)]">P<span className="absolute -right-1 -top-1 h-3 w-3 rounded-full border-2 border-ink-950 bg-emerald-400 shadow-[0_0_20px_rgba(52,211,153,.9)]" /></div>
+              <div><div className="text-[15px] font-extrabold tracking-tight">PrestonHQ</div><div className="text-[11px] text-zinc-500">Command Nexus</div></div>
+            </div>
+            <div className="hidden items-center gap-2 rounded-full border border-white/10 bg-white/[.035] px-3 py-2 text-[12px] text-zinc-400 lg:flex"><Bot size={14} className="text-brand-300" /> IceSway <span className="text-zinc-700">/</span> Veltrix <span className="text-zinc-700">/</span> ECRP</div>
+            <div className="flex items-center gap-2">
+              <div className="hidden rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-[12px] font-bold text-emerald-300 sm:inline-flex"><Activity size={14} className="mr-2" /> Systems synced</div>
+              <div className="rounded-full border border-white/10 bg-white/[.035] px-3 py-2 text-[12px] font-bold text-zinc-300"><Blocks size={14} className="mr-2 inline" /> Dashboard v5</div>
+            </div>
+          </div>
+        </header>
+        <main className="mx-auto max-w-[1500px] px-4 py-6 sm:px-6 lg:py-8">
+          <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: [0.2, 0.8, 0.2, 1] }}>
+            <CommandDirectory />
+          </motion.div>
+        </main>
       </div>
-      <Toaster />
     </>
   );
 }
