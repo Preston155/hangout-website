@@ -1,1 +1,16 @@
-import type {Metadata} from 'next';import './globals.css';export const metadata:Metadata={title:'PrestonHQ Profiles',description:'Next-gen link-in-bio/profile builder for creators.'};export default function RootLayout({children}:{children:React.ReactNode}){return <html lang="en"><body><div className="fixed inset-0 -z-10 opacity-50 bg-[radial-gradient(circle_at_80%_10%,rgba(124,92,255,.35),transparent_30%),radial-gradient(circle_at_15%_90%,rgba(47,255,209,.22),transparent_30%)]"/>{children}</body></html>}
+import type { Metadata } from 'next';
+import type { ReactNode } from 'react';
+import './globals.css';
+
+export const metadata: Metadata = {
+  title: 'PrestonHQ ER:LC Moderation OS',
+  description: 'A premium ER:LC moderation dashboard for server owners, staff permissions, player management, command dispatch, and audit logs.',
+};
+
+export default function RootLayout({ children }: { children: ReactNode }) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  );
+}

@@ -1,3 +1,4 @@
+'use client';
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Activity,
@@ -402,3 +403,5 @@ function LogRow({ log }: { log: ModAction }) { return <div className="flex flex-
 function SeverityBadge({ severity, label }: { severity: Severity; label: string }) { const styles = { low: "border-emerald-300/25 bg-emerald-300/10 text-emerald-100", medium: "border-sky-300/25 bg-sky-300/10 text-sky-100", high: "border-amber-300/25 bg-amber-300/10 text-amber-100", critical: "border-rose-300/25 bg-rose-300/10 text-rose-100" }; return <span className={`rounded-full border px-3 py-1 text-xs font-black uppercase ${styles[severity]}`}>{label}</span>; }
 function EmptyState({ title, text }: { title: string; text: string }) { return <div className="mt-5 rounded-[1.5rem] border border-dashed border-white/15 bg-white/[.025] p-8 text-center"><div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-white/[.06] text-white/40"><AlertTriangle /></div><h3 className="mt-3 text-xl font-black">{title}</h3><p className="mt-1 text-sm text-white/45">{text}</p></div>; }
 function Toast({ message }: { message: string }) { return <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 18 }} className="fixed bottom-5 right-5 z-50 rounded-2xl border border-emerald-300/20 bg-[#0b1512] px-4 py-3 text-sm font-bold text-emerald-100 shadow-2xl"><CheckCircle2 className="mr-2 inline" size={16} />{message}</motion.div>; }
+
+export default App;
