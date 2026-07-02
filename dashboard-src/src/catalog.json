@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-01T00:48:49.953Z",
+  "generatedAt": "2026-07-02T02:07:30.062Z",
   "categories": [
     "Slash commands",
     "Prefix commands",
@@ -25,8 +25,8 @@
         "status": "online",
         "uptime": 1782692807016,
         "restarts": 9,
-        "memoryMb": 97,
-        "cpu": 0.3
+        "memoryMb": 100,
+        "cpu": 0.4
       },
       "stats": {
         "total": 50,
@@ -812,7 +812,7 @@
         "status": "online",
         "uptime": 1782511070120,
         "restarts": 6,
-        "memoryMb": 84,
+        "memoryMb": 85,
         "cpu": 0.3
       },
       "stats": {
@@ -1462,7 +1462,7 @@
         "status": "online",
         "uptime": 1782863977237,
         "restarts": 49,
-        "memoryMb": 83,
+        "memoryMb": 95,
         "cpu": 0.3
       },
       "stats": {
