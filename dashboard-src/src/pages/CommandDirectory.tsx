@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Bot, CheckCircle2, Copy, Gauge, Search, Sparkles, Terminal, Zap } from "lucide-react";
+import { Bot, CheckCircle2, Copy, Cpu, Gauge, Layers3, Radio, Search, Shield, Sparkles, Terminal, Zap } from "lucide-react";
 import catalogData from "../catalog.json";
 import { FILTER_CATEGORIES } from "../constants";
 import { useBotStatus } from "../useBotStatus";
@@ -7,30 +7,46 @@ import type { BotCommand, Catalog, CommandCategory } from "../types";
 
 const catalog = catalogData as Catalog;
 
-const typeStyles = {
-  slash: "border-sky-400/35 bg-sky-400/10 text-sky-200",
-  prefix: "border-violet-400/35 bg-violet-400/10 text-violet-200",
-  auto: "border-emerald-400/35 bg-emerald-400/10 text-emerald-200",
+const typeMeta = {
+  slash: { label: "Slash", className: "border-cyan-300/35 bg-cyan-300/10 text-cyan-100" },
+  prefix: { label: "Prefix", className: "border-fuchsia-300/35 bg-fuchsia-300/10 text-fuchsia-100" },
+  auto: { label: "Auto", className: "border-emerald-300/35 bg-emerald-300/10 text-emerald-100" },
 } as const;
 
-const categoryHints: Record<string, string> = {
-  "Slash commands": "Application commands",
-  "Prefix commands": "Chat shortcuts",
-  Moderation: "Staff tools",
-  Tickets: "Support workflow",
-  Giveaways: "Events & rewards",
-  Sessions: "ERLC sessions",
-  Utility: "Everyday tools",
-  "Systems/Automation": "Background systems",
+const catTone: Record<string, string> = {
+  "Slash commands": "from-cyan-400 to-blue-500",
+  "Prefix commands": "from-violet-400 to-fuchsia-500",
+  Moderation: "from-red-400 to-orange-500",
+  Tickets: "from-amber-300 to-yellow-500",
+  Giveaways: "from-pink-400 to-rose-500",
+  Sessions: "from-indigo-400 to-sky-500",
+  Utility: "from-emerald-300 to-teal-500",
+  "Systems/Automation": "from-slate-300 to-zinc-500",
 };
 
 export function CommandDirectory() {
   const [activeBotId, setActiveBotId] = useState(catalog.bots[0]?.id || "");
   const [category, setCategory] = useState<CommandCategory | "All">("All");
   const [query, setQuery] = useState("");
+  const [selectedCommandId, setSelectedCommandId] = useState<string | null>(null);
   const { statuses } = useBotStatus();
 
   const activeBot = useMemo(() => catalog.bots.find((bot) => bot.id === activeBotId) || catalog.bots[0], [activeBotId]);
+
+  const filtered = useMemo(() => {
+    if (!activeBot) return [];
+    const q = query.trim().toLowerCase();
+    return activeBot.commands.filter((command) => {
+      const inCategory = category === "All" || command.category === category;
+      const text = `${command.name} ${command.description} ${command.usage} ${command.permission} ${command.category} ${command.source}`.toLowerCase();
+      return inCategory && (!q || text.includes(q));
+    });
+  }, [activeBot, category, query]);
+
+  const selectedCommand = useMemo(() => {
+    if (!activeBot) return null;
+    return activeBot.commands.find((command) => command.id === selectedCommandId) || filtered[0] || activeBot.commands[0] || null;
+  }, [activeBot, selectedCommandId, filtered]);
 
   const categoryCounts = useMemo(() => {
     const counts = new Map<string, number>();
@@ -39,240 +55,259 @@ export function CommandDirectory() {
     return counts;
   }, [activeBot]);
 
-  const filtered = useMemo(() => {
-    if (!activeBot) return [];
-    const q = query.trim().toLowerCase();
-    return activeBot.commands.filter((command) => {
-      const inCategory = category === "All" || command.category === category;
-      const haystack = `${command.name} ${command.description} ${command.usage} ${command.permission} ${command.category} ${command.source}`.toLowerCase();
-      return inCategory && (!q || haystack.includes(q));
-    });
-  }, [activeBot, category, query]);
-
   const grouped = useMemo(() => {
     const groups = new Map<string, BotCommand[]>();
     for (const command of filtered) groups.set(command.category, [...(groups.get(command.category) || []), command]);
-    return catalog.categories.filter((item) => groups.has(item)).map((item) => ({ category: item, items: groups.get(item)! }));
+    return catalog.categories.filter((cat) => groups.has(cat)).map((cat) => ({ category: cat, commands: groups.get(cat)! }));
   }, [filtered]);
 
   const totals = useMemo(() => {
-    const all = catalog.bots.reduce((sum, bot) => sum + bot.stats.total, 0);
+    const commands = catalog.bots.reduce((sum, bot) => sum + bot.stats.total, 0);
     const online = catalog.bots.filter((bot) => (statuses[bot.id] || bot.status).online).length;
-    return { all, online };
+    return { commands, online };
   }, [statuses]);
 
   if (!activeBot) return null;
   const live = statuses[activeBot.id] || activeBot.status;
 
   return (
-    <main className="min-h-screen overflow-hidden bg-[#06070a] text-white selection:bg-cyan-300 selection:text-black">
-      <div className="pointer-events-none fixed inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_10%,rgba(56,189,248,.22),transparent_32%),radial-gradient(circle_at_85%_18%,rgba(168,85,247,.2),transparent_30%),radial-gradient(circle_at_45%_100%,rgba(16,185,129,.12),transparent_34%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.035)_1px,transparent_1px)] bg-[size:72px_72px] opacity-25" />
-        <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-white/8 to-transparent" />
+    <main className="min-h-screen bg-[#050509] text-white selection:bg-lime-300 selection:text-black">
+      <style>{`
+        @keyframes phq-scan { 0% { transform: translateX(-20%); opacity:.15 } 50% { opacity:.5 } 100% { transform: translateX(120%); opacity:.15 } }
+        @keyframes phq-pulse { 0%,100% { opacity:.35 } 50% { opacity:.9 } }
+        .phq-scan:before { content:""; position:absolute; inset:0; width:40%; background:linear-gradient(90deg, transparent, rgba(125,255,231,.16), transparent); animation:phq-scan 5.5s linear infinite; }
+        .phq-grid { background-image: linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px); background-size: 54px 54px; }
+      `}</style>
+
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_8%,rgba(34,211,238,.20),transparent_34%),radial-gradient(circle_at_82%_12%,rgba(217,70,239,.18),transparent_31%),radial-gradient(circle_at_50%_92%,rgba(163,230,53,.10),transparent_38%)]" />
+        <div className="phq-grid absolute inset-0 opacity-[.16]" />
+        <div className="absolute left-0 top-0 h-full w-[34vw] bg-gradient-to-r from-black via-black/80 to-transparent" />
       </div>
 
-      <div className="relative mx-auto flex min-h-screen w-full max-w-[1540px] flex-col px-4 py-4 lg:px-7">
-        <header className="sticky top-4 z-30 mb-6 overflow-hidden rounded-[28px] border border-white/10 bg-black/55 shadow-2xl shadow-black/40 backdrop-blur-2xl">
-          <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-cyan-300/70 to-transparent" />
-          <div className="flex flex-wrap items-center justify-between gap-4 px-5 py-4">
-            <div className="flex items-center gap-3">
-              <div className="relative grid h-12 w-12 place-items-center rounded-2xl bg-white text-lg font-black text-black shadow-lg shadow-cyan-500/20">
-                P
-                <span className="absolute -right-1 -top-1 h-4 w-4 rounded-full border-2 border-black bg-emerald-400" />
+      <div className="relative mx-auto max-w-[1600px] px-4 py-4 sm:px-6 lg:px-8">
+        <header className="mb-5 grid gap-3 lg:grid-cols-[1fr_auto]">
+          <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[.045] p-4 shadow-2xl shadow-black/35 backdrop-blur-2xl phq-scan">
+            <div className="relative flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="relative grid h-14 w-14 place-items-center rounded-2xl bg-white text-xl font-black text-black shadow-[0_0_45px_rgba(34,211,238,.25)]">
+                  P
+                  <span className="absolute -right-1 -top-1 h-4 w-4 rounded-full border-2 border-[#050509] bg-lime-300" />
+                </div>
+                <div>
+                  <div className="flex flex-wrap items-center gap-2 text-xs font-black uppercase tracking-[.26em] text-lime-200/80">
+                    <Radio size={14} /> PrestonHQ Command Arsenal
+                  </div>
+                  <h1 className="mt-1 text-2xl font-black tracking-[-.05em] sm:text-4xl">All bots. All commands. One control room.</h1>
+                </div>
               </div>
-              <div>
-                <div className="text-lg font-black leading-tight tracking-[-.03em]">PrestonHQ</div>
-                <div className="text-xs font-medium text-white/45">Command control center</div>
+              <div className="grid grid-cols-3 gap-2 text-center">
+                <TopStat label="Bots" value={catalog.bots.length} />
+                <TopStat label="Online" value={`${totals.online}/${catalog.bots.length}`} />
+                <TopStat label="Commands" value={totals.commands} />
               </div>
             </div>
-
-            <div className="flex flex-wrap items-center gap-2">
-              <Pill icon={<Bot size={14} />} label={`${catalog.bots.length} bots`} />
-              <Pill icon={<Gauge size={14} />} label={`${totals.online}/${catalog.bots.length} online`} tone="green" />
-              <Pill icon={<Terminal size={14} />} label={`${totals.all} commands`} />
+          </div>
+          <div className="rounded-[2rem] border border-lime-300/15 bg-lime-300/10 p-4 shadow-2xl shadow-lime-950/20 backdrop-blur-2xl">
+            <div className="flex h-full min-w-[240px] flex-col justify-between gap-3">
+              <div className="flex items-center gap-2 text-sm font-black text-lime-100"><CheckCircle2 size={18} /> Live synced</div>
+              <p className="text-xs leading-5 text-white/50">Catalog rebuilds from the connected bot files and stays ready for staff lookup.</p>
             </div>
           </div>
         </header>
 
-        <section className="grid gap-5 lg:grid-cols-[360px_minmax(0,1fr)]">
-          <aside className="space-y-5">
-            <Panel className="p-4">
-              <div className="mb-3 flex items-center justify-between">
-                <SectionLabel>Bots</SectionLabel>
-                <span className="rounded-full border border-white/10 px-2 py-1 text-xs text-white/45">live catalog</span>
-              </div>
-              <div className="space-y-3">
-                {catalog.bots.map((bot) => {
-                  const selected = bot.id === activeBot.id;
-                  const botLive = statuses[bot.id] || bot.status;
-                  return (
-                    <button
-                      key={bot.id}
-                      onClick={() => { setActiveBotId(bot.id); setCategory("All"); setQuery(""); }}
-                      className={`group relative flex w-full items-center gap-3 overflow-hidden rounded-2xl border p-3 text-left transition duration-200 ${selected ? "border-white/30 bg-white/14 shadow-xl shadow-black/30" : "border-white/8 bg-white/[.035] hover:border-white/18 hover:bg-white/[.07]"}`}
-                    >
-                      <span className="absolute inset-y-3 left-0 w-1 rounded-r-full opacity-80" style={{ background: bot.accent }} />
-                      <span className="grid h-12 w-12 place-items-center rounded-2xl text-lg font-black text-black shadow-lg transition group-hover:scale-105" style={{ background: `linear-gradient(135deg, ${bot.accent}, #ffffff)` }}>
-                        {bot.name[0]}
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate font-black tracking-[-.02em]">{bot.name}</span>
-                        <span className="block truncate text-xs text-white/45">{bot.pm2} · {bot.stats.total} commands</span>
-                      </span>
-                      <span className={`h-2.5 w-2.5 rounded-full ${botLive.online ? "bg-emerald-400 shadow-[0_0_18px_rgba(52,211,153,.9)]" : "bg-rose-400"}`} />
-                    </button>
-                  );
-                })}
-              </div>
-            </Panel>
+        <section className="mb-5 grid gap-3 lg:grid-cols-3">
+          {catalog.bots.map((bot) => {
+            const selected = bot.id === activeBot.id;
+            const botLive = statuses[bot.id] || bot.status;
+            return (
+              <button
+                key={bot.id}
+                onClick={() => { setActiveBotId(bot.id); setCategory("All"); setQuery(""); setSelectedCommandId(null); }}
+                className={`group relative overflow-hidden rounded-[1.75rem] border p-4 text-left transition duration-200 hover:-translate-y-0.5 ${selected ? "border-white/35 bg-white/[.12] shadow-2xl shadow-black/35" : "border-white/10 bg-white/[.045] hover:border-white/20 hover:bg-white/[.075]"}`}
+              >
+                <div className="absolute inset-x-6 top-0 h-px opacity-80" style={{ background: `linear-gradient(90deg, transparent, ${bot.accent}, transparent)` }} />
+                <div className="flex items-center gap-4">
+                  <div className="grid h-14 w-14 place-items-center rounded-2xl text-xl font-black text-black transition group-hover:scale-105" style={{ background: `linear-gradient(135deg, ${bot.accent}, #ffffff)` }}>{bot.name[0]}</div>
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-lg font-black tracking-[-.03em]">{bot.name}</div>
+                    <div className="mt-0.5 text-xs text-white/45">{bot.pm2} · {bot.stats.total} indexed</div>
+                  </div>
+                  <div className={`h-3 w-3 rounded-full ${botLive.online ? "bg-lime-300 shadow-[0_0_22px_rgba(190,242,100,.9)]" : "bg-red-400"}`} />
+                </div>
+                <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs">
+                  <MiniStat label="Slash" value={bot.stats.slash} />
+                  <MiniStat label="Prefix" value={bot.stats.prefix} />
+                  <MiniStat label="Auto" value={bot.stats.automation} />
+                </div>
+              </button>
+            );
+          })}
+        </section>
 
+        <section className="grid gap-5 xl:grid-cols-[300px_minmax(0,1fr)_360px]">
+          <aside className="space-y-4">
             <Panel className="p-4">
-              <div className="mb-3 flex items-center justify-between">
-                <SectionLabel>Filters</SectionLabel>
-                <Sparkles size={15} className="text-cyan-200/70" />
-              </div>
-              <div className="grid gap-2">
+              <PanelTitle icon={<Layers3 size={16} />}>Categories</PanelTitle>
+              <div className="mt-4 space-y-2">
                 {FILTER_CATEGORIES.map((cat) => {
                   const selected = category === cat;
                   const count = cat === "All" ? activeBot.stats.total : categoryCounts.get(cat) || 0;
                   return (
-                    <button
-                      key={cat}
-                      onClick={() => setCategory(cat)}
-                      className={`flex items-center justify-between rounded-xl border px-3 py-2.5 text-sm transition ${selected ? "border-cyan-300/35 bg-cyan-300/12 text-white" : "border-white/8 bg-white/[.025] text-white/55 hover:border-white/18 hover:bg-white/[.06] hover:text-white"}`}
-                    >
+                    <button key={cat} onClick={() => setCategory(cat)} className={`flex w-full items-center justify-between rounded-2xl border px-3 py-3 text-sm transition ${selected ? "border-lime-300/35 bg-lime-300/12 text-white" : "border-white/8 bg-black/20 text-white/55 hover:border-white/20 hover:bg-white/[.055] hover:text-white"}`}>
                       <span className="font-bold">{cat}</span>
-                      <span className="rounded-full bg-black/30 px-2 py-0.5 text-xs text-white/55">{count}</span>
+                      <span className="rounded-full bg-black/35 px-2 py-0.5 text-xs text-white/45">{count}</span>
                     </button>
                   );
                 })}
               </div>
             </Panel>
+
+            <Panel className="p-4">
+              <PanelTitle icon={<Gauge size={16} />}>Runtime</PanelTitle>
+              <div className="mt-4 grid gap-3 text-sm">
+                <RuntimeRow label="Selected" value={activeBot.name} />
+                <RuntimeRow label="Process" value={activeBot.pm2} />
+                <RuntimeRow label="State" value={live.status} good={live.online} />
+                <RuntimeRow label="Visible" value={`${filtered.length}/${activeBot.stats.total}`} />
+              </div>
+            </Panel>
           </aside>
 
-          <section className="min-w-0 space-y-5">
-            <Panel className="overflow-hidden">
-              <div className="relative p-6 sm:p-8">
-                <div className="absolute right-0 top-0 h-40 w-72 rounded-bl-[80px] opacity-25 blur-3xl" style={{ background: activeBot.accent }} />
-                <div className="relative flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-                  <div>
-                    <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[.045] px-3 py-1 text-xs font-black uppercase tracking-[.28em] text-white/55">
-                      <Zap size={13} className="text-cyan-200" /> PrestonHQ bot index
-                    </div>
-                    <h1 className="max-w-3xl text-5xl font-black leading-[.9] tracking-[-.08em] sm:text-7xl">
-                      {activeBot.name}
-                    </h1>
-                    <p className="mt-4 max-w-2xl text-base leading-7 text-white/55">
-                      Fast command lookup across every connected bot. Pick a bot, filter by system, copy usage, and keep everything readable without digging through Discord.
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 xl:w-[520px]">
-                    <Metric label="Shown" value={filtered.length} />
-                    <Metric label="Slash" value={activeBot.stats.slash} />
-                    <Metric label="Prefix" value={activeBot.stats.prefix} />
-                    <Metric label="Auto" value={activeBot.stats.automation} />
-                  </div>
-                </div>
+          <section className="min-w-0 space-y-4">
+            <Panel className="p-4">
+              <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-black/35 px-4 py-3">
+                <Search size={18} className="text-lime-200/70" />
+                <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search command, permission, usage, source..." className="w-full bg-transparent text-sm outline-none placeholder:text-white/30" />
               </div>
             </Panel>
 
-            <div className="grid gap-4 xl:grid-cols-[1fr_300px]">
-              <Panel className="flex items-center gap-3 px-4 py-3">
-                <Search size={18} className="shrink-0 text-cyan-200/70" />
-                <input
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                  placeholder="Search command, usage, permission, source..."
-                  className="w-full bg-transparent text-sm text-white outline-none placeholder:text-white/35"
-                />
-              </Panel>
-              <Panel className="flex items-center justify-between px-4 py-3">
-                <div>
-                  <div className="text-xs font-black uppercase tracking-[.22em] text-white/35">Status</div>
-                  <div className="mt-1 flex items-center gap-2 text-sm font-bold"><CheckCircle2 size={16} className={live.online ? "text-emerald-300" : "text-rose-300"} /> {live.status}</div>
-                </div>
-                <div className="text-right text-xs text-white/40">{activeBot.pm2}<br />{filtered.length}/{activeBot.stats.total} visible</div>
-              </Panel>
-            </div>
-
-            {grouped.length ? grouped.map(({ category: group, items }) => (
+            {grouped.length ? grouped.map(({ category: group, commands }) => (
               <section key={group} className="space-y-3">
-                <div className="flex items-end justify-between gap-4">
-                  <div>
-                    <h2 className="text-xl font-black uppercase tracking-[-.03em]">{group}</h2>
-                    <p className="text-sm text-white/40">{categoryHints[group] || "Command group"}</p>
+                <div className="flex items-center gap-3">
+                  <div className={`h-8 w-1.5 rounded-full bg-gradient-to-b ${catTone[group] || "from-white to-white/30"}`} />
+                  <div className="min-w-0 flex-1">
+                    <h2 className="text-lg font-black uppercase tracking-[.02em]">{group}</h2>
+                    <p className="text-xs text-white/35">{commands.length} commands in {activeBot.name}</p>
                   </div>
-                  <div className="h-px flex-1 bg-gradient-to-r from-white/15 to-transparent" />
-                  <span className="rounded-full border border-white/10 px-3 py-1 text-xs text-white/45">{items.length}</span>
                 </div>
-                <div className="grid gap-3 md:grid-cols-2 2xl:grid-cols-3">
-                  {items.map((command) => <CommandCard key={command.id} command={command} accent={activeBot.accent} />)}
+                <div className="grid gap-3 lg:grid-cols-2">
+                  {commands.map((command) => (
+                    <CommandTile
+                      key={command.id}
+                      command={command}
+                      active={selectedCommand?.id === command.id}
+                      accent={activeBot.accent}
+                      onSelect={() => setSelectedCommandId(command.id)}
+                    />
+                  ))}
                 </div>
               </section>
             )) : (
-              <Panel className="grid min-h-[260px] place-items-center p-8 text-center">
+              <Panel className="grid min-h-[300px] place-items-center p-10 text-center">
                 <div>
-                  <div className="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-2xl bg-white/8"><Search /></div>
+                  <div className="mx-auto mb-4 grid h-16 w-16 place-items-center rounded-3xl bg-white/8 text-white/60"><Search /></div>
                   <h2 className="text-2xl font-black">No commands found</h2>
-                  <p className="mt-2 text-white/45">Try a different search or category.</p>
+                  <p className="mt-2 text-sm text-white/45">Try a different bot, category, or search.</p>
                 </div>
               </Panel>
             )}
           </section>
+
+          <aside className="xl:sticky xl:top-5 xl:h-[calc(100vh-2.5rem)]">
+            <Panel className="flex h-full flex-col overflow-hidden">
+              <div className="border-b border-white/10 p-5">
+                <PanelTitle icon={<Terminal size={16} />}>Command Details</PanelTitle>
+                {selectedCommand ? (
+                  <>
+                    <h3 className="mt-5 text-3xl font-black tracking-[-.06em]">{selectedCommand.name}</h3>
+                    <p className="mt-2 text-sm leading-6 text-white/55">{selectedCommand.description}</p>
+                  </>
+                ) : null}
+              </div>
+              {selectedCommand ? <CommandInspector command={selectedCommand} botName={activeBot.name} accent={activeBot.accent} /> : null}
+            </Panel>
+          </aside>
         </section>
       </div>
     </main>
   );
 }
 
-function CommandCard({ command, accent }: { command: BotCommand; accent: string }) {
-  const copy = async () => {
+function CommandTile({ command, active, accent, onSelect }: { command: BotCommand; active: boolean; accent: string; onSelect: () => void }) {
+  const copy = async (event: React.MouseEvent) => {
+    event.stopPropagation();
     try { await navigator.clipboard.writeText(command.usage || command.name); } catch {}
   };
   return (
-    <article className="group relative overflow-hidden rounded-3xl border border-white/10 bg-[#101117]/80 p-4 shadow-xl shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-white/20 hover:bg-[#151722]">
-      <div className="absolute inset-x-5 top-0 h-px opacity-60" style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }} />
+    <article onClick={onSelect} className={`group relative cursor-pointer overflow-hidden rounded-[1.5rem] border bg-[#0d0f14]/85 p-4 transition duration-200 hover:-translate-y-0.5 hover:bg-[#12151d] ${active ? "border-white/35 shadow-2xl shadow-black/40" : "border-white/10 hover:border-white/22"}`}>
+      <div className="absolute inset-y-5 left-0 w-1 rounded-r-full" style={{ background: accent }} />
       <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="truncate text-lg font-black tracking-[-.03em]">{command.name}</h3>
-            <span className={`rounded-full border px-2 py-0.5 text-[10px] font-black uppercase ${typeStyles[command.type]}`}>{command.type}</span>
-            {command.enabled && <span className="rounded-full border border-emerald-300/25 bg-emerald-300/10 px-2 py-0.5 text-[10px] font-black uppercase text-emerald-200">live</span>}
+            <Badge className={typeMeta[command.type].className}>{typeMeta[command.type].label}</Badge>
+            {command.enabled ? <Badge className="border-lime-300/35 bg-lime-300/10 text-lime-100">Live</Badge> : null}
           </div>
-          <p className="mt-2 line-clamp-2 min-h-[42px] text-sm leading-6 text-white/55">{command.description}</p>
+          <p className="mt-2 line-clamp-2 min-h-[44px] text-sm leading-6 text-white/52">{command.description}</p>
         </div>
-        <button onClick={copy} className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-white/10 bg-white/[.035] text-white/45 transition hover:border-cyan-300/35 hover:bg-cyan-300/10 hover:text-cyan-100" title="Copy usage">
-          <Copy size={16} />
-        </button>
+        <button onClick={copy} className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-white/10 bg-white/[.035] text-white/45 transition hover:border-lime-300/35 hover:bg-lime-300/10 hover:text-lime-100"><Copy size={16} /></button>
       </div>
       <div className="mt-4 flex flex-wrap gap-2 text-xs">
-        <code className="rounded-xl bg-black/45 px-3 py-2 font-mono font-bold text-white">{command.usage}</code>
-        <span className="rounded-xl border border-white/10 bg-white/[.035] px-3 py-2 text-white/55">{command.permission}</span>
+        <code className="rounded-xl bg-black/50 px-3 py-2 font-mono font-black text-white">{command.usage}</code>
+        <span className="rounded-xl border border-white/10 bg-white/[.035] px-3 py-2 text-white/50">{command.permission}</span>
       </div>
-      <div className="mt-3 truncate rounded-xl border border-white/8 bg-white/[.025] px-3 py-2 font-mono text-xs text-white/35">{command.source}</div>
     </article>
   );
 }
 
-function Panel({ className = "", children }: { className?: string; children: React.ReactNode }) {
-  return <div className={`rounded-[28px] border border-white/10 bg-white/[.045] shadow-2xl shadow-black/25 backdrop-blur-xl ${className}`}>{children}</div>;
-}
-
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return <div className="text-xs font-black uppercase tracking-[.26em] text-white/35">{children}</div>;
-}
-
-function Metric({ label, value }: { label: string; value: number }) {
+function CommandInspector({ command, botName, accent }: { command: BotCommand; botName: string; accent: string }) {
+  const copy = async () => { try { await navigator.clipboard.writeText(command.usage || command.name); } catch {} };
   return (
-    <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
-      <div className="text-[10px] font-black uppercase tracking-[.24em] text-white/35">{label}</div>
-      <div className="mt-2 text-3xl font-black tracking-[-.06em]">{value}</div>
+    <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-5">
+      <div className="rounded-3xl border border-white/10 bg-black/35 p-4">
+        <div className="mb-3 text-xs font-black uppercase tracking-[.24em] text-white/35">Usage</div>
+        <code className="block rounded-2xl bg-black px-4 py-4 font-mono text-sm font-black text-white">{command.usage}</code>
+        <button onClick={copy} className="mt-3 inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[.04] px-3 py-2 text-sm font-bold text-white/70 transition hover:border-lime-300/35 hover:text-lime-100"><Copy size={15} /> Copy command</button>
+      </div>
+      <Detail label="Bot" value={botName} />
+      <Detail label="Category" value={command.category} />
+      <Detail label="Permission" value={command.permission} />
+      <Detail label="Cooldown" value={command.cooldown ? `${command.cooldown}s` : "None"} />
+      <Detail label="Source" value={command.source} mono />
+      <div className="mt-auto rounded-3xl border border-white/10 bg-white/[.035] p-4">
+        <div className="mb-3 flex items-center gap-2 text-xs font-black uppercase tracking-[.24em] text-white/35"><Cpu size={14} /> System note</div>
+        <p className="text-sm leading-6 text-white/50">This catalog is generated from bot files, so it stays cleaner than a manually typed command list.</p>
+        <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/8"><div className="h-full w-2/3 rounded-full" style={{ background: `linear-gradient(90deg, ${accent}, #bef264)` }} /></div>
+      </div>
     </div>
   );
 }
 
-function Pill({ icon, label, tone = "default" }: { icon: React.ReactNode; label: string; tone?: "default" | "green" }) {
-  return <div className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-bold ${tone === "green" ? "border-emerald-300/25 bg-emerald-300/10 text-emerald-100" : "border-white/10 bg-white/[.045] text-white/70"}`}>{icon}{label}</div>;
+function Panel({ className = "", children }: { className?: string; children: React.ReactNode }) {
+  return <div className={`rounded-[1.75rem] border border-white/10 bg-white/[.045] shadow-2xl shadow-black/25 backdrop-blur-2xl ${className}`}>{children}</div>;
+}
+
+function PanelTitle({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
+  return <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[.24em] text-white/42">{icon}{children}</div>;
+}
+
+function TopStat({ label, value }: { label: string; value: number | string }) {
+  return <div className="min-w-[92px] rounded-2xl border border-white/10 bg-black/28 px-4 py-3"><div className="text-[10px] font-black uppercase tracking-[.22em] text-white/35">{label}</div><div className="mt-1 text-2xl font-black tracking-[-.06em]">{value}</div></div>;
+}
+
+function MiniStat({ label, value }: { label: string; value: number }) {
+  return <div className="rounded-2xl border border-white/8 bg-black/25 px-2 py-2"><div className="font-black text-white">{value}</div><div className="mt-0.5 text-[10px] uppercase tracking-[.18em] text-white/35">{label}</div></div>;
+}
+
+function RuntimeRow({ label, value, good }: { label: string; value: string; good?: boolean }) {
+  return <div className="flex items-center justify-between gap-3 rounded-2xl border border-white/8 bg-black/25 px-3 py-2"><span className="text-white/40">{label}</span><span className={`truncate font-bold ${good ? "text-lime-200" : "text-white/80"}`}>{value}</span></div>;
+}
+
+function Badge({ className, children }: { className: string; children: React.ReactNode }) {
+  return <span className={`rounded-full border px-2 py-0.5 text-[10px] font-black uppercase ${className}`}>{children}</span>;
+}
+
+function Detail({ label, value, mono = false }: { label: string; value: string; mono?: boolean }) {
+  return <div className="rounded-3xl border border-white/10 bg-white/[.035] p-4"><div className="text-[10px] font-black uppercase tracking-[.24em] text-white/35">{label}</div><div className={`mt-2 break-words text-sm font-bold text-white/78 ${mono ? "font-mono" : ""}`}>{value}</div></div>;
 }
