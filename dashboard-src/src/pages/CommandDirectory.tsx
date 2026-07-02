@@ -1,21 +1,26 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useMemo, useState } from "react";
-import { Activity, Bot, Command, Filter, Gauge, Layers3, Search, Server, Sparkles, Terminal, Zap } from "lucide-react";
+import { Activity, Bot, CheckCircle2, ChevronRight, Command, Filter, Search, Terminal, Zap } from "lucide-react";
 import catalogData from "../catalog.json";
-import { DirectoryCommandCard } from "../components/DirectoryCommandCard";
 import { FILTER_CATEGORIES } from "../constants";
 import { useBotStatus } from "../useBotStatus";
-import type { Catalog, CommandCategory } from "../types";
+import type { BotCommand, Catalog, CommandCategory } from "../types";
 
 const catalog = catalogData as Catalog;
+
+const typeColor = {
+  slash: "text-cyan-300 bg-cyan-400/10 border-cyan-400/20",
+  prefix: "text-violet-300 bg-violet-400/10 border-violet-400/20",
+  auto: "text-emerald-300 bg-emerald-400/10 border-emerald-400/20",
+} as const;
 
 export function CommandDirectory() {
   const [activeBotId, setActiveBotId] = useState(catalog.bots[0]?.id || "icesway");
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<CommandCategory | "All">("All");
   const { statuses } = useBotStatus();
-  const activeBot = useMemo(() => catalog.bots.find((b) => b.id === activeBotId) || catalog.bots[0], [activeBotId]);
 
+  const activeBot = useMemo(() => catalog.bots.find((b) => b.id === activeBotId) || catalog.bots[0], [activeBotId]);
   const categoryCounts = useMemo(() => {
     const counts = new Map<string, number>();
     if (!activeBot) return counts;
@@ -39,131 +44,127 @@ export function CommandDirectory() {
     return catalog.categories.filter((cat) => map.has(cat)).map((cat) => ({ category: cat, items: map.get(cat)! }));
   }, [filtered]);
 
-  const totalCommands = catalog.bots.reduce((sum, bot) => sum + bot.stats.total, 0);
-  const onlineCount = catalog.bots.filter((bot) => (statuses[bot.id] || bot.status).online).length;
   if (!activeBot) return null;
+  const live = statuses[activeBot.id] || activeBot.status;
 
   return (
-    <div className="space-y-5">
-      <section className="relative overflow-hidden rounded-[30px] border border-white/[.08] bg-[#090a10]/72 p-5 shadow-[0_36px_110px_-72px_rgba(0,0,0,.95)] backdrop-blur-2xl sm:p-6" style={{ "--accent": activeBot.accent } as React.CSSProperties}>
-        <div className="absolute inset-0 -z-10 bg-[linear-gradient(135deg,rgba(255,255,255,.06),rgba(255,255,255,.012)),radial-gradient(circle_at_90%_0%,rgba(99,102,241,.18),transparent_24rem)]" />
-        <div className="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-end">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[.04] px-3 py-1.5 text-[10px] font-black uppercase tracking-[.18em] text-zinc-400">
-              <Sparkles size={12} style={{ color: activeBot.accent }} /> PrestonHQ Command OS
-            </div>
-            <h1 className="mt-4 max-w-4xl text-[clamp(30px,4.4vw,58px)] font-black leading-[.95] tracking-[-.055em] text-white">
-              Commands for every bot, without the clutter.
-            </h1>
-            <p className="mt-3 max-w-2xl text-[14px] leading-6 text-zinc-400">
-              Switch bots, search usage, and browse categories in a tighter dashboard that gets you to the commands fast.
-            </p>
+    <div className="grid gap-4 lg:grid-cols-[300px_1fr]">
+      <aside className="space-y-3 lg:sticky lg:top-[72px] lg:self-start">
+        <Panel>
+          <div className="mb-3 flex items-center justify-between">
+            <Label>Bots</Label>
+            <span className="rounded-lg bg-white/[.05] px-2 py-1 text-[11px] font-bold text-zinc-500">{catalog.bots.length}</span>
           </div>
-          <div className="grid grid-cols-3 gap-2 lg:w-[420px]">
-            <HeroMetric icon={Bot} label="Bots" value={catalog.bots.length} accent="#67e8f9" />
-            <HeroMetric icon={Activity} label="Online" value={`${onlineCount}/${catalog.bots.length}`} accent="#34d399" />
-            <HeroMetric icon={Command} label="Commands" value={totalCommands} accent="#a78bfa" />
+          <div className="space-y-1.5">
+            {catalog.bots.map((bot) => {
+              const selected = bot.id === activeBotId;
+              const botLive = statuses[bot.id] || bot.status;
+              return (
+                <button key={bot.id} onClick={() => { setActiveBotId(bot.id); setCategory("All"); setQuery(""); }} className={`group flex w-full items-center gap-3 rounded-2xl border px-3 py-3 text-left transition ${selected ? "border-white/14 bg-white/[.075]" : "border-transparent hover:border-white/[.08] hover:bg-white/[.035]"}`}>
+                  <span className="relative grid h-10 w-10 shrink-0 place-items-center rounded-xl text-sm font-black text-black" style={{ background: `linear-gradient(135deg, ${bot.accent}, #fff)` }}>
+                    {bot.name[0]}
+                    <span className={`absolute -right-1 -top-1 h-3 w-3 rounded-full border-2 border-[#08090d] ${botLive.online ? "bg-emerald-400" : "bg-rose-400"}`} />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-[13px] font-black text-white">{bot.name}</span>
+                    <span className="mt-0.5 block text-[11px] font-semibold text-zinc-500">{bot.pm2} · {bot.stats.total} commands</span>
+                  </span>
+                  <ChevronRight size={14} className={`text-zinc-600 transition ${selected ? "text-zinc-300" : "group-hover:text-zinc-400"}`} />
+                </button>
+              );
+            })}
           </div>
-        </div>
-      </section>
+        </Panel>
 
-      <section id="bots" className="grid gap-3 lg:grid-cols-3">
-        {catalog.bots.map((bot, index) => {
-          const selected = bot.id === activeBotId;
-          const live = statuses[bot.id] || bot.status;
-          return (
-            <motion.button
-              key={bot.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.04 }}
-              onClick={() => { setActiveBotId(bot.id); setCategory("All"); setQuery(""); }}
-              className={`group relative overflow-hidden rounded-[24px] border p-4 text-left transition ${selected ? "border-white/20 bg-white/[.075]" : "border-white/[.07] bg-white/[.025] hover:border-white/12 hover:bg-white/[.045]"}`}
-            >
-              <div className="absolute -right-14 -top-14 h-32 w-32 rounded-full opacity-20 blur-3xl transition group-hover:opacity-40" style={{ background: bot.accent }} />
-              <div className="relative flex items-center gap-3">
-                <span className="relative grid h-12 w-12 place-items-center rounded-2xl text-base font-black text-black" style={{ background: `linear-gradient(135deg, ${bot.accent}, #fff)` }}>
-                  {bot.name[0]}
-                  <span className={`absolute -right-1 -top-1 h-3.5 w-3.5 rounded-full border-2 border-[#090a10] ${live.online ? "bg-emerald-400" : "bg-rose-400"}`} />
+        <Panel>
+          <div className="mb-3 flex items-center justify-between"><Label>Categories</Label><Filter size={14} className="text-zinc-600" /></div>
+          <div className="space-y-1.5">
+            {FILTER_CATEGORIES.map((cat) => {
+              const selected = category === cat;
+              const count = cat === "All" ? activeBot.stats.total : categoryCounts.get(cat as CommandCategory) || 0;
+              return (
+                <button key={cat} onClick={() => setCategory(cat)} className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-[12px] font-bold transition ${selected ? "bg-white/[.08] text-white" : "text-zinc-500 hover:bg-white/[.035] hover:text-zinc-300"}`}>
+                  <span className="truncate">{cat}</span>
+                  <span className="ml-2 rounded-full bg-black/30 px-2 py-0.5 text-[10px] text-zinc-500">{count}</span>
+                </button>
+              );
+            })}
+          </div>
+        </Panel>
+      </aside>
+
+      <main className="min-w-0 space-y-4">
+        <section className="rounded-[24px] border border-white/[.08] bg-[#0b0d14]/78 p-4 shadow-[0_24px_70px_-46px_rgba(0,0,0,.9)] backdrop-blur-xl">
+          <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-2xl font-black tracking-[-.04em] text-white sm:text-3xl">{activeBot.name}</h1>
+                <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-black ${live.online ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-300" : "border-rose-400/20 bg-rose-400/10 text-rose-300"}`}>
+                  <span className={`h-1.5 w-1.5 rounded-full ${live.online ? "bg-emerald-400" : "bg-rose-400"}`} />{live.status}
                 </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[15px] font-black text-white">{bot.name}</span>
-                  <span className="mt-0.5 block text-[12px] font-semibold text-zinc-500">{bot.pm2} · {live.status}</span>
-                </span>
-                <span className="rounded-full border border-white/10 bg-black/20 px-2.5 py-1 text-[11px] font-black text-zinc-400">{bot.stats.total}</span>
               </div>
-            </motion.button>
-          );
-        })}
-      </section>
-
-      <section className="grid gap-4 xl:grid-cols-[280px_1fr]">
-        <aside className="space-y-3 xl:sticky xl:top-24 xl:self-start">
-          <div className="rounded-[24px] border border-white/[.075] bg-white/[.025] p-3 backdrop-blur-xl">
-            <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-[.18em] text-zinc-500"><span>Search</span><Search size={14} style={{ color: activeBot.accent }} /></div>
-            <div className="mt-3 flex items-center gap-2 rounded-2xl border border-white/10 bg-black/24 px-3 py-2.5">
-              <Search size={15} className="text-zinc-500" />
-              <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Find a command…" className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-600" />
+              <p className="mt-1 text-[13px] font-semibold text-zinc-500">{activeBot.pm2} · prefix {activeBot.prefix} · {activeBot.stats.total} indexed commands</p>
+            </div>
+            <div className="grid grid-cols-4 gap-2 sm:w-[420px]">
+              <Stat label="Shown" value={filtered.length} />
+              <Stat label="Slash" value={activeBot.stats.slash} />
+              <Stat label="Prefix" value={activeBot.stats.prefix} />
+              <Stat label="Auto" value={activeBot.stats.automation} />
             </div>
           </div>
-
-          <div className="rounded-[24px] border border-white/[.075] bg-white/[.025] p-3 backdrop-blur-xl">
-            <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-[.18em] text-zinc-500"><span>Categories</span><Filter size={14} style={{ color: activeBot.accent }} /></div>
-            <div className="mt-3 grid gap-1.5">
-              {FILTER_CATEGORIES.map((cat) => {
-                const selected = category === cat;
-                const count = cat === "All" ? activeBot.stats.total : categoryCounts.get(cat as CommandCategory) || 0;
-                return (
-                  <button key={cat} onClick={() => setCategory(cat)} className={`flex items-center justify-between rounded-xl border px-3 py-2 text-[12px] font-bold transition ${selected ? "border-white/15 bg-white/[.08] text-white" : "border-white/[.045] bg-black/10 text-zinc-500 hover:border-white/12 hover:text-zinc-200"}`}>
-                    <span className="truncate">{cat}</span><span className="rounded-full bg-black/25 px-2 py-0.5 text-[10px] text-zinc-500">{count}</span>
-                  </button>
-                );
-              })}
-            </div>
+          <div className="mt-4 flex items-center gap-2 rounded-2xl border border-white/[.08] bg-black/25 px-3 py-2.5">
+            <Search size={16} className="text-zinc-500" />
+            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search command name, usage, permission..." className="w-full bg-transparent text-sm font-medium text-white outline-none placeholder:text-zinc-600" />
           </div>
+        </section>
 
-          <div className="hidden rounded-[24px] border border-white/[.075] bg-white/[.025] p-3 backdrop-blur-xl xl:block">
-            <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-[.18em] text-zinc-500"><span>Stats</span><Gauge size={14} style={{ color: activeBot.accent }} /></div>
-            <div className="mt-3 grid grid-cols-2 gap-2">
-              <MiniStat label="Shown" value={filtered.length} />
-              <MiniStat label="Groups" value={grouped.length} />
-              <MiniStat label="Slash" value={activeBot.stats.slash} />
-              <MiniStat label="Prefix" value={activeBot.stats.prefix} />
-            </div>
-          </div>
-        </aside>
-
-        <main className="min-w-0 space-y-6">
-          <div id="status" className="grid gap-3 sm:grid-cols-2 2xl:grid-cols-4 xl:hidden">
-            <StatChip icon={Search} label="Showing" value={filtered.length} />
-            <StatChip icon={Layers3} label="Groups" value={grouped.length} />
-            <StatChip icon={Terminal} label="Slash" value={activeBot.stats.slash} />
-            <StatChip icon={Zap} label="Prefix" value={activeBot.stats.prefix} />
-          </div>
-
-          <AnimatePresence mode="wait">
-            <motion.div key={`${activeBot.id}-${category}-${query}`} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="space-y-7">
-              {grouped.length ? grouped.map(({ category: cat, items }) => (
-                <section key={cat}>
-                  <div className="mb-3 flex items-center justify-between gap-3">
-                    <div>
-                      <h2 className="text-[20px] font-black tracking-[-.03em] text-white">{cat}</h2>
-                      <p className="mt-0.5 text-[12px] font-semibold text-zinc-500">{items.length} command{items.length === 1 ? "" : "s"} in {activeBot.name}</p>
-                    </div>
-                    <div className="hidden h-1.5 w-40 overflow-hidden rounded-full bg-white/[.06] sm:block"><span className="block h-full rounded-full" style={{ width: `${Math.max(22, (items.length / filtered.length) * 100)}%`, background: `linear-gradient(90deg, ${activeBot.accent}, transparent)` }} /></div>
+        <AnimatePresence mode="wait">
+          <motion.div key={`${activeBot.id}-${category}-${query}`} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }} className="space-y-5">
+            {grouped.length ? grouped.map(({ category: cat, items }) => (
+              <section key={cat} className="space-y-2.5">
+                <div className="flex items-center justify-between gap-3 px-1">
+                  <div>
+                    <h2 className="text-[15px] font-black uppercase tracking-[.11em] text-zinc-300">{cat}</h2>
+                    <p className="mt-0.5 text-[12px] text-zinc-600">{items.length} command{items.length === 1 ? "" : "s"}</p>
                   </div>
-                  <div className="grid gap-3 md:grid-cols-2 2xl:grid-cols-3">{items.map((cmd, i) => <DirectoryCommandCard key={cmd.id} command={cmd} index={i} accent={activeBot.accent} />)}</div>
-                </section>
-              )) : <EmptyState bot={activeBot.name} />}
-            </motion.div>
-          </AnimatePresence>
-        </main>
-      </section>
+                  <div className="h-1 w-32 overflow-hidden rounded-full bg-white/[.06]"><span className="block h-full rounded-full" style={{ width: `${Math.max(18, (items.length / filtered.length) * 100)}%`, background: activeBot.accent }} /></div>
+                </div>
+                <div className="grid gap-2.5 xl:grid-cols-2 2xl:grid-cols-3">{items.map((cmd, i) => <CommandRow key={cmd.id} command={cmd} index={i} accent={activeBot.accent} />)}</div>
+              </section>
+            )) : <EmptyState bot={activeBot.name} />}
+          </motion.div>
+        </AnimatePresence>
+      </main>
     </div>
   );
 }
 
-function HeroMetric({ icon: Icon, label, value, accent }: { icon: typeof Bot; label: string; value: string | number; accent: string }) { return <div className="rounded-[20px] border border-white/[.08] bg-white/[.035] p-3"><div className="flex items-center justify-between"><span className="text-[10px] font-black uppercase tracking-[.16em] text-zinc-500">{label}</span><Icon size={14} style={{ color: accent }} /></div><div className="mt-1 text-2xl font-black text-white">{value}</div></div>; }
-function MiniStat({ label, value }: { label: string; value: number }) { return <div className="rounded-xl border border-white/[.055] bg-black/15 p-2"><div className="text-[9px] font-black uppercase tracking-[.14em] text-zinc-600">{label}</div><div className="mt-1 text-lg font-black text-white">{value}</div></div>; }
-function StatChip({ icon: Icon, label, value }: { icon: typeof Search; label: string; value: number }) { return <div className="rounded-[20px] border border-white/[.075] bg-white/[.025] p-3"><div className="flex items-center justify-between"><span className="text-[10px] font-black uppercase tracking-[.16em] text-zinc-600">{label}</span><Icon size={14} className="text-zinc-500" /></div><div className="mt-1 text-xl font-black text-white">{value}</div></div>; }
-function EmptyState({ bot }: { bot: string }) { return <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid place-items-center rounded-[28px] border border-white/[.075] bg-white/[.025] py-20 text-center"><Search size={30} className="text-zinc-500" /><p className="mt-4 text-lg font-bold text-white">No commands found</p><p className="mt-1 text-sm text-zinc-500">Try another search or category in {bot}.</p></motion.div>; }
+function CommandRow({ command, index, accent }: { command: BotCommand; index: number; accent: string }) {
+  const copyUsage = async () => { try { await navigator.clipboard.writeText(command.usage || command.name); } catch {} };
+  return (
+    <motion.article initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(index * 0.01, 0.12) }} className="group relative overflow-hidden rounded-2xl border border-white/[.07] bg-[#0b0d14]/70 p-3 transition hover:border-white/[.14] hover:bg-[#10131d]">
+      <div className="absolute left-0 top-0 h-full w-1 opacity-70" style={{ background: accent }} />
+      <div className="flex items-start justify-between gap-3 pl-1">
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <Terminal size={14} style={{ color: accent }} />
+            <h3 className="font-mono text-[14px] font-black text-white">{command.name}</h3>
+            <span className={`rounded-full border px-2 py-0.5 text-[10px] font-black uppercase ${typeColor[command.type]}`}>{command.type}</span>
+            {command.enabled && <span className="inline-flex items-center gap-1 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2 py-0.5 text-[10px] font-black uppercase text-emerald-300"><CheckCircle2 size={11} /> live</span>}
+          </div>
+          <p className="mt-2 line-clamp-1 text-[13px] text-zinc-400">{command.description}</p>
+          <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px] text-zinc-500">
+            <code className="rounded-lg border border-white/[.07] bg-black/25 px-2 py-1 font-mono text-zinc-300">{command.usage}</code>
+            <span className="rounded-lg bg-white/[.035] px-2 py-1">{command.permission}</span>
+          </div>
+        </div>
+        <button onClick={copyUsage} className="grid h-8 w-8 shrink-0 place-items-center rounded-xl border border-white/[.08] bg-black/20 text-zinc-500 transition hover:text-white">⧉</button>
+      </div>
+    </motion.article>
+  );
+}
+
+function Panel({ children }: { children: React.ReactNode }) { return <section className="rounded-[22px] border border-white/[.075] bg-[#0b0d14]/72 p-3 shadow-[0_18px_60px_-45px_rgba(0,0,0,.9)] backdrop-blur-xl">{children}</section>; }
+function Label({ children }: { children: React.ReactNode }) { return <div className="text-[10px] font-black uppercase tracking-[.18em] text-zinc-600">{children}</div>; }
+function Stat({ label, value }: { label: string; value: number }) { return <div className="rounded-xl border border-white/[.07] bg-white/[.035] px-3 py-2"><div className="text-[9px] font-black uppercase tracking-[.14em] text-zinc-600">{label}</div><div className="text-lg font-black text-white">{value}</div></div>; }
+function EmptyState({ bot }: { bot: string }) { return <div className="grid place-items-center rounded-[24px] border border-white/[.075] bg-[#0b0d14]/72 py-20 text-center"><Search size={30} className="text-zinc-600" /><p className="mt-4 text-lg font-bold text-white">No commands found</p><p className="mt-1 text-sm text-zinc-500">Try another search or category in {bot}.</p></div>; }
