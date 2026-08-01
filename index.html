@@ -235,6 +235,43 @@
         line-height: 1.78;
       }
 
+      .hero-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 26px;
+      }
+      .hero-badges span {
+        border: 1px solid rgba(245,245,245,.16);
+        border-radius: 999px;
+        background: rgba(0,0,0,.38);
+        padding: 10px 13px;
+        color: rgba(245,245,245,.86);
+        font-size: .76rem;
+        font-weight: 900;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        backdrop-filter: blur(12px);
+      }
+
+      .hero-proof {
+        position: absolute;
+        z-index: 3;
+        right: clamp(22px, 6vw, 98px);
+        top: clamp(130px, 19vw, 210px);
+        width: min(330px, 34vw);
+        border: 1px solid rgba(245,245,245,.14);
+        border-radius: 26px;
+        background: rgba(15,15,16,.72);
+        padding: 20px;
+        box-shadow: 0 28px 90px rgba(0,0,0,.52);
+        backdrop-filter: blur(18px);
+      }
+      .hero-proof h3 { font-size: 2.25rem; }
+      .hero-proof ul { margin: 16px 0 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+      .hero-proof li { display: flex; align-items: center; gap: 10px; color: rgba(245,245,245,.82); font-weight: 800; }
+      .hero-proof i { color: var(--red); width: 18px; }
+
       .hero-tire {
         position: absolute;
         z-index: 1;
@@ -315,6 +352,37 @@
         text-transform: uppercase;
       }
 
+      .premium-strip {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        margin: -42px clamp(18px, 5vw, 78px) 0;
+        position: relative;
+        z-index: 5;
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        overflow: hidden;
+        background: rgba(15,15,16,.88);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(18px);
+      }
+      .premium-strip article {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        padding: 22px;
+        border-right: 1px solid var(--line);
+      }
+      .premium-strip article:last-child { border-right: 0; }
+      .premium-strip i { color: var(--red); width: 28px; height: 28px; }
+      .premium-strip b {
+        display: block;
+        font-family: "Barlow Condensed";
+        font-size: 1.7rem;
+        line-height: .9;
+        text-transform: uppercase;
+      }
+      .premium-strip span { color: var(--gray); font-size: .85rem; font-weight: 700; }
+
       .section { padding: clamp(70px, 8vw, 120px) clamp(18px, 5vw, 78px); }
       .section-head {
         display: flex;
@@ -341,6 +409,21 @@
       }
       .service-card, .why-card { padding: 28px; transition: .25s ease; }
       .service-card:hover, .why-card:hover { transform: translateY(-5px); border-color: rgba(229,57,53,.55); }
+      .service-card {
+        position: relative;
+        overflow: hidden;
+        min-height: 280px;
+      }
+      .service-card::after {
+        content: "";
+        position: absolute;
+        inset: auto 22px 22px auto;
+        width: 110px;
+        height: 22px;
+        background: linear-gradient(90deg, transparent, rgba(229,57,53,.5));
+        transform: skewX(-24deg);
+        opacity: .5;
+      }
       .icon-box {
         display: grid;
         place-items: center;
@@ -383,6 +466,15 @@
         background: linear-gradient(180deg, rgba(255,255,255,.078), rgba(255,255,255,.028));
         box-shadow: var(--shadow);
         transition: .25s ease;
+        position: relative;
+      }
+      .product-card::before {
+        content: "";
+        position: absolute;
+        inset: 0 0 auto;
+        height: 3px;
+        background: linear-gradient(90deg, var(--red), transparent);
+        z-index: 4;
       }
       .product-card:hover { transform: translateY(-5px); border-color: rgba(229,57,53,.58); }
       .product-media {
@@ -478,6 +570,38 @@
         gap: 12px;
       }
       .panel { padding: 24px; }
+      .standards {
+        display: grid;
+        grid-template-columns: .85fr 1.15fr;
+        gap: 22px;
+        align-items: stretch;
+      }
+      .standard-photo {
+        min-height: 560px;
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        background:
+          linear-gradient(180deg, rgba(0,0,0,.05), rgba(0,0,0,.82)),
+          var(--hero-img) center / cover;
+        filter: grayscale(1) contrast(1.08);
+        box-shadow: var(--shadow);
+      }
+      .standard-list {
+        display: grid;
+        gap: 14px;
+      }
+      .standard-item {
+        display: grid;
+        grid-template-columns: 56px 1fr;
+        gap: 18px;
+        align-items: start;
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        background: rgba(255,255,255,.045);
+        padding: 22px;
+      }
+      .standard-item i { color: var(--red); }
+      .standard-item h3 { font-size: 2rem; }
       .field { display: grid; gap: 8px; }
       label, .label {
         color: var(--gray);
@@ -567,11 +691,14 @@
       @media (max-width: 1180px) {
         .hero { min-height: 740px; }
         .hero-tire { opacity: .35; width: 720px; right: -240px; }
-        .services-grid, .why-grid, .inventory { grid-template-columns: repeat(2, 1fr); }
+        .hero-proof { position: relative; top: auto; right: auto; width: min(520px, 100%); margin-top: 28px; }
+        .services-grid, .why-grid, .inventory, .premium-strip { grid-template-columns: repeat(2, 1fr); }
         .hero-stats { grid-template-columns: repeat(2, 1fr); }
         .filters, .admin-grid { grid-template-columns: repeat(2, 1fr); }
-        .admin-shell, .contact-grid { grid-template-columns: 1fr; }
+        .admin-shell, .contact-grid, .standards { grid-template-columns: 1fr; }
         .admin-side { position: static; }
+        .premium-strip { margin-top: 18px; }
+        .premium-strip article:nth-child(2) { border-right: 0; }
       }
 
       @media (max-width: 720px) {
@@ -583,8 +710,11 @@
         .hero { min-height: auto; padding-top: 54px; }
         .hero h1 { font-size: 5.1rem; }
         .hero-tire { display: none; }
-        .services-grid, .why-grid, .inventory, .filters, .admin-grid { grid-template-columns: 1fr; }
+        .services-grid, .why-grid, .inventory, .filters, .admin-grid, .premium-strip { grid-template-columns: 1fr; }
         .section-head, .footer { flex-direction: column; align-items: flex-start; }
+        .premium-strip article { border-right: 0; border-bottom: 1px solid var(--line); }
+        .premium-strip article:last-child { border-bottom: 0; }
+        .standard-photo { min-height: 320px; }
         .admin-row { grid-template-columns: 1fr; }
         .admin-row img { width: 100%; height: 190px; }
         .mobile-call { display: flex; }
@@ -617,10 +747,25 @@
               <span class="kicker">Akron tire specialists</span>
               <h1 id="heroTitle">Good Tires.<span>Good Prices.</span></h1>
               <p id="heroText">New and used tires, professional mounting and balancing, and dependable tire repairs. Straightforward service built to get you back on the road.</p>
+              <div class="hero-badges">
+                <span>New Tires</span>
+                <span>Used Tires</span>
+                <span>Mount & Balance</span>
+                <span>Flat Repair</span>
+              </div>
               <div class="actions">
                 <a class="btn red" id="heroCall" href="tel:+13305550000"><i data-lucide="phone-call"></i> Call Now</a>
                 <a class="btn dark" href="#tires" data-page="tires"><i data-lucide="circle-dot"></i> Browse Tires</a>
               </div>
+            </div>
+            <div class="hero-proof reveal">
+              <span class="kicker">Road-ready service</span>
+              <h3>No runaround. Just tires.</h3>
+              <ul>
+                <li><i data-lucide="check-circle-2"></i> New & used tire options</li>
+                <li><i data-lucide="check-circle-2"></i> Mounting and balancing</li>
+                <li><i data-lucide="check-circle-2"></i> Tire repairs when safe</li>
+              </ul>
             </div>
             <div class="hero-tire" aria-hidden="true"></div>
             <div class="hero-stats reveal" id="stats">
@@ -629,6 +774,13 @@
               <article><span class="counter" data-target="10" data-suffix="+">0</span><span>Years experience</span></article>
               <article><span class="counter" data-target="49" data-decimal="true" data-suffix="/5">0</span><span>Customer rating</span></article>
             </div>
+          </div>
+
+          <div class="premium-strip reveal">
+            <article><i data-lucide="clock"></i><div><b>Same-Day</b><span>Service when available</span></div></article>
+            <article><i data-lucide="wallet-cards"></i><div><b>Fair Prices</b><span>New and used options</span></div></article>
+            <article><i data-lucide="badge-check"></i><div><b>Tire-Focused</b><span>No unrelated upsell</span></div></article>
+            <article><i data-lucide="map-pin"></i><div><b>Akron, OH</b><span>Local shop presence</span></div></article>
           </div>
 
           <section class="section reveal">
@@ -650,6 +802,22 @@
                 <article class="why-card"><div class="icon-box"><i data-lucide="timer"></i></div><h3>Fast Service</h3><p>Designed for same-day help when the tire issue cannot wait.</p></article>
                 <article class="why-card"><div class="icon-box"><i data-lucide="shield-check"></i></div><h3>Honest Work</h3><p>Clear recommendations focused only on tire service and safety.</p></article>
                 <article class="why-card"><div class="icon-box"><i data-lucide="wrench"></i></div><h3>Experienced Techs</h3><p>Mounting, balancing, and repair work handled with care.</p></article>
+              </div>
+            </div>
+          </section>
+
+          <section class="section reveal">
+            <div class="section-head">
+              <div><span class="kicker">Shop standards</span><h2>How We Keep It Professional.</h2></div>
+              <p>Customers should know exactly what they are getting before they call: focused tire work, clear availability, and practical service.</p>
+            </div>
+            <div class="standards">
+              <div class="standard-photo" aria-hidden="true"></div>
+              <div class="standard-list">
+                <article class="standard-item"><i data-lucide="search-check"></i><div><h3>Confirm Fitment</h3><p class="muted">Inventory is listed by width, ratio, rim size, condition, and quantity type.</p></div></article>
+                <article class="standard-item"><i data-lucide="circle-dollar-sign"></i><div><h3>Clear Price Display</h3><p class="muted">Each listing shows a starting price and whether it is a set, pair, or single.</p></div></article>
+                <article class="standard-item"><i data-lucide="wrench"></i><div><h3>Focused Services</h3><p class="muted">New tires, used tires, mounting, balancing, and tire repair only.</p></div></article>
+                <article class="standard-item"><i data-lucide="phone-call"></i><div><h3>Call To Confirm</h3><p class="muted">Every tire card pushes customers to confirm stock before coming in.</p></div></article>
               </div>
             </div>
           </section>
