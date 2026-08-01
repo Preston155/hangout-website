@@ -3,39 +3,35 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#0F0F10" />
-    <title>Akron Tire Shop | Good Tires. Good Prices.</title>
-    <meta name="description" content="Akron Tire Shop offers new tires, used tires, tire mounting, tire balancing, and tire repairs in Akron, Ohio." />
-    <meta property="og:title" content="Akron Tire Shop | Good Tires. Good Prices." />
-    <meta property="og:description" content="New and used tires, tire mounting, tire balancing, and tire repairs in Akron, Ohio." />
+    <meta name="theme-color" content="#101312" />
+    <title>Akron Multi-Service Company | Lawn, Seal Coating, Trees, Hauling & Tires</title>
+    <meta name="description" content="A reliable local Akron, Ohio company for grass mowing, lawn care, seal coating, tree service, dump truck hauling, and tire shop services." />
+    <meta property="og:title" content="One Crew. Multiple Services. Work Done Right." />
+    <meta property="og:description" content="Reliable lawn care, seal coating, tree service, dump truck hauling, and tire service around Akron." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://prestonhq.com/" />
     <meta property="og:image" content="https://prestonhq.com/assets/akron-tire-shop-og.jpg" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Akron Tire Shop | Good Tires. Good Prices." />
-    <meta name="twitter:description" content="New and used tires, mounting, balancing, and repairs in Akron, Ohio." />
-    <meta name="twitter:image" content="https://prestonhq.com/assets/akron-tire-shop-og.jpg" />
     <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
-    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
     <style>
       :root {
-        --bg: #0F0F10;
-        --bg2: #1A1A1A;
-        --red: #E53935;
-        --red2: #b91f1b;
-        --white: #F5F5F5;
-        --gray: #9A9A9A;
-        --line: rgba(245,245,245,.12);
-        --panel: rgba(255,255,255,.055);
-        --shadow: 0 28px 100px rgba(0,0,0,.58);
-        --hero-img: url("https://images.unsplash.com/photo-1612692064035-df2d74a77cb8?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=78&w=2400");
+        --charcoal: #101312;
+        --black: #0a0c0b;
+        --gray: #9ca3a1;
+        --dark: #1a1f1c;
+        --green: #2f6b3f;
+        --orange: #f97316;
+        --white: #f7f7f2;
+        --line: rgba(247,247,242,.13);
+        --panel: rgba(247,247,242,.055);
+        --shadow: 0 28px 90px rgba(0,0,0,.48);
+        --hero: url("https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=2200&q=82");
+        --asphalt: url("https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1800&q=80");
       }
 
       * { box-sizing: border-box; }
@@ -43,141 +39,150 @@
       body {
         margin: 0;
         background:
-          radial-gradient(circle at 18% 0%, rgba(229,57,53,.16), transparent 34rem),
-          radial-gradient(circle at 90% 6%, rgba(255,255,255,.06), transparent 30rem),
-          var(--bg);
+          radial-gradient(circle at 18% 0%, rgba(47,107,63,.18), transparent 34rem),
+          radial-gradient(circle at 92% 8%, rgba(249,115,22,.12), transparent 30rem),
+          var(--charcoal);
         color: var(--white);
         font-family: Inter, system-ui, sans-serif;
-        overflow-x: hidden;
       }
 
-      body.theme-steel { --red: #d12d2a; --red2: #8e1614; --bg: #0e1115; --bg2: #1b2027; --gray: #a6abb2; }
-      body.theme-clean { --red: #c92420; --red2: #8f1714; --bg: #101010; --bg2: #202020; --gray: #b4b4b4; }
-      body.theme-track { --red: #E53935; --red2: #8b1512; --bg: #0F0F10; --bg2: #191919; }
-
-      a { color: inherit; text-decoration: none; }
-      button, input, select, textarea { font: inherit; }
-      button { cursor: pointer; }
-      img { display: block; max-width: 100%; }
-      ::selection { background: var(--red); color: white; }
-
-      h1, h2, h3 {
-        margin: 0;
-        font-family: "Barlow Condensed", Inter, sans-serif;
-        font-weight: 900;
-        line-height: .9;
-        letter-spacing: -.045em;
-        text-transform: uppercase;
-      }
-
-      .site {
-        width: min(1640px, 100%);
-        margin: 0 auto;
-        min-height: 100vh;
-        background:
-          linear-gradient(90deg, rgba(255,255,255,.026) 1px, transparent 1px),
-          linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
-          var(--bg);
-        background-size: 72px 72px;
-        position: relative;
-      }
-
-      .site::before {
+      body::before {
         content: "";
         position: fixed;
         inset: 0;
         pointer-events: none;
-        opacity: .26;
-        mix-blend-mode: overlay;
-        background-image:
-          linear-gradient(135deg, transparent 46%, rgba(255,255,255,.16) 48%, transparent 50%),
-          linear-gradient(45deg, transparent 46%, rgba(255,255,255,.1) 48%, transparent 50%);
-        background-size: 42px 42px;
-        mask-image: linear-gradient(180deg, black, transparent 62%);
+        opacity: .22;
+        background:
+          linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px),
+          linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px);
+        background-size: 58px 58px;
+        mask-image: linear-gradient(180deg, black, transparent 70%);
       }
 
-      .announce {
-        display: none;
-        padding: 12px clamp(18px, 5vw, 78px);
-        background: linear-gradient(90deg, var(--red), rgba(229,57,53,.15));
-        color: white;
-        font-size: .86rem;
+      a { color: inherit; text-decoration: none; }
+      button, input, select, textarea { font: inherit; }
+      button { cursor: pointer; }
+      img { max-width: 100%; display: block; }
+      h1, h2, h3 {
+        margin: 0;
+        font-family: "Barlow Condensed", Inter, sans-serif;
         font-weight: 900;
-        letter-spacing: .08em;
         text-transform: uppercase;
+        letter-spacing: -.035em;
+        line-height: .92;
       }
-      .announce.show { display: block; }
+      p { line-height: 1.72; }
+      ::selection { background: var(--orange); color: white; }
 
-      .nav {
+      .site { position: relative; overflow: clip; min-height: 100vh; }
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 10px clamp(18px, 5vw, 78px);
+        background: #0b0d0c;
+        border-bottom: 1px solid var(--line);
+        color: var(--gray);
+        font-size: .82rem;
+        font-weight: 800;
+      }
+      .navbar {
         position: sticky;
         top: 0;
-        z-index: 50;
+        z-index: 60;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 24px;
-        padding: 16px clamp(18px, 5vw, 78px);
+        gap: 22px;
+        padding: 17px clamp(18px, 5vw, 78px);
+        background: rgba(16,19,18,.84);
         border-bottom: 1px solid var(--line);
-        background: rgba(15,15,16,.78);
-        backdrop-filter: blur(20px);
-        transition: .22s ease;
+        backdrop-filter: blur(18px);
+        transition: .2s ease;
       }
-
-      .nav.shrunk { padding-top: 9px; padding-bottom: 9px; background: rgba(15,15,16,.92); }
-      .brand { width: min(260px, 42vw); }
-      .brand img { width: 100%; height: 82px; object-fit: contain; object-position: left center; filter: drop-shadow(0 16px 24px rgba(229,57,53,.2)); transition: .22s ease; }
-      .nav.shrunk .brand img { height: 58px; }
-
-      .nav-links { display: flex; align-items: center; justify-content: center; gap: 2px; flex-wrap: wrap; }
-      .nav-links a {
+      .navbar.shrunk { padding-top: 9px; padding-bottom: 9px; background: rgba(16,19,18,.95); }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-family: "Barlow Condensed";
+        font-size: 2rem;
+        font-weight: 900;
+        letter-spacing: -.02em;
+        text-transform: uppercase;
+      }
+      .brand-mark {
+        display: grid;
+        place-items: center;
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, var(--green), #183a24);
+        border: 1px solid rgba(255,255,255,.18);
+        border-radius: 14px;
+        color: white;
+      }
+      .navlinks {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        flex-wrap: wrap;
+      }
+      .navlinks a {
         position: relative;
-        padding: 12px 14px;
-        color: rgba(245,245,245,.82);
+        padding: 10px 11px;
+        color: rgba(247,247,242,.82);
+        font-size: .76rem;
+        font-weight: 900;
+        letter-spacing: .11em;
+        text-transform: uppercase;
+      }
+      .navlinks a::after {
+        content: "";
+        position: absolute;
+        left: 11px;
+        right: 11px;
+        bottom: 5px;
+        height: 2px;
+        background: var(--orange);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: .2s ease;
+      }
+      .navlinks a:hover::after, .navlinks a.active::after { transform: scaleX(1); }
+      .nav-actions { display: flex; align-items: center; gap: 10px; }
+      .menu-btn { display: none; }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-height: 50px;
+        padding: 13px 20px;
+        border: 1px solid rgba(247,247,242,.16);
+        border-radius: 12px;
+        background: rgba(247,247,242,.055);
+        color: white;
         font-size: .82rem;
         font-weight: 900;
-        letter-spacing: .13em;
+        letter-spacing: .08em;
         text-transform: uppercase;
         transition: .2s ease;
       }
-      .nav-links a::after {
-        content: "";
-        position: absolute;
-        left: 14px;
-        right: 14px;
-        bottom: 6px;
-        height: 2px;
-        background: var(--red);
-        transform: scaleX(0);
-        transform-origin: left;
-        transition: .22s ease;
-      }
-      .nav-links a:hover, .nav-links a.active { color: #fff; }
-      .nav-links a:hover::after, .nav-links a.active::after { transform: scaleX(1); }
-
-      .nav-call {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        border: 1px solid rgba(245,245,245,.16);
-        border-radius: 999px;
-        padding: 12px 18px;
-        background: rgba(255,255,255,.045);
-        color: white;
-        font-weight: 900;
-        white-space: nowrap;
-        transition: .22s ease;
-      }
-      .nav-call:hover { border-color: var(--red); background: rgba(229,57,53,.12); transform: translateY(-1px); }
+      .btn:hover { transform: translateY(-2px); border-color: rgba(247,247,242,.35); }
+      .btn.orange { background: linear-gradient(135deg, var(--orange), #b9470a); border-color: var(--orange); box-shadow: 0 20px 50px rgba(249,115,22,.22); }
+      .btn.green { background: linear-gradient(135deg, var(--green), #1d472b); border-color: #3b7f4f; }
+      .btn.small { min-height: 38px; padding: 9px 12px; font-size: .72rem; }
 
       .page { display: none; }
       .page.active { display: block; }
 
       .hero {
+        min-height: 790px;
         position: relative;
-        min-height: 820px;
-        padding: clamp(58px, 8vw, 120px) clamp(18px, 5vw, 78px) 70px;
         display: grid;
         align-items: center;
+        padding: clamp(58px, 7vw, 110px) clamp(18px, 5vw, 78px) 84px;
         overflow: hidden;
       }
       .hero::before {
@@ -185,1099 +190,496 @@
         position: absolute;
         inset: 0;
         background:
-          linear-gradient(90deg, var(--bg) 0%, rgba(15,15,16,.88) 36%, rgba(15,15,16,.36) 68%, var(--bg) 100%),
-          var(--hero-img) center right / cover no-repeat;
-        filter: grayscale(1) contrast(1.08);
-        opacity: .84;
+          linear-gradient(90deg, var(--charcoal) 0%, rgba(16,19,18,.92) 38%, rgba(16,19,18,.32) 72%, var(--charcoal) 100%),
+          var(--hero) center / cover;
+        filter: grayscale(.35) contrast(1.05);
       }
       .hero::after {
         content: "";
         position: absolute;
-        width: 780px;
-        height: 210px;
-        left: -80px;
+        width: 820px;
+        height: 180px;
+        left: -100px;
         top: 27%;
-        background: linear-gradient(90deg, transparent, rgba(229,57,53,.6), transparent);
-        transform: rotate(-10deg);
+        background: linear-gradient(90deg, transparent, rgba(47,107,63,.72), rgba(249,115,22,.34), transparent);
+        transform: rotate(-9deg);
         filter: blur(10px);
-        opacity: .75;
+        opacity: .72;
       }
-
       .hero-inner {
         position: relative;
         z-index: 2;
-        max-width: 780px;
+        max-width: 880px;
       }
-      .kicker {
+      .eyebrow {
         display: inline-flex;
         align-items: center;
         gap: 10px;
-        color: var(--red);
-        font-size: .82rem;
+        color: var(--orange);
+        font-size: .78rem;
         font-weight: 900;
-        letter-spacing: .24em;
+        letter-spacing: .22em;
         text-transform: uppercase;
       }
-      .kicker::before { content: ""; width: 42px; height: 2px; background: var(--red); }
-
-      .hero h1 {
-        margin-top: 20px;
-        font-size: clamp(5.4rem, 12vw, 13.2rem);
-        text-shadow: 0 16px 50px rgba(0,0,0,.62);
-      }
-      .hero h1 span { display: block; color: var(--red); }
-      .hero p {
-        max-width: 590px;
-        margin: 22px 0 0;
-        color: rgba(245,245,245,.82);
-        font-size: clamp(1.05rem, 1.25vw, 1.28rem);
-        font-weight: 600;
-        line-height: 1.78;
-      }
-
-      .hero-badges {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 26px;
-      }
-      .hero-badges span {
-        border: 1px solid rgba(245,245,245,.16);
-        border-radius: 999px;
-        background: rgba(0,0,0,.38);
-        padding: 10px 13px;
-        color: rgba(245,245,245,.86);
-        font-size: .76rem;
-        font-weight: 900;
-        letter-spacing: .12em;
-        text-transform: uppercase;
-        backdrop-filter: blur(12px);
-      }
-
-      .hero-proof {
+      .eyebrow::before { content: ""; width: 38px; height: 2px; background: var(--orange); }
+      .hero h1 { margin-top: 20px; font-size: clamp(4.7rem, 10.4vw, 11.8rem); max-width: 990px; text-shadow: 0 20px 70px rgba(0,0,0,.68); }
+      .hero p { max-width: 720px; color: rgba(247,247,242,.84); font-size: clamp(1.05rem, 1.4vw, 1.28rem); font-weight: 650; }
+      .hero-badges { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+      .hero-badges span { border: 1px solid rgba(247,247,242,.15); border-radius: 999px; background: rgba(0,0,0,.38); padding: 9px 12px; color: rgba(247,247,242,.86); font-size: .75rem; font-weight: 900; letter-spacing: .11em; text-transform: uppercase; backdrop-filter: blur(10px); }
+      .hero-card {
         position: absolute;
         z-index: 3;
-        right: clamp(22px, 6vw, 98px);
-        top: clamp(130px, 19vw, 210px);
-        width: min(330px, 34vw);
-        border: 1px solid rgba(245,245,245,.14);
-        border-radius: 26px;
-        background: rgba(15,15,16,.72);
-        padding: 20px;
-        box-shadow: 0 28px 90px rgba(0,0,0,.52);
-        backdrop-filter: blur(18px);
-      }
-      .hero-proof h3 { font-size: 2.25rem; }
-      .hero-proof ul { margin: 16px 0 0; padding: 0; list-style: none; display: grid; gap: 10px; }
-      .hero-proof li { display: flex; align-items: center; gap: 10px; color: rgba(245,245,245,.82); font-weight: 800; }
-      .hero-proof i { color: var(--red); width: 18px; }
-
-      .hero-tire {
-        position: absolute;
-        z-index: 1;
-        right: clamp(-190px, -7vw, -70px);
-        bottom: -170px;
-        width: min(760px, 58vw);
-        aspect-ratio: 1;
-        border-radius: 999px;
-        background: var(--hero-img) center / cover;
-        filter: grayscale(1) contrast(1.16) drop-shadow(-34px 30px 70px rgba(0,0,0,.78));
-        opacity: .9;
-        border: 1px solid rgba(255,255,255,.1);
-      }
-      .hero-tire::before {
-        content: "";
-        position: absolute;
-        inset: 12%;
-        border-radius: inherit;
-        border: 44px solid rgba(0,0,0,.5);
-        box-shadow: inset 0 0 0 2px rgba(255,255,255,.12);
-      }
-
-      .actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 34px; }
-      .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        min-height: 54px;
-        border: 1px solid rgba(245,245,245,.16);
-        border-radius: 12px;
-        padding: 14px 24px;
-        background: rgba(245,245,245,.055);
-        color: white;
-        font-size: .88rem;
-        font-weight: 900;
-        letter-spacing: .08em;
-        text-transform: uppercase;
-        transition: .22s ease;
-      }
-      .btn:hover { transform: translateY(-2px); border-color: rgba(245,245,245,.34); background: rgba(245,245,245,.09); }
-      .btn.red { border-color: var(--red); background: linear-gradient(135deg, var(--red), var(--red2)); box-shadow: 0 20px 50px rgba(229,57,53,.22); }
-      .btn.red:hover { box-shadow: 0 24px 70px rgba(229,57,53,.3); }
-      .btn.dark { background: rgba(0,0,0,.36); }
-      .btn.small { min-height: 38px; padding: 9px 12px; border-radius: 10px; font-size: .72rem; }
-      .btn.danger { border-color: rgba(255,90,90,.34); color: #ffb9b9; }
-
-      .hero-stats {
-        position: relative;
-        z-index: 2;
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 1px;
-        max-width: 1000px;
-        margin-top: 72px;
-        border: 1px solid var(--line);
-        background: var(--line);
-      }
-      .hero-stats article {
-        background: rgba(15,15,16,.86);
-        padding: 24px;
-        backdrop-filter: blur(12px);
-      }
-      .counter {
-        display: block;
-        font-family: "Barlow Condensed";
-        font-size: clamp(3rem, 5vw, 5rem);
-        font-weight: 900;
-        line-height: .84;
-      }
-      .hero-stats span:last-child {
-        display: block;
-        margin-top: 10px;
-        color: var(--gray);
-        font-size: .76rem;
-        font-weight: 900;
-        letter-spacing: .14em;
-        text-transform: uppercase;
-      }
-
-      .premium-strip {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        margin: -42px clamp(18px, 5vw, 78px) 0;
-        position: relative;
-        z-index: 5;
-        border: 1px solid var(--line);
-        border-radius: 28px;
-        overflow: hidden;
-        background: rgba(15,15,16,.88);
-        box-shadow: var(--shadow);
-        backdrop-filter: blur(18px);
-      }
-      .premium-strip article {
-        display: flex;
-        gap: 14px;
-        align-items: center;
+        right: clamp(24px, 6vw, 90px);
+        bottom: 90px;
+        width: min(360px, 34vw);
         padding: 22px;
-        border-right: 1px solid var(--line);
-      }
-      .premium-strip article:last-child { border-right: 0; }
-      .premium-strip i { color: var(--red); width: 28px; height: 28px; }
-      .premium-strip b {
-        display: block;
-        font-family: "Barlow Condensed";
-        font-size: 1.7rem;
-        line-height: .9;
-        text-transform: uppercase;
-      }
-      .premium-strip span { color: var(--gray); font-size: .85rem; font-weight: 700; }
-
-      .section { padding: clamp(70px, 8vw, 120px) clamp(18px, 5vw, 78px); }
-      .section-head {
-        display: flex;
-        align-items: flex-end;
-        justify-content: space-between;
-        gap: 28px;
-        margin-bottom: 38px;
-      }
-      .section-head h2, .section-head h1 { font-size: clamp(3.3rem, 7vw, 7.6rem); }
-      .section-head p { max-width: 520px; color: var(--gray); line-height: 1.7; font-weight: 600; }
-      .muted { color: var(--gray); line-height: 1.7; }
-
-      .services-grid, .why-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 18px;
-      }
-      .service-card, .why-card, .panel {
         border: 1px solid var(--line);
-        border-radius: 22px;
-        background:
-          linear-gradient(180deg, rgba(255,255,255,.074), rgba(255,255,255,.032));
-        box-shadow: 0 24px 70px rgba(0,0,0,.3);
+        border-radius: 24px;
+        background: rgba(16,19,18,.76);
+        backdrop-filter: blur(16px);
+        box-shadow: var(--shadow);
       }
-      .service-card, .why-card { padding: 28px; transition: .25s ease; }
-      .service-card:hover, .why-card:hover { transform: translateY(-5px); border-color: rgba(229,57,53,.55); }
-      .service-card {
-        position: relative;
-        overflow: hidden;
-        min-height: 280px;
-      }
-      .service-card::after {
-        content: "";
-        position: absolute;
-        inset: auto 22px 22px auto;
-        width: 110px;
-        height: 22px;
-        background: linear-gradient(90deg, transparent, rgba(229,57,53,.5));
-        transform: skewX(-24deg);
-        opacity: .5;
-      }
-      .icon-box {
-        display: grid;
-        place-items: center;
-        width: 58px;
-        height: 58px;
-        border-radius: 18px;
-        background: rgba(229,57,53,.12);
-        color: var(--red);
-        margin-bottom: 28px;
-      }
-      .service-card h3, .why-card h3 { font-size: 2.35rem; }
-      .service-card p, .why-card p { color: var(--gray); font-weight: 600; line-height: 1.65; }
+      .hero-card h3 { font-size: 2.4rem; }
+      .hero-card ul { list-style: none; padding: 0; margin: 18px 0 0; display: grid; gap: 10px; }
+      .hero-card li { display: flex; gap: 10px; align-items: center; color: rgba(247,247,242,.86); font-weight: 800; }
+      .hero-card i { color: var(--orange); width: 18px; }
 
-      .feature-band {
+      .trustbar {
         position: relative;
-        overflow: hidden;
-        border-block: 1px solid var(--line);
-        background:
-          linear-gradient(90deg, rgba(15,15,16,.92), rgba(15,15,16,.62)),
-          var(--hero-img) center / cover no-repeat;
-        filter: none;
-      }
-      .feature-band .section { position: relative; z-index: 1; }
-      .feature-band::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(circle at 72% 50%, rgba(229,57,53,.25), transparent 30rem);
-      }
-
-      .inventory {
+        z-index: 8;
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 22px;
-      }
-      .product-card {
+        grid-template-columns: repeat(5, 1fr);
+        margin: -48px clamp(18px, 5vw, 78px) 0;
         overflow: hidden;
         border: 1px solid var(--line);
         border-radius: 24px;
-        background: linear-gradient(180deg, rgba(255,255,255,.078), rgba(255,255,255,.028));
+        background: rgba(16,19,18,.9);
+        backdrop-filter: blur(18px);
         box-shadow: var(--shadow);
-        transition: .25s ease;
-        position: relative;
       }
-      .product-card::before {
-        content: "";
-        position: absolute;
-        inset: 0 0 auto;
-        height: 3px;
-        background: linear-gradient(90deg, var(--red), transparent);
-        z-index: 4;
-      }
-      .product-card:hover { transform: translateY(-5px); border-color: rgba(229,57,53,.58); }
-      .product-media {
-        position: relative;
-        height: 270px;
-        overflow: hidden;
-        background: var(--bg2);
-      }
-      .product-media img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        filter: grayscale(1) contrast(1.05);
-        transition: .45s ease;
-      }
-      .product-card:hover .product-media img { transform: scale(1.055); filter: grayscale(.25) contrast(1.05); }
-      .product-media::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(0deg, rgba(0,0,0,.92), rgba(0,0,0,.18), transparent);
-      }
-      .stock-badge {
-        position: absolute;
-        z-index: 2;
-        top: 16px;
-        left: 16px;
-        border: 1px solid rgba(229,57,53,.55);
-        border-radius: 999px;
-        background: rgba(0,0,0,.72);
-        padding: 7px 12px;
-        font-size: .72rem;
-        font-weight: 900;
-        letter-spacing: .13em;
-        text-transform: uppercase;
-        backdrop-filter: blur(10px);
-      }
-      .media-tags {
-        position: absolute;
-        z-index: 2;
-        left: 16px;
-        right: 16px;
-        bottom: 16px;
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
-      }
-      .media-tags span {
-        border: 1px solid rgba(255,255,255,.18);
-        border-radius: 999px;
-        background: rgba(0,0,0,.62);
-        padding: 7px 12px;
-        font-size: .72rem;
-        font-weight: 900;
-        letter-spacing: .12em;
-        text-transform: uppercase;
-      }
-      .product-body { padding: 24px; }
-      .product-body h3 { margin-top: 9px; font-size: 2.7rem; }
-      .size-row {
-        display: flex;
-        justify-content: space-between;
-        gap: 18px;
-        margin-top: 16px;
-        padding-block: 14px;
-        border-top: 1px solid var(--line);
-        border-bottom: 1px solid var(--line);
-      }
-      .size-row span, .price-label {
-        color: var(--gray);
-        font-size: .76rem;
-        font-weight: 900;
-        letter-spacing: .15em;
-        text-transform: uppercase;
-      }
-      .buy-row {
-        display: flex;
-        align-items: flex-end;
-        justify-content: space-between;
-        gap: 18px;
-        margin-top: 22px;
-      }
-      .price {
-        font-family: "Barlow Condensed";
-        font-size: 4.5rem;
-        font-weight: 900;
-        line-height: .82;
-      }
+      .trustbar article { display: flex; align-items: center; gap: 13px; padding: 20px; border-right: 1px solid var(--line); }
+      .trustbar article:last-child { border-right: 0; }
+      .trustbar i { color: var(--orange); }
+      .trustbar b { display: block; font-family: "Barlow Condensed"; font-size: 1.55rem; text-transform: uppercase; }
+      .trustbar span { display: block; color: var(--gray); font-size: .82rem; font-weight: 700; }
 
-      .filters, .admin-grid {
-        display: grid;
-        grid-template-columns: repeat(6, 1fr);
-        gap: 12px;
-      }
-      .panel { padding: 24px; }
-      .standards {
-        display: grid;
-        grid-template-columns: .85fr 1.15fr;
-        gap: 22px;
-        align-items: stretch;
-      }
-      .standard-photo {
-        min-height: 560px;
-        border: 1px solid var(--line);
-        border-radius: 28px;
-        background:
-          linear-gradient(180deg, rgba(0,0,0,.05), rgba(0,0,0,.82)),
-          var(--hero-img) center / cover;
-        filter: grayscale(1) contrast(1.08);
-        box-shadow: var(--shadow);
-      }
-      .standard-list {
-        display: grid;
-        gap: 14px;
-      }
-      .standard-item {
-        display: grid;
-        grid-template-columns: 56px 1fr;
-        gap: 18px;
-        align-items: start;
+      .section { padding: clamp(74px, 8vw, 118px) clamp(18px, 5vw, 78px); }
+      .section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 28px; margin-bottom: 38px; }
+      .section-head h1, .section-head h2 { font-size: clamp(3.35rem, 7vw, 7.2rem); }
+      .section-head p { max-width: 590px; color: var(--gray); font-weight: 600; }
+      .muted { color: var(--gray); }
+
+      .cards { display: grid; grid-template-columns: repeat(5, 1fr); gap: 18px; }
+      .card, .panel {
         border: 1px solid var(--line);
         border-radius: 22px;
-        background: rgba(255,255,255,.045);
-        padding: 22px;
+        background: linear-gradient(180deg, rgba(247,247,242,.07), rgba(247,247,242,.03));
+        box-shadow: 0 24px 70px rgba(0,0,0,.34);
       }
-      .standard-item i { color: var(--red); }
-      .standard-item h3 { font-size: 2rem; }
-      .field { display: grid; gap: 8px; }
-      label, .label {
-        color: var(--gray);
-        font-size: .76rem;
-        font-weight: 900;
-        letter-spacing: .14em;
-        text-transform: uppercase;
-      }
-      input, select, textarea {
-        width: 100%;
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        background: rgba(255,255,255,.06);
-        color: #fff;
-        padding: 13px 14px;
-        outline: none;
-        transition: .18s ease;
-      }
-      option { background: #161616; }
-      input:focus, select:focus, textarea:focus { border-color: var(--red); box-shadow: 0 0 0 4px rgba(229,57,53,.14); }
+      .service-card { overflow: hidden; transition: .24s ease; }
+      .service-card:hover { transform: translateY(-5px); border-color: rgba(249,115,22,.55); }
+      .service-img { height: 210px; position: relative; background: var(--img) center / cover; filter: grayscale(.15) contrast(1.03); }
+      .service-img::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,0,0,.86), transparent 72%); }
+      .service-body { padding: 22px; }
+      .icon-box { display: grid; place-items: center; width: 54px; height: 54px; margin-top: -50px; margin-bottom: 18px; position: relative; z-index: 2; border-radius: 16px; background: linear-gradient(135deg, var(--green), #173a22); color: white; border: 1px solid rgba(255,255,255,.18); }
+      .service-body h3, .panel h3 { font-size: 2.25rem; }
+      .service-body p { color: var(--gray); font-weight: 600; min-height: 96px; }
 
-      .admin-shell { display: grid; grid-template-columns: 260px 1fr; gap: 20px; align-items: start; }
-      .admin-side { display: grid; gap: 10px; position: sticky; top: 120px; }
-      .admin-tab {
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        background: rgba(255,255,255,.045);
-        color: white;
-        padding: 15px;
-        text-align: left;
-        font-weight: 900;
-        letter-spacing: .08em;
-        text-transform: uppercase;
-      }
-      .admin-tab.active { border-color: var(--red); background: rgba(229,57,53,.13); }
-      .admin-pane { display: none; }
-      .admin-pane.active { display: block; }
-      .admin-row {
-        display: grid;
-        grid-template-columns: 128px 1fr auto;
-        gap: 18px;
-        align-items: center;
-        margin-top: 14px;
-      }
-      .admin-row img { height: 112px; width: 128px; object-fit: cover; border-radius: 16px; filter: grayscale(1); }
-      .status-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-
-      .contact-grid { display: grid; grid-template-columns: .9fr 1.1fr; gap: 22px; }
-      .map {
-        display: grid;
-        place-items: center;
-        min-height: 300px;
-        margin-top: 18px;
-        border: 1px solid var(--line);
-        border-radius: 20px;
+      .feature {
+        position: relative;
+        overflow: hidden;
         background:
-          linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px),
-          linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
-          var(--bg2);
-        background-size: 34px 34px;
-        color: var(--gray);
-        text-align: center;
+          linear-gradient(90deg, rgba(16,19,18,.96), rgba(16,19,18,.64)),
+          url("https://images.unsplash.com/photo-1615811361523-6bd03d7748e7?auto=format&fit=crop&w=1800&q=80") center / cover;
+        border-block: 1px solid var(--line);
       }
+      .feature::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 75% 40%, rgba(249,115,22,.22), transparent 30rem); }
+      .feature .section { position: relative; z-index: 1; }
+      .haul-list { display: flex; flex-wrap: wrap; gap: 10px; max-width: 780px; margin-top: 22px; }
+      .haul-list span { border: 1px solid rgba(247,247,242,.14); border-radius: 999px; padding: 10px 13px; background: rgba(0,0,0,.34); font-weight: 900; text-transform: uppercase; letter-spacing: .08em; font-size: .78rem; }
 
-      .footer {
-        display: flex;
-        justify-content: space-between;
-        gap: 20px;
-        padding: 34px clamp(18px, 5vw, 78px);
-        border-top: 1px solid var(--line);
-        color: var(--gray);
-        background: #080808;
-      }
-      .mobile-call {
-        display: none;
-        position: fixed;
-        z-index: 80;
-        left: 14px;
-        right: 14px;
-        bottom: 14px;
-        box-shadow: 0 20px 60px rgba(0,0,0,.45);
-      }
+      .gallery { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+      .project { min-height: 300px; display: flex; align-items: end; overflow: hidden; border-radius: 22px; border: 1px solid var(--line); background: linear-gradient(0deg, rgba(0,0,0,.88), transparent 66%), var(--img) center / cover; box-shadow: 0 24px 70px rgba(0,0,0,.34); }
+      .project div { padding: 20px; }
+      .project h3 { font-size: 2rem; }
+      .project p { color: var(--gray); margin: 6px 0 0; font-weight: 700; }
 
-      .reveal { opacity: 0; transform: translateY(22px); transition: .7s ease; }
+      .why-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+      .why { padding: 24px; transition: .22s ease; }
+      .why:hover { transform: translateY(-4px); border-color: rgba(47,107,63,.7); }
+      .why i { color: var(--orange); margin-bottom: 16px; width: 30px; height: 30px; }
+      .why h3 { font-size: 2rem; }
+
+      .split { display: grid; grid-template-columns: .92fr 1.08fr; gap: 24px; align-items: stretch; }
+      .photo-block { min-height: 560px; border-radius: 26px; border: 1px solid var(--line); background: linear-gradient(0deg, rgba(0,0,0,.58), transparent), var(--img) center / cover; box-shadow: var(--shadow); }
+      .quote-card { padding: 30px; }
+      .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+      .field { display: grid; gap: 8px; }
+      label, .label { color: var(--gray); font-size: .76rem; font-weight: 900; letter-spacing: .13em; text-transform: uppercase; }
+      input, select, textarea { width: 100%; border: 1px solid var(--line); border-radius: 12px; background: rgba(247,247,242,.065); color: white; padding: 13px 14px; outline: none; }
+      option { background: var(--dark); }
+      input:focus, select:focus, textarea:focus { border-color: var(--orange); box-shadow: 0 0 0 4px rgba(249,115,22,.14); }
+      .full { grid-column: 1 / -1; }
+
+      .service-page-hero { padding-top: 86px; }
+      .detail-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 28px; }
+      .detail-list article { padding: 22px; }
+      .tire-inventory { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 28px; }
+      .tire-card { padding: 22px; }
+      .tire-card h3 { font-size: 2rem; }
+      .size-form { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 18px; }
+
+      .footer { display: grid; grid-template-columns: 1.1fr repeat(3, .7fr); gap: 28px; padding: 58px clamp(18px, 5vw, 78px); background: #080a09; border-top: 1px solid var(--line); color: var(--gray); }
+      .footer h3 { color: var(--white); font-size: 2rem; }
+      .footer a { display: block; margin-top: 9px; color: var(--gray); font-weight: 700; }
+      .mobile-call { display: none; position: fixed; z-index: 90; left: 14px; right: 14px; bottom: 14px; box-shadow: var(--shadow); }
+
+      .reveal { opacity: 0; transform: translateY(22px); transition: .65s ease; }
       .reveal.in { opacity: 1; transform: translateY(0); }
 
-      @media (max-width: 1180px) {
-        .hero { min-height: 740px; }
-        .hero-tire { opacity: .35; width: 720px; right: -240px; }
-        .hero-proof { position: relative; top: auto; right: auto; width: min(520px, 100%); margin-top: 28px; }
-        .services-grid, .why-grid, .inventory, .premium-strip { grid-template-columns: repeat(2, 1fr); }
-        .hero-stats { grid-template-columns: repeat(2, 1fr); }
-        .filters, .admin-grid { grid-template-columns: repeat(2, 1fr); }
-        .admin-shell, .contact-grid, .standards { grid-template-columns: 1fr; }
-        .admin-side { position: static; }
-        .premium-strip { margin-top: 18px; }
-        .premium-strip article:nth-child(2) { border-right: 0; }
+      @media (max-width: 1220px) {
+        .cards, .gallery { grid-template-columns: repeat(2, 1fr); }
+        .why-grid, .tire-inventory, .detail-list { grid-template-columns: repeat(2, 1fr); }
+        .trustbar { grid-template-columns: repeat(2, 1fr); }
+        .trustbar article { border-bottom: 1px solid var(--line); }
+        .hero-card { position: relative; right: auto; bottom: auto; width: min(560px, 100%); margin-top: 28px; }
+        .split { grid-template-columns: 1fr; }
       }
 
-      @media (max-width: 720px) {
-        .nav { align-items: flex-start; flex-direction: column; }
-        .brand { width: min(280px, 86vw); }
-        .brand img { height: 76px; }
-        .nav-call { width: 100%; justify-content: center; }
-        .nav-links { justify-content: flex-start; }
-        .hero { min-height: auto; padding-top: 54px; }
-        .hero h1 { font-size: 5.1rem; }
-        .hero-tire { display: none; }
-        .services-grid, .why-grid, .inventory, .filters, .admin-grid, .premium-strip { grid-template-columns: 1fr; }
-        .section-head, .footer { flex-direction: column; align-items: flex-start; }
-        .premium-strip article { border-right: 0; border-bottom: 1px solid var(--line); }
-        .premium-strip article:last-child { border-bottom: 0; }
-        .standard-photo { min-height: 320px; }
-        .admin-row { grid-template-columns: 1fr; }
-        .admin-row img { width: 100%; height: 190px; }
+      @media (max-width: 820px) {
+        .topbar { display: none; }
+        .navbar { align-items: flex-start; flex-wrap: wrap; }
+        .navlinks { display: none; width: 100%; flex-direction: column; align-items: stretch; }
+        .navlinks.open { display: flex; }
+        .navlinks a { padding: 14px 0; }
+        .menu-btn { display: inline-flex; }
+        .nav-actions .btn.green { display: none; }
+        .hero { min-height: auto; }
+        .hero h1 { font-size: 4.5rem; }
+        .trustbar, .cards, .gallery, .why-grid, .tire-inventory, .detail-list, .form-grid, .size-form, .footer { grid-template-columns: 1fr; }
+        .photo-block { min-height: 340px; }
         .mobile-call { display: flex; }
       }
     </style>
   </head>
-  <body class="theme-track">
+  <body>
     <div class="site">
-      <div class="announce" id="announcement"></div>
+      <div class="topbar">
+        <span id="topLocation">Akron, Ohio</span>
+        <span id="topHours">Mon-Sat, 9:00 AM-6:00 PM</span>
+      </div>
 
-      <header class="nav" id="navbar">
-        <a class="brand" href="#home" data-page="home" aria-label="Akron Tire Shop home">
-          <img src="/assets/akron-tire-shop-logo.png" alt="Akron Tire Shop" />
-        </a>
-        <nav class="nav-links" aria-label="Main navigation">
+      <header class="navbar" id="navbar">
+        <a class="brand" href="#home" data-page="home"><span class="brand-mark"><i data-lucide="shovel"></i></span><span id="brandName">Akron Multi Service</span></a>
+        <nav class="navlinks" id="navlinks">
           <a class="active" href="#home" data-page="home">Home</a>
-          <a href="#tires" data-page="tires">Tires</a>
           <a href="#services" data-page="services">Services</a>
+          <a href="#grass" data-page="grass">Grass Mowing</a>
+          <a href="#seal" data-page="seal">Seal Coating</a>
+          <a href="#tree" data-page="tree">Tree Service</a>
+          <a href="#hauling" data-page="hauling">Hauling</a>
+          <a href="#tires" data-page="tires">Tire Shop</a>
           <a href="#about" data-page="about">About</a>
           <a href="#contact" data-page="contact">Contact</a>
-          <a href="#admin" data-page="admin">Admin</a>
         </nav>
-        <a class="nav-call" id="phoneTop" href="tel:+13305550000"><i data-lucide="phone"></i> Call 330-XXX-XXXX</a>
+        <div class="nav-actions">
+          <a class="btn green" href="#quote" data-page="quote">Request a Quote</a>
+          <a class="btn orange" id="navPhone" href="tel:+13305550000"><i data-lucide="phone"></i> Call</a>
+          <button class="btn menu-btn" id="menuBtn" aria-label="Open menu"><i data-lucide="menu"></i></button>
+        </div>
       </header>
 
       <main>
         <section id="home" class="page active">
           <div class="hero">
             <div class="hero-inner reveal">
-              <span class="kicker">Akron tire specialists</span>
-              <h1 id="heroTitle">Good Tires.<span>Good Prices.</span></h1>
-              <p id="heroText">New and used tires, professional mounting and balancing, and dependable tire repairs. Straightforward service built to get you back on the road.</p>
+              <span class="eyebrow">Akron property, hauling, and tire service</span>
+              <h1>One Crew. Multiple Services. Work Done Right.</h1>
+              <p>Reliable lawn care, seal coating, tree service, dump truck hauling, and tire service for homes, businesses, and properties around Akron.</p>
               <div class="hero-badges">
-                <span>New Tires</span>
-                <span>Used Tires</span>
-                <span>Mount & Balance</span>
-                <span>Flat Repair</span>
+                <span>Grass mowing</span><span>Seal coating</span><span>Tree service</span><span>Dump truck hauling</span><span>Tire shop</span>
               </div>
-              <div class="actions">
-                <a class="btn red" id="heroCall" href="tel:+13305550000"><i data-lucide="phone-call"></i> Call Now</a>
-                <a class="btn dark" href="#tires" data-page="tires"><i data-lucide="circle-dot"></i> Browse Tires</a>
+              <div class="hero-badges" style="margin-top:16px">
+                <a class="btn orange" href="#quote" data-page="quote"><i data-lucide="clipboard-pen"></i> Request a Quote</a>
+                <a class="btn green" id="heroPhone" href="tel:+13305550000"><i data-lucide="phone-call"></i> Call Now</a>
               </div>
             </div>
-            <div class="hero-proof reveal">
-              <span class="kicker">Road-ready service</span>
-              <h3>No runaround. Just tires.</h3>
+            <aside class="hero-card reveal">
+              <span class="eyebrow">One dependable call</span>
+              <h3>Property work, hauling, and tires.</h3>
               <ul>
-                <li><i data-lucide="check-circle-2"></i> New & used tire options</li>
-                <li><i data-lucide="check-circle-2"></i> Mounting and balancing</li>
-                <li><i data-lucide="check-circle-2"></i> Tire repairs when safe</li>
+                <li><i data-lucide="check-circle-2"></i> Residential and commercial</li>
+                <li><i data-lucide="check-circle-2"></i> Fast estimates</li>
+                <li><i data-lucide="check-circle-2"></i> Reliable equipment</li>
               </ul>
-            </div>
-            <div class="hero-tire" aria-hidden="true"></div>
-            <div class="hero-stats reveal" id="stats">
-              <article><span class="counter" data-target="1500" data-suffix="+">0</span><span>Tires installed</span></article>
-              <article><span class="counter" data-target="500" data-suffix="+">0</span><span>Repairs completed</span></article>
-              <article><span class="counter" data-target="10" data-suffix="+">0</span><span>Years experience</span></article>
-              <article><span class="counter" data-target="49" data-decimal="true" data-suffix="/5">0</span><span>Customer rating</span></article>
-            </div>
+            </aside>
           </div>
 
-          <div class="premium-strip reveal">
-            <article><i data-lucide="clock"></i><div><b>Same-Day</b><span>Service when available</span></div></article>
-            <article><i data-lucide="wallet-cards"></i><div><b>Fair Prices</b><span>New and used options</span></div></article>
-            <article><i data-lucide="badge-check"></i><div><b>Tire-Focused</b><span>No unrelated upsell</span></div></article>
-            <article><i data-lucide="map-pin"></i><div><b>Akron, OH</b><span>Local shop presence</span></div></article>
+          <div class="trustbar reveal">
+            <article><i data-lucide="map-pin"></i><div><b>Local Akron Service</b><span>Centered around Akron, Ohio</span></div></article>
+            <article><i data-lucide="building-2"></i><div><b>Residential & Commercial</b><span>Homes, businesses, properties</span></div></article>
+            <article><i data-lucide="timer"></i><div><b>Fast Estimates</b><span>Clear next steps</span></div></article>
+            <article><i data-lucide="truck"></i><div><b>Reliable Equipment</b><span>Built for real work</span></div></article>
+            <article><i data-lucide="shield-check"></i><div><b>Quality Work</b><span>Clean, direct service</span></div></article>
           </div>
 
-          <section class="section reveal">
+          <section class="section reveal" id="services-overview">
             <div class="section-head">
-              <div><span class="kicker">Featured inventory</span><h2>Ready To Roll.</h2></div>
-              <p>Current public tire stock from the shop inventory. Call to confirm exact availability before stopping by.</p>
+              <div><span class="eyebrow">Services</span><h2>One Company For The Work Around Your Property.</h2></div>
+              <p>Five focused services, no random add-ons. Pick what you need or request multiple services together.</p>
             </div>
-            <div class="inventory" id="homeInventory"></div>
+            <div class="cards" id="serviceCards"></div>
           </section>
 
-          <section class="feature-band">
+          <section class="feature">
             <div class="section reveal">
-              <div class="section-head">
-                <div><span class="kicker">Why choose us</span><h2>Built For Drivers Who Need It Done Right.</h2></div>
-                <p>A sharper, honest tire-shop experience: practical prices, quick service, and no unrelated upsell.</p>
-              </div>
-              <div class="why-grid">
-                <article class="why-card"><div class="icon-box"><i data-lucide="badge-dollar-sign"></i></div><h3>Affordable Prices</h3><p>Options for new and used tires that make sense for your budget.</p></article>
-                <article class="why-card"><div class="icon-box"><i data-lucide="timer"></i></div><h3>Fast Service</h3><p>Designed for same-day help when the tire issue cannot wait.</p></article>
-                <article class="why-card"><div class="icon-box"><i data-lucide="shield-check"></i></div><h3>Honest Work</h3><p>Clear recommendations focused only on tire service and safety.</p></article>
-                <article class="why-card"><div class="icon-box"><i data-lucide="wrench"></i></div><h3>Experienced Techs</h3><p>Mounting, balancing, and repair work handled with care.</p></article>
-              </div>
+              <span class="eyebrow">Dump truck hauling</span>
+              <h2>Need It Moved? We Haul It.</h2>
+              <p class="muted" style="max-width:720px">Hauling for dirt, gravel, mulch, brush, yard waste, construction debris, and property cleanup material. No hazardous waste or specialty-licensed materials are listed.</p>
+              <div class="haul-list" id="haulList"></div>
+              <div class="hero-badges"><a class="btn orange" href="#quote" data-page="quote">Get A Hauling Quote</a></div>
             </div>
           </section>
 
           <section class="section reveal">
             <div class="section-head">
-              <div><span class="kicker">Shop standards</span><h2>How We Keep It Professional.</h2></div>
-              <p>Customers should know exactly what they are getting before they call: focused tire work, clear availability, and practical service.</p>
+              <div><span class="eyebrow">Project gallery</span><h2>Before And After Work.</h2></div>
+              <p>Realistic sample project cards that can be replaced with actual job photos later.</p>
             </div>
-            <div class="standards">
-              <div class="standard-photo" aria-hidden="true"></div>
-              <div class="standard-list">
-                <article class="standard-item"><i data-lucide="search-check"></i><div><h3>Confirm Fitment</h3><p class="muted">Inventory is listed by width, ratio, rim size, condition, and quantity type.</p></div></article>
-                <article class="standard-item"><i data-lucide="circle-dollar-sign"></i><div><h3>Clear Price Display</h3><p class="muted">Each listing shows a starting price and whether it is a set, pair, or single.</p></div></article>
-                <article class="standard-item"><i data-lucide="wrench"></i><div><h3>Focused Services</h3><p class="muted">New tires, used tires, mounting, balancing, and tire repair only.</p></div></article>
-                <article class="standard-item"><i data-lucide="phone-call"></i><div><h3>Call To Confirm</h3><p class="muted">Every tire card pushes customers to confirm stock before coming in.</p></div></article>
-              </div>
-            </div>
+            <div class="gallery" id="gallery"></div>
           </section>
-        </section>
 
-        <section id="tires" class="page section">
-          <div class="section-head reveal">
-            <div><span class="kicker">Live inventory</span><h1>Tires In Stock.</h1></div>
-            <p>Sample inventory can be edited from the admin dashboard. Sold tires are hidden from public listings.</p>
-          </div>
-          <div class="panel filters reveal">
-            <div class="field"><label>New or Used</label><select id="condition"><option>Any</option><option>New</option><option>Used</option></select></div>
-            <div class="field"><label>Tire Width</label><select id="width"><option>Any</option><option>205</option><option>215</option><option>225</option><option>235</option><option>245</option></select></div>
-            <div class="field"><label>Aspect Ratio</label><select id="ratio"><option>Any</option><option>45</option><option>50</option><option>55</option><option>60</option><option>65</option></select></div>
-            <div class="field"><label>Rim Size</label><select id="rim"><option>Any</option><option>16</option><option>17</option><option>18</option><option>20</option></select></div>
-            <div class="field"><label>Brand</label><select id="brand"><option>Any</option></select></div>
-            <div class="field"><label>Price Range</label><select id="price"><option>Any</option><option>Under $100</option><option>$100-$300</option><option>$300+</option></select></div>
-          </div>
-          <div class="inventory reveal" id="inventory"></div>
+          <section class="section reveal">
+            <div class="section-head">
+              <div><span class="eyebrow">Why choose us</span><h2>Dependable Local Help Without The Runaround.</h2></div>
+            </div>
+            <div class="why-grid" id="whyGrid"></div>
+          </section>
         </section>
 
         <section id="services" class="page section">
+          <div class="section-head reveal"><div><span class="eyebrow">Services</span><h1>What We Do.</h1></div><p>Grass mowing, seal coating, tree service, dump truck hauling, and tire service only.</p></div>
+          <div class="cards reveal" id="serviceCardsPage"></div>
+        </section>
+
+        <section id="grass" class="page section service-page-hero"></section>
+        <section id="seal" class="page section service-page-hero"></section>
+        <section id="tree" class="page section service-page-hero"></section>
+        <section id="hauling" class="page section service-page-hero"></section>
+
+        <section id="tires" class="page section">
           <div class="section-head reveal">
-            <div><span class="kicker">Shop services</span><h1>Only Tires. Done Right.</h1></div>
-            <p>No alignments, rims, oil changes, brakes, TPMS service, towing, or unrelated work.</p>
+            <div><span class="eyebrow">Tire shop</span><h1>New Tires. Used Tires. Repairs.</h1></div>
+            <p>Call for availability. Sample inventory is placeholder data and can be connected to a real inventory later.</p>
           </div>
-          <div class="services-grid reveal" id="servicesGrid"></div>
+          <div class="split reveal">
+            <div class="photo-block" style="--img:url('https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1400&q=82')"></div>
+            <div class="panel quote-card">
+              <h3>Tire Size Lookup</h3>
+              <p class="muted">Enter your tire size to ask about matching new or used tires.</p>
+              <form class="size-form" id="sizeForm">
+                <input name="width" placeholder="Width 225" required />
+                <input name="ratio" placeholder="Ratio 60" required />
+                <input name="rim" placeholder="Rim 17" required />
+                <button class="btn orange" type="submit">Check Size</button>
+              </form>
+              <p id="sizeMsg" class="muted"></p>
+              <div class="hero-badges"><a class="btn green" id="tirePhone" href="tel:+13305550000">Call For Availability</a><a class="btn" id="directionsBtn" target="_blank" rel="noreferrer">Directions</a></div>
+            </div>
+          </div>
+          <div class="detail-list reveal" id="tireServices"></div>
+          <div class="tire-inventory reveal" id="tireInventory"></div>
         </section>
 
         <section id="about" class="page section">
-          <div class="section-head reveal">
-            <div><span class="kicker">About Akron Tire Shop</span><h1>Focused Tire Work. No Runaround.</h1></div>
-            <p>A local shop presentation built around trust, clarity, and practical tire help.</p>
+          <div class="split reveal">
+            <div class="photo-block" style="--img:url('https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1400&q=82')"></div>
+            <div class="panel quote-card">
+              <span class="eyebrow">About</span>
+              <h1>Hardworking Local Service Around Akron.</h1>
+              <p class="muted">We are a hardworking local service company serving Akron and nearby areas. We help homeowners, landlords, property managers, and small businesses maintain their properties, move materials, protect asphalt, handle tree work, and stay on the road.</p>
+              <p class="muted">The goal is simple: clear communication, practical work, and dependable service across the jobs properties actually need.</p>
+              <a class="btn orange" href="#quote" data-page="quote">Request a Quote</a>
+            </div>
           </div>
-          <div class="why-grid reveal">
-            <article class="why-card"><div class="icon-box"><i data-lucide="map-pin"></i></div><h3>Akron Local</h3><p>Placeholder location details can be updated from the admin panel.</p></article>
-            <article class="why-card"><div class="icon-box"><i data-lucide="clipboard-check"></i></div><h3>Clear Service List</h3><p>New tires, used tires, mounting, balancing, and repairs only.</p></article>
-            <article class="why-card"><div class="icon-box"><i data-lucide="gauge"></i></div><h3>Road Ready</h3><p>Service built around practical safety and getting customers moving.</p></article>
-            <article class="why-card"><div class="icon-box"><i data-lucide="handshake"></i></div><h3>Trust First</h3><p>Professional presentation, simple choices, and direct calls to confirm.</p></article>
-          </div>
+        </section>
+
+        <section id="quote" class="page section">
+          <div class="section-head reveal"><div><span class="eyebrow">Quote request</span><h1>Tell Us What You Need.</h1></div><p>Fill this out and it will show a success message. It is ready to connect to email or a backend later.</p></div>
+          <form class="panel quote-card reveal" id="quoteForm" noValidate>
+            <div class="form-grid">
+              <label class="field"><span>Name</span><input name="name" autocomplete="name" required /></label>
+              <label class="field"><span>Phone</span><input name="phone" autocomplete="tel" required /></label>
+              <label class="field"><span>Email</span><input name="email" type="email" autocomplete="email" required /></label>
+              <label class="field"><span>Service needed</span><select name="service" required><option value="">Select one</option><option>Grass Mowing</option><option>Seal Coating</option><option>Tree Service</option><option>Dump Truck Hauling</option><option>Tire Service</option><option>Multiple Services</option></select></label>
+              <label class="field full"><span>Property address</span><input name="address" required /></label>
+              <label class="field"><span>Property type</span><select name="propertyType" required><option value="">Select one</option><option>Residential</option><option>Commercial</option></select></label>
+              <label class="field"><span>Preferred date</span><input name="date" type="date" /></label>
+              <label class="field full"><span>Description of work</span><textarea name="description" rows="6" required></textarea></label>
+              <label class="field full"><span>Photo upload placeholder</span><input name="photos" type="file" accept="image/*" multiple /></label>
+            </div>
+            <p id="quoteMsg" class="muted"></p>
+            <button class="btn orange" type="submit">Submit Quote Request</button>
+          </form>
         </section>
 
         <section id="contact" class="page section">
-          <div class="section-head reveal"><div><span class="kicker">Contact</span><h1>Call Or Stop By.</h1></div></div>
-          <div class="contact-grid reveal">
-            <article class="panel">
-              <h3 id="contactName">Akron Tire Shop</h3>
+          <div class="section-head reveal"><div><span class="eyebrow">Contact</span><h1>Call Or Request A Quote.</h1></div></div>
+          <div class="split reveal">
+            <div class="panel quote-card">
+              <h3 id="contactName"></h3>
               <p class="muted" id="contactDetails"></p>
-              <div class="actions">
-                <a class="btn red" id="callContact" href="tel:+13305550000"><i data-lucide="phone"></i> Click To Call</a>
-                <a class="btn dark" id="directionsContact" href="https://maps.google.com/?q=Akron%2C%20Ohio" target="_blank" rel="noreferrer"><i data-lucide="navigation"></i> Directions</a>
-              </div>
-              <div class="map">Map placeholder for Akron, Ohio</div>
-            </article>
-            <form class="panel" id="contactForm" noValidate>
-              <h3>Request Tire Help</h3>
-              <div class="filters" style="grid-template-columns:repeat(2,1fr); margin-top:18px">
-                <label class="field"><span>Name</span><input name="name" required /></label>
-                <label class="field"><span>Phone</span><input name="phone" required /></label>
-                <label class="field"><span>Need</span><select name="need"><option>Tires</option><option>Mounting</option><option>Balancing</option><option>Repair</option></select></label>
-                <label class="field"><span>Preferred time</span><input name="time" placeholder="Today, tomorrow..." /></label>
-              </div>
-              <label class="field" style="margin-top:14px"><span>Message</span><textarea name="message" rows="6" required></textarea></label>
-              <p id="formMsg" class="muted"></p>
-              <button class="btn red" type="submit"><i data-lucide="send"></i> Send Request</button>
-            </form>
-          </div>
-        </section>
-
-        <section id="admin" class="page section">
-          <div id="adminLogin" class="panel reveal" style="max-width:640px">
-            <span class="kicker">Admin dashboard</span>
-            <h1 style="margin-top:16px">Inventory Login</h1>
-            <p class="muted">Enter the admin code to customize inventory, styles, and shop settings.</p>
-            <form id="loginForm" class="actions">
-              <input id="code" type="password" placeholder="Admin code" />
-              <button class="btn red">Unlock</button>
-            </form>
-            <p id="loginMsg" class="muted"></p>
-          </div>
-
-          <div id="adminPanel" style="display:none">
-            <div class="section-head">
-              <div><span class="kicker">Admin dashboard</span><h1>Shop Control Center.</h1></div>
-              <p>Code: 1111. This saves on this browser until a real database is connected.</p>
+              <div class="hero-badges"><a class="btn orange" id="contactPhone" href="tel:+13305550000">Call Now</a><a class="btn green" href="#quote" data-page="quote">Request a Quote</a></div>
+              <div class="panel" style="margin-top:20px"><h3>Service Area</h3><p class="muted" id="serviceArea"></p></div>
             </div>
-            <div class="admin-shell">
-              <aside class="admin-side">
-                <button class="admin-tab active" data-admin-tab="inventoryPane">Inventory</button>
-                <button class="admin-tab" data-admin-tab="settingsPane">Shop Settings</button>
-                <button class="admin-tab" data-admin-tab="stylePane">Styles</button>
-                <button class="admin-tab" data-admin-tab="dataPane">Data Tools</button>
-              </aside>
-              <div>
-                <div id="inventoryPane" class="admin-pane active">
-                  <form id="addForm" class="panel admin-grid">
-                    <input name="brand" placeholder="Brand" required />
-                    <input name="model" placeholder="Model" required />
-                    <input name="size" placeholder="Size ex. 225/60R17" required />
-                    <input name="price" type="number" min="0" placeholder="Price" required />
-                    <input name="width" placeholder="Width ex. 225" required />
-                    <input name="ratio" placeholder="Ratio ex. 60" required />
-                    <input name="rim" placeholder="Rim ex. 17" required />
-                    <select name="condition"><option>New</option><option>Used</option></select>
-                    <select name="quantityType"><option>Set of 4</option><option>Pair of 2</option><option>Single</option></select>
-                    <select name="availability"><option>In Stock</option><option>Limited</option><option>Sold</option></select>
-                    <label class="field" style="grid-column:span 2"><span>Tire Image</span><input id="imageInput" type="file" accept="image/*" /></label>
-                    <button class="btn red" type="submit">Add Tire</button>
-                    <p id="adminMsg" class="muted"></p>
-                  </form>
-                  <div class="panel" style="margin-top:18px">
-                    <div class="filters" style="grid-template-columns:repeat(3,1fr)">
-                      <label class="field"><span>Search inventory</span><input id="adminSearch" placeholder="Brand, model, size..." /></label>
-                      <label class="field"><span>Quick status</span><select id="adminStatus"><option>All</option><option>In Stock</option><option>Limited</option><option>Sold</option></select></label>
-                      <label class="field"><span>Sort</span><select id="adminSort"><option>Newest</option><option>Price Low</option><option>Price High</option><option>Brand A-Z</option></select></label>
-                    </div>
-                  </div>
-                  <div id="adminList"></div>
-                </div>
-
-                <div id="settingsPane" class="admin-pane">
-                  <form id="settingsForm" class="panel admin-grid">
-                    <input name="shopName" placeholder="Shop name" />
-                    <input name="phoneDisplay" placeholder="Phone display" />
-                    <input name="phoneHref" placeholder="Phone link ex. tel:+13305550000" />
-                    <input name="address" placeholder="Address" />
-                    <input name="hours" placeholder="Hours" />
-                    <input name="sunday" placeholder="Sunday hours" />
-                    <input name="heroLine1" placeholder="Hero line 1" />
-                    <input name="heroLine2" placeholder="Hero line 2" />
-                    <textarea name="heroText" rows="4" placeholder="Hero text" style="grid-column:span 3"></textarea>
-                    <textarea name="announcement" rows="4" placeholder="Announcement bar text" style="grid-column:span 3"></textarea>
-                    <button class="btn red" type="submit">Save Settings</button>
-                    <button class="btn dark" id="clearAnnouncement" type="button">Clear Announcement</button>
-                  </form>
-                </div>
-
-                <div id="stylePane" class="admin-pane">
-                  <div class="panel">
-                    <h3>Site Style</h3>
-                    <p class="muted">Switch between clean automotive themes without editing code.</p>
-                    <div class="actions">
-                      <button class="btn red" data-style="theme-track">Track Red</button>
-                      <button class="btn dark" data-style="theme-steel">Dark Steel</button>
-                      <button class="btn dark" data-style="theme-clean">Clean Shop</button>
-                    </div>
-                    <div class="actions">
-                      <button class="btn dark" data-accent="#E53935">Red</button>
-                      <button class="btn dark" data-accent="#D97706">Amber</button>
-                      <button class="btn dark" data-accent="#B91C1C">Deep Red</button>
-                    </div>
-                  </div>
-                </div>
-
-                <div id="dataPane" class="admin-pane">
-                  <div class="panel">
-                    <h3>Inventory Data</h3>
-                    <p class="muted">Export your tire list as backup, import JSON, or reset to sample stock.</p>
-                    <div class="actions">
-                      <button class="btn red" id="exportData" type="button">Export JSON</button>
-                      <button class="btn danger" id="resetData" type="button">Reset Inventory</button>
-                    </div>
-                    <textarea id="importBox" rows="8" placeholder="Paste exported JSON here to import..." style="margin-top:18px"></textarea>
-                    <div class="actions"><button class="btn dark" id="importData" type="button">Import JSON</button></div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <div class="photo-block" style="--img:url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=82')"></div>
           </div>
         </section>
       </main>
 
       <footer class="footer">
-        <p>(c) <span id="year"></span> <span id="footerName">Akron Tire Shop</span>. New tires, used tires, mounting, balancing, and repairs.</p>
-        <p>Good tires. Good prices. Get back on the road.</p>
+        <div><h3 id="footerBusiness"></h3><p id="footerInfo"></p><a class="btn orange" href="#quote" data-page="quote">Request a Quote</a></div>
+        <div><h3>Services</h3><div id="footerServices"></div></div>
+        <div><h3>Links</h3><a href="#about" data-page="about">About</a><a href="#contact" data-page="contact">Contact</a><a href="#tires" data-page="tires">Tire Shop</a></div>
+        <div><h3>Social</h3><div id="footerSocial"></div></div>
       </footer>
     </div>
 
-    <a class="btn red mobile-call" id="mobileCall" href="tel:+13305550000"><i data-lucide="phone"></i> Call Akron Tire Shop</a>
+    <a class="btn orange mobile-call" id="mobileCall" href="tel:+13305550000"><i data-lucide="phone"></i> Call Now</a>
 
     <script>
-      const tirePhoto = "https://images.unsplash.com/photo-1612692064035-df2d74a77cb8?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=78&w=1400";
-      const tireKey = "akron-tire-inventory-v4";
-      const settingsKey = "akron-tire-settings-v2";
-      const oldKeys = ["akron-tire-inventory-v3", "akron-tire-inventory-v2"];
-
-      const services = [
-        ["New Tires", "Fresh tire options for daily drivers, work vehicles, and family cars.", "circle-dot"],
-        ["Used Tires", "Budget-friendly tires checked for practical tread and road-ready condition.", "refresh-ccw"],
-        ["Mount & Balance", "Professional mounting and balancing for a smoother ride.", "wrench"],
-        ["Flat Repair", "Leak checks and puncture repairs when the tire can be safely fixed.", "shield-check"]
-      ];
-
-      const defaults = [
-        { id:"t1", brand:"Goodyear", model:"Assurance All-Season", size:"225/60R17", width:"225", ratio:"60", rim:"17", condition:"New", quantityType:"Set of 4", price:516, availability:"In Stock", featured:true, image:tirePhoto },
-        { id:"t2", brand:"Michelin", model:"Defender T+H", size:"215/55R17", width:"215", ratio:"55", rim:"17", condition:"Used", quantityType:"Pair of 2", price:156, availability:"Limited", featured:true, image:tirePhoto },
-        { id:"t3", brand:"Firestone", model:"All Season", size:"205/55R16", width:"205", ratio:"55", rim:"16", condition:"New", quantityType:"Single", price:105, availability:"In Stock", featured:false, image:tirePhoto },
-        { id:"t4", brand:"Cooper", model:"Endeavor Plus", size:"235/65R18", width:"235", ratio:"65", rim:"18", condition:"Used", quantityType:"Set of 4", price:368, availability:"In Stock", featured:true, image:tirePhoto }
-      ];
-
-      const defaultSettings = {
-        shopName: "Akron Tire Shop",
-        phoneDisplay: "330-XXX-XXXX",
+      const business = {
+        name: "Akron Multi Service",
+        phone: "(330) 555-0000",
         phoneHref: "tel:+13305550000",
+        email: "quotes@example.com",
         address: "Akron, Ohio",
         hours: "Monday-Saturday, 9:00 AM-6:00 PM",
-        sunday: "Closed",
-        heroLine1: "Good Tires.",
-        heroLine2: "Good Prices.",
-        heroText: "New and used tires, professional mounting and balancing, and dependable tire repairs. Straightforward service built to get you back on the road.",
-        announcement: "",
-        style: "theme-track",
-        accent: "#E53935"
+        serviceAreas: ["Akron, Ohio", "Nearby areas - edit this list in the business config"],
+        socialLinks: [{ label: "Facebook", url: "#" }, { label: "Instagram", url: "#" }],
+        services: [
+          { id:"grass", title:"Grass Mowing", icon:"leaf", image:"https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1000&q=82", description:"Regular mowing, trimming, edging, and property cleanup for residential and commercial properties.", bullets:["Residential mowing","Commercial mowing","Trimming","Edging","Cleanup","One-time cuts","Recurring service"] },
+          { id:"seal", title:"Seal Coating", icon:"paintbrush", image:"https://images.unsplash.com/photo-1593113646773-028c64a8f1b8?auto=format&fit=crop&w=1000&q=82", description:"Driveway and parking-lot seal coating designed to improve appearance and protect asphalt.", bullets:["Driveways","Small parking lots","Surface preparation","Crack-cleaning disclaimer","Seal coating process","Maintenance benefits"] },
+          { id:"tree", title:"Tree Service", icon:"trees", image:"https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&w=1000&q=82", description:"Tree trimming, branch removal, storm cleanup, and general tree-related property work.", bullets:["Trimming","Small tree removal","Branch removal","Storm cleanup","Brush cleanup"] },
+          { id:"hauling", title:"Dump Truck Hauling", icon:"truck", image:"https://images.unsplash.com/photo-1615811361523-6bd03d7748e7?auto=format&fit=crop&w=1000&q=82", description:"Hauling dirt, gravel, mulch, brush, debris, and other materials using a dump truck.", bullets:["Material hauling","Debris hauling","Brush hauling","Gravel delivery","Mulch delivery","Dirt hauling","Property cleanup"] },
+          { id:"tires", title:"Tire Shop", icon:"circle-dot", image:"https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1000&q=82", description:"New and used tires, mounting, balancing, and tire repairs.", bullets:["New tires","Used tires","Tire mounting","Tire balancing","Tire repairs"] }
+        ],
+        tireShop: {
+          hours: "Monday-Saturday, 9:00 AM-6:00 PM",
+          inventory: [
+            { brand:"Goodyear", model:"Assurance", size:"225/60R17", condition:"New", price:"Call", availability:"Sample" },
+            { brand:"Michelin", model:"Defender", size:"215/55R17", condition:"Used", price:"Call", availability:"Sample" },
+            { brand:"Cooper", model:"Endeavor Plus", size:"235/65R18", condition:"Used", price:"Call", availability:"Sample" }
+          ]
+        },
+        haulingExamples: ["Dirt","Gravel","Mulch","Brush","Yard waste","Construction debris","Property cleanup material"]
       };
 
-      function readInventory() {
-        const current = JSON.parse(localStorage.getItem(tireKey) || "null");
-        if (current) return current;
-        for (const key of oldKeys) {
-          const old = JSON.parse(localStorage.getItem(key) || "null");
-          if (old) return old.map((t, i) => ({ featured: i < 3, image: t.image || tirePhoto, ...t }));
-        }
-        return defaults;
-      }
-
-      let tires = readInventory();
-      let settings = { ...defaultSettings, ...(JSON.parse(localStorage.getItem(settingsKey) || "null") || {}) };
-      let pendingImage = "";
+      const gallery = [
+        ["Lawn Mowing","Trimmed, edged, and cleaned up lawn service.","https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=900&q=82"],
+        ["Seal Coating","Driveway and small parking-lot finish samples.","https://images.unsplash.com/photo-1593113646773-028c64a8f1b8?auto=format&fit=crop&w=900&q=82"],
+        ["Tree Cleanup","Branch and brush cleanup examples.","https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&w=900&q=82"],
+        ["Hauling Jobs","Material and property cleanup hauling samples.","https://images.unsplash.com/photo-1615811361523-6bd03d7748e7?auto=format&fit=crop&w=900&q=82"],
+        ["Tire Work","New, used, mount, balance, and repair examples.","https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=900&q=82"]
+      ];
+      const why = ["Local and dependable","Multiple services from one company","Honest estimates","Proper equipment","Residential and commercial work","Clean job sites","Fast communication","Flexible scheduling"];
 
       const $ = (id) => document.getElementById(id);
-      const saveTires = () => localStorage.setItem(tireKey, JSON.stringify(tires));
-      const saveSettings = () => localStorage.setItem(settingsKey, JSON.stringify(settings));
-      const publicTires = () => tires.filter((t) => t.availability !== "Sold");
 
-      function applySettings() {
-        document.body.className = settings.style || "theme-track";
-        document.documentElement.style.setProperty("--red", settings.accent || "#E53935");
-        document.documentElement.style.setProperty("--red2", settings.accent || "#b91f1b");
-        $("heroTitle").innerHTML = `${settings.heroLine1 || "Good Tires."}<span>${settings.heroLine2 || "Good Prices."}</span>`;
-        $("heroText").textContent = settings.heroText || defaultSettings.heroText;
-        $("phoneTop").innerHTML = `<i data-lucide="phone"></i> Call ${settings.phoneDisplay}`;
-        $("phoneTop").href = settings.phoneHref;
-        $("heroCall").href = settings.phoneHref;
-        $("mobileCall").href = settings.phoneHref;
-        $("mobileCall").innerHTML = `<i data-lucide="phone"></i> Call ${settings.shopName}`;
-        $("callContact").href = settings.phoneHref;
-        $("contactName").textContent = settings.shopName;
-        $("footerName").textContent = settings.shopName;
-        $("contactDetails").innerHTML = `<b>Phone:</b> <a href="${settings.phoneHref}">${settings.phoneDisplay}</a><br><b>Address:</b> ${settings.address}<br><b>Hours:</b> ${settings.hours}<br><b>Sunday:</b> ${settings.sunday}`;
-        $("directionsContact").href = `https://maps.google.com/?q=${encodeURIComponent(settings.address || "Akron, Ohio")}`;
-        $("announcement").textContent = settings.announcement || "";
-        $("announcement").classList.toggle("show", Boolean(settings.announcement));
-      }
-
-      function tireCard(t) {
-        return `<article class="product-card reveal">
-          <div class="product-media">
-            <img src="${t.image || tirePhoto}" alt="${t.brand} ${t.model}">
-            <span class="stock-badge">${t.availability}</span>
-            <div class="media-tags"><span>${t.condition}</span><span>${t.quantityType}</span></div>
-          </div>
-          <div class="product-body">
-            <span class="kicker">${t.featured ? "Featured tire" : "In-stock tire"}</span>
-            <h3>${t.brand} ${t.model}</h3>
-            <div class="size-row"><span>Size</span><b>${t.size}</b></div>
-            <div class="buy-row">
-              <div><div class="price-label">Starting at</div><div class="price">$${t.price}</div></div>
-              <a class="btn red" href="${settings.phoneHref}">Call</a>
-            </div>
+      function serviceCard(service) {
+        return `<article class="card service-card">
+          <div class="service-img" style="--img:url('${service.image}')"></div>
+          <div class="service-body">
+            <div class="icon-box"><i data-lucide="${service.icon}"></i></div>
+            <h3>${service.title}</h3>
+            <p>${service.description}</p>
+            <a class="btn small green" href="#${service.id}" data-page="${service.id}">Learn More</a>
           </div>
         </article>`;
       }
 
-      function renderServices() {
-        $("servicesGrid").innerHTML = services.map(([title, text, icon]) => `<article class="service-card">
-          <div class="icon-box"><i data-lucide="${icon}"></i></div>
-          <h3>${title}</h3>
-          <p>${text}</p>
-        </article>`).join("");
+      function render() {
+        brandName.textContent = business.name;
+        topLocation.textContent = business.address;
+        topHours.textContent = business.hours;
+        navPhone.href = business.phoneHref;
+        navPhone.innerHTML = `<i data-lucide="phone"></i> ${business.phone}`;
+        heroPhone.href = business.phoneHref;
+        mobileCall.href = business.phoneHref;
+        contactPhone.href = business.phoneHref;
+        contactName.textContent = business.name;
+        contactDetails.innerHTML = `<b>Phone:</b> <a href="${business.phoneHref}">${business.phone}</a><br><b>Email:</b> ${business.email}<br><b>Location:</b> ${business.address}<br><b>Hours:</b> ${business.hours}`;
+        serviceArea.textContent = business.serviceAreas.join(" | ");
+        footerBusiness.textContent = business.name;
+        footerInfo.innerHTML = `${business.phone}<br>${business.email}<br>${business.address}<br>${business.hours}`;
+        serviceCards.innerHTML = business.services.map(serviceCard).join("");
+        serviceCardsPage.innerHTML = business.services.map(serviceCard).join("");
+        haulList.innerHTML = business.haulingExamples.map((item) => `<span>${item}</span>`).join("");
+        gallery.innerHTML = galleryData();
+        whyGrid.innerHTML = why.map((item) => `<article class="panel why"><i data-lucide="check-circle-2"></i><h3>${item}</h3><p class="muted">Reliable local service with clear communication and practical scheduling.</p></article>`).join("");
+        footerServices.innerHTML = business.services.map((s) => `<a href="#${s.id}" data-page="${s.id}">${s.title}</a>`).join("");
+        footerSocial.innerHTML = business.socialLinks.map((s) => `<a href="${s.url}">${s.label}</a>`).join("");
+        renderServicePages();
+        renderTires();
+        requestAnimationFrame(() => { if (window.lucide) lucide.createIcons(); revealNow(); bindDynamicLinks(); });
       }
 
-      function renderFilters() {
-        const brands = ["Any", ...new Set(tires.map((t) => t.brand).filter(Boolean))];
-        const brandSelect = $("brand");
-        const current = brandSelect.value || "Any";
-        brandSelect.innerHTML = brands.map((b) => `<option>${b}</option>`).join("");
-        brandSelect.value = brands.includes(current) ? current : "Any";
+      function galleryData() {
+        return gallery.map(([title, text, image]) => `<article class="project" style="--img:url('${image}')"><div><span class="eyebrow">Before / After</span><h3>${title}</h3><p>${text}</p></div></article>`).join("");
       }
 
-      function filteredPublic() {
-        const f = { condition: condition.value, width: width.value, ratio: ratio.value, rim: rim.value, brand: brand.value, price: price.value };
-        return publicTires().filter((t) => {
-          const p = Number(t.price);
-          return (f.condition === "Any" || t.condition === f.condition)
-            && (f.width === "Any" || t.width === f.width)
-            && (f.ratio === "Any" || t.ratio === f.ratio)
-            && (f.rim === "Any" || t.rim === f.rim)
-            && (f.brand === "Any" || t.brand === f.brand)
-            && (f.price === "Any" || (f.price === "Under $100" && p < 100) || (f.price === "$100-$300" && p >= 100 && p <= 300) || (f.price === "$300+" && p > 300));
+      function renderServicePages() {
+        for (const service of business.services.filter((s) => s.id !== "tires")) {
+          const warnings = service.id === "seal" ? `<p class="muted">Crack cleaning and preparation are part of the process, but full asphalt replacement is not listed as a service.</p>` : service.id === "tree" ? `<p class="muted">This page does not claim dangerous large-tree removal, crane work, or certified arborist services.</p>` : service.id === "hauling" ? `<p class="muted">Hazardous waste or specialty-licensed materials are not listed as hauling services.</p>` : "";
+          $(service.id).innerHTML = `<div class="section-head reveal"><div><span class="eyebrow">${service.title}</span><h1>${service.title} Services.</h1></div><p>${service.description}</p></div><div class="split reveal"><div class="photo-block" style="--img:url('${service.image}')"></div><div class="panel quote-card"><h3>What is included</h3>${warnings}<div class="detail-list">${service.bullets.map((b) => `<article class="panel"><h3>${b}</h3><p class="muted">Request a quote and describe the job so the service can be confirmed.</p></article>`).join("")}</div><div class="hero-badges"><a class="btn orange" href="#quote" data-page="quote">Request A Quote</a><a class="btn green" href="${business.phoneHref}">Call Now</a></div></div></div>`;
+        }
+      }
+
+      function renderTires() {
+        tireServices.innerHTML = business.services.find((s) => s.id === "tires").bullets.map((b) => `<article class="panel"><h3>${b}</h3><p class="muted">Call for availability and service timing.</p></article>`).join("");
+        tireInventory.innerHTML = business.tireShop.inventory.map((t) => `<article class="panel tire-card"><span class="eyebrow">Sample inventory</span><h3>${t.brand} ${t.model}</h3><p class="muted">${t.size}<br>${t.condition} | ${t.availability}</p><a class="btn orange" href="${business.phoneHref}">Call To Confirm</a></article>`).join("");
+      }
+
+      function bindDynamicLinks() {
+        document.querySelectorAll("[data-page]").forEach((link) => {
+          if (link.dataset.bound) return;
+          link.dataset.bound = "true";
+          link.addEventListener("click", navigate);
         });
       }
 
-      function renderAdminList() {
-        const search = ($("adminSearch")?.value || "").toLowerCase();
-        const status = $("adminStatus")?.value || "All";
-        const sort = $("adminSort")?.value || "Newest";
-        let rows = tires.filter((t) => `${t.brand} ${t.model} ${t.size}`.toLowerCase().includes(search) && (status === "All" || t.availability === status));
-        if (sort === "Price Low") rows.sort((a,b) => Number(a.price) - Number(b.price));
-        if (sort === "Price High") rows.sort((a,b) => Number(b.price) - Number(a.price));
-        if (sort === "Brand A-Z") rows.sort((a,b) => String(a.brand).localeCompare(String(b.brand)));
-        $("adminList").innerHTML = rows.map((t) => `<article class="panel admin-row">
-          <img src="${t.image || tirePhoto}" alt="">
-          <div>
-            <h3>${t.brand} ${t.model}</h3>
-            <p class="muted">${t.size} - ${t.condition} - ${t.quantityType} - $${t.price} - ${t.featured ? "Featured" : "Not featured"}</p>
-            <div class="status-buttons">
-              ${["In Stock","Limited","Sold"].map((s) => `<button class="btn small ${t.availability === s ? "red" : "dark"}" onclick="statusTire('${t.id}','${s}')">${s}</button>`).join("")}
-              <button class="btn small dark" onclick="toggleFeatured('${t.id}')">${t.featured ? "Unfeature" : "Feature"}</button>
-              <button class="btn small dark" onclick="duplicateTire('${t.id}')">Duplicate</button>
-            </div>
-          </div>
-          <button class="btn small danger" onclick="deleteTire('${t.id}')">Delete</button>
-        </article>`).join("") || `<div class="panel muted">No tires match those admin filters.</div>`;
+      function navigate(e) {
+        e.preventDefault();
+        const page = e.currentTarget.dataset.page;
+        document.querySelectorAll(".page").forEach((el) => el.classList.remove("active"));
+        $(page).classList.add("active");
+        document.querySelectorAll(".navlinks a").forEach((el) => el.classList.toggle("active", el.dataset.page === page));
+        navlinks.classList.remove("open");
+        scrollTo({ top: 0, behavior: "smooth" });
+        setTimeout(revealNow, 80);
       }
-
-      function render() {
-        applySettings();
-        renderFilters();
-        const visible = publicTires();
-        const featured = visible.filter((t) => t.featured).slice(0, 3);
-        homeInventory.innerHTML = (featured.length ? featured : visible.slice(0, 3)).map(tireCard).join("") || `<div class="panel muted">No tires listed yet.</div>`;
-        inventory.innerHTML = filteredPublic().map(tireCard).join("") || `<div class="panel muted">No in-stock tires match those filters.</div>`;
-        renderAdminList();
-        requestAnimationFrame(() => { if (window.lucide) lucide.createIcons(); revealNow(); });
-      }
-
-      function statusTire(id, status) { tires = tires.map((t) => t.id === id ? { ...t, availability: status } : t); saveTires(); render(); }
-      function toggleFeatured(id) { tires = tires.map((t) => t.id === id ? { ...t, featured: !t.featured } : t); saveTires(); render(); }
-      function duplicateTire(id) { const t = tires.find((x) => x.id === id); if (!t) return; tires.unshift({ ...t, id:`tire-${Date.now()}`, model:`${t.model} Copy` }); saveTires(); render(); }
-      function deleteTire(id) { if (!confirm("Delete this tire?")) return; tires = tires.filter((t) => t.id !== id); saveTires(); render(); }
 
       function revealNow() {
         document.querySelectorAll(".reveal").forEach((el) => {
-          const top = el.getBoundingClientRect().top;
-          if (top < innerHeight - 60) el.classList.add("in");
+          if (el.getBoundingClientRect().top < innerHeight - 50) el.classList.add("in");
         });
       }
 
-      function runCounters() {
-        document.querySelectorAll(".counter").forEach((el) => {
-          if (el.dataset.done) return;
-          el.dataset.done = "true";
-          const target = Number(el.dataset.target || 0);
-          const suffix = el.dataset.suffix || "";
-          const decimal = el.dataset.decimal === "true";
-          const start = performance.now();
-          function tick(now) {
-            const p = Math.min((now - start) / 1200, 1);
-            const eased = 1 - Math.pow(1 - p, 3);
-            const value = target * eased;
-            el.textContent = decimal ? (value / 10).toFixed(1) + suffix : Math.round(value).toLocaleString() + suffix;
-            if (p < 1) requestAnimationFrame(tick);
-          }
-          requestAnimationFrame(tick);
-        });
-      }
-
-      renderServices();
-      document.querySelectorAll("[data-page]").forEach((link) => link.addEventListener("click", (e) => {
+      quoteForm.addEventListener("submit", (e) => {
         e.preventDefault();
-        const page = link.dataset.page;
-        document.querySelectorAll(".page").forEach((el) => el.classList.remove("active"));
-        $(page).classList.add("active");
-        document.querySelectorAll(".nav-links a").forEach((el) => el.classList.toggle("active", el.dataset.page === page));
-        scrollTo({ top: 0, behavior: "smooth" });
-        setTimeout(revealNow, 80);
-      }));
-
-      document.querySelectorAll("select").forEach((el) => el.addEventListener("change", render));
-      ["adminSearch","adminStatus","adminSort"].forEach((id) => $(id)?.addEventListener("input", render));
-      addEventListener("scroll", () => { navbar.classList.toggle("shrunk", scrollY > 36); revealNow(); });
-      addEventListener("load", () => { if (window.lucide) lucide.createIcons(); revealNow(); runCounters(); });
-
-      loginForm.addEventListener("submit", (e) => {
+        const data = new FormData(quoteForm);
+        const ok = ["name","phone","email","service","address","propertyType","description"].every((k) => String(data.get(k) || "").trim());
+        quoteMsg.textContent = ok ? "Thanks. Your quote request is ready to be sent once this form is connected to email or a backend." : "Please fill out the required fields.";
+        if (ok) quoteForm.reset();
+      });
+      sizeForm.addEventListener("submit", (e) => {
         e.preventDefault();
-        if (code.value === "1111") { adminLogin.style.display = "none"; adminPanel.style.display = "block"; render(); }
-        else loginMsg.textContent = "Wrong code.";
+        const data = new FormData(sizeForm);
+        sizeMsg.textContent = `Size request saved for ${data.get("width")}/${data.get("ratio")}R${data.get("rim")}. Call to confirm availability.`;
       });
-
-      document.querySelectorAll("[data-admin-tab]").forEach((tab) => tab.addEventListener("click", () => {
-        document.querySelectorAll(".admin-tab").forEach((el) => el.classList.remove("active"));
-        document.querySelectorAll(".admin-pane").forEach((el) => el.classList.remove("active"));
-        tab.classList.add("active");
-        $(tab.dataset.adminTab).classList.add("active");
-      }));
-
-      imageInput.addEventListener("change", (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = () => pendingImage = String(reader.result || "");
-        reader.readAsDataURL(file);
-      });
-
-      addForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const d = new FormData(addForm);
-        tires.unshift({
-          id:`tire-${Date.now()}`,
-          brand:d.get("brand") || "Unknown",
-          model:d.get("model") || "Tire",
-          size:d.get("size") || "225/60R17",
-          width:d.get("width") || "225",
-          ratio:d.get("ratio") || "60",
-          rim:d.get("rim") || "17",
-          condition:d.get("condition"),
-          quantityType:d.get("quantityType"),
-          price:Number(d.get("price") || 0),
-          availability:d.get("availability"),
-          featured:true,
-          image:pendingImage || tirePhoto
-        });
-        pendingImage = "";
-        addForm.reset();
-        adminMsg.textContent = "Tire added and saved.";
-        saveTires();
-        render();
-      });
-
-      settingsForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        settings = { ...settings, ...Object.fromEntries(new FormData(settingsForm).entries()) };
-        saveSettings();
-        render();
-      });
-      clearAnnouncement.addEventListener("click", () => { settings.announcement = ""; settingsForm.announcement.value = ""; saveSettings(); render(); });
-      document.querySelectorAll("[data-style]").forEach((btn) => btn.addEventListener("click", () => { settings.style = btn.dataset.style; saveSettings(); render(); }));
-      document.querySelectorAll("[data-accent]").forEach((btn) => btn.addEventListener("click", () => { settings.accent = btn.dataset.accent; saveSettings(); render(); }));
-
-      exportData.addEventListener("click", () => { importBox.value = JSON.stringify({ settings, tires }, null, 2); importBox.select(); });
-      importData.addEventListener("click", () => {
-        try {
-          const data = JSON.parse(importBox.value);
-          if (Array.isArray(data)) tires = data;
-          if (Array.isArray(data.tires)) tires = data.tires;
-          if (data.settings) settings = { ...settings, ...data.settings };
-          saveTires(); saveSettings(); render(); alert("Imported.");
-        } catch { alert("That JSON is not valid."); }
-      });
-      resetData.addEventListener("click", () => { if (!confirm("Reset inventory back to sample tires?")) return; tires = defaults; saveTires(); render(); });
-
-      contactForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const d = new FormData(contactForm);
-        formMsg.textContent = d.get("name") && d.get("phone") && d.get("message") ? "Thanks - this demo form is ready to connect to email or a backend." : "Please fill out your name, phone number, and message.";
-        if (formMsg.textContent.startsWith("Thanks")) contactForm.reset();
-      });
-
-      Object.entries(settings).forEach(([k, v]) => { if (settingsForm[k]) settingsForm[k].value = v; });
-      year.textContent = new Date().getFullYear();
+      menuBtn.addEventListener("click", () => navlinks.classList.toggle("open"));
+      addEventListener("scroll", () => { navbar.classList.toggle("shrunk", scrollY > 32); revealNow(); });
+      addEventListener("load", () => { render(); if (window.lucide) lucide.createIcons(); revealNow(); });
       render();
     </script>
   </body>
