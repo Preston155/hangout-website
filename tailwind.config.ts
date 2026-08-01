@@ -1,1 +1,30 @@
-import type {Config} from 'tailwindcss';const config:Config={content:['./app/**/*.{ts,tsx}','./components/**/*.{ts,tsx}','./lib/**/*.{ts,tsx}'],theme:{extend:{colors:{ink:'#070913',panel:'#0d1020',neon:'#7c5cff',aqua:'#2fffd1',hot:'#ff4fd8'},boxShadow:{glow:'0 0 40px rgba(124,92,255,.35)'},animation:{float:'float 8s ease-in-out infinite',shimmer:'shimmer 7s linear infinite'},keyframes:{float:{'0%,100%':{transform:'translateY(0)'},'50%':{transform:'translateY(-12px)'}},shimmer:{'0%':{backgroundPosition:'0% 50%'},'100%':{backgroundPosition:'200% 50%'}}}}},plugins:[]};export default config;
+import type { Config } from 'tailwindcss';
+
+const config: Config = {
+  content: ['./app/**/*.{ts,tsx}', './components/**/*.{ts,tsx}', './lib/**/*.{ts,tsx}'],
+  theme: {
+    extend: {
+      colors: {
+        tire: {
+          black: '#070707',
+          charcoal: '#141414',
+          steel: '#242424',
+          cream: '#f6f3ec',
+          muted: '#b5b0a7',
+          red: '#b91c1c',
+        },
+      },
+      fontFamily: {
+        display: ['"Barlow Condensed"', 'Inter', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+      },
+      backgroundImage: {
+        tread:
+          'linear-gradient(135deg, transparent 46%, rgba(255,255,255,.35) 48%, transparent 50%), linear-gradient(45deg, transparent 46%, rgba(255,255,255,.25) 48%, transparent 50%)',
+      },
+    },
+  },
+  plugins: [],
+};
+
+export default config;

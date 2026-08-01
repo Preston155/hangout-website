@@ -1,1 +1,31 @@
-const nextConfig={images:{remotePatterns:[{protocol:'https',hostname:'cdn.discordapp.com'},{protocol:'https',hostname:'i.ytimg.com'},{protocol:'https',hostname:'tr.rbxcdn.com'},{protocol:'https',hostname:'images.unsplash.com'}]},async headers(){return[{source:'/(.*)',headers:[{key:'X-Frame-Options',value:'SAMEORIGIN'},{key:'X-Content-Type-Options',value:'nosniff'},{key:'Referrer-Policy',value:'strict-origin-when-cross-origin'},{key:'Permissions-Policy',value:'camera=(), microphone=(), geolocation=()'}]}]}};export default nextConfig;
+import path from 'node:path';
+
+const nextConfig = {
+  images: {
+    remotePatterns: [
+      { protocol: 'https', hostname: 'cdn.discordapp.com' },
+      { protocol: 'https', hostname: 'i.ytimg.com' },
+      { protocol: 'https', hostname: 'tr.rbxcdn.com' },
+      { protocol: 'https', hostname: 'images.unsplash.com' },
+    ],
+  },
+  webpack(config) {
+    config.resolve.alias['@'] = path.resolve(process.cwd());
+    return config;
+  },
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+        ],
+      },
+    ];
+  },
+};
+
+export default nextConfig;
