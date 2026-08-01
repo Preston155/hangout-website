@@ -3,36 +3,39 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#070707" />
-    <title>Akron Tire Shop | Good Tires. Good Grip.</title>
+    <meta name="theme-color" content="#0F0F10" />
+    <title>Akron Tire Shop | Good Tires. Good Prices.</title>
     <meta name="description" content="Akron Tire Shop offers new tires, used tires, tire mounting, tire balancing, and tire repairs in Akron, Ohio." />
-    <meta property="og:title" content="Akron Tire Shop | Good Tires. Good Grip." />
-    <meta property="og:description" content="New tires, used tires, mounting, balancing, and tire repairs in Akron, Ohio." />
+    <meta property="og:title" content="Akron Tire Shop | Good Tires. Good Prices." />
+    <meta property="og:description" content="New and used tires, tire mounting, tire balancing, and tire repairs in Akron, Ohio." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://prestonhq.com/" />
     <meta property="og:image" content="https://prestonhq.com/assets/akron-tire-shop-og.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Akron Tire Shop | Good Tires. Good Grip." />
-    <meta name="twitter:description" content="New tires, used tires, mounting, balancing, and tire repairs in Akron, Ohio." />
+    <meta name="twitter:title" content="Akron Tire Shop | Good Tires. Good Prices." />
+    <meta name="twitter:description" content="New and used tires, mounting, balancing, and repairs in Akron, Ohio." />
     <meta name="twitter:image" content="https://prestonhq.com/assets/akron-tire-shop-og.jpg" />
     <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
     <style>
       :root {
-        --accent: #c91d1d;
-        --accent-2: #ff3b30;
-        --cream: #f7f1e7;
-        --muted: #b9b0a4;
-        --black: #070707;
-        --panel: rgba(255, 255, 255, .065);
-        --line: rgba(255, 255, 255, .13);
-        --shadow: 0 28px 90px rgba(0,0,0,.55);
+        --bg: #0F0F10;
+        --bg2: #1A1A1A;
+        --red: #E53935;
+        --red2: #b91f1b;
+        --white: #F5F5F5;
+        --gray: #9A9A9A;
+        --line: rgba(245,245,245,.12);
+        --panel: rgba(255,255,255,.055);
+        --shadow: 0 28px 100px rgba(0,0,0,.58);
+        --hero-img: url("https://images.unsplash.com/photo-1612692064035-df2d74a77cb8?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=78&w=2400");
       }
 
       * { box-sizing: border-box; }
@@ -40,373 +43,386 @@
       body {
         margin: 0;
         background:
-          radial-gradient(circle at 18% 0%, rgba(201,29,29,.18), transparent 34rem),
-          radial-gradient(circle at 95% 8%, rgba(255,255,255,.06), transparent 28rem),
-          #0a0a0a;
-        color: var(--cream);
+          radial-gradient(circle at 18% 0%, rgba(229,57,53,.16), transparent 34rem),
+          radial-gradient(circle at 90% 6%, rgba(255,255,255,.06), transparent 30rem),
+          var(--bg);
+        color: var(--white);
         font-family: Inter, system-ui, sans-serif;
+        overflow-x: hidden;
       }
 
-      body.clean { --accent: #a91515; --accent-2: #e23a2e; --cream: #faf7ef; --muted: #d5c8b8; }
-      body.street { --accent: #e02222; --accent-2: #ff5a21; }
-      body.steel { --accent: #8f1515; --accent-2: #d92323; --muted: #aab0b8; }
+      body.theme-steel { --red: #d12d2a; --red2: #8e1614; --bg: #0e1115; --bg2: #1b2027; --gray: #a6abb2; }
+      body.theme-clean { --red: #c92420; --red2: #8f1714; --bg: #101010; --bg2: #202020; --gray: #b4b4b4; }
+      body.theme-track { --red: #E53935; --red2: #8b1512; --bg: #0F0F10; --bg2: #191919; }
 
       a { color: inherit; text-decoration: none; }
       button, input, select, textarea { font: inherit; }
       button { cursor: pointer; }
-      img { max-width: 100%; display: block; }
-      ::selection { background: var(--accent); color: white; }
+      img { display: block; max-width: 100%; }
+      ::selection { background: var(--red); color: white; }
 
       h1, h2, h3 {
         margin: 0;
         font-family: "Barlow Condensed", Inter, sans-serif;
-        font-style: italic;
         font-weight: 900;
-        letter-spacing: -.055em;
-        line-height: .88;
+        line-height: .9;
+        letter-spacing: -.045em;
         text-transform: uppercase;
       }
 
       .site {
-        width: min(1540px, calc(100% - 22px));
+        width: min(1640px, 100%);
         margin: 0 auto;
         min-height: 100vh;
         background:
-          linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,.026) 1px, transparent 1px),
           linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
-          #070707;
-        background-size: 54px 54px;
-        box-shadow: 0 34px 120px rgba(0,0,0,.8);
-        overflow: clip;
+          var(--bg);
+        background-size: 72px 72px;
+        position: relative;
       }
 
-      .topbar {
+      .site::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        opacity: .26;
+        mix-blend-mode: overlay;
+        background-image:
+          linear-gradient(135deg, transparent 46%, rgba(255,255,255,.16) 48%, transparent 50%),
+          linear-gradient(45deg, transparent 46%, rgba(255,255,255,.1) 48%, transparent 50%);
+        background-size: 42px 42px;
+        mask-image: linear-gradient(180deg, black, transparent 62%);
+      }
+
+      .announce {
+        display: none;
+        padding: 12px clamp(18px, 5vw, 78px);
+        background: linear-gradient(90deg, var(--red), rgba(229,57,53,.15));
+        color: white;
+        font-size: .86rem;
+        font-weight: 900;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+      }
+      .announce.show { display: block; }
+
+      .nav {
+        position: sticky;
+        top: 0;
+        z-index: 50;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 18px;
-        padding: 18px clamp(18px, 5vw, 76px);
+        gap: 24px;
+        padding: 16px clamp(18px, 5vw, 78px);
         border-bottom: 1px solid var(--line);
-        background: rgba(0,0,0,.76);
-        position: sticky;
-        top: 0;
-        z-index: 30;
-        backdrop-filter: blur(18px);
+        background: rgba(15,15,16,.78);
+        backdrop-filter: blur(20px);
+        transition: .22s ease;
       }
 
-      .logo { width: min(310px, 44vw); }
-      .logo img { height: 96px; width: 100%; object-fit: contain; object-position: left center; filter: drop-shadow(0 18px 26px rgba(201,29,29,.2)); }
+      .nav.shrunk { padding-top: 9px; padding-bottom: 9px; background: rgba(15,15,16,.92); }
+      .brand { width: min(260px, 42vw); }
+      .brand img { width: 100%; height: 82px; object-fit: contain; object-position: left center; filter: drop-shadow(0 16px 24px rgba(229,57,53,.2)); transition: .22s ease; }
+      .nav.shrunk .brand img { height: 58px; }
 
-      .nav {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-      }
-
-      .nav a {
-        border: 1px solid transparent;
+      .nav-links { display: flex; align-items: center; justify-content: center; gap: 2px; flex-wrap: wrap; }
+      .nav-links a {
+        position: relative;
         padding: 12px 14px;
-        color: #fff;
-        font-family: "Barlow Condensed", Inter, sans-serif;
-        font-size: 1.25rem;
+        color: rgba(245,245,245,.82);
+        font-size: .82rem;
         font-weight: 900;
-        letter-spacing: .045em;
+        letter-spacing: .13em;
         text-transform: uppercase;
         transition: .2s ease;
       }
-
-      .nav a:hover, .nav a.active {
-        border-color: rgba(255,255,255,.18);
-        background: rgba(255,255,255,.07);
-        color: var(--accent-2);
+      .nav-links a::after {
+        content: "";
+        position: absolute;
+        left: 14px;
+        right: 14px;
+        bottom: 6px;
+        height: 2px;
+        background: var(--red);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: .22s ease;
       }
+      .nav-links a:hover, .nav-links a.active { color: #fff; }
+      .nav-links a:hover::after, .nav-links a.active::after { transform: scaleX(1); }
 
-      .phone-pill {
-        border: 1px solid rgba(255,255,255,.15);
-        background: linear-gradient(135deg, rgba(201,29,29,.2), rgba(255,255,255,.05));
-        padding: 12px 16px;
-        color: #fff;
-        font-family: "Barlow Condensed", Inter, sans-serif;
-        font-size: 1.35rem;
+      .nav-call {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        border: 1px solid rgba(245,245,245,.16);
+        border-radius: 999px;
+        padding: 12px 18px;
+        background: rgba(255,255,255,.045);
+        color: white;
         font-weight: 900;
-        letter-spacing: .04em;
         white-space: nowrap;
+        transition: .22s ease;
       }
-
-      .announcement {
-        display: none;
-        padding: 12px clamp(18px, 5vw, 76px);
-        background: linear-gradient(90deg, var(--accent), rgba(201,29,29,.2));
-        color: #fff;
-        font-weight: 900;
-        letter-spacing: .04em;
-        text-transform: uppercase;
-      }
-
-      .announcement.show { display: block; }
+      .nav-call:hover { border-color: var(--red); background: rgba(229,57,53,.12); transform: translateY(-1px); }
 
       .page { display: none; }
       .page.active { display: block; }
 
       .hero {
         position: relative;
-        padding: clamp(46px, 7vw, 96px) clamp(18px, 5vw, 76px) 58px;
+        min-height: 820px;
+        padding: clamp(58px, 8vw, 120px) clamp(18px, 5vw, 78px) 70px;
+        display: grid;
+        align-items: center;
         overflow: hidden;
       }
-
       .hero::before {
         content: "";
         position: absolute;
         inset: 0;
-        opacity: .15;
         background:
-          linear-gradient(135deg, transparent 0 42%, rgba(255,255,255,.4) 45%, transparent 48%),
-          linear-gradient(45deg, transparent 0 42%, rgba(255,255,255,.22) 45%, transparent 48%);
-        background-size: 46px 46px;
-        pointer-events: none;
+          linear-gradient(90deg, var(--bg) 0%, rgba(15,15,16,.88) 36%, rgba(15,15,16,.36) 68%, var(--bg) 100%),
+          var(--hero-img) center right / cover no-repeat;
+        filter: grayscale(1) contrast(1.08);
+        opacity: .84;
       }
-
       .hero::after {
         content: "";
         position: absolute;
-        width: 720px;
-        height: 140px;
-        left: 3%;
-        top: 18%;
+        width: 780px;
+        height: 210px;
+        left: -80px;
+        top: 27%;
+        background: linear-gradient(90deg, transparent, rgba(229,57,53,.6), transparent);
         transform: rotate(-10deg);
-        background: linear-gradient(90deg, transparent, rgba(201,29,29,.58), transparent);
-        filter: blur(4px);
+        filter: blur(10px);
         opacity: .75;
       }
 
-      .hero-grid {
+      .hero-inner {
         position: relative;
-        z-index: 1;
-        display: grid;
-        grid-template-columns: .88fr 1.12fr;
-        align-items: center;
-        gap: clamp(28px, 5vw, 70px);
+        z-index: 2;
+        max-width: 780px;
       }
-
-      .eyebrow {
-        color: var(--accent-2);
-        font-size: .78rem;
+      .kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--red);
+        font-size: .82rem;
         font-weight: 900;
         letter-spacing: .24em;
         text-transform: uppercase;
       }
+      .kicker::before { content: ""; width: 42px; height: 2px; background: var(--red); }
 
       .hero h1 {
-        margin-top: 14px;
-        font-size: clamp(4.4rem, 10vw, 10.8rem);
-        text-shadow: 5px 5px 0 #000;
+        margin-top: 20px;
+        font-size: clamp(5.4rem, 12vw, 13.2rem);
+        text-shadow: 0 16px 50px rgba(0,0,0,.62);
+      }
+      .hero h1 span { display: block; color: var(--red); }
+      .hero p {
+        max-width: 590px;
+        margin: 22px 0 0;
+        color: rgba(245,245,245,.82);
+        font-size: clamp(1.05rem, 1.25vw, 1.28rem);
+        font-weight: 600;
+        line-height: 1.78;
       }
 
-      .hero h1 span {
-        display: block;
-        color: var(--accent-2);
-        transform: rotate(-2deg);
+      .hero-tire {
+        position: absolute;
+        z-index: 1;
+        right: clamp(-190px, -7vw, -70px);
+        bottom: -170px;
+        width: min(760px, 58vw);
+        aspect-ratio: 1;
+        border-radius: 999px;
+        background: var(--hero-img) center / cover;
+        filter: grayscale(1) contrast(1.16) drop-shadow(-34px 30px 70px rgba(0,0,0,.78));
+        opacity: .9;
+        border: 1px solid rgba(255,255,255,.1);
       }
-
-      .hero-copy {
-        max-width: 620px;
-        color: #ded7cd;
-        font-size: 1.08rem;
-        font-weight: 700;
-        line-height: 1.8;
-      }
-
-      .hero-visual {
-        min-height: 600px;
-        position: relative;
-        border: 1px solid var(--line);
-        background:
-          linear-gradient(90deg, rgba(0,0,0,.15), rgba(0,0,0,.78)),
-          url("https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1600&q=88") center/cover;
-        filter: grayscale(1);
-        box-shadow: var(--shadow);
-        overflow: hidden;
-      }
-
-      .hero-visual::after {
+      .hero-tire::before {
         content: "";
         position: absolute;
-        inset: auto 0 0;
-        height: 190px;
-        background: linear-gradient(transparent, #070707);
+        inset: 12%;
+        border-radius: inherit;
+        border: 44px solid rgba(0,0,0,.5);
+        box-shadow: inset 0 0 0 2px rgba(255,255,255,.12);
       }
 
-      .hero-card {
-        position: absolute;
-        right: 24px;
-        bottom: 24px;
-        left: 24px;
-        z-index: 1;
-        border-left: 4px solid var(--accent);
-        background: rgba(0,0,0,.72);
-        padding: 22px;
-        backdrop-filter: blur(12px);
-      }
-
-      .actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 28px; }
+      .actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 34px; }
       .btn {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        border: 1px solid var(--line);
-        min-height: 50px;
-        padding: 13px 24px;
-        background: rgba(255,255,255,.06);
-        color: #fff;
-        font-size: .92rem;
+        gap: 10px;
+        min-height: 54px;
+        border: 1px solid rgba(245,245,245,.16);
+        border-radius: 12px;
+        padding: 14px 24px;
+        background: rgba(245,245,245,.055);
+        color: white;
+        font-size: .88rem;
         font-weight: 900;
-        letter-spacing: .04em;
+        letter-spacing: .08em;
         text-transform: uppercase;
-        transition: .2s ease;
+        transition: .22s ease;
       }
-      .btn:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.3); }
-      .btn.red { border-color: var(--accent); background: linear-gradient(135deg, var(--accent), #8e1010); }
-      .btn.light { background: var(--cream); color: #070707; }
-      .btn.small { min-height: 38px; padding: 9px 12px; font-size: .78rem; }
+      .btn:hover { transform: translateY(-2px); border-color: rgba(245,245,245,.34); background: rgba(245,245,245,.09); }
+      .btn.red { border-color: var(--red); background: linear-gradient(135deg, var(--red), var(--red2)); box-shadow: 0 20px 50px rgba(229,57,53,.22); }
+      .btn.red:hover { box-shadow: 0 24px 70px rgba(229,57,53,.3); }
+      .btn.dark { background: rgba(0,0,0,.36); }
+      .btn.small { min-height: 38px; padding: 9px 12px; border-radius: 10px; font-size: .72rem; }
+      .btn.danger { border-color: rgba(255,90,90,.34); color: #ffb9b9; }
 
-      .stats {
+      .hero-stats {
+        position: relative;
+        z-index: 2;
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 12px;
-        margin-top: 34px;
-      }
-
-      .stat {
+        gap: 1px;
+        max-width: 1000px;
+        margin-top: 72px;
         border: 1px solid var(--line);
-        background: rgba(0,0,0,.55);
-        padding: 16px;
+        background: var(--line);
       }
-      .stat b {
+      .hero-stats article {
+        background: rgba(15,15,16,.86);
+        padding: 24px;
+        backdrop-filter: blur(12px);
+      }
+      .counter {
         display: block;
-        font-family: "Barlow Condensed", Inter, sans-serif;
-        font-size: 2.8rem;
-        font-weight: 900;
-        line-height: .9;
-      }
-      .stat span { color: var(--muted); font-size: .72rem; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; }
-
-      .service-rail {
-        margin: 0 clamp(18px, 6vw, 100px);
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        border-top: 2px solid var(--accent);
-        background: linear-gradient(180deg, #151515, #090909);
-        box-shadow: var(--shadow);
-      }
-
-      .service-rail article {
-        display: flex;
-        gap: 18px;
-        align-items: center;
-        padding: 26px;
-        border-right: 1px solid var(--line);
-      }
-      .service-rail article:last-child { border-right: 0; }
-      .round {
-        display: grid;
-        place-items: center;
-        width: 64px;
-        height: 64px;
-        flex: 0 0 auto;
-        border: 2px solid var(--accent);
-        border-radius: 999px;
-        color: var(--accent-2);
         font-family: "Barlow Condensed";
-        font-size: 2rem;
+        font-size: clamp(3rem, 5vw, 5rem);
         font-weight: 900;
+        line-height: .84;
+      }
+      .hero-stats span:last-child {
+        display: block;
+        margin-top: 10px;
+        color: var(--gray);
+        font-size: .76rem;
+        font-weight: 900;
+        letter-spacing: .14em;
+        text-transform: uppercase;
       }
 
-      .section { padding: 82px clamp(18px, 5vw, 76px); }
+      .section { padding: clamp(70px, 8vw, 120px) clamp(18px, 5vw, 78px); }
       .section-head {
         display: flex;
-        align-items: end;
+        align-items: flex-end;
         justify-content: space-between;
-        gap: 22px;
-        margin-bottom: 30px;
+        gap: 28px;
+        margin-bottom: 38px;
       }
-      .section-head h2, .section-head h1 { font-size: clamp(3.1rem, 6.2vw, 6.8rem); }
-      .muted { color: var(--muted); line-height: 1.72; }
+      .section-head h2, .section-head h1 { font-size: clamp(3.3rem, 7vw, 7.6rem); }
+      .section-head p { max-width: 520px; color: var(--gray); line-height: 1.7; font-weight: 600; }
+      .muted { color: var(--gray); line-height: 1.7; }
 
-      .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-      .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
-
-      .panel {
+      .services-grid, .why-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+      }
+      .service-card, .why-card, .panel {
         border: 1px solid var(--line);
-        border-top: 2px solid var(--accent);
-        background: var(--panel);
-        padding: 26px;
-        box-shadow: 0 22px 60px rgba(0,0,0,.35);
+        border-radius: 22px;
+        background:
+          linear-gradient(180deg, rgba(255,255,255,.074), rgba(255,255,255,.032));
+        box-shadow: 0 24px 70px rgba(0,0,0,.3);
       }
-      .panel h3 { font-size: 2.55rem; }
+      .service-card, .why-card { padding: 28px; transition: .25s ease; }
+      .service-card:hover, .why-card:hover { transform: translateY(-5px); border-color: rgba(229,57,53,.55); }
+      .icon-box {
+        display: grid;
+        place-items: center;
+        width: 58px;
+        height: 58px;
+        border-radius: 18px;
+        background: rgba(229,57,53,.12);
+        color: var(--red);
+        margin-bottom: 28px;
+      }
+      .service-card h3, .why-card h3 { font-size: 2.35rem; }
+      .service-card p, .why-card p { color: var(--gray); font-weight: 600; line-height: 1.65; }
+
+      .feature-band {
+        position: relative;
+        overflow: hidden;
+        border-block: 1px solid var(--line);
+        background:
+          linear-gradient(90deg, rgba(15,15,16,.92), rgba(15,15,16,.62)),
+          var(--hero-img) center / cover no-repeat;
+        filter: none;
+      }
+      .feature-band .section { position: relative; z-index: 1; }
+      .feature-band::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 72% 50%, rgba(229,57,53,.25), transparent 30rem);
+      }
 
       .inventory {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 20px;
+        gap: 22px;
       }
-
       .product-card {
         overflow: hidden;
         border: 1px solid var(--line);
-        background: linear-gradient(180deg, rgba(255,255,255,.085), rgba(255,255,255,.032));
-        box-shadow: 0 24px 80px rgba(0,0,0,.45);
-        transition: .28s ease;
+        border-radius: 24px;
+        background: linear-gradient(180deg, rgba(255,255,255,.078), rgba(255,255,255,.028));
+        box-shadow: var(--shadow);
+        transition: .25s ease;
       }
-      .product-card:hover {
-        transform: translateY(-5px);
-        border-color: rgba(201,29,29,.72);
-        box-shadow: 0 32px 110px rgba(201,29,29,.16);
-      }
+      .product-card:hover { transform: translateY(-5px); border-color: rgba(229,57,53,.58); }
       .product-media {
         position: relative;
         height: 270px;
         overflow: hidden;
-        border-bottom: 1px solid var(--line);
-        background: radial-gradient(circle at 50% 12%, rgba(201,29,29,.32), transparent 42%), #101010;
+        background: var(--bg2);
       }
       .product-media img {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        filter: grayscale(1);
-        transition: .5s ease;
+        filter: grayscale(1) contrast(1.05);
+        transition: .45s ease;
       }
-      .product-card:hover img { transform: scale(1.055); filter: grayscale(0); }
+      .product-card:hover .product-media img { transform: scale(1.055); filter: grayscale(.25) contrast(1.05); }
       .product-media::after {
         content: "";
         position: absolute;
         inset: 0;
-        background: linear-gradient(0deg, #000, rgba(0,0,0,.16), transparent);
-      }
-      .stock-badge, .media-tags span {
-        position: relative;
-        z-index: 2;
-        border: 1px solid rgba(255,255,255,.18);
-        background: rgba(0,0,0,.68);
-        color: #fff;
-        padding: 7px 10px;
-        font-size: .72rem;
-        font-weight: 900;
-        letter-spacing: .14em;
-        text-transform: uppercase;
-        backdrop-filter: blur(10px);
+        background: linear-gradient(0deg, rgba(0,0,0,.92), rgba(0,0,0,.18), transparent);
       }
       .stock-badge {
         position: absolute;
-        left: 16px;
+        z-index: 2;
         top: 16px;
-        border-color: rgba(201,29,29,.68);
+        left: 16px;
+        border: 1px solid rgba(229,57,53,.55);
+        border-radius: 999px;
+        background: rgba(0,0,0,.72);
+        padding: 7px 12px;
+        font-size: .72rem;
+        font-weight: 900;
+        letter-spacing: .13em;
+        text-transform: uppercase;
+        backdrop-filter: blur(10px);
       }
       .media-tags {
         position: absolute;
-        z-index: 3;
+        z-index: 2;
         left: 16px;
         right: 16px;
         bottom: 16px;
@@ -414,107 +430,115 @@
         justify-content: space-between;
         gap: 10px;
       }
+      .media-tags span {
+        border: 1px solid rgba(255,255,255,.18);
+        border-radius: 999px;
+        background: rgba(0,0,0,.62);
+        padding: 7px 12px;
+        font-size: .72rem;
+        font-weight: 900;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+      }
       .product-body { padding: 24px; }
-      .product-body h3 { margin-top: 8px; color: #fff; font-size: 2.65rem; }
+      .product-body h3 { margin-top: 9px; font-size: 2.7rem; }
       .size-row {
         display: flex;
-        align-items: center;
         justify-content: space-between;
-        gap: 14px;
-        margin-top: 14px;
-        padding: 13px 0;
+        gap: 18px;
+        margin-top: 16px;
+        padding-block: 14px;
         border-top: 1px solid var(--line);
         border-bottom: 1px solid var(--line);
       }
-      .size-row span, .buy-row small {
-        color: var(--muted);
+      .size-row span, .price-label {
+        color: var(--gray);
         font-size: .76rem;
         font-weight: 900;
-        letter-spacing: .16em;
+        letter-spacing: .15em;
         text-transform: uppercase;
       }
       .buy-row {
         display: flex;
-        align-items: end;
+        align-items: flex-end;
         justify-content: space-between;
         gap: 18px;
-        margin-top: 20px;
+        margin-top: 22px;
       }
       .price {
-        color: #fff;
         font-family: "Barlow Condensed";
-        font-size: 4.1rem;
+        font-size: 4.5rem;
         font-weight: 900;
-        line-height: .84;
+        line-height: .82;
       }
 
       .filters, .admin-grid {
         display: grid;
         grid-template-columns: repeat(6, 1fr);
         gap: 12px;
-        margin-bottom: 24px;
       }
-      .field { display: grid; gap: 7px; }
+      .panel { padding: 24px; }
+      .field { display: grid; gap: 8px; }
       label, .label {
-        color: var(--muted);
-        font-size: .75rem;
+        color: var(--gray);
+        font-size: .76rem;
         font-weight: 900;
-        letter-spacing: .16em;
+        letter-spacing: .14em;
         text-transform: uppercase;
       }
       input, select, textarea {
         width: 100%;
         border: 1px solid var(--line);
+        border-radius: 12px;
         background: rgba(255,255,255,.06);
         color: #fff;
-        padding: 13px;
+        padding: 13px 14px;
         outline: none;
+        transition: .18s ease;
       }
-      option { background: #111; }
-      input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(201,29,29,.18); }
-
-      .light {
-        background: #f5eee2;
-        color: #111;
-      }
-      .light .muted { color: #4d4942; }
-      .light .panel { background: #fff; border-color: rgba(0,0,0,.12); box-shadow: 0 22px 60px rgba(0,0,0,.12); }
+      option { background: #161616; }
+      input:focus, select:focus, textarea:focus { border-color: var(--red); box-shadow: 0 0 0 4px rgba(229,57,53,.14); }
 
       .admin-shell { display: grid; grid-template-columns: 260px 1fr; gap: 20px; align-items: start; }
-      .admin-side { position: sticky; top: 148px; display: grid; gap: 10px; }
+      .admin-side { display: grid; gap: 10px; position: sticky; top: 120px; }
       .admin-tab {
         border: 1px solid var(--line);
-        background: rgba(255,255,255,.055);
-        color: #fff;
-        padding: 14px;
+        border-radius: 14px;
+        background: rgba(255,255,255,.045);
+        color: white;
+        padding: 15px;
         text-align: left;
         font-weight: 900;
+        letter-spacing: .08em;
         text-transform: uppercase;
       }
-      .admin-tab.active { border-color: var(--accent); background: rgba(201,29,29,.18); }
+      .admin-tab.active { border-color: var(--red); background: rgba(229,57,53,.13); }
       .admin-pane { display: none; }
       .admin-pane.active { display: block; }
       .admin-row {
         display: grid;
-        grid-template-columns: 120px 1fr auto;
+        grid-template-columns: 128px 1fr auto;
         gap: 18px;
         align-items: center;
+        margin-top: 14px;
       }
-      .admin-row img { height: 112px; width: 120px; object-fit: cover; filter: grayscale(1); }
+      .admin-row img { height: 112px; width: 128px; object-fit: cover; border-radius: 16px; filter: grayscale(1); }
       .status-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-      .danger { border-color: rgba(255,80,80,.35); color: #ffb4b4; }
 
+      .contact-grid { display: grid; grid-template-columns: .9fr 1.1fr; gap: 22px; }
       .map {
-        min-height: 310px;
         display: grid;
         place-items: center;
+        min-height: 300px;
         margin-top: 18px;
         border: 1px solid var(--line);
+        border-radius: 20px;
         background:
-          linear-gradient(90deg, rgba(255,255,255,.055) 1px, transparent 1px),
-          linear-gradient(rgba(255,255,255,.055) 1px, transparent 1px),
-          #111;
+          linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px),
+          linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+          var(--bg2);
         background-size: 34px 34px;
+        color: var(--gray);
         text-align: center;
       }
 
@@ -522,54 +546,60 @@
         display: flex;
         justify-content: space-between;
         gap: 20px;
-        padding: 34px clamp(18px, 5vw, 76px);
+        padding: 34px clamp(18px, 5vw, 78px);
         border-top: 1px solid var(--line);
-        background: #000;
-        color: var(--muted);
+        color: var(--gray);
+        background: #080808;
       }
-
       .mobile-call {
         display: none;
         position: fixed;
-        z-index: 50;
+        z-index: 80;
         left: 14px;
         right: 14px;
         bottom: 14px;
-        text-align: center;
+        box-shadow: 0 20px 60px rgba(0,0,0,.45);
       }
 
-      @media (max-width: 1120px) {
-        .topbar, .section-head, .footer { flex-direction: column; align-items: flex-start; }
-        .hero-grid, .inventory, .grid-3, .grid-4, .service-rail, .admin-shell { grid-template-columns: 1fr; }
+      .reveal { opacity: 0; transform: translateY(22px); transition: .7s ease; }
+      .reveal.in { opacity: 1; transform: translateY(0); }
+
+      @media (max-width: 1180px) {
+        .hero { min-height: 740px; }
+        .hero-tire { opacity: .35; width: 720px; right: -240px; }
+        .services-grid, .why-grid, .inventory { grid-template-columns: repeat(2, 1fr); }
+        .hero-stats { grid-template-columns: repeat(2, 1fr); }
         .filters, .admin-grid { grid-template-columns: repeat(2, 1fr); }
-        .hero-visual { min-height: 390px; }
+        .admin-shell, .contact-grid { grid-template-columns: 1fr; }
         .admin-side { position: static; }
       }
 
-      @media (max-width: 640px) {
-        .site { width: 100%; }
-        .logo { width: min(260px, 78vw); }
-        .logo img { height: 82px; }
-        .phone-pill { width: 100%; text-align: center; }
-        .filters, .admin-grid { grid-template-columns: 1fr; }
-        .stats { grid-template-columns: repeat(2, 1fr); }
-        .hero h1 { font-size: 4.3rem; }
-        .mobile-call { display: block; }
+      @media (max-width: 720px) {
+        .nav { align-items: flex-start; flex-direction: column; }
+        .brand { width: min(280px, 86vw); }
+        .brand img { height: 76px; }
+        .nav-call { width: 100%; justify-content: center; }
+        .nav-links { justify-content: flex-start; }
+        .hero { min-height: auto; padding-top: 54px; }
+        .hero h1 { font-size: 5.1rem; }
+        .hero-tire { display: none; }
+        .services-grid, .why-grid, .inventory, .filters, .admin-grid { grid-template-columns: 1fr; }
+        .section-head, .footer { flex-direction: column; align-items: flex-start; }
         .admin-row { grid-template-columns: 1fr; }
         .admin-row img { width: 100%; height: 190px; }
+        .mobile-call { display: flex; }
       }
     </style>
   </head>
-  <body class="street">
+  <body class="theme-track">
     <div class="site">
-      <div class="announcement" id="announcement"></div>
+      <div class="announce" id="announcement"></div>
 
-      <header class="topbar">
-        <a class="logo" href="#home" data-page="home" aria-label="Akron Tire Shop home">
+      <header class="nav" id="navbar">
+        <a class="brand" href="#home" data-page="home" aria-label="Akron Tire Shop home">
           <img src="/assets/akron-tire-shop-logo.png" alt="Akron Tire Shop" />
         </a>
-
-        <nav class="nav" aria-label="Main navigation">
+        <nav class="nav-links" aria-label="Main navigation">
           <a class="active" href="#home" data-page="home">Home</a>
           <a href="#tires" data-page="tires">Tires</a>
           <a href="#services" data-page="services">Services</a>
@@ -577,72 +607,60 @@
           <a href="#contact" data-page="contact">Contact</a>
           <a href="#admin" data-page="admin">Admin</a>
         </nav>
-
-        <a class="phone-pill" id="phoneTop" href="tel:+13305550000">CALL 330-XXX-XXXX</a>
+        <a class="nav-call" id="phoneTop" href="tel:+13305550000"><i data-lucide="phone"></i> Call 330-XXX-XXXX</a>
       </header>
 
       <main>
         <section id="home" class="page active">
           <div class="hero">
-            <div class="hero-grid">
-              <div>
-                <p class="eyebrow">Akron tire inventory + tire service</p>
-                <h1 id="heroTitle">Good Tires.<span>Good Grip.</span></h1>
-                <p class="hero-copy" id="heroText">New and used tires, professional mounting and balancing, and dependable tire repairs. No runaround. Just tires done right.</p>
-                <div class="actions">
-                  <a class="btn red" href="#tires" data-page="tires">Browse Tires</a>
-                  <a class="btn" href="#services" data-page="services">Our Services</a>
-                  <a class="btn light" id="directionsTop" href="https://maps.google.com/?q=Akron%2C%20Ohio" target="_blank" rel="noreferrer">Get Directions</a>
-                </div>
-                <div class="stats">
-                  <div class="stat"><b id="stockCount">0</b><span>public tires</span></div>
-                  <div class="stat"><b id="setCount">0</b><span>sets / pairs</span></div>
-                  <div class="stat"><b>5</b><span>tire services</span></div>
-                  <div class="stat"><b>6</b><span>days open</span></div>
-                </div>
+            <div class="hero-inner reveal">
+              <span class="kicker">Akron tire specialists</span>
+              <h1 id="heroTitle">Good Tires.<span>Good Prices.</span></h1>
+              <p id="heroText">New and used tires, professional mounting and balancing, and dependable tire repairs. Straightforward service built to get you back on the road.</p>
+              <div class="actions">
+                <a class="btn red" id="heroCall" href="tel:+13305550000"><i data-lucide="phone-call"></i> Call Now</a>
+                <a class="btn dark" href="#tires" data-page="tires"><i data-lucide="circle-dot"></i> Browse Tires</a>
               </div>
-              <div class="hero-visual">
-                <div class="hero-card">
-                  <p class="eyebrow">Mounted. Balanced. Road Ready.</p>
-                  <h3>Good prices. Get back on the road.</h3>
-                  <p class="muted">Fast tire-focused help for Akron drivers.</p>
-                </div>
-              </div>
+            </div>
+            <div class="hero-tire" aria-hidden="true"></div>
+            <div class="hero-stats reveal" id="stats">
+              <article><span class="counter" data-target="1500" data-suffix="+">0</span><span>Tires installed</span></article>
+              <article><span class="counter" data-target="500" data-suffix="+">0</span><span>Repairs completed</span></article>
+              <article><span class="counter" data-target="10" data-suffix="+">0</span><span>Years experience</span></article>
+              <article><span class="counter" data-target="49" data-decimal="true" data-suffix="/5">0</span><span>Customer rating</span></article>
             </div>
           </div>
 
-          <div class="service-rail">
-            <article><span class="round">T</span><div><h3>New & Used Tires</h3><p class="muted">All brands. All sizes.</p></div></article>
-            <article><span class="round">B</span><div><h3>Mount & Balance</h3><p class="muted">Smooth ride. Every time.</p></div></article>
-            <article><span class="round">R</span><div><h3>Tire Repairs</h3><p class="muted">Patches, plugs, and leak checks.</p></div></article>
-          </div>
-
-          <div class="section">
+          <section class="section reveal">
             <div class="section-head">
-              <div><p class="eyebrow">Featured stock</p><h2>Ready To Roll.</h2></div>
-              <a class="btn red" href="#tires" data-page="tires">View All Tires</a>
+              <div><span class="kicker">Featured inventory</span><h2>Ready To Roll.</h2></div>
+              <p>Current public tire stock from the shop inventory. Call to confirm exact availability before stopping by.</p>
             </div>
             <div class="inventory" id="homeInventory"></div>
-          </div>
+          </section>
 
-          <div class="light section">
-            <p class="eyebrow">Why choose us</p>
-            <h2>Local. Straightforward. Tire-focused.</h2>
-            <div class="grid-4" style="margin-top:24px">
-              <article class="panel"><h3>Clear Pricing</h3><p class="muted">Practical tire options and no pressure to buy unrelated services.</p></article>
-              <article class="panel"><h3>Real Stock</h3><p class="muted">Inventory can be updated from the admin dashboard anytime.</p></article>
-              <article class="panel"><h3>Fast Help</h3><p class="muted">Built around getting customers back on the road.</p></article>
-              <article class="panel"><h3>Akron Local</h3><p class="muted">A rugged neighborhood shop feel, not a corporate template.</p></article>
+          <section class="feature-band">
+            <div class="section reveal">
+              <div class="section-head">
+                <div><span class="kicker">Why choose us</span><h2>Built For Drivers Who Need It Done Right.</h2></div>
+                <p>A sharper, honest tire-shop experience: practical prices, quick service, and no unrelated upsell.</p>
+              </div>
+              <div class="why-grid">
+                <article class="why-card"><div class="icon-box"><i data-lucide="badge-dollar-sign"></i></div><h3>Affordable Prices</h3><p>Options for new and used tires that make sense for your budget.</p></article>
+                <article class="why-card"><div class="icon-box"><i data-lucide="timer"></i></div><h3>Fast Service</h3><p>Designed for same-day help when the tire issue cannot wait.</p></article>
+                <article class="why-card"><div class="icon-box"><i data-lucide="shield-check"></i></div><h3>Honest Work</h3><p>Clear recommendations focused only on tire service and safety.</p></article>
+                <article class="why-card"><div class="icon-box"><i data-lucide="wrench"></i></div><h3>Experienced Techs</h3><p>Mounting, balancing, and repair work handled with care.</p></article>
+              </div>
             </div>
-          </div>
+          </section>
         </section>
 
         <section id="tires" class="page section">
-          <div class="section-head">
-            <div><p class="eyebrow">Live inventory</p><h1>Tires In Stock.</h1></div>
-            <p class="muted">Sold tires are hidden from public listings. Call to confirm exact availability.</p>
+          <div class="section-head reveal">
+            <div><span class="kicker">Live inventory</span><h1>Tires In Stock.</h1></div>
+            <p>Sample inventory can be edited from the admin dashboard. Sold tires are hidden from public listings.</p>
           </div>
-          <div class="panel filters">
+          <div class="panel filters reveal">
             <div class="field"><label>New or Used</label><select id="condition"><option>Any</option><option>New</option><option>Used</option></select></div>
             <div class="field"><label>Tire Width</label><select id="width"><option>Any</option><option>205</option><option>215</option><option>225</option><option>235</option><option>245</option></select></div>
             <div class="field"><label>Aspect Ratio</label><select id="ratio"><option>Any</option><option>45</option><option>50</option><option>55</option><option>60</option><option>65</option></select></div>
@@ -650,57 +668,62 @@
             <div class="field"><label>Brand</label><select id="brand"><option>Any</option></select></div>
             <div class="field"><label>Price Range</label><select id="price"><option>Any</option><option>Under $100</option><option>$100-$300</option><option>$300+</option></select></div>
           </div>
-          <div class="inventory" id="inventory"></div>
+          <div class="inventory reveal" id="inventory"></div>
         </section>
 
         <section id="services" class="page section">
-          <div class="section-head">
-            <div><p class="eyebrow">Services</p><h1>Only Tires. Done Right.</h1></div>
-            <p class="muted">No alignments, rims, oil changes, brakes, TPMS service, towing, or unrelated work.</p>
+          <div class="section-head reveal">
+            <div><span class="kicker">Shop services</span><h1>Only Tires. Done Right.</h1></div>
+            <p>No alignments, rims, oil changes, brakes, TPMS service, towing, or unrelated work.</p>
           </div>
-          <div class="grid-3" id="servicesGrid"></div>
+          <div class="services-grid reveal" id="servicesGrid"></div>
         </section>
 
         <section id="about" class="page section">
-          <div class="section-head"><div><p class="eyebrow">About us</p><h1>Akron Tire Help Without The Runaround.</h1></div></div>
-          <div class="grid-3">
-            <article class="panel"><h3>Focused Work</h3><p class="muted">New tires, used tires, tire mounting, tire balancing, and tire repairs. That is it.</p></article>
-            <article class="panel"><h3>Local Feel</h3><p class="muted">Built for Akron drivers who need fair tire options and practical service.</p></article>
-            <article class="panel"><h3>No Extras</h3><p class="muted">Clear service list, clear communication, and tire-focused help.</p></article>
+          <div class="section-head reveal">
+            <div><span class="kicker">About Akron Tire Shop</span><h1>Focused Tire Work. No Runaround.</h1></div>
+            <p>A local shop presentation built around trust, clarity, and practical tire help.</p>
+          </div>
+          <div class="why-grid reveal">
+            <article class="why-card"><div class="icon-box"><i data-lucide="map-pin"></i></div><h3>Akron Local</h3><p>Placeholder location details can be updated from the admin panel.</p></article>
+            <article class="why-card"><div class="icon-box"><i data-lucide="clipboard-check"></i></div><h3>Clear Service List</h3><p>New tires, used tires, mounting, balancing, and repairs only.</p></article>
+            <article class="why-card"><div class="icon-box"><i data-lucide="gauge"></i></div><h3>Road Ready</h3><p>Service built around practical safety and getting customers moving.</p></article>
+            <article class="why-card"><div class="icon-box"><i data-lucide="handshake"></i></div><h3>Trust First</h3><p>Professional presentation, simple choices, and direct calls to confirm.</p></article>
           </div>
         </section>
 
         <section id="contact" class="page section">
-          <div class="section-head"><div><p class="eyebrow">Contact</p><h1>Call Or Stop By.</h1></div></div>
-          <div class="grid-3">
-            <article class="panel" style="grid-column:span 1">
+          <div class="section-head reveal"><div><span class="kicker">Contact</span><h1>Call Or Stop By.</h1></div></div>
+          <div class="contact-grid reveal">
+            <article class="panel">
               <h3 id="contactName">Akron Tire Shop</h3>
               <p class="muted" id="contactDetails"></p>
               <div class="actions">
-                <a class="btn red" id="callContact" href="tel:+13305550000">Click To Call</a>
-                <a class="btn" id="directionsContact" href="https://maps.google.com/?q=Akron%2C%20Ohio" target="_blank" rel="noreferrer">Get Directions</a>
+                <a class="btn red" id="callContact" href="tel:+13305550000"><i data-lucide="phone"></i> Click To Call</a>
+                <a class="btn dark" id="directionsContact" href="https://maps.google.com/?q=Akron%2C%20Ohio" target="_blank" rel="noreferrer"><i data-lucide="navigation"></i> Directions</a>
               </div>
               <div class="map">Map placeholder for Akron, Ohio</div>
             </article>
-            <form class="panel" id="contactForm" style="grid-column:span 2">
-              <h3>Contact Form</h3>
-              <div class="grid-3" style="margin-top:18px">
+            <form class="panel" id="contactForm" noValidate>
+              <h3>Request Tire Help</h3>
+              <div class="filters" style="grid-template-columns:repeat(2,1fr); margin-top:18px">
                 <label class="field"><span>Name</span><input name="name" required /></label>
                 <label class="field"><span>Phone</span><input name="phone" required /></label>
                 <label class="field"><span>Need</span><select name="need"><option>Tires</option><option>Mounting</option><option>Balancing</option><option>Repair</option></select></label>
+                <label class="field"><span>Preferred time</span><input name="time" placeholder="Today, tomorrow..." /></label>
               </div>
               <label class="field" style="margin-top:14px"><span>Message</span><textarea name="message" rows="6" required></textarea></label>
               <p id="formMsg" class="muted"></p>
-              <button class="btn red" type="submit">Send Request</button>
+              <button class="btn red" type="submit"><i data-lucide="send"></i> Send Request</button>
             </form>
           </div>
         </section>
 
         <section id="admin" class="page section">
-          <div id="adminLogin" class="panel" style="max-width:620px">
-            <p class="eyebrow">Admin dashboard</p>
-            <h1>Inventory Login</h1>
-            <p class="muted">Enter the admin code to customize inventory and shop settings.</p>
+          <div id="adminLogin" class="panel reveal" style="max-width:640px">
+            <span class="kicker">Admin dashboard</span>
+            <h1 style="margin-top:16px">Inventory Login</h1>
+            <p class="muted">Enter the admin code to customize inventory, styles, and shop settings.</p>
             <form id="loginForm" class="actions">
               <input id="code" type="password" placeholder="Admin code" />
               <button class="btn red">Unlock</button>
@@ -710,10 +733,9 @@
 
           <div id="adminPanel" style="display:none">
             <div class="section-head">
-              <div><p class="eyebrow">Admin dashboard</p><h1>Control Center.</h1></div>
-              <p class="muted">Code: 1111. This saves in this browser for now. Database sync can be added next.</p>
+              <div><span class="kicker">Admin dashboard</span><h1>Shop Control Center.</h1></div>
+              <p>Code: 1111. This saves on this browser until a real database is connected.</p>
             </div>
-
             <div class="admin-shell">
               <aside class="admin-side">
                 <button class="admin-tab active" data-admin-tab="inventoryPane">Inventory</button>
@@ -721,7 +743,6 @@
                 <button class="admin-tab" data-admin-tab="stylePane">Styles</button>
                 <button class="admin-tab" data-admin-tab="dataPane">Data Tools</button>
               </aside>
-
               <div>
                 <div id="inventoryPane" class="admin-pane active">
                   <form id="addForm" class="panel admin-grid">
@@ -739,14 +760,14 @@
                     <button class="btn red" type="submit">Add Tire</button>
                     <p id="adminMsg" class="muted"></p>
                   </form>
-                  <div class="panel" style="margin-bottom:18px">
-                    <div class="grid-3">
+                  <div class="panel" style="margin-top:18px">
+                    <div class="filters" style="grid-template-columns:repeat(3,1fr)">
                       <label class="field"><span>Search inventory</span><input id="adminSearch" placeholder="Brand, model, size..." /></label>
                       <label class="field"><span>Quick status</span><select id="adminStatus"><option>All</option><option>In Stock</option><option>Limited</option><option>Sold</option></select></label>
                       <label class="field"><span>Sort</span><select id="adminSort"><option>Newest</option><option>Price Low</option><option>Price High</option><option>Brand A-Z</option></select></label>
                     </div>
                   </div>
-                  <div class="inventory" style="grid-template-columns:1fr" id="adminList"></div>
+                  <div id="adminList"></div>
                 </div>
 
                 <div id="settingsPane" class="admin-pane">
@@ -757,28 +778,28 @@
                     <input name="address" placeholder="Address" />
                     <input name="hours" placeholder="Hours" />
                     <input name="sunday" placeholder="Sunday hours" />
-                    <input name="heroTitle" placeholder="Hero title" />
-                    <input name="heroAccent" placeholder="Hero accent word" />
+                    <input name="heroLine1" placeholder="Hero line 1" />
+                    <input name="heroLine2" placeholder="Hero line 2" />
                     <textarea name="heroText" rows="4" placeholder="Hero text" style="grid-column:span 3"></textarea>
                     <textarea name="announcement" rows="4" placeholder="Announcement bar text" style="grid-column:span 3"></textarea>
                     <button class="btn red" type="submit">Save Settings</button>
-                    <button class="btn" id="clearAnnouncement" type="button">Clear Announcement</button>
+                    <button class="btn dark" id="clearAnnouncement" type="button">Clear Announcement</button>
                   </form>
                 </div>
 
                 <div id="stylePane" class="admin-pane">
                   <div class="panel">
                     <h3>Site Style</h3>
-                    <p class="muted">Switch the whole site vibe without editing code.</p>
+                    <p class="muted">Switch between clean automotive themes without editing code.</p>
                     <div class="actions">
-                      <button class="btn red" data-style="street">Street Red</button>
-                      <button class="btn" data-style="steel">Dark Steel</button>
-                      <button class="btn" data-style="clean">Clean Shop</button>
+                      <button class="btn red" data-style="theme-track">Track Red</button>
+                      <button class="btn dark" data-style="theme-steel">Dark Steel</button>
+                      <button class="btn dark" data-style="theme-clean">Clean Shop</button>
                     </div>
-                    <div class="grid-3" style="margin-top:22px">
-                      <button class="btn" data-accent="#c91d1d">Red</button>
-                      <button class="btn" data-accent="#f97316">Orange</button>
-                      <button class="btn" data-accent="#d4a017">Gold</button>
+                    <div class="actions">
+                      <button class="btn dark" data-accent="#E53935">Red</button>
+                      <button class="btn dark" data-accent="#D97706">Amber</button>
+                      <button class="btn dark" data-accent="#B91C1C">Deep Red</button>
                     </div>
                   </div>
                 </div>
@@ -792,7 +813,7 @@
                       <button class="btn danger" id="resetData" type="button">Reset Inventory</button>
                     </div>
                     <textarea id="importBox" rows="8" placeholder="Paste exported JSON here to import..." style="margin-top:18px"></textarea>
-                    <div class="actions"><button class="btn" id="importData" type="button">Import JSON</button></div>
+                    <div class="actions"><button class="btn dark" id="importData" type="button">Import JSON</button></div>
                   </div>
                 </div>
               </div>
@@ -802,31 +823,31 @@
       </main>
 
       <footer class="footer">
-        <p>(c) <span id="year"></span> <span id="footerName">Akron Tire Shop</span>. All placeholder details can be edited in Admin.</p>
-        <p>New tires. Used tires. Mounting. Balancing. Repairs.</p>
+        <p>(c) <span id="year"></span> <span id="footerName">Akron Tire Shop</span>. New tires, used tires, mounting, balancing, and repairs.</p>
+        <p>Good tires. Good prices. Get back on the road.</p>
       </footer>
     </div>
 
-    <a class="btn red mobile-call" id="mobileCall" href="tel:+13305550000">Call Akron Tire Shop</a>
+    <a class="btn red mobile-call" id="mobileCall" href="tel:+13305550000"><i data-lucide="phone"></i> Call Akron Tire Shop</a>
 
     <script>
-      const fallback = "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=900&q=88";
-      const tireKey = "akron-tire-inventory-v3";
-      const settingsKey = "akron-tire-settings-v1";
+      const tirePhoto = "https://images.unsplash.com/photo-1612692064035-df2d74a77cb8?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=78&w=1400";
+      const tireKey = "akron-tire-inventory-v4";
+      const settingsKey = "akron-tire-settings-v2";
+      const oldKeys = ["akron-tire-inventory-v3", "akron-tire-inventory-v2"];
 
       const services = [
-        ["New Tires", "Fresh tire options for everyday vehicles. Call to confirm current availability."],
-        ["Used Tires", "Budget-friendly used tires checked for practical tread and road-ready condition."],
-        ["Tire Mounting", "Professional mounting for purchased or customer-provided tires."],
-        ["Tire Balancing", "Wheel balancing to reduce vibration and support smoother driving."],
-        ["Tire Repairs", "Leak checks and puncture repairs when the tire can be safely fixed."]
+        ["New Tires", "Fresh tire options for daily drivers, work vehicles, and family cars.", "circle-dot"],
+        ["Used Tires", "Budget-friendly tires checked for practical tread and road-ready condition.", "refresh-ccw"],
+        ["Mount & Balance", "Professional mounting and balancing for a smoother ride.", "wrench"],
+        ["Flat Repair", "Leak checks and puncture repairs when the tire can be safely fixed.", "shield-check"]
       ];
 
       const defaults = [
-        { id:"t1", brand:"Goodyear", model:"Assurance All-Season", size:"225/60R17", width:"225", ratio:"60", rim:"17", condition:"New", quantityType:"Set of 4", price:516, availability:"In Stock", featured:true, image:fallback },
-        { id:"t2", brand:"Michelin", model:"Defender T+H", size:"215/55R17", width:"215", ratio:"55", rim:"17", condition:"Used", quantityType:"Pair of 2", price:156, availability:"Limited", featured:true, image:fallback },
-        { id:"t3", brand:"Firestone", model:"All Season", size:"205/55R16", width:"205", ratio:"55", rim:"16", condition:"New", quantityType:"Single", price:105, availability:"In Stock", featured:false, image:fallback },
-        { id:"t4", brand:"Cooper", model:"Endeavor Plus", size:"235/65R18", width:"235", ratio:"65", rim:"18", condition:"Used", quantityType:"Set of 4", price:368, availability:"In Stock", featured:true, image:fallback }
+        { id:"t1", brand:"Goodyear", model:"Assurance All-Season", size:"225/60R17", width:"225", ratio:"60", rim:"17", condition:"New", quantityType:"Set of 4", price:516, availability:"In Stock", featured:true, image:tirePhoto },
+        { id:"t2", brand:"Michelin", model:"Defender T+H", size:"215/55R17", width:"215", ratio:"55", rim:"17", condition:"Used", quantityType:"Pair of 2", price:156, availability:"Limited", featured:true, image:tirePhoto },
+        { id:"t3", brand:"Firestone", model:"All Season", size:"205/55R16", width:"205", ratio:"55", rim:"16", condition:"New", quantityType:"Single", price:105, availability:"In Stock", featured:false, image:tirePhoto },
+        { id:"t4", brand:"Cooper", model:"Endeavor Plus", size:"235/65R18", width:"235", ratio:"65", rim:"18", condition:"Used", quantityType:"Set of 4", price:368, availability:"In Stock", featured:true, image:tirePhoto }
       ];
 
       const defaultSettings = {
@@ -836,61 +857,78 @@
         address: "Akron, Ohio",
         hours: "Monday-Saturday, 9:00 AM-6:00 PM",
         sunday: "Closed",
-        heroTitle: "Good Tires.",
-        heroAccent: "Good Grip.",
-        heroText: "New and used tires, professional mounting and balancing, and dependable tire repairs. No runaround. Just tires done right.",
+        heroLine1: "Good Tires.",
+        heroLine2: "Good Prices.",
+        heroText: "New and used tires, professional mounting and balancing, and dependable tire repairs. Straightforward service built to get you back on the road.",
         announcement: "",
-        style: "street",
-        accent: "#c91d1d"
+        style: "theme-track",
+        accent: "#E53935"
       };
 
-      let tires = JSON.parse(localStorage.getItem(tireKey) || "null") || JSON.parse(localStorage.getItem("akron-tire-inventory-v2") || "null") || defaults;
+      function readInventory() {
+        const current = JSON.parse(localStorage.getItem(tireKey) || "null");
+        if (current) return current;
+        for (const key of oldKeys) {
+          const old = JSON.parse(localStorage.getItem(key) || "null");
+          if (old) return old.map((t, i) => ({ featured: i < 3, image: t.image || tirePhoto, ...t }));
+        }
+        return defaults;
+      }
+
+      let tires = readInventory();
       let settings = { ...defaultSettings, ...(JSON.parse(localStorage.getItem(settingsKey) || "null") || {}) };
       let pendingImage = "";
 
       const $ = (id) => document.getElementById(id);
       const saveTires = () => localStorage.setItem(tireKey, JSON.stringify(tires));
       const saveSettings = () => localStorage.setItem(settingsKey, JSON.stringify(settings));
-
-      function publicTires() {
-        return tires.filter((t) => t.availability !== "Sold");
-      }
-
-      function tireCard(t) {
-        return `<article class="product-card">
-          <div class="product-media">
-            <img src="${t.image || fallback}" alt="${t.brand} ${t.model}">
-            <span class="stock-badge">${t.availability}</span>
-            <div class="media-tags"><span>${t.condition}</span><span>${t.quantityType}</span></div>
-          </div>
-          <div class="product-body">
-            <p class="eyebrow">${t.featured ? "Featured tire" : "In-stock tire"}</p>
-            <h3>${t.brand} ${t.model}</h3>
-            <div class="size-row"><span>Size</span><b>${t.size}</b></div>
-            <div class="buy-row"><div><small>Starting at</small><div class="price">$${t.price}</div></div><a class="btn red" href="${settings.phoneHref}">Call</a></div>
-          </div>
-        </article>`;
-      }
+      const publicTires = () => tires.filter((t) => t.availability !== "Sold");
 
       function applySettings() {
-        document.body.className = settings.style || "street";
-        document.documentElement.style.setProperty("--accent", settings.accent || "#c91d1d");
-        document.documentElement.style.setProperty("--accent-2", settings.accent || "#ff3b30");
-        $("heroTitle").innerHTML = `${settings.heroTitle || "Good Tires."}<span>${settings.heroAccent || "Good Grip."}</span>`;
+        document.body.className = settings.style || "theme-track";
+        document.documentElement.style.setProperty("--red", settings.accent || "#E53935");
+        document.documentElement.style.setProperty("--red2", settings.accent || "#b91f1b");
+        $("heroTitle").innerHTML = `${settings.heroLine1 || "Good Tires."}<span>${settings.heroLine2 || "Good Prices."}</span>`;
         $("heroText").textContent = settings.heroText || defaultSettings.heroText;
-        $("phoneTop").textContent = `CALL ${settings.phoneDisplay}`;
+        $("phoneTop").innerHTML = `<i data-lucide="phone"></i> Call ${settings.phoneDisplay}`;
         $("phoneTop").href = settings.phoneHref;
+        $("heroCall").href = settings.phoneHref;
         $("mobileCall").href = settings.phoneHref;
-        $("mobileCall").textContent = `Call ${settings.shopName}`;
+        $("mobileCall").innerHTML = `<i data-lucide="phone"></i> Call ${settings.shopName}`;
         $("callContact").href = settings.phoneHref;
         $("contactName").textContent = settings.shopName;
         $("footerName").textContent = settings.shopName;
         $("contactDetails").innerHTML = `<b>Phone:</b> <a href="${settings.phoneHref}">${settings.phoneDisplay}</a><br><b>Address:</b> ${settings.address}<br><b>Hours:</b> ${settings.hours}<br><b>Sunday:</b> ${settings.sunday}`;
-        const map = `https://maps.google.com/?q=${encodeURIComponent(settings.address || "Akron, Ohio")}`;
-        $("directionsTop").href = map;
-        $("directionsContact").href = map;
+        $("directionsContact").href = `https://maps.google.com/?q=${encodeURIComponent(settings.address || "Akron, Ohio")}`;
         $("announcement").textContent = settings.announcement || "";
         $("announcement").classList.toggle("show", Boolean(settings.announcement));
+      }
+
+      function tireCard(t) {
+        return `<article class="product-card reveal">
+          <div class="product-media">
+            <img src="${t.image || tirePhoto}" alt="${t.brand} ${t.model}">
+            <span class="stock-badge">${t.availability}</span>
+            <div class="media-tags"><span>${t.condition}</span><span>${t.quantityType}</span></div>
+          </div>
+          <div class="product-body">
+            <span class="kicker">${t.featured ? "Featured tire" : "In-stock tire"}</span>
+            <h3>${t.brand} ${t.model}</h3>
+            <div class="size-row"><span>Size</span><b>${t.size}</b></div>
+            <div class="buy-row">
+              <div><div class="price-label">Starting at</div><div class="price">$${t.price}</div></div>
+              <a class="btn red" href="${settings.phoneHref}">Call</a>
+            </div>
+          </div>
+        </article>`;
+      }
+
+      function renderServices() {
+        $("servicesGrid").innerHTML = services.map(([title, text, icon]) => `<article class="service-card">
+          <div class="icon-box"><i data-lucide="${icon}"></i></div>
+          <h3>${title}</h3>
+          <p>${text}</p>
+        </article>`).join("");
       }
 
       function renderFilters() {
@@ -902,14 +940,7 @@
       }
 
       function filteredPublic() {
-        const f = {
-          condition: $("condition").value,
-          width: $("width").value,
-          ratio: $("ratio").value,
-          rim: $("rim").value,
-          brand: $("brand").value,
-          price: $("price").value
-        };
+        const f = { condition: condition.value, width: width.value, ratio: ratio.value, rim: rim.value, brand: brand.value, price: price.value };
         return publicTires().filter((t) => {
           const p = Number(t.price);
           return (f.condition === "Any" || t.condition === f.condition)
@@ -925,23 +956,19 @@
         const search = ($("adminSearch")?.value || "").toLowerCase();
         const status = $("adminStatus")?.value || "All";
         const sort = $("adminSort")?.value || "Newest";
-        let rows = tires.filter((t) => {
-          const hay = `${t.brand} ${t.model} ${t.size}`.toLowerCase();
-          return hay.includes(search) && (status === "All" || t.availability === status);
-        });
+        let rows = tires.filter((t) => `${t.brand} ${t.model} ${t.size}`.toLowerCase().includes(search) && (status === "All" || t.availability === status));
         if (sort === "Price Low") rows.sort((a,b) => Number(a.price) - Number(b.price));
         if (sort === "Price High") rows.sort((a,b) => Number(b.price) - Number(a.price));
         if (sort === "Brand A-Z") rows.sort((a,b) => String(a.brand).localeCompare(String(b.brand)));
-
         $("adminList").innerHTML = rows.map((t) => `<article class="panel admin-row">
-          <img src="${t.image || fallback}" alt="">
+          <img src="${t.image || tirePhoto}" alt="">
           <div>
             <h3>${t.brand} ${t.model}</h3>
             <p class="muted">${t.size} - ${t.condition} - ${t.quantityType} - $${t.price} - ${t.featured ? "Featured" : "Not featured"}</p>
             <div class="status-buttons">
-              ${["In Stock","Limited","Sold"].map((s) => `<button class="btn small ${t.availability === s ? "red" : ""}" onclick="statusTire('${t.id}','${s}')">${s}</button>`).join("")}
-              <button class="btn small" onclick="toggleFeatured('${t.id}')">${t.featured ? "Unfeature" : "Feature"}</button>
-              <button class="btn small" onclick="duplicateTire('${t.id}')">Duplicate</button>
+              ${["In Stock","Limited","Sold"].map((s) => `<button class="btn small ${t.availability === s ? "red" : "dark"}" onclick="statusTire('${t.id}','${s}')">${s}</button>`).join("")}
+              <button class="btn small dark" onclick="toggleFeatured('${t.id}')">${t.featured ? "Unfeature" : "Feature"}</button>
+              <button class="btn small dark" onclick="duplicateTire('${t.id}')">Duplicate</button>
             </div>
           </div>
           <button class="btn small danger" onclick="deleteTire('${t.id}')">Delete</button>
@@ -952,61 +979,64 @@
         applySettings();
         renderFilters();
         const visible = publicTires();
-        $("stockCount").textContent = visible.length;
-        $("setCount").textContent = visible.filter((t) => t.quantityType !== "Single").length;
         const featured = visible.filter((t) => t.featured).slice(0, 3);
-        $("homeInventory").innerHTML = (featured.length ? featured : visible.slice(0,3)).map(tireCard).join("") || `<div class="panel muted">No tires listed yet.</div>`;
-        const rows = filteredPublic();
-        $("inventory").innerHTML = rows.map(tireCard).join("") || `<div class="panel muted">No in-stock tires match those filters.</div>`;
+        homeInventory.innerHTML = (featured.length ? featured : visible.slice(0, 3)).map(tireCard).join("") || `<div class="panel muted">No tires listed yet.</div>`;
+        inventory.innerHTML = filteredPublic().map(tireCard).join("") || `<div class="panel muted">No in-stock tires match those filters.</div>`;
         renderAdminList();
+        requestAnimationFrame(() => { if (window.lucide) lucide.createIcons(); revealNow(); });
       }
 
-      function statusTire(id, status) {
-        tires = tires.map((t) => t.id === id ? { ...t, availability: status } : t);
-        saveTires(); render();
+      function statusTire(id, status) { tires = tires.map((t) => t.id === id ? { ...t, availability: status } : t); saveTires(); render(); }
+      function toggleFeatured(id) { tires = tires.map((t) => t.id === id ? { ...t, featured: !t.featured } : t); saveTires(); render(); }
+      function duplicateTire(id) { const t = tires.find((x) => x.id === id); if (!t) return; tires.unshift({ ...t, id:`tire-${Date.now()}`, model:`${t.model} Copy` }); saveTires(); render(); }
+      function deleteTire(id) { if (!confirm("Delete this tire?")) return; tires = tires.filter((t) => t.id !== id); saveTires(); render(); }
+
+      function revealNow() {
+        document.querySelectorAll(".reveal").forEach((el) => {
+          const top = el.getBoundingClientRect().top;
+          if (top < innerHeight - 60) el.classList.add("in");
+        });
       }
 
-      function toggleFeatured(id) {
-        tires = tires.map((t) => t.id === id ? { ...t, featured: !t.featured } : t);
-        saveTires(); render();
+      function runCounters() {
+        document.querySelectorAll(".counter").forEach((el) => {
+          if (el.dataset.done) return;
+          el.dataset.done = "true";
+          const target = Number(el.dataset.target || 0);
+          const suffix = el.dataset.suffix || "";
+          const decimal = el.dataset.decimal === "true";
+          const start = performance.now();
+          function tick(now) {
+            const p = Math.min((now - start) / 1200, 1);
+            const eased = 1 - Math.pow(1 - p, 3);
+            const value = target * eased;
+            el.textContent = decimal ? (value / 10).toFixed(1) + suffix : Math.round(value).toLocaleString() + suffix;
+            if (p < 1) requestAnimationFrame(tick);
+          }
+          requestAnimationFrame(tick);
+        });
       }
 
-      function duplicateTire(id) {
-        const tire = tires.find((t) => t.id === id);
-        if (!tire) return;
-        tires.unshift({ ...tire, id: `tire-${Date.now()}`, model: `${tire.model} Copy` });
-        saveTires(); render();
-      }
-
-      function deleteTire(id) {
-        if (!confirm("Delete this tire?")) return;
-        tires = tires.filter((t) => t.id !== id);
-        saveTires(); render();
-      }
-
-      servicesGrid.innerHTML = services.map((s) => `<article class="panel"><h3>${s[0]}</h3><p class="muted">${s[1]}</p></article>`).join("");
-
+      renderServices();
       document.querySelectorAll("[data-page]").forEach((link) => link.addEventListener("click", (e) => {
         e.preventDefault();
         const page = link.dataset.page;
         document.querySelectorAll(".page").forEach((el) => el.classList.remove("active"));
         $(page).classList.add("active");
-        document.querySelectorAll(".nav a").forEach((el) => el.classList.toggle("active", el.dataset.page === page));
+        document.querySelectorAll(".nav-links a").forEach((el) => el.classList.toggle("active", el.dataset.page === page));
         scrollTo({ top: 0, behavior: "smooth" });
+        setTimeout(revealNow, 80);
       }));
 
       document.querySelectorAll("select").forEach((el) => el.addEventListener("change", render));
       ["adminSearch","adminStatus","adminSort"].forEach((id) => $(id)?.addEventListener("input", render));
+      addEventListener("scroll", () => { navbar.classList.toggle("shrunk", scrollY > 36); revealNow(); });
+      addEventListener("load", () => { if (window.lucide) lucide.createIcons(); revealNow(); runCounters(); });
 
       loginForm.addEventListener("submit", (e) => {
         e.preventDefault();
-        if (code.value === "1111") {
-          adminLogin.style.display = "none";
-          adminPanel.style.display = "block";
-          render();
-        } else {
-          loginMsg.textContent = "Wrong code.";
-        }
+        if (code.value === "1111") { adminLogin.style.display = "none"; adminPanel.style.display = "block"; render(); }
+        else loginMsg.textContent = "Wrong code.";
       });
 
       document.querySelectorAll("[data-admin-tab]").forEach((tab) => tab.addEventListener("click", () => {
@@ -1026,92 +1056,60 @@
 
       addForm.addEventListener("submit", (e) => {
         e.preventDefault();
-        const data = new FormData(addForm);
+        const d = new FormData(addForm);
         tires.unshift({
-          id: `tire-${Date.now()}`,
-          brand: data.get("brand") || "Unknown",
-          model: data.get("model") || "Tire",
-          size: data.get("size") || "225/60R17",
-          width: data.get("width") || "225",
-          ratio: data.get("ratio") || "60",
-          rim: data.get("rim") || "17",
-          condition: data.get("condition"),
-          quantityType: data.get("quantityType"),
-          price: Number(data.get("price") || 0),
-          availability: data.get("availability"),
-          featured: true,
-          image: pendingImage || fallback
+          id:`tire-${Date.now()}`,
+          brand:d.get("brand") || "Unknown",
+          model:d.get("model") || "Tire",
+          size:d.get("size") || "225/60R17",
+          width:d.get("width") || "225",
+          ratio:d.get("ratio") || "60",
+          rim:d.get("rim") || "17",
+          condition:d.get("condition"),
+          quantityType:d.get("quantityType"),
+          price:Number(d.get("price") || 0),
+          availability:d.get("availability"),
+          featured:true,
+          image:pendingImage || tirePhoto
         });
         pendingImage = "";
         addForm.reset();
         adminMsg.textContent = "Tire added and saved.";
-        saveTires(); render();
+        saveTires();
+        render();
       });
 
       settingsForm.addEventListener("submit", (e) => {
         e.preventDefault();
-        const data = new FormData(settingsForm);
-        settings = { ...settings, ...Object.fromEntries(data.entries()) };
-        saveSettings(); render();
+        settings = { ...settings, ...Object.fromEntries(new FormData(settingsForm).entries()) };
+        saveSettings();
+        render();
       });
+      clearAnnouncement.addEventListener("click", () => { settings.announcement = ""; settingsForm.announcement.value = ""; saveSettings(); render(); });
+      document.querySelectorAll("[data-style]").forEach((btn) => btn.addEventListener("click", () => { settings.style = btn.dataset.style; saveSettings(); render(); }));
+      document.querySelectorAll("[data-accent]").forEach((btn) => btn.addEventListener("click", () => { settings.accent = btn.dataset.accent; saveSettings(); render(); }));
 
-      clearAnnouncement.addEventListener("click", () => {
-        settings.announcement = "";
-        settingsForm.announcement.value = "";
-        saveSettings(); render();
-      });
-
-      document.querySelectorAll("[data-style]").forEach((btn) => btn.addEventListener("click", () => {
-        settings.style = btn.dataset.style;
-        saveSettings(); render();
-      }));
-
-      document.querySelectorAll("[data-accent]").forEach((btn) => btn.addEventListener("click", () => {
-        settings.accent = btn.dataset.accent;
-        saveSettings(); render();
-      }));
-
-      exportData.addEventListener("click", () => {
-        importBox.value = JSON.stringify({ settings, tires }, null, 2);
-        importBox.select();
-      });
-
+      exportData.addEventListener("click", () => { importBox.value = JSON.stringify({ settings, tires }, null, 2); importBox.select(); });
       importData.addEventListener("click", () => {
         try {
           const data = JSON.parse(importBox.value);
           if (Array.isArray(data)) tires = data;
           if (Array.isArray(data.tires)) tires = data.tires;
           if (data.settings) settings = { ...settings, ...data.settings };
-          saveTires(); saveSettings(); render();
-          alert("Imported.");
-        } catch {
-          alert("That JSON is not valid.");
-        }
+          saveTires(); saveSettings(); render(); alert("Imported.");
+        } catch { alert("That JSON is not valid."); }
       });
-
-      resetData.addEventListener("click", () => {
-        if (!confirm("Reset inventory back to sample tires?")) return;
-        tires = defaults;
-        saveTires(); render();
-      });
+      resetData.addEventListener("click", () => { if (!confirm("Reset inventory back to sample tires?")) return; tires = defaults; saveTires(); render(); });
 
       contactForm.addEventListener("submit", (e) => {
         e.preventDefault();
-        const data = new FormData(contactForm);
-        formMsg.textContent = data.get("name") && data.get("phone") && data.get("message")
-          ? "Thanks - this demo form is ready to connect to email or a backend."
-          : "Please fill out your name, phone number, and message.";
+        const d = new FormData(contactForm);
+        formMsg.textContent = d.get("name") && d.get("phone") && d.get("message") ? "Thanks - this demo form is ready to connect to email or a backend." : "Please fill out your name, phone number, and message.";
         if (formMsg.textContent.startsWith("Thanks")) contactForm.reset();
       });
 
-      function hydrateSettingsForm() {
-        Object.entries(settings).forEach(([key, value]) => {
-          if (settingsForm[key]) settingsForm[key].value = value;
-        });
-      }
-
+      Object.entries(settings).forEach(([k, v]) => { if (settingsForm[k]) settingsForm[k].value = v; });
       year.textContent = new Date().getFullYear();
-      hydrateSettingsForm();
       render();
     </script>
   </body>
