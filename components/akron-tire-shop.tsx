@@ -296,19 +296,35 @@ function TireGrid({ tires }: { tires: Tire[] }) {
   return (
     <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
       {tires.map((tire) => (
-        <article key={tire.id} className="overflow-hidden border border-white/10 bg-white/[.055] shadow-2xl">
-          <div className="h-56 bg-cover bg-center grayscale" style={{ backgroundImage: `linear-gradient(180deg,transparent,rgba(0,0,0,.35)),url(${tire.image || fallbackImage})` }} />
-          <div className="p-5">
-            <div className="mb-3 flex flex-wrap gap-2">
-              <span className="tire-tag">{tire.condition}</span>
-              <span className="tire-tag">{tire.quantityType}</span>
-              <span className="tire-tag">{tire.availability}</span>
+        <article key={tire.id} className="group overflow-hidden border border-white/10 bg-gradient-to-b from-white/[.08] to-white/[.03] shadow-[0_24px_80px_rgba(0,0,0,.45)] transition duration-300 hover:-translate-y-1 hover:border-tire-red/60 hover:shadow-[0_28px_90px_rgba(185,28,28,.18)]">
+          <div className="relative h-64 overflow-hidden border-b border-white/10 bg-[radial-gradient(circle_at_50%_15%,rgba(185,28,28,.28),transparent_42%),#101010]">
+            <img
+              src={tire.image || fallbackImage}
+              alt={`${tire.brand} ${tire.model}`}
+              className="h-full w-full object-cover grayscale transition duration-500 group-hover:scale-105 group-hover:grayscale-0"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+            <div className="absolute left-4 top-4 border border-tire-red/50 bg-black/70 px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-white backdrop-blur">
+              {tire.availability}
             </div>
-            <h3 className="font-display text-4xl font-black uppercase italic">{tire.brand} {tire.model}</h3>
-            <p className="mt-2 text-tire-muted">{tire.size}</p>
+            <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between gap-3">
+              <span className="border border-white/15 bg-white/10 px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-white backdrop-blur">{tire.condition}</span>
+              <span className="border border-white/15 bg-white/10 px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-white backdrop-blur">{tire.quantityType}</span>
+            </div>
+          </div>
+          <div className="p-6">
+            <p className="text-xs font-black uppercase tracking-[0.22em] text-tire-red">In-stock tire</p>
+            <h3 className="mt-2 font-display text-4xl font-black uppercase italic tracking-tight text-white">{tire.brand} {tire.model}</h3>
+            <div className="mt-3 flex items-center justify-between gap-3 border-y border-white/10 py-3">
+              <span className="text-sm font-bold uppercase tracking-wide text-tire-muted">Size</span>
+              <span className="font-black text-white">{tire.size}</span>
+            </div>
             <div className="mt-5 flex items-end justify-between gap-4">
-              <div className="font-display text-5xl font-black">${tire.price}</div>
-              <a className="tire-btn tire-btn-red" href={BUSINESS.phoneHref}>Call To Confirm</a>
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-tire-muted">Starting at</p>
+                <div className="font-display text-6xl font-black leading-none text-white">${tire.price}</div>
+              </div>
+              <a className="tire-btn tire-btn-red px-7" href={BUSINESS.phoneHref}>Call</a>
             </div>
           </div>
         </article>
