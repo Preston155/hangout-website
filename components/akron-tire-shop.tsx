@@ -127,9 +127,12 @@ export function AkronTireShop({ initialPage = 'home' }: { initialPage?: PageKey 
       <div className="mx-auto min-h-screen w-[min(1500px,calc(100%-24px))] overflow-hidden bg-[#070707] shadow-[0_30px_100px_rgba(0,0,0,.72)]">
         <header className="sticky top-0 z-40 border-b border-white/10 bg-black/80 px-5 py-4 backdrop-blur-xl lg:px-20">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-            <button onClick={() => setPage('home')} className="text-left" aria-label="Akron Tire Shop home">
-              <span className="block font-display text-5xl font-black uppercase italic leading-[.72] tracking-[-.06em] text-white [text-shadow:3px_3px_0_rgba(185,28,28,.7)] md:text-6xl">Akron</span>
-              <span className="-mt-1 block rotate-[-4deg] font-display text-4xl font-black uppercase italic leading-none tracking-[-.05em] text-tire-red [text-shadow:2px_2px_0_rgba(0,0,0,.9)] md:text-5xl">Tire Shop</span>
+            <button onClick={() => setPage('home')} className="w-[min(280px,42vw)] text-left" aria-label="Akron Tire Shop home">
+              <img
+                src="/assets/akron-tire-shop-logo.png"
+                alt="Akron Tire Shop"
+                className="h-24 w-full object-contain object-left drop-shadow-[0_18px_24px_rgba(185,28,28,.22)]"
+              />
             </button>
 
             <nav className="flex flex-wrap items-center gap-2 lg:justify-center" aria-label="Main navigation">
