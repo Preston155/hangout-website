@@ -487,8 +487,8 @@ function ReceiptPreview({ transaction, activeLines, activeTotals, customer, tire
         <div className="text-center">
           <div className="mx-auto mb-3 grid h-14 w-14 place-items-center rounded-full border-2 border-black bg-black text-sm font-black text-white">ATS</div>
           <h3 className="text-lg font-black">AKRON TIRE SHOP</h3>
-          <p>Akron, Ohio</p>
-          <p>(330) 555-0000</p>
+          <p>1051 S Arlington Street</p>
+          <p>Akron Ohio, 44306</p>
         </div>
         <hr className="my-3 border-black" />
         <p>Receipt: {transaction?.receiptNumber ?? 'ATS-2026-DRAFT'}</p>
