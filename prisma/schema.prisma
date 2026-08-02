@@ -191,6 +191,12 @@ model Transaction {
   @@index([paymentMethod])
 }
 
+model ReceiptCounter {
+  year         Int      @id
+  nextSequence Int     @default(1)
+  updatedAt    DateTime @updatedAt
+}
+
 model TransactionLine {
   id              String       @id @default(cuid())
   transactionId   String

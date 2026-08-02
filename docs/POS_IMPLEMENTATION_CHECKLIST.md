@@ -5,14 +5,14 @@ This project is being rebuilt as a private POS and receipt-printing system for `
 ## Stage 1 - Foundation
 
 - [x] Replace public website UI with private POS shell
-- [x] PIN sign-in demo screen
+- [x] PIN sign-in screen
 - [x] Touchscreen checkout interface
 - [x] Quick-sale buttons
 - [x] Integer-cent money calculations
 - [x] Tire-size normalization
 - [x] Receipt preview
 - [x] Transaction history UI
-- [x] Inventory/report/settings UI placeholders
+- [x] Inventory/report/settings UI shells
 - [x] Prisma POS schema
 - [x] PrinterAdapter abstraction
 - [x] Mock printer adapter
@@ -21,21 +21,24 @@ This project is being rebuilt as a private POS and receipt-printing system for `
 
 ## Stage 2 - Server persistence
 
-- [ ] Implement secure server-side PIN auth with hashed PINs
-- [ ] Add HTTP-only session cookies
-- [ ] Add login rate limits and temporary lockouts
-- [ ] Implement transaction create API with idempotency keys
-- [ ] Generate sequential receipt numbers inside a database transaction
-- [ ] Recalculate totals on the server before saving
-- [ ] Save print job after transaction save
-- [ ] Add audit records for every protected action
+- [x] Implement secure server-side PIN auth with hashed PINs
+- [x] Add HTTP-only session cookies
+- [x] Add login rate limits and temporary lockouts
+- [x] Implement transaction create API with idempotency keys
+- [x] Generate sequential receipt numbers inside a database transaction
+- [x] Recalculate totals on the server before saving
+- [x] Save print job after transaction save
+- [x] Add audit records for login, completed sales, successful prints, and failed prints
+- [x] Add development seed script for employees, quick-sale buttons, settings, and starter inventory
+- [ ] Add admin UI for employee management and PIN rotation
+- [ ] Add audit records for every remaining protected action
 
 ## Stage 3 - Inventory and customers
 
 - [ ] Tire inventory CRUD
 - [ ] Manager approval for manual adjustments
 - [ ] Inventory reduction on sale
-- [ ] Customer and vehicle records
+- [x] Customer and vehicle records created during sale
 - [ ] Service history views
 
 ## Stage 4 - Printing

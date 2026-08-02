@@ -23,7 +23,7 @@ import {
   UserRound,
   Warehouse,
 } from 'lucide-react';
-import { FormEvent, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { calculateSaleTotals, cents, formatMoney } from '@/lib/pos/money';
 import { normalizeTireSize } from '@/lib/pos/tire-size';
@@ -31,6 +31,7 @@ import { normalizeTireSize } from '@/lib/pos/tire-size';
 type Screen = 'checkout' | 'history' | 'inventory' | 'reports' | 'settings';
 type PaymentMethod = 'Cash' | 'Credit/debit card' | 'Cash App' | 'Zelle' | 'Other';
 type TireCondition = 'New' | 'Used';
+type Employee = { id: string; name: string; role: 'OWNER' | 'MANAGER' | 'EMPLOYEE' };
 
 type SaleLine = {
   id: string;
@@ -55,13 +56,7 @@ type Transaction = {
   lines: SaleLine[];
 };
 
-const employees = [
-  { name: 'Owner', role: 'Owner', pin: '1111' },
-  { name: 'Manager', role: 'Manager', pin: '2222' },
-  { name: 'Employee', role: 'Employee', pin: '3333' },
-];
-
-const quickButtons: SaleLine[] = [
+const defaultQuickButtons: SaleLine[] = [
   { id: 'used-one', label: 'One used tire', quantity: 1, unitCents: cents(65), type: 'tire' },
   { id: 'used-two', label: 'Two used tires', quantity: 2, unitCents: cents(60), type: 'tire' },
   { id: 'used-set', label: 'Set of four used tires', quantity: 1, unitCents: cents(240), type: 'tire' },
@@ -75,32 +70,13 @@ const quickButtons: SaleLine[] = [
   { id: 'wheel', label: 'Wheel installation', quantity: 1, unitCents: cents(20), type: 'service' },
 ];
 
-const seedTransactions: Transaction[] = [
-  {
-    id: 'txn-1',
-    receiptNumber: 'ATS-2026-000001',
-    customer: 'Walk-in Customer',
-    phone: '(330) 555-0000',
-    tireSize: '215/65R17',
-    vehicle: '2016 Honda Accord',
-    employee: 'Owner',
-    paymentMethod: 'Cash',
-    totalCents: cents(359.76),
-    status: 'Printed',
-    createdAt: 'Today, 9:42 AM',
-    lines: [
-      { id: 'l1', label: 'Set of four used tires', quantity: 1, unitCents: cents(240), type: 'tire' },
-      { id: 'l2', label: 'Mounting and balancing', quantity: 1, unitCents: cents(80), type: 'service' },
-      { id: 'l3', label: 'Disposal fee', quantity: 1, unitCents: cents(16), type: 'fee' },
-    ],
-  },
-];
-
 export function AkronTireShop({ initialScreen = 'checkout' }: { initialScreen?: Screen }) {
   const [screen, setScreen] = useState<Screen>(initialScreen);
-  const [employee, setEmployee] = useState<(typeof employees)[number] | null>(null);
+  const [employee, setEmployee] = useState<Employee | null>(null);
   const [pin, setPin] = useState('');
   const [authError, setAuthError] = useState('');
+  const [appError, setAppError] = useState('');
+  const [booting, setBooting] = useState(true);
   const [tireSize, setTireSize] = useState('215/65R17');
   const [brand, setBrand] = useState('Mixed');
   const [model, setModel] = useState('All-season');
@@ -121,9 +97,33 @@ export function AkronTireShop({ initialScreen = 'checkout' }: { initialScreen?: 
     { id: 'mount-balance', label: 'Mounting and balancing', quantity: 1, unitCents: cents(80), type: 'service' },
     { id: 'disposal', label: 'Disposal fee', quantity: 1, unitCents: cents(16), type: 'fee' },
   ]);
-  const [transactions, setTransactions] = useState<Transaction[]>(seedTransactions);
+  const [quickButtons, setQuickButtons] = useState<SaleLine[]>(defaultQuickButtons);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [status, setStatus] = useState<'Saved' | 'Saving' | 'Printing' | 'Printed' | 'Print failed' | 'Offline'>('Saved');
-  const [selectedTransactionId, setSelectedTransactionId] = useState('txn-1');
+  const [selectedTransactionId, setSelectedTransactionId] = useState('');
+
+  useEffect(() => {
+    let alive = true;
+    async function restoreSession() {
+      try {
+        const response = await fetch('/api/auth/me', { credentials: 'include' });
+        const result = await readApi<{ employee: Employee | null }>(response);
+        if (!alive) return;
+        if (result.employee) {
+          setEmployee(result.employee);
+          await loadBootstrap();
+        }
+      } catch {
+        if (alive) setAppError('POS API is not reachable. Make sure the Next.js app is running with PostgreSQL configured.');
+      } finally {
+        if (alive) setBooting(false);
+      }
+    }
+    restoreSession();
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   const totals = useMemo(
     () =>
@@ -140,15 +140,40 @@ export function AkronTireShop({ initialScreen = 'checkout' }: { initialScreen?: 
   const normalizedTire = normalizeTireSize(tireSize);
   const canComplete = paymentMethod !== 'Cash' || totals.changeDueCents >= 0;
 
-  function login(event: FormEvent<HTMLFormElement>) {
+  async function loadBootstrap() {
+    const response = await fetch('/api/pos/bootstrap', { credentials: 'include' });
+    const result = await readApi<{
+      quickButtons: SaleLine[];
+      transactions: Transaction[];
+      settings: Record<string, unknown>;
+    }>(response);
+    setQuickButtons(result.quickButtons.length ? result.quickButtons : defaultQuickButtons);
+    setTransactions(result.transactions);
+    setSelectedTransactionId(result.transactions[0]?.id ?? '');
+    const taxSetting = result.settings.taxRateBasisPoints;
+    if (typeof taxSetting === 'number') setTaxRate(String(taxSetting / 100));
+    const warrantySetting = result.settings.warrantyLanguage;
+    if (typeof warrantySetting === 'string') setWarranty(warrantySetting);
+  }
+
+  async function login(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const found = employees.find((item) => item.pin === pin);
-    if (!found) {
-      setAuthError('Wrong PIN. Accounts lock temporarily after repeated failed attempts in the server implementation.');
-      return;
-    }
-    setEmployee(found);
     setAuthError('');
+    setAppError('');
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pin }),
+      });
+      const result = await readApi<{ employee: Employee }>(response);
+      setEmployee(result.employee);
+      setPin('');
+      await loadBootstrap();
+    } catch (error) {
+      setAuthError(error instanceof Error ? error.message : 'Sign-in failed.');
+    }
   }
 
   function addQuick(line: SaleLine) {
@@ -159,30 +184,53 @@ export function AkronTireShop({ initialScreen = 'checkout' }: { initialScreen?: 
     setLines((current) => current.filter((line) => line.id !== id));
   }
 
-  function completeSale() {
+  async function completeSale() {
     if (!employee || !canComplete) return;
     setStatus('Saving');
-    window.setTimeout(() => {
-      const receiptNumber = `ATS-2026-${String(transactions.length + 1).padStart(6, '0')}`;
-      const saved: Transaction = {
-        id: `txn-${Date.now()}`,
-        receiptNumber,
-        customer: customer || 'Walk-in Customer',
-        phone,
-        tireSize: normalizedTire.value || tireSize,
-        vehicle,
-        employee: employee.name,
-        paymentMethod,
-        totalCents: totals.totalCents,
-        status: 'Saved',
-        createdAt: 'Just now',
-        lines,
-      };
-      setTransactions((current) => [saved, ...current]);
-      setSelectedTransactionId(saved.id);
+    setAppError('');
+    try {
+      const response = await fetch('/api/pos/complete-sale', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          idempotencyKey: globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`,
+          tireSize: normalizedTire.value || tireSize,
+          condition,
+          brand,
+          model,
+          customer: { name: customer, phone },
+          vehicle: { model: vehicle, mileage, licensePlate: plate },
+          lines,
+          discountCents: cents(Number(discount || 0)),
+          taxRateBasisPoints: Math.round(Number(taxRate || 0) * 100),
+          paymentMethod,
+          amountReceivedCents: paymentMethod === 'Cash' ? cents(Number(amountReceived || 0)) : undefined,
+          notes,
+          warrantyNotes: warranty,
+        }),
+      });
       setStatus('Printing');
-      window.setTimeout(() => setStatus('Printed'), 650);
-    }, 450);
+      const result = await readApi<{ transaction: Transaction }>(response);
+      setTransactions((current) => [result.transaction, ...current.filter((item) => item.id !== result.transaction.id)]);
+      setSelectedTransactionId(result.transaction.id);
+      setStatus(result.transaction.status === 'Print failed' ? 'Print failed' : 'Printed');
+    } catch (error) {
+      setStatus('Offline');
+      setAppError(error instanceof Error ? error.message : 'Could not complete sale.');
+    }
+  }
+
+  if (booting) {
+    return (
+      <main className="grid min-h-screen place-items-center bg-[#07080a] text-white">
+        <div className="rounded-[2rem] border border-white/10 bg-white/[.055] p-8 text-center shadow-2xl">
+          <RefreshCw className="mx-auto mb-4 h-8 w-8 animate-spin text-red-300" />
+          <h1 className="text-3xl font-black">Loading Akron POS</h1>
+          <p className="mt-2 text-zinc-400">Checking secure session and database connection.</p>
+        </div>
+      </main>
+    );
   }
 
   if (!employee) {
@@ -214,7 +262,7 @@ export function AkronTireShop({ initialScreen = 'checkout' }: { initialScreen?: 
                 <KeyRound />
               </div>
               <h2 className="text-4xl font-black tracking-tight">Employee PIN</h2>
-              <p className="mt-2 text-zinc-400">Demo PINs: Owner 1111, Manager 2222, Employee 3333.</p>
+              <p className="mt-2 text-zinc-400">Use an employee PIN created in the database seed or admin settings.</p>
               <input
                 className="mt-8 h-20 w-full rounded-2xl border border-white/10 bg-black px-6 text-center text-5xl font-black tracking-[.35em] outline-none ring-red-500/20 transition focus:border-red-400 focus:ring-4"
                 inputMode="numeric"
@@ -228,6 +276,7 @@ export function AkronTireShop({ initialScreen = 'checkout' }: { initialScreen?: 
                 Sign In
               </button>
               {authError && <p className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-100">{authError}</p>}
+              {appError && <p className="mt-4 rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-3 text-sm text-yellow-100">{appError}</p>}
             </form>
           </section>
         </div>
@@ -269,7 +318,7 @@ export function AkronTireShop({ initialScreen = 'checkout' }: { initialScreen?: 
             <UserRound className="h-5 w-5 text-red-300" />
             <div>
               <p className="text-sm font-black">{employee.name}</p>
-              <p className="text-xs text-zinc-400">{employee.role}</p>
+              <p className="text-xs text-zinc-400">{formatRole(employee.role)}</p>
             </div>
           </div>
         </div>
@@ -356,6 +405,7 @@ export function AkronTireShop({ initialScreen = 'checkout' }: { initialScreen?: 
               <button disabled={!canComplete || status === 'Saving' || status === 'Printing'} onClick={completeSale} className="h-16 w-full rounded-2xl bg-gradient-to-r from-red-700 via-red-600 to-red-500 text-lg font-black uppercase tracking-wide shadow-lg shadow-red-950/30 transition hover:-translate-y-0.5 hover:from-red-600 hover:to-red-400 disabled:cursor-not-allowed disabled:from-zinc-700 disabled:to-zinc-700">
                 {status === 'Saving' ? 'Saving...' : status === 'Printing' ? 'Printing...' : 'Complete Sale'}
               </button>
+              {appError && <p className="rounded-2xl border border-yellow-500/30 bg-yellow-500/10 p-3 text-sm text-yellow-100">{appError}</p>}
             </div>
           </Panel>
 
@@ -552,4 +602,18 @@ function SettingsPanel() {
       </div>
     </Panel>
   );
+}
+
+async function readApi<T>(response: Response): Promise<T> {
+  const payload = (await response.json()) as { ok: boolean; data?: T; error?: string };
+  if (!response.ok || !payload.ok) {
+    throw new Error(payload.error || 'Request failed.');
+  }
+  return payload.data as T;
+}
+
+function formatRole(role: Employee['role']) {
+  if (role === 'OWNER') return 'Owner';
+  if (role === 'MANAGER') return 'Manager';
+  return 'Employee';
 }

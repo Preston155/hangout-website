@@ -13,6 +13,7 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate deploy",
     "db:push": "prisma db push",
+    "db:seed": "node scripts/seed-pos.mjs",
     "db:studio": "prisma studio",
     "legacy:build-static": "node scripts/build-httpdocs.js",
     "auto-publish": "node auto-publish.js"

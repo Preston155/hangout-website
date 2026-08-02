@@ -18,18 +18,25 @@ Target private host: `pos.prestonhq.com`
 
 ## Current implementation stage
 
-Stage 1 is implemented:
+The app now has the first production-backed POS slice implemented:
 
 - Touchscreen-friendly private POS shell
-- Employee PIN demo login
+- Server-side employee PIN login with bcrypt-hashed PINs
+- HTTP-only signed sessions
+- Failed-login tracking and temporary lockout
 - Checkout screen
-- Quick sale buttons
+- Quick sale buttons loaded from PostgreSQL
 - Integer-cent money calculations
 - Cash received and change due
 - Receipt preview
-- Transaction history UI
+- Real transaction save API with idempotency keys
+- Server-side receipt numbers generated in a database transaction
+- Print-job records that cannot erase or duplicate completed sales
+- Transaction history loaded from PostgreSQL
 - Inventory/report/settings UI shell
 - POS Prisma schema
+- Initial Prisma migration
+- Development seed script
 - Printer adapter contract
 - Mock printer adapter
 - Epson adapter placeholder requiring physical TM-m30III validation
@@ -56,7 +63,8 @@ Then run:
 
 ```bash
 npm run db:generate
-npm run db:push
+npm run db:migrate
+npm run db:seed
 ```
 
 ## 3. Environment variables
@@ -77,13 +85,19 @@ Never commit live secrets.
 
 ## 4. Creating the first owner account
 
-Stage 1 uses demo PINs in the UI:
+Run the seed command once after migrations:
+
+```bash
+npm run db:seed
+```
+
+By default it creates hashed starter PINs:
 
 - Owner: `1111`
 - Manager: `2222`
 - Employee: `3333`
 
-Stage 2 will move PIN auth server-side with hashed PINs, lockouts, login audit records, and owner account creation.
+Set `SEED_OWNER_PIN`, `SEED_MANAGER_PIN`, and `SEED_EMPLOYEE_PIN` before seeding production. PINs are hashed with bcrypt and are never stored in plain text.
 
 ## 5. Starting the development server
 
