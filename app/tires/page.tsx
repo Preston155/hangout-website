@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default function TiresPage() {
-  return <AkronTireShop initialPage="tires" />;
+  return <AkronTireShop initialScreen="inventory" />;
 }

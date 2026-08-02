@@ -1,969 +1,352 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#101312" />
-    <title>Akron Multi-Service Company | Lawn, Seal Coating, Trees, Hauling & Tires</title>
-    <meta name="description" content="A reliable local Akron, Ohio company for grass mowing, lawn care, seal coating, tree service, dump truck hauling, and tire shop services." />
-    <meta property="og:title" content="One Crew. Multiple Services. Work Done Right." />
-    <meta property="og:description" content="Reliable lawn care, seal coating, tree service, dump truck hauling, and tire service around Akron." />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://prestonhq.com/" />
-    <meta property="og:image" content="https://prestonhq.com/assets/akron-tire-shop-og.jpg" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" />
-    <link rel="icon" href="/favicon.ico" sizes="any" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex,nofollow" />
+    <meta name="description" content="Private Akron Tire Shop point-of-sale and receipt-printing system." />
+    <meta property="og:title" content="Akron Tire Shop POS" />
+    <meta property="og:description" content="Private checkout, receipt, inventory, and reporting register for Akron Tire Shop." />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/favicon.ico" />
+    <title>Akron Tire Shop POS</title>
     <style>
       :root {
-        --charcoal: #101312;
-        --black: #0a0c0b;
-        --gray: #9ca3a1;
-        --dark: #1a1f1c;
-        --green: #2f6b3f;
-        --orange: #f97316;
-        --white: #f7f7f2;
-        --line: rgba(247,247,242,.13);
-        --panel: rgba(247,247,242,.055);
-        --shadow: 0 28px 90px rgba(0,0,0,.48);
-        --hero: url("https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=2200&q=82");
-        --asphalt: url("https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1800&q=80");
+        color-scheme: dark;
+        --bg: #07080a;
+        --panel: rgba(255, 255, 255, 0.06);
+        --panel-2: rgba(255, 255, 255, 0.1);
+        --line: rgba(255, 255, 255, 0.11);
+        --red: #ef4444;
+        --red-dark: #991b1b;
+        --text: #f8fafc;
+        --muted: #a1a1aa;
+        --green: #22c55e;
       }
 
       * { box-sizing: border-box; }
-      html { scroll-behavior: smooth; }
       body {
         margin: 0;
+        min-height: 100vh;
         background:
-          radial-gradient(circle at 18% 0%, rgba(47,107,63,.18), transparent 34rem),
-          radial-gradient(circle at 92% 8%, rgba(249,115,22,.12), transparent 30rem),
-          var(--charcoal);
-        color: var(--white);
-        font-family: Inter, system-ui, sans-serif;
+          radial-gradient(circle at 18% -10%, rgba(239, 68, 68, .28), transparent 32rem),
+          radial-gradient(circle at 94% 8%, rgba(59, 130, 246, .12), transparent 28rem),
+          linear-gradient(135deg, #050607, #0b0c10 50%, #07080a);
+        color: var(--text);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       }
 
-      body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        opacity: .22;
-        background:
-          linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px),
-          linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px);
-        background-size: 58px 58px;
-        mask-image: linear-gradient(180deg, black, transparent 70%);
-      }
-
-      a { color: inherit; text-decoration: none; }
       button, input, select, textarea { font: inherit; }
       button { cursor: pointer; }
-      img { max-width: 100%; display: block; }
-      h1, h2, h3 {
-        margin: 0;
-        font-family: "Barlow Condensed", Inter, sans-serif;
-        font-weight: 900;
-        text-transform: uppercase;
-        letter-spacing: -.035em;
-        line-height: .92;
+      .shell { min-height: 100vh; }
+      .login {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 1.1fr .9fr;
       }
-      p { line-height: 1.72; }
-      ::selection { background: var(--orange); color: white; }
+      .login-art {
+        position: relative;
+        padding: 56px;
+        overflow: hidden;
+        border-right: 1px solid var(--line);
+        background:
+          linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px),
+          #090a0d;
+        background-size: 48px 48px;
+      }
+      .login-art::after {
+        content: "";
+        position: absolute;
+        width: 620px;
+        height: 180px;
+        left: 40px;
+        top: 170px;
+        background: var(--red);
+        opacity: .32;
+        filter: blur(10px);
+        transform: rotate(-12deg);
+      }
+      .login-art-inner { position: relative; z-index: 1; display: flex; min-height: calc(100vh - 112px); flex-direction: column; justify-content: space-between; }
+      .eyebrow { color: #fca5a5; font-weight: 950; text-transform: uppercase; letter-spacing: .22em; font-size: .78rem; }
+      h1, h2, h3, p { margin: 0; }
+      h1 { max-width: 850px; margin-top: 28px; font-size: clamp(4rem, 8vw, 8.8rem); line-height: .84; letter-spacing: -.07em; }
+      .login-art p { max-width: 680px; margin-top: 24px; color: var(--muted); font-size: 1.18rem; line-height: 1.7; }
+      .login-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+      .login-stat, .panel, .receipt { border: 1px solid var(--line); background: var(--panel); box-shadow: 0 30px 90px rgba(0,0,0,.25); backdrop-filter: blur(18px); }
+      .login-stat { border-radius: 28px; padding: 22px; }
+      .login-stat b { display: block; font-size: 2.4rem; }
+      .login-stat span { color: var(--muted); text-transform: uppercase; font-size: .72rem; font-weight: 900; letter-spacing: .14em; }
+      .login-form-wrap { display: grid; place-items: center; padding: 28px; }
+      .login-form { width: min(440px, 100%); border: 1px solid var(--line); border-radius: 34px; background: var(--panel); padding: 34px; box-shadow: 0 30px 90px rgba(0,0,0,.35); }
+      .lock { display: grid; width: 68px; height: 68px; place-items: center; border-radius: 22px; background: var(--red); box-shadow: 0 18px 40px rgba(239,68,68,.25); font-size: 2rem; }
+      .login-form h2 { margin-top: 26px; font-size: 2.4rem; letter-spacing: -.04em; }
+      .pin { width: 100%; height: 76px; margin-top: 26px; border: 1px solid var(--line); border-radius: 22px; background: #030405; color: white; text-align: center; font-size: 3rem; font-weight: 950; letter-spacing: .32em; outline: none; }
+      .btn { min-height: 54px; border: 0; border-radius: 18px; padding: 0 20px; background: var(--red); color: white; font-weight: 950; text-transform: uppercase; letter-spacing: .06em; transition: .18s ease; }
+      .btn:hover { transform: translateY(-1px); background: #f87171; }
+      .btn.secondary { border: 1px solid var(--line); background: rgba(255,255,255,.07); }
+      .btn.green { background: #16a34a; }
+      .error { margin-top: 14px; color: #fecaca; }
 
-      .site { position: relative; overflow: clip; min-height: 100vh; }
+      .app { display: none; min-height: 100vh; }
+      .app.active, .login.hidden { display: none; }
+      .app.active { display: block; }
       .topbar {
-        display: flex;
-        justify-content: space-between;
-        gap: 16px;
-        padding: 10px clamp(18px, 5vw, 78px);
-        background: #0b0d0c;
-        border-bottom: 1px solid var(--line);
-        color: var(--gray);
-        font-size: .82rem;
-        font-weight: 800;
-      }
-      .navbar {
         position: sticky;
         top: 0;
-        z-index: 60;
+        z-index: 10;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 22px;
-        padding: 17px clamp(18px, 5vw, 78px);
-        background: rgba(16,19,18,.84);
+        gap: 18px;
+        padding: 14px 20px;
         border-bottom: 1px solid var(--line);
+        background: rgba(7,8,10,.88);
         backdrop-filter: blur(18px);
-        transition: .2s ease;
       }
-      .navbar.shrunk { padding-top: 9px; padding-bottom: 9px; background: rgba(16,19,18,.95); }
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-family: "Barlow Condensed";
-        font-size: 2rem;
-        font-weight: 900;
-        letter-spacing: -.02em;
-        text-transform: uppercase;
+      .brand { display: flex; align-items: center; gap: 12px; }
+      .brand-icon { display: grid; width: 50px; height: 50px; place-items: center; border-radius: 18px; background: var(--red); font-size: 1.5rem; }
+      .brand b { display: block; }
+      .brand span { color: var(--muted); font-size: .8rem; }
+      nav { display: flex; flex-wrap: wrap; gap: 8px; }
+      nav button { border: 1px solid var(--line); border-radius: 16px; background: var(--panel); color: #d4d4d8; min-height: 46px; padding: 0 15px; font-weight: 900; }
+      nav button.active { border-color: #fca5a5; background: var(--red); color: white; }
+      .employee { border: 1px solid var(--line); border-radius: 18px; background: var(--panel); padding: 10px 14px; }
+      .grid { display: grid; grid-template-columns: 1fr 410px; gap: 18px; padding: 18px; }
+      .main-stack { display: grid; gap: 18px; }
+      .two { display: grid; grid-template-columns: 1fr 360px; gap: 18px; }
+      .panel { border-radius: 30px; padding: 22px; }
+      .panel-head { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+      .panel h2 { font-size: 1.55rem; letter-spacing: -.03em; }
+      .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+      label { display: grid; gap: 7px; color: var(--muted); font-size: .74rem; font-weight: 950; text-transform: uppercase; letter-spacing: .12em; }
+      input, select, textarea { min-height: 54px; border: 1px solid var(--line); border-radius: 16px; background: rgba(0,0,0,.38); color: white; padding: 0 14px; outline: none; }
+      textarea { min-height: 96px; padding-top: 14px; resize: vertical; }
+      .wide { grid-column: 1 / -1; }
+      .quick { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .quick button, .line { border: 1px solid var(--line); border-radius: 20px; background: rgba(0,0,0,.35); color: white; padding: 14px; text-align: left; }
+      .quick button:hover, .line:hover { border-color: #fca5a5; background: rgba(239,68,68,.12); }
+      .quick b { display: block; }
+      .quick span, .muted { color: var(--muted); }
+      .line { display: grid; grid-template-columns: 1fr 80px 105px auto; align-items: center; gap: 12px; margin-top: 10px; }
+      .totals { display: grid; gap: 12px; }
+      .money-row { display: flex; justify-content: space-between; border-bottom: 1px solid var(--line); padding-bottom: 10px; color: var(--muted); font-weight: 800; }
+      .money-row b { color: white; font-size: 1.2rem; }
+      .total-due { border-radius: 28px; background: white; color: #050505; padding: 22px; }
+      .total-due span { color: #71717a; font-size: .78rem; font-weight: 950; text-transform: uppercase; letter-spacing: .14em; }
+      .total-due b { display: block; margin-top: 4px; font-size: 3.8rem; line-height: .95; letter-spacing: -.06em; }
+      .receipt { max-width: 320px; margin: 0 auto; border-radius: 4px; background: white; color: #050505; padding: 20px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .78rem; }
+      .receipt .center { text-align: center; }
+      .receipt hr { border: 0; border-top: 1px dashed black; margin: 12px 0; }
+      .receipt-row { display: flex; justify-content: space-between; gap: 12px; margin: 6px 0; }
+      .history-item, .metric, .settings-card { border: 1px solid var(--line); border-radius: 22px; background: rgba(0,0,0,.35); padding: 18px; }
+      .history-item { display: flex; justify-content: space-between; gap: 16px; margin-top: 10px; }
+      .metrics, .settings-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+      .metric b { display: block; font-size: 2rem; }
+      .screen { display: none; }
+      .screen.active { display: block; }
+      .status { color: var(--green); }
+      @media (max-width: 1100px) {
+        .login, .grid, .two { grid-template-columns: 1fr; }
+        .login-art { display: none; }
+        .form-grid, .metrics, .settings-grid { grid-template-columns: 1fr 1fr; }
       }
-      .brand-mark {
-        display: grid;
-        place-items: center;
-        width: 48px;
-        height: 48px;
-        background: linear-gradient(135deg, var(--green), #183a24);
-        border: 1px solid rgba(255,255,255,.18);
-        border-radius: 14px;
-        color: white;
-      }
-      .navlinks {
-        display: flex;
-        align-items: center;
-        gap: 2px;
-        flex-wrap: wrap;
-      }
-      .navlinks a {
-        position: relative;
-        padding: 10px 11px;
-        color: rgba(247,247,242,.82);
-        font-size: .76rem;
-        font-weight: 900;
-        letter-spacing: .11em;
-        text-transform: uppercase;
-      }
-      .navlinks a::after {
-        content: "";
-        position: absolute;
-        left: 11px;
-        right: 11px;
-        bottom: 5px;
-        height: 2px;
-        background: var(--orange);
-        transform: scaleX(0);
-        transform-origin: left;
-        transition: .2s ease;
-      }
-      .navlinks a:hover::after, .navlinks a.active::after { transform: scaleX(1); }
-      .nav-actions { display: flex; align-items: center; gap: 10px; }
-      .menu-btn { display: none; }
-
-      .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        min-height: 50px;
-        padding: 13px 20px;
-        border: 1px solid rgba(247,247,242,.16);
-        border-radius: 12px;
-        background: rgba(247,247,242,.055);
-        color: white;
-        font-size: .82rem;
-        font-weight: 900;
-        letter-spacing: .08em;
-        text-transform: uppercase;
-        transition: .2s ease;
-      }
-      .btn:hover { transform: translateY(-2px); border-color: rgba(247,247,242,.35); }
-      .btn.orange { background: linear-gradient(135deg, var(--orange), #b9470a); border-color: var(--orange); box-shadow: 0 20px 50px rgba(249,115,22,.22); }
-      .btn.green { background: linear-gradient(135deg, var(--green), #1d472b); border-color: #3b7f4f; }
-      .btn.small { min-height: 38px; padding: 9px 12px; font-size: .72rem; }
-
-      .page { display: none; }
-      .page.active { display: block; }
-
-      .hero {
-        min-height: 790px;
-        position: relative;
-        display: grid;
-        align-items: center;
-        padding: clamp(58px, 7vw, 110px) clamp(18px, 5vw, 78px) 84px;
-        overflow: hidden;
-      }
-      .hero::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background:
-          linear-gradient(90deg, var(--charcoal) 0%, rgba(16,19,18,.92) 38%, rgba(16,19,18,.32) 72%, var(--charcoal) 100%),
-          var(--hero) center / cover;
-        filter: grayscale(.35) contrast(1.05);
-      }
-      .hero::after {
-        content: "";
-        position: absolute;
-        width: 820px;
-        height: 180px;
-        left: -100px;
-        top: 27%;
-        background: linear-gradient(90deg, transparent, rgba(47,107,63,.72), rgba(249,115,22,.34), transparent);
-        transform: rotate(-9deg);
-        filter: blur(10px);
-        opacity: .72;
-      }
-      .hero-inner {
-        position: relative;
-        z-index: 2;
-        max-width: 880px;
-      }
-      .eyebrow {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        color: var(--orange);
-        font-size: .78rem;
-        font-weight: 900;
-        letter-spacing: .22em;
-        text-transform: uppercase;
-      }
-      .eyebrow::before { content: ""; width: 38px; height: 2px; background: var(--orange); }
-      .hero h1 { margin-top: 20px; font-size: clamp(4.7rem, 10.4vw, 11.8rem); max-width: 990px; text-shadow: 0 20px 70px rgba(0,0,0,.68); }
-      .hero p { max-width: 720px; color: rgba(247,247,242,.84); font-size: clamp(1.05rem, 1.4vw, 1.28rem); font-weight: 650; }
-      .hero-badges { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
-      .hero-badges span { border: 1px solid rgba(247,247,242,.15); border-radius: 999px; background: rgba(0,0,0,.38); padding: 9px 12px; color: rgba(247,247,242,.86); font-size: .75rem; font-weight: 900; letter-spacing: .11em; text-transform: uppercase; backdrop-filter: blur(10px); }
-      .hero-card {
-        position: absolute;
-        z-index: 3;
-        right: clamp(24px, 6vw, 90px);
-        bottom: 90px;
-        width: min(360px, 34vw);
-        padding: 22px;
-        border: 1px solid var(--line);
-        border-radius: 24px;
-        background: rgba(16,19,18,.76);
-        backdrop-filter: blur(16px);
-        box-shadow: var(--shadow);
-      }
-      .hero-card h3 { font-size: 2.4rem; }
-      .hero-card ul { list-style: none; padding: 0; margin: 18px 0 0; display: grid; gap: 10px; }
-      .hero-card li { display: flex; gap: 10px; align-items: center; color: rgba(247,247,242,.86); font-weight: 800; }
-      .hero-card i { color: var(--orange); width: 18px; }
-
-      .trustbar {
-        position: relative;
-        z-index: 8;
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        margin: -48px clamp(18px, 5vw, 78px) 0;
-        overflow: hidden;
-        border: 1px solid var(--line);
-        border-radius: 24px;
-        background: rgba(16,19,18,.9);
-        backdrop-filter: blur(18px);
-        box-shadow: var(--shadow);
-      }
-      .trustbar article { display: flex; align-items: center; gap: 13px; padding: 20px; border-right: 1px solid var(--line); }
-      .trustbar article:last-child { border-right: 0; }
-      .trustbar i { color: var(--orange); }
-      .trustbar b { display: block; font-family: "Barlow Condensed"; font-size: 1.55rem; text-transform: uppercase; }
-      .trustbar span { display: block; color: var(--gray); font-size: .82rem; font-weight: 700; }
-
-      .section { padding: clamp(74px, 8vw, 118px) clamp(18px, 5vw, 78px); }
-      .section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 28px; margin-bottom: 38px; }
-      .section-head h1, .section-head h2 { font-size: clamp(3.35rem, 7vw, 7.2rem); }
-      .section-head p { max-width: 590px; color: var(--gray); font-weight: 600; }
-      .muted { color: var(--gray); }
-
-      .cards { display: grid; grid-template-columns: repeat(5, 1fr); gap: 18px; }
-      .card, .panel {
-        border: 1px solid var(--line);
-        border-radius: 22px;
-        background: linear-gradient(180deg, rgba(247,247,242,.07), rgba(247,247,242,.03));
-        box-shadow: 0 24px 70px rgba(0,0,0,.34);
-      }
-      .service-card { overflow: hidden; transition: .24s ease; }
-      .service-card:hover { transform: translateY(-5px); border-color: rgba(249,115,22,.55); }
-      .service-img { height: 210px; position: relative; background: var(--img) center / cover; filter: grayscale(.15) contrast(1.03); }
-      .service-img::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,0,0,.86), transparent 72%); }
-      .service-body { padding: 22px; }
-      .icon-box { display: grid; place-items: center; width: 54px; height: 54px; margin-top: -50px; margin-bottom: 18px; position: relative; z-index: 2; border-radius: 16px; background: linear-gradient(135deg, var(--green), #173a22); color: white; border: 1px solid rgba(255,255,255,.18); }
-      .service-body h3, .panel h3 { font-size: 2.25rem; }
-      .service-body p { color: var(--gray); font-weight: 600; min-height: 96px; }
-
-      .feature {
-        position: relative;
-        overflow: hidden;
-        background:
-          linear-gradient(90deg, rgba(16,19,18,.96), rgba(16,19,18,.64)),
-          url("https://images.unsplash.com/photo-1615811361523-6bd03d7748e7?auto=format&fit=crop&w=1800&q=80") center / cover;
-        border-block: 1px solid var(--line);
-      }
-      .feature::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 75% 40%, rgba(249,115,22,.22), transparent 30rem); }
-      .feature .section { position: relative; z-index: 1; }
-      .haul-list { display: flex; flex-wrap: wrap; gap: 10px; max-width: 780px; margin-top: 22px; }
-      .haul-list span { border: 1px solid rgba(247,247,242,.14); border-radius: 999px; padding: 10px 13px; background: rgba(0,0,0,.34); font-weight: 900; text-transform: uppercase; letter-spacing: .08em; font-size: .78rem; }
-
-      .gallery { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
-      .project { min-height: 300px; display: flex; align-items: end; overflow: hidden; border-radius: 22px; border: 1px solid var(--line); background: linear-gradient(0deg, rgba(0,0,0,.88), transparent 66%), var(--img) center / cover; box-shadow: 0 24px 70px rgba(0,0,0,.34); }
-      .project div { padding: 20px; }
-      .project h3 { font-size: 2rem; }
-      .project p { color: var(--gray); margin: 6px 0 0; font-weight: 700; }
-
-      .why-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-      .why { padding: 24px; transition: .22s ease; }
-      .why:hover { transform: translateY(-4px); border-color: rgba(47,107,63,.7); }
-      .why i { color: var(--orange); margin-bottom: 16px; width: 30px; height: 30px; }
-      .why h3 { font-size: 2rem; }
-
-      .split { display: grid; grid-template-columns: .92fr 1.08fr; gap: 24px; align-items: stretch; }
-      .photo-block { min-height: 560px; border-radius: 26px; border: 1px solid var(--line); background: linear-gradient(0deg, rgba(0,0,0,.58), transparent), var(--img) center / cover; box-shadow: var(--shadow); }
-      .quote-card { padding: 30px; }
-      .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
-      .field { display: grid; gap: 8px; }
-      label, .label { color: var(--gray); font-size: .76rem; font-weight: 900; letter-spacing: .13em; text-transform: uppercase; }
-      input, select, textarea { width: 100%; border: 1px solid var(--line); border-radius: 12px; background: rgba(247,247,242,.065); color: white; padding: 13px 14px; outline: none; }
-      option { background: var(--dark); }
-      input:focus, select:focus, textarea:focus { border-color: var(--orange); box-shadow: 0 0 0 4px rgba(249,115,22,.14); }
-      .full { grid-column: 1 / -1; }
-
-      .service-page-hero { padding-top: 86px; }
-      .detail-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 28px; }
-      .detail-list article { padding: 22px; }
-      .tire-inventory { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 28px; }
-      .tire-card { padding: 22px; }
-      .tire-card h3 { font-size: 2rem; }
-      .size-form { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 18px; }
-
-      .footer { display: grid; grid-template-columns: 1.1fr repeat(3, .7fr); gap: 28px; padding: 58px clamp(18px, 5vw, 78px); background: #080a09; border-top: 1px solid var(--line); color: var(--gray); }
-      .footer h3 { color: var(--white); font-size: 2rem; }
-      .footer a { display: block; margin-top: 9px; color: var(--gray); font-weight: 700; }
-      .mobile-call { display: none; position: fixed; z-index: 90; left: 14px; right: 14px; bottom: 14px; box-shadow: var(--shadow); }
-
-      .reveal { opacity: 0; transform: translateY(22px); transition: .65s ease; }
-      .reveal.in { opacity: 1; transform: translateY(0); }
-
-      @media (max-width: 1220px) {
-        .cards, .gallery { grid-template-columns: repeat(2, 1fr); }
-        .why-grid, .tire-inventory, .detail-list { grid-template-columns: repeat(2, 1fr); }
-        .trustbar { grid-template-columns: repeat(2, 1fr); }
-        .trustbar article { border-bottom: 1px solid var(--line); }
-        .hero-card { position: relative; right: auto; bottom: auto; width: min(560px, 100%); margin-top: 28px; }
-        .split { grid-template-columns: 1fr; }
-      }
-
-      @media (max-width: 820px) {
-        .topbar { display: none; }
-        .navbar { align-items: flex-start; flex-wrap: wrap; }
-        .navlinks { display: none; width: 100%; flex-direction: column; align-items: stretch; }
-        .navlinks.open { display: flex; }
-        .navlinks a { padding: 14px 0; }
-        .menu-btn { display: inline-flex; }
-        .nav-actions .btn.green { display: none; }
-        .hero { min-height: auto; }
-        .hero h1 { font-size: 4.5rem; }
-        .trustbar, .cards, .gallery, .why-grid, .tire-inventory, .detail-list, .form-grid, .size-form, .footer { grid-template-columns: 1fr; }
-        .photo-block { min-height: 340px; }
-        .mobile-call { display: flex; }
-      }
-
-      /* Premium UI pass: stronger hierarchy, more texture, and real multi-service visual weight. */
-      body {
-        background:
-          radial-gradient(circle at 18% -10%, rgba(47, 107, 63, .18), transparent 34rem),
-          radial-gradient(circle at 88% 12%, rgba(249, 115, 22, .12), transparent 32rem),
-          linear-gradient(135deg, #090b0a 0%, #101312 45%, #090a09 100%);
-      }
-
-      .site::before {
-        opacity: .42;
-        background-image:
-          linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
-        background-size: 88px 88px;
-        mask-image: linear-gradient(to bottom, black 0%, transparent 78%);
-      }
-
-      .topbar {
-        background: linear-gradient(90deg, rgba(6,8,7,.96), rgba(20,28,22,.96));
-        color: #dbe9de;
-        border-bottom: 1px solid rgba(255,255,255,.08);
-      }
-
-      .navbar {
-        top: 18px;
-        width: min(1440px, calc(100% - 36px));
-        border: 1px solid rgba(255,255,255,.12);
-        border-radius: 24px;
-        background: rgba(9, 11, 10, .74);
-        box-shadow: 0 24px 80px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.08);
-      }
-
-      .brand { gap: 13px; letter-spacing: -.02em; }
-      .brand-mark {
-        background: linear-gradient(135deg, rgba(47,107,63,.95), rgba(249,115,22,.9)), #141916;
-        box-shadow: 0 12px 28px rgba(47,107,63,.2);
-      }
-
-      .navlinks a { border-radius: 999px; padding: 10px 13px; }
-      .navlinks a.active, .navlinks a:hover { background: rgba(255,255,255,.08); color: #fff; }
-
-      .hero {
-        min-height: 880px;
-        padding: 168px 26px 100px;
-        display: block;
-        overflow: hidden;
-      }
-
-      .hero::before {
-        opacity: 1;
-        filter: none;
-        background:
-          linear-gradient(90deg, rgba(8,10,9,.98) 0%, rgba(8,10,9,.9) 36%, rgba(8,10,9,.62) 100%),
-          radial-gradient(circle at 65% 18%, rgba(249,115,22,.18), transparent 28rem),
-          radial-gradient(circle at 80% 74%, rgba(47,107,63,.24), transparent 34rem),
-          var(--hero) center/cover;
-      }
-
-      .hero::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-        background:
-          linear-gradient(120deg, transparent 0 58%, rgba(255,255,255,.08) 58.15%, transparent 58.7%),
-          repeating-linear-gradient(-12deg, rgba(255,255,255,.035) 0 1px, transparent 1px 22px);
-        mix-blend-mode: screen;
-        opacity: .34;
-      }
-
-      .hero-layout {
-        position: relative;
-        z-index: 2;
-        width: min(1420px, 100%);
-        margin: 0 auto;
-        display: grid;
-        grid-template-columns: minmax(0, .92fr) minmax(420px, 1.08fr);
-        gap: clamp(28px, 5vw, 74px);
-        align-items: center;
-      }
-
-      .hero-copy-stack { display: grid; gap: 24px; }
-      .hero-inner { max-width: 760px; }
-      .hero h1 {
-        max-width: 820px;
-        font-size: clamp(4.7rem, 8.2vw, 9.2rem);
-        line-height: .78;
-        letter-spacing: -.075em;
-        text-shadow: 0 22px 60px rgba(0,0,0,.5);
-      }
-
-      .hero p { max-width: 690px; font-size: 1.18rem; color: #d6ddd8; }
-      .hero-actions { margin-top: 18px; }
-
-      .hero-card {
-        position: relative;
-        right: auto;
-        bottom: auto;
-        width: min(100%, 560px);
-        background: linear-gradient(135deg, rgba(18,24,20,.94), rgba(10,12,11,.86));
-        border: 1px solid rgba(255,255,255,.14);
-        box-shadow: 0 30px 80px rgba(0,0,0,.35);
-      }
-
-      .hero-media {
-        min-height: 620px;
-        display: grid;
-        grid-template-columns: 1.1fr .92fr;
-        grid-template-rows: 250px 210px 170px;
-        gap: 16px;
-        transform: rotate(-1deg);
-      }
-
-      .media-tile {
-        --img: none;
-        position: relative;
-        overflow: hidden;
-        border-radius: 28px;
-        border: 1px solid rgba(255,255,255,.16);
-        background: linear-gradient(180deg, rgba(0,0,0,.04), rgba(0,0,0,.76)), var(--img) center/cover;
-        box-shadow: 0 28px 72px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.1);
-        transition: transform .35s ease, border-color .35s ease, filter .35s ease;
-      }
-
-      .media-tile::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(circle at 16% 8%, rgba(255,255,255,.18), transparent 16rem), linear-gradient(135deg, rgba(47,107,63,.12), rgba(249,115,22,.08));
-      }
-
-      .media-tile:hover { transform: translateY(-6px) scale(1.012); border-color: rgba(249,115,22,.42); filter: saturate(1.08) contrast(1.04); }
-      .media-tile.big { grid-row: span 2; border-radius: 34px; }
-      .media-tile.wide { grid-column: span 2; }
-      .media-tile span {
-        position: absolute;
-        left: 18px;
-        bottom: 18px;
-        z-index: 2;
-        padding: 10px 13px;
-        border: 1px solid rgba(255,255,255,.15);
-        border-radius: 999px;
-        background: rgba(7,9,8,.72);
-        color: #fff;
-        font-weight: 900;
-        text-transform: uppercase;
-        letter-spacing: .08em;
-        font-size: .78rem;
-        backdrop-filter: blur(12px);
-      }
-
-      .trustbar {
-        position: relative;
-        z-index: 4;
-        width: min(1400px, calc(100% - 44px));
-        margin: -52px auto 0;
-        border-radius: 28px;
-        background: linear-gradient(135deg, rgba(18,22,20,.95), rgba(10,12,11,.92)), rgba(16,19,18,.9);
-        box-shadow: 0 26px 80px rgba(0,0,0,.38);
-      }
-
-      .trustbar article { padding: 24px 20px; }
-      .process-section { padding-top: 44px; padding-bottom: 22px; }
-      .process-strip {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 14px;
-        padding: 12px;
-        border: 1px solid rgba(255,255,255,.11);
-        border-radius: 30px;
-        background: linear-gradient(135deg, rgba(255,255,255,.055), rgba(255,255,255,.018));
-        box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
-      }
-
-      .process-strip article {
-        position: relative;
-        padding: 24px;
-        min-height: 168px;
-        overflow: hidden;
-        border: 1px solid rgba(255,255,255,.09);
-        border-radius: 22px;
-        background: radial-gradient(circle at 100% 0%, rgba(47,107,63,.2), transparent 12rem), #111513;
-      }
-
-      .process-strip article span { display: block; color: var(--orange); font-weight: 950; letter-spacing: .18em; font-size: .74rem; }
-      .process-strip article svg { width: 30px; height: 30px; color: var(--green); margin: 16px 0 14px; }
-      .process-strip article b { display: block; color: #fff; font-size: 1.08rem; }
-      .process-strip article p { margin: 8px 0 0; color: var(--muted); line-height: 1.55; }
-
-      .section { padding-top: 92px; padding-bottom: 92px; }
-      .section-head { margin-bottom: 34px; }
-      .section-head h2, .section-head h1 { letter-spacing: -.06em; }
-      .cards { gap: 18px; }
-
-      .service-card {
-        position: relative;
-        overflow: hidden;
-        border-radius: 30px;
-        background: linear-gradient(180deg, rgba(255,255,255,.045), transparent 44%), #101412;
-        box-shadow: 0 18px 54px rgba(0,0,0,.25);
-      }
-
-      .service-card::after {
-        content: "";
-        position: absolute;
-        inset: auto 22px 0 22px;
-        height: 3px;
-        border-radius: 99px 99px 0 0;
-        background: linear-gradient(90deg, var(--green), var(--orange));
-        opacity: .75;
-      }
-
-      .service-number {
-        position: absolute;
-        right: 18px;
-        top: 18px;
-        z-index: 3;
-        padding: 8px 10px;
-        border-radius: 999px;
-        border: 1px solid rgba(255,255,255,.16);
-        background: rgba(0,0,0,.56);
-        color: rgba(255,255,255,.78);
-        font-size: .72rem;
-        font-weight: 950;
-        letter-spacing: .16em;
-        backdrop-filter: blur(10px);
-      }
-
-      .service-img { height: 240px; transform-origin: center; transition: transform .45s ease, filter .45s ease; }
-      .service-card:hover .service-img { transform: scale(1.06); filter: saturate(1.1) contrast(1.06); }
-      .service-body { padding: 26px; }
-      .service-body h3 { font-size: 1.55rem; letter-spacing: -.035em; }
-      .service-body p { color: #b8c2bb; line-height: 1.65; }
-      .btn { border-radius: 14px; box-shadow: 0 12px 28px rgba(0,0,0,.18); transform: translateZ(0); }
-      .btn:hover { transform: translateY(-2px); }
-
-      .feature {
-        border-top: 1px solid rgba(255,255,255,.08);
-        border-bottom: 1px solid rgba(255,255,255,.08);
-        background: linear-gradient(90deg, rgba(8,10,9,.94), rgba(8,10,9,.7)), var(--asphalt) center/cover fixed;
-      }
-
-      .gallery { grid-template-columns: repeat(5, minmax(180px, 1fr)); }
-      .project { min-height: 380px; border-radius: 28px; box-shadow: 0 24px 70px rgba(0,0,0,.28); }
-      .why-grid .panel { border-radius: 24px; background: linear-gradient(145deg, rgba(255,255,255,.06), rgba(255,255,255,.02)), #101412; }
-
-      @media (max-width: 1180px) {
-        .hero-layout { grid-template-columns: 1fr; }
-        .hero-media { min-height: 520px; transform: none; }
-        .process-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      }
-
-      @media (max-width: 760px) {
-        .navbar { top: 10px; width: calc(100% - 20px); border-radius: 18px; }
-        .hero { min-height: auto; padding: 128px 16px 58px; }
-        .hero h1 { font-size: clamp(3.6rem, 17vw, 5.7rem); }
-        .hero-media { grid-template-columns: 1fr; grid-template-rows: repeat(4, 190px); min-height: auto; }
-        .media-tile.big, .media-tile.wide { grid-column: auto; grid-row: auto; }
-        .trustbar { margin-top: 0; width: calc(100% - 28px); }
-        .process-strip, .gallery { grid-template-columns: 1fr; }
+      @media (max-width: 720px) {
+        .topbar { align-items: stretch; flex-direction: column; }
+        .grid { padding: 10px; }
+        .form-grid, .metrics, .settings-grid, .quick, .line { grid-template-columns: 1fr; }
+        h1 { font-size: 4rem; }
       }
     </style>
   </head>
   <body>
-    <div class="site">
-      <div class="topbar">
-        <span id="topLocation">Akron, Ohio</span>
-        <span id="topHours">Mon-Sat, 9:00 AM-6:00 PM</span>
-      </div>
-
-      <header class="navbar" id="navbar">
-        <a class="brand" href="#home" data-page="home"><span class="brand-mark"><i data-lucide="shovel"></i></span><span id="brandName">Akron Multi Service</span></a>
-        <nav class="navlinks" id="navlinks">
-          <a class="active" href="#home" data-page="home">Home</a>
-          <a href="#services" data-page="services">Services</a>
-          <a href="#grass" data-page="grass">Grass Mowing</a>
-          <a href="#seal" data-page="seal">Seal Coating</a>
-          <a href="#tree" data-page="tree">Tree Service</a>
-          <a href="#hauling" data-page="hauling">Hauling</a>
-          <a href="#tires" data-page="tires">Tire Shop</a>
-          <a href="#about" data-page="about">About</a>
-          <a href="#contact" data-page="contact">Contact</a>
-        </nav>
-        <div class="nav-actions">
-          <a class="btn green" href="#quote" data-page="quote">Request a Quote</a>
-          <a class="btn orange" id="navPhone" href="tel:+13305550000"><i data-lucide="phone"></i> Call</a>
-          <button class="btn menu-btn" id="menuBtn" aria-label="Open menu"><i data-lucide="menu"></i></button>
+    <div class="shell">
+      <section class="login" id="login">
+        <div class="login-art">
+          <div class="login-art-inner">
+            <div>
+              <span class="eyebrow">Akron Tire Shop POS</span>
+              <h1>Touchscreen tire sales, receipts, inventory, and reports.</h1>
+              <p>Private register system for new tires, used tires, mounting, balancing, repairs, cash change, Epson receipt printing, and transaction history.</p>
+            </div>
+            <div class="login-stats">
+              <div class="login-stat"><b>3</b><span>printer modes</span></div>
+              <div class="login-stat"><b>80mm</b><span>receipt preview</span></div>
+              <div class="login-stat"><b>PIN</b><span>employee access</span></div>
+            </div>
+          </div>
         </div>
-      </header>
+        <div class="login-form-wrap">
+          <form class="login-form" id="loginForm">
+            <div class="lock">🔐</div>
+            <h2>Employee PIN</h2>
+            <p class="muted" style="margin-top:8px">Demo PINs: Owner 1111, Manager 2222, Employee 3333.</p>
+            <input class="pin" id="pin" type="password" inputmode="numeric" maxlength="8" autofocus />
+            <button class="btn" style="width:100%;margin-top:14px" type="submit">Sign In</button>
+            <p class="error" id="authError"></p>
+          </form>
+        </div>
+      </section>
 
-      <main>
-        <section id="home" class="page active">
-          <div class="hero">
-            <div class="hero-layout">
-              <div class="hero-copy-stack">
-                <div class="hero-inner reveal">
-                  <span class="eyebrow">Akron property, hauling, and tire service</span>
-                  <h1>One Crew. Multiple Services. Work Done Right.</h1>
-                  <p>Reliable lawn care, seal coating, tree service, dump truck hauling, and tire service for homes, businesses, and properties around Akron.</p>
-                  <div class="hero-badges">
-                    <span>Grass mowing</span><span>Seal coating</span><span>Tree service</span><span>Dump truck hauling</span><span>Tire shop</span>
-                  </div>
-                  <div class="hero-badges hero-actions">
-                    <a class="btn orange" href="#quote" data-page="quote"><i data-lucide="clipboard-pen"></i> Request a Quote</a>
-                    <a class="btn green" id="heroPhone" href="tel:+13305550000"><i data-lucide="phone-call"></i> Call Now</a>
+      <section class="app" id="app">
+        <header class="topbar">
+          <div class="brand"><div class="brand-icon">◉</div><div><b>Akron Tire Shop</b><span>Private POS Register</span></div></div>
+          <nav id="nav">
+            <button class="active" data-screen="checkout">Checkout</button>
+            <button data-screen="history">History</button>
+            <button data-screen="inventory">Inventory</button>
+            <button data-screen="reports">Reports</button>
+            <button data-screen="settings">Settings</button>
+          </nav>
+          <div class="employee"><b id="employeeName">Owner</b><div class="muted" id="employeeRole">Owner</div></div>
+        </header>
+
+        <main class="grid">
+          <div class="main-stack">
+            <section class="screen active" id="checkout">
+              <div class="two">
+                <div class="panel">
+                  <div class="panel-head"><div><span class="eyebrow">Saved → printing → printed</span><h2>New tire sale</h2></div><span class="status" id="saleStatus">Saved</span></div>
+                  <div class="form-grid">
+                    <label>Tire size<input id="tireSize" value="215/65R17" /></label>
+                    <label>Brand<input id="brand" value="Mixed" /></label>
+                    <label>Model<input id="model" value="All-season" /></label>
+                    <label>Condition<select id="condition"><option>Used</option><option>New</option></select></label>
+                    <label>Customer<input id="customer" placeholder="Walk-in Customer" /></label>
+                    <label>Telephone<input id="phone" /></label>
+                    <label>Vehicle<input id="vehicle" value="2016 Honda Accord" /></label>
+                    <label>Mileage<input id="mileage" /></label>
+                    <label>License Plate<input id="plate" /></label>
+                    <label class="wide">Employee notes<textarea id="notes"></textarea></label>
+                    <label class="wide">Warranty notes<textarea id="warranty">Used tires sold as-is unless otherwise written on receipt.</textarea></label>
                   </div>
                 </div>
-                <aside class="hero-card reveal">
-                  <span class="eyebrow">One dependable call</span>
-                  <h3>Property work, hauling, and tires.</h3>
-                  <ul>
-                    <li><i data-lucide="check-circle-2"></i> Residential and commercial</li>
-                    <li><i data-lucide="check-circle-2"></i> Fast estimates</li>
-                    <li><i data-lucide="check-circle-2"></i> Reliable equipment</li>
-                  </ul>
-                </aside>
+                <div class="panel">
+                  <div class="panel-head"><div><span class="eyebrow">Configurable</span><h2>Quick sale</h2></div></div>
+                  <div class="quick" id="quick"></div>
+                </div>
               </div>
-
-              <div class="hero-media reveal" aria-label="Akron Multi Service preview images">
-                <article class="media-tile big" style="--img:url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1000&q=84')"><span>Grass Mowing</span></article>
-                <article class="media-tile" style="--img:url('https://images.unsplash.com/photo-1593113646773-028c64a8f1b8?auto=format&fit=crop&w=900&q=84')"><span>Seal Coating</span></article>
-                <article class="media-tile" style="--img:url('https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&w=900&q=84')"><span>Tree Service</span></article>
-                <article class="media-tile wide" style="--img:url('https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1100&q=84')"><span>Tires + Shop Service</span></article>
+              <div class="panel" style="margin-top:18px">
+                <div class="panel-head"><div><span class="eyebrow">Cart</span><h2>Sale items</h2></div></div>
+                <div id="cart"></div>
               </div>
-            </div>
+            </section>
+
+            <section class="screen" id="history">
+              <div class="panel">
+                <div class="panel-head"><div><span class="eyebrow">Append-only records</span><h2>Transaction history</h2></div></div>
+                <input style="width:100%;margin-bottom:12px" placeholder="Search receipt, customer, phone, tire size, vehicle..." />
+                <div id="historyList"></div>
+              </div>
+            </section>
+
+            <section class="screen" id="inventory">
+              <div class="panel">
+                <div class="panel-head"><div><span class="eyebrow">Manager approval required</span><h2>Tire inventory</h2></div></div>
+                <div class="metrics">
+                  <div class="metric"><b>215/65R17</b><span class="muted">Used set · stock 3 · Rack A</span></div>
+                  <div class="metric"><b>225/60R17</b><span class="muted">New · stock 6 · Rack B</span></div>
+                  <div class="metric"><b>235/65R18</b><span class="muted">Used pair · stock 2 · Rack C</span></div>
+                </div>
+              </div>
+            </section>
+
+            <section class="screen" id="reports">
+              <div class="panel">
+                <div class="panel-head"><div><span class="eyebrow">CSV export ready</span><h2>Dashboard reports</h2></div></div>
+                <div class="metrics">
+                  <div class="metric"><b id="reportSales">$0.00</b><span class="muted">Today sales</span></div>
+                  <div class="metric"><b id="reportCount">0</b><span class="muted">Transactions</span></div>
+                  <div class="metric"><b>$23.76</b><span class="muted">Tax collected sample</span></div>
+                </div>
+                <button class="btn secondary" style="margin-top:14px">Export CSV</button>
+              </div>
+            </section>
+
+            <section class="screen" id="settings">
+              <div class="panel">
+                <div class="panel-head"><div><span class="eyebrow">Owner / manager</span><h2>Settings</h2></div></div>
+                <div class="settings-grid">
+                  <div class="settings-card"><b>Shop info</b><p class="muted">Logo, address, phone, website.</p></div>
+                  <div class="settings-card"><b>Tax + receipt</b><p class="muted">Tax rate, footer, warranty, return policy.</p></div>
+                  <div class="settings-card"><b>Printer</b><p class="muted">Epson IP, port, mode, test print.</p></div>
+                  <div class="settings-card"><b>Security</b><p class="muted">PIN users, approval limits, lockouts.</p></div>
+                  <div class="settings-card"><b>Backups</b><p class="muted">Database export and restore docs.</p></div>
+                  <div class="settings-card"><b>PWA</b><p class="muted">Installable Windows/iPad register mode.</p></div>
+                </div>
+              </div>
+            </section>
           </div>
 
-          <div class="trustbar reveal">
-            <article><i data-lucide="map-pin"></i><div><b>Local Akron Service</b><span>Centered around Akron, Ohio</span></div></article>
-            <article><i data-lucide="building-2"></i><div><b>Residential & Commercial</b><span>Homes, businesses, properties</span></div></article>
-            <article><i data-lucide="timer"></i><div><b>Fast Estimates</b><span>Clear next steps</span></div></article>
-            <article><i data-lucide="truck"></i><div><b>Reliable Equipment</b><span>Built for real work</span></div></article>
-            <article><i data-lucide="shield-check"></i><div><b>Quality Work</b><span>Clean, direct service</span></div></article>
-          </div>
-
-          <section class="section process-section reveal">
-            <div class="process-strip">
-              <article><span>01</span><i data-lucide="message-square-text"></i><b>Tell Us The Job</b><p>Send the service, location, and a few photos if you have them.</p></article>
-              <article><span>02</span><i data-lucide="clipboard-check"></i><b>Get A Clear Estimate</b><p>No confusing packages. Just practical pricing and next steps.</p></article>
-              <article><span>03</span><i data-lucide="calendar-check"></i><b>Schedule The Work</b><p>We line up the right equipment and a realistic service window.</p></article>
-              <article><span>04</span><i data-lucide="badge-check"></i><b>Job Done Right</b><p>Clean finish, direct communication, and dependable local service.</p></article>
+          <aside class="main-stack">
+            <div class="panel totals">
+              <div class="panel-head"><div><span class="eyebrow">Server recalculates before save</span><h2>Totals</h2></div></div>
+              <div class="money-row"><span>Subtotal</span><b id="subtotal">$0.00</b></div>
+              <label>Discount $<input id="discount" value="0" /></label>
+              <label>Tax %<input id="taxRate" value="7.25" /></label>
+              <div class="money-row"><span>Tax</span><b id="tax">$0.00</b></div>
+              <div class="total-due"><span>Total due</span><b id="total">$0.00</b></div>
+              <label>Payment method<select id="payment"><option>Cash</option><option>Credit/debit card</option><option>Cash App</option><option>Zelle</option><option>Other</option></select></label>
+              <label id="cashWrap">Amount received<input id="received" value="400.00" /></label>
+              <div class="money-row"><span>Change due</span><b id="change">$0.00</b></div>
+              <button class="btn" id="complete">Complete Sale</button>
             </div>
-          </section>
-
-          <section class="section reveal" id="services-overview">
-            <div class="section-head">
-              <div><span class="eyebrow">Services</span><h2>One Company For The Work Around Your Property.</h2></div>
-              <p>Five focused services, no random add-ons. Pick what you need or request multiple services together.</p>
+            <div class="panel">
+              <div class="panel-head"><div><span class="eyebrow">Monochrome thermal</span><h2>80mm receipt preview</h2></div></div>
+              <div class="receipt" id="receipt"></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px"><button class="btn secondary">Print</button><button class="btn secondary">Reprint</button></div>
             </div>
-            <div class="cards" id="serviceCards"></div>
-          </section>
-
-          <section class="feature">
-            <div class="section reveal">
-              <span class="eyebrow">Dump truck hauling</span>
-              <h2>Need It Moved? We Haul It.</h2>
-              <p class="muted" style="max-width:720px">Hauling for dirt, gravel, mulch, brush, yard waste, construction debris, and property cleanup material. No hazardous waste or specialty-licensed materials are listed.</p>
-              <div class="haul-list" id="haulList"></div>
-              <div class="hero-badges"><a class="btn orange" href="#quote" data-page="quote">Get A Hauling Quote</a></div>
-            </div>
-          </section>
-
-          <section class="section reveal">
-            <div class="section-head">
-              <div><span class="eyebrow">Project gallery</span><h2>Before And After Work.</h2></div>
-              <p>Realistic sample project cards that can be replaced with actual job photos later.</p>
-            </div>
-            <div class="gallery" id="gallery"></div>
-          </section>
-
-          <section class="section reveal">
-            <div class="section-head">
-              <div><span class="eyebrow">Why choose us</span><h2>Dependable Local Help Without The Runaround.</h2></div>
-            </div>
-            <div class="why-grid" id="whyGrid"></div>
-          </section>
-        </section>
-
-        <section id="services" class="page section">
-          <div class="section-head reveal"><div><span class="eyebrow">Services</span><h1>What We Do.</h1></div><p>Grass mowing, seal coating, tree service, dump truck hauling, and tire service only.</p></div>
-          <div class="cards reveal" id="serviceCardsPage"></div>
-        </section>
-
-        <section id="grass" class="page section service-page-hero"></section>
-        <section id="seal" class="page section service-page-hero"></section>
-        <section id="tree" class="page section service-page-hero"></section>
-        <section id="hauling" class="page section service-page-hero"></section>
-
-        <section id="tires" class="page section">
-          <div class="section-head reveal">
-            <div><span class="eyebrow">Tire shop</span><h1>New Tires. Used Tires. Repairs.</h1></div>
-            <p>Call for availability. Sample inventory is placeholder data and can be connected to a real inventory later.</p>
-          </div>
-          <div class="split reveal">
-            <div class="photo-block" style="--img:url('https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1400&q=82')"></div>
-            <div class="panel quote-card">
-              <h3>Tire Size Lookup</h3>
-              <p class="muted">Enter your tire size to ask about matching new or used tires.</p>
-              <form class="size-form" id="sizeForm">
-                <input name="width" placeholder="Width 225" required />
-                <input name="ratio" placeholder="Ratio 60" required />
-                <input name="rim" placeholder="Rim 17" required />
-                <button class="btn orange" type="submit">Check Size</button>
-              </form>
-              <p id="sizeMsg" class="muted"></p>
-              <div class="hero-badges"><a class="btn green" id="tirePhone" href="tel:+13305550000">Call For Availability</a><a class="btn" id="directionsBtn" target="_blank" rel="noreferrer">Directions</a></div>
-            </div>
-          </div>
-          <div class="detail-list reveal" id="tireServices"></div>
-          <div class="tire-inventory reveal" id="tireInventory"></div>
-        </section>
-
-        <section id="about" class="page section">
-          <div class="split reveal">
-            <div class="photo-block" style="--img:url('https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1400&q=82')"></div>
-            <div class="panel quote-card">
-              <span class="eyebrow">About</span>
-              <h1>Hardworking Local Service Around Akron.</h1>
-              <p class="muted">We are a hardworking local service company serving Akron and nearby areas. We help homeowners, landlords, property managers, and small businesses maintain their properties, move materials, protect asphalt, handle tree work, and stay on the road.</p>
-              <p class="muted">The goal is simple: clear communication, practical work, and dependable service across the jobs properties actually need.</p>
-              <a class="btn orange" href="#quote" data-page="quote">Request a Quote</a>
-            </div>
-          </div>
-        </section>
-
-        <section id="quote" class="page section">
-          <div class="section-head reveal"><div><span class="eyebrow">Quote request</span><h1>Tell Us What You Need.</h1></div><p>Fill this out and it will show a success message. It is ready to connect to email or a backend later.</p></div>
-          <form class="panel quote-card reveal" id="quoteForm" noValidate>
-            <div class="form-grid">
-              <label class="field"><span>Name</span><input name="name" autocomplete="name" required /></label>
-              <label class="field"><span>Phone</span><input name="phone" autocomplete="tel" required /></label>
-              <label class="field"><span>Email</span><input name="email" type="email" autocomplete="email" required /></label>
-              <label class="field"><span>Service needed</span><select name="service" required><option value="">Select one</option><option>Grass Mowing</option><option>Seal Coating</option><option>Tree Service</option><option>Dump Truck Hauling</option><option>Tire Service</option><option>Multiple Services</option></select></label>
-              <label class="field full"><span>Property address</span><input name="address" required /></label>
-              <label class="field"><span>Property type</span><select name="propertyType" required><option value="">Select one</option><option>Residential</option><option>Commercial</option></select></label>
-              <label class="field"><span>Preferred date</span><input name="date" type="date" /></label>
-              <label class="field full"><span>Description of work</span><textarea name="description" rows="6" required></textarea></label>
-              <label class="field full"><span>Photo upload placeholder</span><input name="photos" type="file" accept="image/*" multiple /></label>
-            </div>
-            <p id="quoteMsg" class="muted"></p>
-            <button class="btn orange" type="submit">Submit Quote Request</button>
-          </form>
-        </section>
-
-        <section id="contact" class="page section">
-          <div class="section-head reveal"><div><span class="eyebrow">Contact</span><h1>Call Or Request A Quote.</h1></div></div>
-          <div class="split reveal">
-            <div class="panel quote-card">
-              <h3 id="contactName"></h3>
-              <p class="muted" id="contactDetails"></p>
-              <div class="hero-badges"><a class="btn orange" id="contactPhone" href="tel:+13305550000">Call Now</a><a class="btn green" href="#quote" data-page="quote">Request a Quote</a></div>
-              <div class="panel" style="margin-top:20px"><h3>Service Area</h3><p class="muted" id="serviceArea"></p></div>
-            </div>
-            <div class="photo-block" style="--img:url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=82')"></div>
-          </div>
-        </section>
-      </main>
-
-      <footer class="footer">
-        <div><h3 id="footerBusiness"></h3><p id="footerInfo"></p><a class="btn orange" href="#quote" data-page="quote">Request a Quote</a></div>
-        <div><h3>Services</h3><div id="footerServices"></div></div>
-        <div><h3>Links</h3><a href="#about" data-page="about">About</a><a href="#contact" data-page="contact">Contact</a><a href="#tires" data-page="tires">Tire Shop</a></div>
-        <div><h3>Social</h3><div id="footerSocial"></div></div>
-      </footer>
+          </aside>
+        </main>
+      </section>
     </div>
 
-    <a class="btn orange mobile-call" id="mobileCall" href="tel:+13305550000"><i data-lucide="phone"></i> Call Now</a>
-
     <script>
-      const business = {
-        name: "Akron Multi Service",
-        phone: "(330) 555-0000",
-        phoneHref: "tel:+13305550000",
-        email: "quotes@example.com",
-        address: "Akron, Ohio",
-        hours: "Monday-Saturday, 9:00 AM-6:00 PM",
-        serviceAreas: ["Akron, Ohio", "Nearby areas - edit this list in the business config"],
-        socialLinks: [{ label: "Facebook", url: "#" }, { label: "Instagram", url: "#" }],
-        services: [
-          { id:"grass", title:"Grass Mowing", icon:"leaf", image:"https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1000&q=82", description:"Regular mowing, trimming, edging, and property cleanup for residential and commercial properties.", bullets:["Residential mowing","Commercial mowing","Trimming","Edging","Cleanup","One-time cuts","Recurring service"] },
-          { id:"seal", title:"Seal Coating", icon:"paintbrush", image:"https://images.unsplash.com/photo-1593113646773-028c64a8f1b8?auto=format&fit=crop&w=1000&q=82", description:"Driveway and parking-lot seal coating designed to improve appearance and protect asphalt.", bullets:["Driveways","Small parking lots","Surface preparation","Crack-cleaning disclaimer","Seal coating process","Maintenance benefits"] },
-          { id:"tree", title:"Tree Service", icon:"trees", image:"https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&w=1000&q=82", description:"Tree trimming, branch removal, storm cleanup, and general tree-related property work.", bullets:["Trimming","Small tree removal","Branch removal","Storm cleanup","Brush cleanup"] },
-          { id:"hauling", title:"Dump Truck Hauling", icon:"truck", image:"https://images.unsplash.com/photo-1615811361523-6bd03d7748e7?auto=format&fit=crop&w=1000&q=82", description:"Hauling dirt, gravel, mulch, brush, debris, and other materials using a dump truck.", bullets:["Material hauling","Debris hauling","Brush hauling","Gravel delivery","Mulch delivery","Dirt hauling","Property cleanup"] },
-          { id:"tires", title:"Tire Shop", icon:"circle-dot", image:"https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1000&q=82", description:"New and used tires, mounting, balancing, and tire repairs.", bullets:["New tires","Used tires","Tire mounting","Tire balancing","Tire repairs"] }
-        ],
-        tireShop: {
-          hours: "Monday-Saturday, 9:00 AM-6:00 PM",
-          inventory: [
-            { brand:"Goodyear", model:"Assurance", size:"225/60R17", condition:"New", price:"Call", availability:"Sample" },
-            { brand:"Michelin", model:"Defender", size:"215/55R17", condition:"Used", price:"Call", availability:"Sample" },
-            { brand:"Cooper", model:"Endeavor Plus", size:"235/65R18", condition:"Used", price:"Call", availability:"Sample" }
-          ]
-        },
-        haulingExamples: ["Dirt","Gravel","Mulch","Brush","Yard waste","Construction debris","Property cleanup material"]
-      };
-
-      const gallery = [
-        ["Lawn Mowing","Trimmed, edged, and cleaned up lawn service.","https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=900&q=82"],
-        ["Seal Coating","Driveway and small parking-lot finish samples.","https://images.unsplash.com/photo-1593113646773-028c64a8f1b8?auto=format&fit=crop&w=900&q=82"],
-        ["Tree Cleanup","Branch and brush cleanup examples.","https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&w=900&q=82"],
-        ["Hauling Jobs","Material and property cleanup hauling samples.","https://images.unsplash.com/photo-1615811361523-6bd03d7748e7?auto=format&fit=crop&w=900&q=82"],
-        ["Tire Work","New, used, mount, balance, and repair examples.","https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=900&q=82"]
+      const employees = {1111:["Owner","Owner"],2222:["Manager","Manager"],3333:["Employee","Employee"]};
+      const quick = [
+        ["One used tire",1,6500,"tire"],["Two used tires",2,6000,"tire"],["Set of four used tires",1,24000,"tire"],["One new tire",1,13500,"tire"],["Set of four new tires",1,52000,"tire"],["Mount and balance",1,8000,"service"],["Tire repair",1,2500,"service"],["Tire rotation",1,3500,"service"],["Disposal fee",1,1600,"fee"],["Valve stem",1,800,"fee"],["Wheel installation",1,2000,"service"]
       ];
-      const why = ["Local and dependable","Multiple services from one company","Honest estimates","Proper equipment","Residential and commercial work","Clean job sites","Fast communication","Flexible scheduling"];
-
-      const $ = (id) => document.getElementById(id);
-
-      function serviceCard(service, index = 0) {
-        return `<article class="card service-card">
-          <span class="service-number">${String(index + 1).padStart(2, "0")}</span>
-          <div class="service-img" style="--img:url('${service.image}')"></div>
-          <div class="service-body">
-            <div class="icon-box"><i data-lucide="${service.icon}"></i></div>
-            <h3>${service.title}</h3>
-            <p>${service.description}</p>
-            <a class="btn small green" href="#${service.id}" data-page="${service.id}">Learn More</a>
-          </div>
-        </article>`;
-      }
-
-      function render() {
-        brandName.textContent = business.name;
-        topLocation.textContent = business.address;
-        topHours.textContent = business.hours;
-        navPhone.href = business.phoneHref;
-        navPhone.innerHTML = `<i data-lucide="phone"></i> ${business.phone}`;
-        heroPhone.href = business.phoneHref;
-        mobileCall.href = business.phoneHref;
-        contactPhone.href = business.phoneHref;
-        contactName.textContent = business.name;
-        contactDetails.innerHTML = `<b>Phone:</b> <a href="${business.phoneHref}">${business.phone}</a><br><b>Email:</b> ${business.email}<br><b>Location:</b> ${business.address}<br><b>Hours:</b> ${business.hours}`;
-        serviceArea.textContent = business.serviceAreas.join(" | ");
-        footerBusiness.textContent = business.name;
-        footerInfo.innerHTML = `${business.phone}<br>${business.email}<br>${business.address}<br>${business.hours}`;
-        serviceCards.innerHTML = business.services.map(serviceCard).join("");
-        serviceCardsPage.innerHTML = business.services.map(serviceCard).join("");
-        haulList.innerHTML = business.haulingExamples.map((item) => `<span>${item}</span>`).join("");
-        gallery.innerHTML = galleryData();
-        whyGrid.innerHTML = why.map((item) => `<article class="panel why"><i data-lucide="check-circle-2"></i><h3>${item}</h3><p class="muted">Reliable local service with clear communication and practical scheduling.</p></article>`).join("");
-        footerServices.innerHTML = business.services.map((s) => `<a href="#${s.id}" data-page="${s.id}">${s.title}</a>`).join("");
-        footerSocial.innerHTML = business.socialLinks.map((s) => `<a href="${s.url}">${s.label}</a>`).join("");
-        renderServicePages();
-        renderTires();
-        requestAnimationFrame(() => { if (window.lucide) lucide.createIcons(); revealNow(); bindDynamicLinks(); });
-      }
-
-      function galleryData() {
-        return gallery.map(([title, text, image]) => `<article class="project" style="--img:url('${image}')"><div><span class="eyebrow">Before / After</span><h3>${title}</h3><p>${text}</p></div></article>`).join("");
-      }
-
-      function renderServicePages() {
-        for (const service of business.services.filter((s) => s.id !== "tires")) {
-          const warnings = service.id === "seal" ? `<p class="muted">Crack cleaning and preparation are part of the process, but full asphalt replacement is not listed as a service.</p>` : service.id === "tree" ? `<p class="muted">This page does not claim dangerous large-tree removal, crane work, or certified arborist services.</p>` : service.id === "hauling" ? `<p class="muted">Hazardous waste or specialty-licensed materials are not listed as hauling services.</p>` : "";
-          $(service.id).innerHTML = `<div class="section-head reveal"><div><span class="eyebrow">${service.title}</span><h1>${service.title} Services.</h1></div><p>${service.description}</p></div><div class="split reveal"><div class="photo-block" style="--img:url('${service.image}')"></div><div class="panel quote-card"><h3>What is included</h3>${warnings}<div class="detail-list">${service.bullets.map((b) => `<article class="panel"><h3>${b}</h3><p class="muted">Request a quote and describe the job so the service can be confirmed.</p></article>`).join("")}</div><div class="hero-badges"><a class="btn orange" href="#quote" data-page="quote">Request A Quote</a><a class="btn green" href="${business.phoneHref}">Call Now</a></div></div></div>`;
-        }
-      }
-
-      function renderTires() {
-        tireServices.innerHTML = business.services.find((s) => s.id === "tires").bullets.map((b) => `<article class="panel"><h3>${b}</h3><p class="muted">Call for availability and service timing.</p></article>`).join("");
-        tireInventory.innerHTML = business.tireShop.inventory.map((t) => `<article class="panel tire-card"><span class="eyebrow">Sample inventory</span><h3>${t.brand} ${t.model}</h3><p class="muted">${t.size}<br>${t.condition} | ${t.availability}</p><a class="btn orange" href="${business.phoneHref}">Call To Confirm</a></article>`).join("");
-      }
-
-      function bindDynamicLinks() {
-        document.querySelectorAll("[data-page]").forEach((link) => {
-          if (link.dataset.bound) return;
-          link.dataset.bound = "true";
-          link.addEventListener("click", navigate);
-        });
-      }
-
-      function navigate(e) {
+      let lines = [["Set of four used tires",1,24000,"tire"],["Mounting and balancing",1,8000,"service"],["Disposal fee",1,1600,"fee"]];
+      let txns = [{receipt:"ATS-2026-000001", customer:"Walk-in Customer", total:36036, status:"Printed", tire:"215/65R17"}];
+      const $ = id => document.getElementById(id);
+      const money = cents => `${cents < 0 ? "-" : ""}$${(Math.abs(cents)/100).toFixed(2)}`;
+      const toCents = v => Math.round(Number(String(v || "0").replace(/[$,]/g,""))*100);
+      const normalizeTire = v => {
+        const m = String(v).trim().replace(/\s+/g,"").toUpperCase().match(/^(\d{3})\/?(\d{2})R?(\d{2})$/);
+        return m ? `${m[1]}/${m[2]}R${m[3]}` : v;
+      };
+      loginForm.addEventListener("submit", e => {
         e.preventDefault();
-        const page = e.currentTarget.dataset.page;
-        document.querySelectorAll(".page").forEach((el) => el.classList.remove("active"));
-        $(page).classList.add("active");
-        document.querySelectorAll(".navlinks a").forEach((el) => el.classList.toggle("active", el.dataset.page === page));
-        navlinks.classList.remove("open");
-        scrollTo({ top: 0, behavior: "smooth" });
-        setTimeout(revealNow, 80);
-      }
-
-      function revealNow() {
-        document.querySelectorAll(".reveal").forEach((el) => {
-          if (el.getBoundingClientRect().top < innerHeight - 50) el.classList.add("in");
-        });
-      }
-
-      quoteForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const data = new FormData(quoteForm);
-        const ok = ["name","phone","email","service","address","propertyType","description"].every((k) => String(data.get(k) || "").trim());
-        quoteMsg.textContent = ok ? "Thanks. Your quote request is ready to be sent once this form is connected to email or a backend." : "Please fill out the required fields.";
-        if (ok) quoteForm.reset();
+        const user = employees[pin.value];
+        if (!user) { authError.textContent = "Wrong PIN."; return; }
+        employeeName.textContent = user[0]; employeeRole.textContent = user[1];
+        login.classList.add("hidden"); app.classList.add("active"); render();
       });
-      sizeForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const data = new FormData(sizeForm);
-        sizeMsg.textContent = `Size request saved for ${data.get("width")}/${data.get("ratio")}R${data.get("rim")}. Call to confirm availability.`;
+      nav.addEventListener("click", e => {
+        if (!e.target.dataset.screen) return;
+        document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active", b===e.target));
+        document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("active", s.id===e.target.dataset.screen));
       });
-      menuBtn.addEventListener("click", () => navlinks.classList.toggle("open"));
-      addEventListener("scroll", () => { navbar.classList.toggle("shrunk", scrollY > 32); revealNow(); });
-      addEventListener("load", () => { render(); if (window.lucide) lucide.createIcons(); revealNow(); });
+      quick.innerHTML = quick.map((q,i)=>`<button data-q="${i}"><b>${q[0]}</b><span>${money(q[2])}</span></button>`).join("");
+      quick.addEventListener("click", e => { const b=e.target.closest("button"); if(!b)return; lines.push(quick[Number(b.dataset.q)]); render(); });
+      cart.addEventListener("click", e => { const b=e.target.closest("button"); if(!b)return; lines.splice(Number(b.dataset.remove),1); render(); });
+      [discount,taxRate,received,payment,tireSize,customer,vehicle].forEach(el=>el.addEventListener("input",render));
+      complete.addEventListener("click", () => {
+        const total = calc().total;
+        if (payment.value === "Cash" && toCents(received.value) < total) return alert("Cash received is below total.");
+        saleStatus.textContent = "Saving";
+        setTimeout(()=>{ const t={receipt:`ATS-2026-${String(txns.length+1).padStart(6,"0")}`, customer:customer.value||"Walk-in Customer", total, status:"Printed", tire:normalizeTire(tireSize.value)}; txns.unshift(t); saleStatus.textContent="Printed"; render(); }, 450);
+      });
+      function calc(){ const subtotal=lines.reduce((s,l)=>s+l[1]*l[2],0); const disc=Math.min(toCents(discount.value),subtotal); const taxable=subtotal-disc; const tax=Math.round(taxable*(Number(taxRate.value||0)*100)/10000); const total=taxable+tax; const change=payment.value==="Cash"?toCents(received.value)-total:0; return {subtotal,disc,tax,total,change}; }
+      function render(){
+        const c=calc();
+        subtotal.textContent=money(c.subtotal); tax.textContent=money(c.tax); total.textContent=money(c.total); change.textContent=money(c.change);
+        cashWrap.style.display = payment.value === "Cash" ? "grid" : "none";
+        cart.innerHTML = lines.map((l,i)=>`<div class="line"><div><b>${l[0]}</b><div class="muted">${l[3]}</div></div><b>Qty ${l[1]}</b><b>${money(l[1]*l[2])}</b><button class="btn secondary" data-remove="${i}">Remove</button></div>`).join("");
+        historyList.innerHTML = txns.map(t=>`<div class="history-item"><div><b>${t.receipt}</b><div class="muted">${t.customer} · ${t.tire} · ${t.status}</div></div><b>${money(t.total)}</b></div>`).join("");
+        reportSales.textContent = money(txns.reduce((s,t)=>s+t.total,0)); reportCount.textContent = txns.length;
+        receipt.innerHTML = `<div class="center"><b>AKRON TIRE SHOP</b><br>Akron, Ohio<br>(330) 555-0000<br>prestonhq.com</div><hr><div>Receipt: ATS-2026-DRAFT</div><div>Employee: ${employeeName.textContent}</div><div>Customer: ${customer.value||"Walk-in Customer"}</div><div>Vehicle: ${vehicle.value||""}</div><div>Tire: ${normalizeTire(tireSize.value)}</div><hr>${lines.map(l=>`<div class="receipt-row"><span>${l[1]}x ${l[0]}</span><span>${money(l[1]*l[2])}</span></div>`).join("")}<hr><div class="receipt-row"><b>Total</b><b>${money(c.total)}</b></div><div>Payment: ${payment.value}</div><div style="border:1px solid #000;text-align:center;padding:18px;margin:12px 0">QR<br>prestonhq.com</div><div class="center">Thank you for supporting a local business</div>`;
+      }
       render();
     </script>
   </body>

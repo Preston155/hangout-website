@@ -1,0 +1,16 @@
+{
+  "name": "Akron Tire Shop POS",
+  "short_name": "ATS POS",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#08090b",
+  "theme_color": "#ef4444",
+  "description": "Private Akron Tire Shop point-of-sale and receipt system.",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    }
+  ]
+}

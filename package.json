@@ -1,13 +1,14 @@
 {
-  "name": "prestonhq-profiles",
+  "name": "akron-tire-shop-pos",
   "version": "2.0.0",
   "private": true,
-  "description": "PrestonHQ Profiles production SaaS platform",
+  "description": "Private Akron Tire Shop point-of-sale and receipt-printing system",
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "node scripts/lint-check.mjs",
+    "test": "node --test --experimental-strip-types tests/*.test.ts",
     "typecheck": "tsc --noEmit",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate deploy",

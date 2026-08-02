@@ -1,0 +1,25 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: akron_pos
+      POSTGRES_PASSWORD: akron_pos_dev
+      POSTGRES_DB: akron_pos
+    ports:
+      - "5432:5432"
+    volumes:
+      - akron-pos-data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    environment:
+      DATABASE_URL: postgresql://akron_pos:akron_pos_dev@postgres:5432/akron_pos
+      SESSION_SECRET: change-me
+      PRINTER_MODE: MOCK
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+
+volumes:
+  akron-pos-data:

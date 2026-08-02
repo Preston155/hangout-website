@@ -7,272 +7,284 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  USER
-  MODERATOR
-  ADMIN
+enum EmployeeRole {
   OWNER
+  MANAGER
+  EMPLOYEE
 }
 
-enum Plan {
-  FREE
-  PRO
-  ENTERPRISE
+enum TireCondition {
+  NEW
+  USED
 }
 
-enum ProfileStatus {
-  PUBLIC
-  PRIVATE
-  SUSPENDED
+enum PaymentMethod {
+  CASH
+  CARD_EXTERNAL
+  CASH_APP
+  ZELLE
+  OTHER
 }
 
-enum CardType {
-  LINK
-  TEXT
-  IMAGE
-  VIDEO
-  MUSIC
-  SPOTIFY
-  DISCORD
-  ROBLOX
-  YOUTUBE
-  TIKTOK
-  TWITCH
-  GALLERY
-  COUNTDOWN
-  FAQ
-  DONATE
-  CONTACT
-  SOCIALS
-  EMBED
-  HTML
+enum TransactionStatus {
+  COMPLETED
+  VOIDED
+  PARTIALLY_REFUNDED
+  REFUNDED
 }
 
-enum ReportStatus {
-  OPEN
-  REVIEWING
-  RESOLVED
-  DISMISSED
+enum PrintJobStatus {
+  PENDING
+  PRINTING
+  PRINTED
+  FAILED
+  RETRY_AVAILABLE
 }
 
-enum NotificationType {
-  SYSTEM
-  PROFILE
-  REPORT
-  BILLING
-  MODERATION
+enum PrinterMode {
+  EPSON_EPOS_NETWORK
+  BROWSER_PRINT
+  MOCK
 }
 
-model User {
-  id                String             @id @default(cuid())
-  email             String             @unique
-  emailVerified     DateTime?
-  passwordHash      String?
-  username          String             @unique
-  displayName       String?
-  role              Role               @default(USER)
-  plan              Plan               @default(FREE)
-  image             String?
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-  profile           Profile?
-  accounts          Account[]
-  sessions          Session[]
-  notifications     Notification[]
-  reportsMade       Report[]           @relation("Reporter")
-  reportsReceived   Report[]           @relation("ReportedUser")
-  moderationActions ModerationAction[] @relation("ModeratorActions")
-  subscription      Subscription?
+enum AuditAction {
+  EMPLOYEE_LOGIN
+  COMPLETED_SALE
+  FAILED_PRINT
+  SUCCESSFUL_PRINT
+  REPRINT
+  REFUND
+  VOID
+  DISCOUNT
+  TAX_OVERRIDE
+  INVENTORY_ADJUSTMENT
+  SETTINGS_CHANGE
+  EMPLOYEE_CHANGE
+  CASH_DRAWER_OPEN
 }
 
-model Profile {
-  id                 String          @id @default(cuid())
-  userId             String          @unique
-  user               User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  username           String          @unique
-  slug               String          @unique
-  status             ProfileStatus   @default(PUBLIC)
-  headline           String?
-  bio                String?
-  avatarUrl          String?
-  bannerUrl          String?
-  backgroundUrl      String?
-  backgroundVideoUrl String?
-  musicUrl           String?
-  musicAutoplay      Boolean         @default(false)
-  theme              Json
-  effects            Json
-  socials            Json
-  badges             Json
-  customCss          String?
-  customJs           String?
-  views              Int             @default(0)
-  lastViewedAt       DateTime?
-  createdAt          DateTime        @default(now())
-  updatedAt          DateTime        @updatedAt
-  cards              Card[]
-  analytics          AnalyticsEvent[]
-  viewsLog           ProfileView[]
-}
-
-model Card {
-  id           String   @id @default(cuid())
-  profileId    String
-  profile      Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  type         CardType
-  title        String?
-  body         String?
-  url          String?
-  imageUrl     String?
-  metadata     Json
-  safeEmbedUrl String?
-  position     Int      @default(0)
-  enabled      Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  @@index([profileId, position])
-}
-
-model AnalyticsEvent {
-  id        String   @id @default(cuid())
-  profileId String?
-  profile   Profile? @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  userId    String?
-  event     String
-  source    String?
-  country   String?
-  device    String?
-  referrer  String?
-  ipHash    String?
-  metadata  Json
-  createdAt DateTime @default(now())
-
-  @@index([profileId, createdAt])
-}
-
-model ProfileView {
-  id        String   @id @default(cuid())
-  profileId String
-  profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  ipHash    String?
-  userAgent String?
-  referrer  String?
-  createdAt DateTime @default(now())
-
-  @@index([profileId, createdAt])
-}
-
-model Notification {
-  id        String           @id @default(cuid())
-  userId    String
-  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type      NotificationType @default(SYSTEM)
-  title     String
-  message   String
-  readAt    DateTime?
-  createdAt DateTime         @default(now())
-}
-
-model Report {
+model Employee {
   id             String       @id @default(cuid())
-  reporterId     String?
-  reportedUserId String?
-  profileId      String?
-  reason         String
-  details        String?
-  status         ReportStatus @default(OPEN)
-  reporter       User?        @relation("Reporter", fields: [reporterId], references: [id])
-  reportedUser   User?        @relation("ReportedUser", fields: [reportedUserId], references: [id])
+  name           String
+  role           EmployeeRole @default(EMPLOYEE)
+  pinHash        String
+  active         Boolean      @default(true)
+  failedAttempts Int          @default(0)
+  lockedUntil    DateTime?
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
+  logins         LoginActivity[]
+  transactions   Transaction[]
+  auditLogs      AuditLog[]    @relation("ActingEmployee")
+  approvals      Approval[]    @relation("ApprovingEmployee")
 }
 
-model ModerationAction {
-  id           String   @id @default(cuid())
-  moderatorId  String
-  moderator    User     @relation("ModeratorActions", fields: [moderatorId], references: [id])
-  targetUserId String?
-  profileId    String?
-  action       String
-  reason       String?
-  metadata     Json
-  createdAt    DateTime @default(now())
+model LoginActivity {
+  id         String   @id @default(cuid())
+  employeeId String?
+  employee   Employee? @relation(fields: [employeeId], references: [id])
+  success    Boolean
+  ipHash     String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  @@index([employeeId, createdAt])
 }
 
-model Theme {
-  id        String   @id @default(cuid())
-  name      String
-  slug      String   @unique
-  creatorId String?
-  isPremium Boolean  @default(false)
-  isPublic  Boolean  @default(true)
-  config    Json
-  installs  Int      @default(0)
-  createdAt DateTime @default(now())
+model Customer {
+  id        String    @id @default(cuid())
+  name      String?
+  phone     String?
+  email     String?
+  address   String?
+  notes     String?
+  vehicles  Vehicle[]
+  transactions Transaction[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([phone])
+  @@index([name])
 }
 
-model SiteSetting {
+model Vehicle {
+  id         String   @id @default(cuid())
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id])
+  year       String?
+  make       String?
+  model      String?
+  trim       String?
+  licensePlate String?
+  vin        String?
+  mileage    Int?
+  notes      String?
+  transactions Transaction[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([licensePlate])
+}
+
+model TireInventory {
+  id              String        @id @default(cuid())
+  tireSize        String
+  brand           String
+  model           String?
+  condition       TireCondition
+  quantityInStock Int           @default(0)
+  costCents       Int           @default(0)
+  sellingPriceCents Int         @default(0)
+  dotCode         String?
+  treadDepth      String?
+  storageLocation String?
+  supplier        String?
+  notes           String?
+  dateReceived    DateTime?
+  lowStockThreshold Int         @default(2)
+  active          Boolean       @default(true)
+  adjustments     InventoryAdjustment[]
+  saleLines       TransactionLine[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([tireSize])
+  @@index([condition])
+  @@index([active])
+}
+
+model Transaction {
+  id                 String            @id @default(cuid())
+  receiptNumber      String            @unique
+  receiptYear        Int
+  receiptSequence    Int
+  idempotencyKey     String            @unique
+  employeeId         String
+  employee           Employee          @relation(fields: [employeeId], references: [id])
+  customerId         String?
+  customer           Customer?         @relation(fields: [customerId], references: [id])
+  vehicleId          String?
+  vehicle            Vehicle?          @relation(fields: [vehicleId], references: [id])
+  status             TransactionStatus @default(COMPLETED)
+  paymentMethod      PaymentMethod
+  subtotalCents      Int
+  discountCents      Int               @default(0)
+  taxRateBasisPoints Int
+  taxCents           Int
+  totalCents         Int
+  amountReceivedCents Int?
+  changeDueCents     Int?
+  notes              String?
+  warrantyNotes      String?
+  voidReason         String?
+  refundReason       String?
+  lines              TransactionLine[]
+  printJobs          PrintJob[]
+  refunds            Refund[]
+  auditLogs          AuditLog[]
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  @@unique([receiptYear, receiptSequence])
+  @@index([createdAt])
+  @@index([customerId])
+  @@index([paymentMethod])
+}
+
+model TransactionLine {
+  id              String       @id @default(cuid())
+  transactionId   String
+  transaction     Transaction  @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  inventoryItemId String?
+  inventoryItem   TireInventory? @relation(fields: [inventoryItemId], references: [id])
+  label           String
+  lineType        String
+  quantity        Int
+  unitCents       Int
+  totalCents      Int
+  createdAt       DateTime     @default(now())
+}
+
+model PrintJob {
+  id            String         @id @default(cuid())
+  transactionId String
+  transaction   Transaction    @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  status        PrintJobStatus @default(PENDING)
+  printerMode   PrinterMode
+  attempts      Int            @default(0)
+  lastError     String?
+  printedAt     DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([transactionId, status])
+}
+
+model Refund {
+  id            String      @id @default(cuid())
+  transactionId String
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  amountCents   Int
+  reason        String
+  approvedById  String?
+  createdAt     DateTime    @default(now())
+}
+
+model InventoryAdjustment {
+  id              String        @id @default(cuid())
+  inventoryItemId String
+  inventoryItem   TireInventory @relation(fields: [inventoryItemId], references: [id])
+  deltaQuantity   Int
+  beforeQuantity  Int
+  afterQuantity   Int
+  reason          String
+  approvedById    String?
+  createdAt       DateTime      @default(now())
+}
+
+model Approval {
+  id             String   @id @default(cuid())
+  approvedById   String
+  approvedBy     Employee @relation("ApprovingEmployee", fields: [approvedById], references: [id])
+  action         String
+  reason         String?
+  entityType     String
+  entityId       String?
+  createdAt      DateTime @default(now())
+}
+
+model QuickSaleButton {
+  id          String   @id @default(cuid())
+  label       String
+  lineType    String
+  unitCents   Int
+  quantity    Int      @default(1)
+  sortOrder   Int      @default(0)
+  enabled     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ShopSetting {
   key       String   @id
   value     Json
   updatedAt DateTime @updatedAt
 }
 
-model Subscription {
-  id                   String    @id @default(cuid())
-  userId               String    @unique
-  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  stripeCustomerId     String?
-  stripeSubscriptionId String?
-  status               String?
-  currentPeriodEnd     DateTime?
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
-}
+model AuditLog {
+  id               String      @id @default(cuid())
+  actingEmployeeId String?
+  actingEmployee   Employee?   @relation("ActingEmployee", fields: [actingEmployeeId], references: [id])
+  action           AuditAction
+  entityType       String
+  entityId         String?
+  beforeValue      Json?
+  afterValue       Json?
+  reason           String?
+  transactionId    String?
+  transaction      Transaction? @relation(fields: [transactionId], references: [id])
+  createdAt        DateTime    @default(now())
 
-model VerificationCode {
-  id         String    @id @default(cuid())
-  userId     String?
-  email      String
-  codeHash   String
-  purpose    String
-  expiresAt  DateTime
-  consumedAt DateTime?
-  createdAt  DateTime  @default(now())
-
-  @@index([email, purpose])
-}
-
-model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-}
-
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
+  @@index([action, createdAt])
+  @@index([actingEmployeeId, createdAt])
 }
