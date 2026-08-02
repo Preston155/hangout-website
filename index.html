@@ -29,9 +29,11 @@
         margin: 0;
         min-height: 100vh;
         background:
-          radial-gradient(circle at 18% -10%, rgba(239, 68, 68, .28), transparent 32rem),
-          radial-gradient(circle at 94% 8%, rgba(59, 130, 246, .12), transparent 28rem),
+          radial-gradient(circle at 18% -10%, rgba(229, 57, 53, .28), transparent 34rem),
+          radial-gradient(circle at 96% 6%, rgba(255, 255, 255, .10), transparent 28rem),
+          linear-gradient(135deg, rgba(255,255,255,.028) 1px, transparent 1px),
           linear-gradient(135deg, #050607, #0b0c10 50%, #07080a);
+        background-size: auto, auto, 44px 44px, auto;
         color: var(--text);
         font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       }
@@ -73,17 +75,17 @@
       h1 { max-width: 850px; margin-top: 28px; font-size: clamp(4rem, 8vw, 8.8rem); line-height: .84; letter-spacing: -.07em; }
       .login-art p { max-width: 680px; margin-top: 24px; color: var(--muted); font-size: 1.18rem; line-height: 1.7; }
       .login-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-      .login-stat, .panel, .receipt { border: 1px solid var(--line); background: var(--panel); box-shadow: 0 30px 90px rgba(0,0,0,.25); backdrop-filter: blur(18px); }
+      .login-stat, .panel, .receipt { border: 1px solid var(--line); background: linear-gradient(145deg, rgba(255,255,255,.095), rgba(255,255,255,.035)); box-shadow: 0 30px 90px rgba(0,0,0,.32); backdrop-filter: blur(18px); }
       .login-stat { border-radius: 28px; padding: 22px; }
       .login-stat b { display: block; font-size: 2.4rem; }
       .login-stat span { color: var(--muted); text-transform: uppercase; font-size: .72rem; font-weight: 900; letter-spacing: .14em; }
       .login-form-wrap { display: grid; place-items: center; padding: 28px; }
-      .login-form { width: min(440px, 100%); border: 1px solid var(--line); border-radius: 34px; background: var(--panel); padding: 34px; box-shadow: 0 30px 90px rgba(0,0,0,.35); }
-      .lock { display: grid; width: 68px; height: 68px; place-items: center; border-radius: 22px; background: var(--red); box-shadow: 0 18px 40px rgba(239,68,68,.25); font-size: 2rem; }
+      .login-form { width: min(440px, 100%); border: 1px solid var(--line); border-radius: 34px; background: linear-gradient(145deg, rgba(255,255,255,.11), rgba(255,255,255,.04)); padding: 34px; box-shadow: 0 30px 100px rgba(0,0,0,.46); }
+      .lock { display: grid; width: 68px; height: 68px; place-items: center; border-radius: 22px; background: linear-gradient(135deg, #ef4444, #991b1b); box-shadow: 0 18px 40px rgba(239,68,68,.25); font-size: 2rem; }
       .login-form h2 { margin-top: 26px; font-size: 2.4rem; letter-spacing: -.04em; }
       .pin { width: 100%; height: 76px; margin-top: 26px; border: 1px solid var(--line); border-radius: 22px; background: #030405; color: white; text-align: center; font-size: 3rem; font-weight: 950; letter-spacing: .32em; outline: none; }
-      .btn { min-height: 54px; border: 0; border-radius: 18px; padding: 0 20px; background: var(--red); color: white; font-weight: 950; text-transform: uppercase; letter-spacing: .06em; transition: .18s ease; }
-      .btn:hover { transform: translateY(-1px); background: #f87171; }
+      .btn { min-height: 54px; border: 0; border-radius: 18px; padding: 0 20px; background: linear-gradient(135deg, #b91c1c, #ef4444); color: white; font-weight: 950; text-transform: uppercase; letter-spacing: .06em; transition: .18s ease; box-shadow: 0 16px 42px rgba(127,29,29,.26); }
+      .btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
       .btn.secondary { border: 1px solid var(--line); background: rgba(255,255,255,.07); }
       .btn.green { background: #16a34a; }
       .error { margin-top: 14px; color: #fecaca; }
@@ -93,24 +95,28 @@
       .app.active { display: block; }
       .topbar {
         position: sticky;
-        top: 0;
+        top: 12px;
         z-index: 10;
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 18px;
+        margin: 0 14px;
         padding: 14px 20px;
-        border-bottom: 1px solid var(--line);
-        background: rgba(7,8,10,.88);
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        background: rgba(7,8,10,.82);
+        box-shadow: 0 18px 70px rgba(0,0,0,.36);
         backdrop-filter: blur(18px);
       }
       .brand { display: flex; align-items: center; gap: 12px; }
-      .brand-icon { display: grid; width: 50px; height: 50px; place-items: center; border-radius: 18px; background: var(--red); font-size: 1.5rem; }
+      .brand-icon { display: grid; width: 50px; height: 50px; place-items: center; border-radius: 18px; background: linear-gradient(135deg, #ef4444, #7f1d1d); font-size: 1.5rem; box-shadow: 0 12px 34px rgba(127,29,29,.34); }
       .brand b { display: block; }
       .brand span { color: var(--muted); font-size: .8rem; }
       nav { display: flex; flex-wrap: wrap; gap: 8px; }
-      nav button { border: 1px solid var(--line); border-radius: 16px; background: var(--panel); color: #d4d4d8; min-height: 46px; padding: 0 15px; font-weight: 900; }
-      nav button.active { border-color: #fca5a5; background: var(--red); color: white; }
+      nav button { border: 1px solid var(--line); border-radius: 16px; background: rgba(255,255,255,.055); color: #d4d4d8; min-height: 46px; padding: 0 15px; font-weight: 900; transition: .18s ease; }
+      nav button:hover { transform: translateY(-1px); background: rgba(255,255,255,.09); }
+      nav button.active { border-color: #fca5a5; background: linear-gradient(135deg, #b91c1c, #ef4444); color: white; }
       .employee { border: 1px solid var(--line); border-radius: 18px; background: var(--panel); padding: 10px 14px; }
       .grid { display: grid; grid-template-columns: 1fr 410px; gap: 18px; padding: 18px; }
       .main-stack { display: grid; gap: 18px; }
@@ -124,18 +130,19 @@
       textarea { min-height: 96px; padding-top: 14px; resize: vertical; }
       .wide { grid-column: 1 / -1; }
       .quick { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-      .quick button, .line { border: 1px solid var(--line); border-radius: 20px; background: rgba(0,0,0,.35); color: white; padding: 14px; text-align: left; }
-      .quick button:hover, .line:hover { border-color: #fca5a5; background: rgba(239,68,68,.12); }
+      .quick button, .line { border: 1px solid var(--line); border-radius: 20px; background: rgba(0,0,0,.35); color: white; padding: 14px; text-align: left; transition: .18s ease; }
+      .quick button:hover, .line:hover { transform: translateY(-1px); border-color: #fca5a5; background: rgba(239,68,68,.12); }
       .quick b { display: block; }
       .quick span, .muted { color: var(--muted); }
       .line { display: grid; grid-template-columns: 1fr 80px 105px auto; align-items: center; gap: 12px; margin-top: 10px; }
       .totals { display: grid; gap: 12px; }
       .money-row { display: flex; justify-content: space-between; border-bottom: 1px solid var(--line); padding-bottom: 10px; color: var(--muted); font-weight: 800; }
       .money-row b { color: white; font-size: 1.2rem; }
-      .total-due { border-radius: 28px; background: white; color: #050505; padding: 22px; }
+      .total-due { border-radius: 28px; background: linear-gradient(135deg, #fff, #e7e5e4); color: #050505; padding: 22px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08), 0 18px 40px rgba(0,0,0,.22); }
       .total-due span { color: #71717a; font-size: .78rem; font-weight: 950; text-transform: uppercase; letter-spacing: .14em; }
       .total-due b { display: block; margin-top: 4px; font-size: 3.8rem; line-height: .95; letter-spacing: -.06em; }
-      .receipt { max-width: 320px; margin: 0 auto; border-radius: 4px; background: white; color: #050505; padding: 20px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .78rem; }
+      .receipt { position: relative; overflow: hidden; max-width: 320px; margin: 0 auto; border-radius: 16px; background: #fff; color: #050505; padding: 24px 20px 20px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .78rem; box-shadow: 0 24px 70px rgba(0,0,0,.45); }
+      .receipt::before { content: ""; position: absolute; inset: 0 0 auto; height: 6px; background: #050505; }
       .receipt .center { text-align: center; }
       .receipt hr { border: 0; border-top: 1px dashed black; margin: 12px 0; }
       .receipt-row { display: flex; justify-content: space-between; gap: 12px; margin: 6px 0; }
@@ -292,7 +299,7 @@
               <button class="btn" id="complete">Complete Sale</button>
             </div>
             <div class="panel">
-              <div class="panel-head"><div><span class="eyebrow">Monochrome thermal</span><h2>80mm receipt preview</h2></div></div>
+              <div class="panel-head"><div><span class="eyebrow">Thermal receipt</span><h2>80mm receipt preview</h2></div></div>
               <div class="receipt" id="receipt"></div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px"><button class="btn secondary">Print</button><button class="btn secondary">Reprint</button></div>
             </div>
@@ -345,7 +352,7 @@
         cart.innerHTML = lines.map((l,i)=>`<div class="line"><div><b>${l[0]}</b><div class="muted">${l[3]}</div></div><b>Qty ${l[1]}</b><b>${money(l[1]*l[2])}</b><button class="btn secondary" data-remove="${i}">Remove</button></div>`).join("");
         historyList.innerHTML = txns.map(t=>`<div class="history-item"><div><b>${t.receipt}</b><div class="muted">${t.customer} · ${t.tire} · ${t.status}</div></div><b>${money(t.total)}</b></div>`).join("");
         reportSales.textContent = money(txns.reduce((s,t)=>s+t.total,0)); reportCount.textContent = txns.length;
-        receipt.innerHTML = `<div class="center"><b>AKRON TIRE SHOP</b><br>Akron, Ohio<br>(330) 555-0000<br>prestonhq.com</div><hr><div>Receipt: ATS-2026-DRAFT</div><div>Employee: ${employeeName.textContent}</div><div>Customer: ${customer.value||"Walk-in Customer"}</div><div>Vehicle: ${vehicle.value||""}</div><div>Tire: ${normalizeTire(tireSize.value)}</div><hr>${lines.map(l=>`<div class="receipt-row"><span>${l[1]}x ${l[0]}</span><span>${money(l[1]*l[2])}</span></div>`).join("")}<hr><div class="receipt-row"><b>Total</b><b>${money(c.total)}</b></div><div>Payment: ${payment.value}</div><div style="border:1px solid #000;text-align:center;padding:18px;margin:12px 0">QR<br>prestonhq.com</div><div class="center">Thank you for supporting a local business</div>`;
+        receipt.innerHTML = `<div class="center"><b>AKRON TIRE SHOP</b><br>Akron, Ohio<br>(330) 555-0000</div><hr><div>Receipt: ATS-2026-DRAFT</div><div>Employee: ${employeeName.textContent}</div><div>Customer: ${customer.value||"Walk-in Customer"}</div><div>Tire: ${normalizeTire(tireSize.value)}</div><hr>${lines.map(l=>`<div class="receipt-row"><span>${l[1]}x ${l[0]}</span><span>${money(l[1]*l[2])}</span></div>`).join("")}<hr><div class="receipt-row"><b>Total</b><b>${money(c.total)}</b></div><div>Payment: ${payment.value}</div><br><div class="center">Thank you for supporting a local business</div>`;
       }
       render();
     </script>

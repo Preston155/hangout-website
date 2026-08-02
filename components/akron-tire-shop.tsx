@@ -187,7 +187,7 @@ export function AkronTireShop({ initialScreen = 'checkout' }: { initialScreen?: 
 
   if (!employee) {
     return (
-      <main className="min-h-screen bg-[#07080a] text-white">
+      <main className="min-h-screen bg-[#07080a] text-white [background-image:radial-gradient(circle_at_20%_10%,rgba(229,57,53,.18),transparent_28rem),radial-gradient(circle_at_85%_0%,rgba(255,255,255,.08),transparent_22rem),linear-gradient(135deg,rgba(255,255,255,.035)_1px,transparent_1px)] [background-size:auto,auto,42px_42px]">
         <div className="grid min-h-screen lg:grid-cols-[1.1fr_.9fr]">
           <section className="relative hidden overflow-hidden border-r border-white/10 bg-zinc-950 p-12 lg:block">
             <div className="absolute inset-0 opacity-30 [background-image:linear-gradient(90deg,rgba(255,255,255,.06)_1px,transparent_1px),linear-gradient(rgba(255,255,255,.06)_1px,transparent_1px)] [background-size:46px_46px]" />
@@ -209,8 +209,8 @@ export function AkronTireShop({ initialScreen = 'checkout' }: { initialScreen?: 
             </div>
           </section>
           <section className="grid place-items-center p-6">
-            <form onSubmit={login} className="w-full max-w-md rounded-[2rem] border border-white/10 bg-white/[.055] p-8 shadow-2xl backdrop-blur">
-              <div className="mb-8 grid h-16 w-16 place-items-center rounded-2xl bg-red-500 text-white shadow-lg shadow-red-950/40">
+            <form onSubmit={login} className="w-full max-w-md rounded-[2rem] border border-white/10 bg-[linear-gradient(145deg,rgba(255,255,255,.11),rgba(255,255,255,.035))] p-8 shadow-[0_30px_100px_rgba(0,0,0,.5)] backdrop-blur-xl">
+              <div className="mb-8 grid h-16 w-16 place-items-center rounded-2xl bg-gradient-to-br from-red-500 to-red-800 text-white shadow-lg shadow-red-950/40">
                 <KeyRound />
               </div>
               <h2 className="text-4xl font-black tracking-tight">Employee PIN</h2>
@@ -224,7 +224,7 @@ export function AkronTireShop({ initialScreen = 'checkout' }: { initialScreen?: 
                 onChange={(event) => setPin(event.target.value.replace(/\D/g, ''))}
                 autoFocus
               />
-              <button className="mt-5 h-16 w-full rounded-2xl bg-red-500 text-lg font-black uppercase tracking-wide text-white transition hover:bg-red-400" type="submit">
+              <button className="mt-5 h-16 w-full rounded-2xl bg-gradient-to-r from-red-600 to-red-500 text-lg font-black uppercase tracking-wide text-white shadow-lg shadow-red-950/30 transition hover:-translate-y-0.5 hover:from-red-500 hover:to-red-400" type="submit">
                 Sign In
               </button>
               {authError && <p className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-100">{authError}</p>}
@@ -236,11 +236,11 @@ export function AkronTireShop({ initialScreen = 'checkout' }: { initialScreen?: 
   }
 
   return (
-    <main className="min-h-screen bg-[#08090b] text-white">
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#08090b]/90 px-4 py-3 backdrop-blur-2xl lg:px-6">
+    <main className="min-h-screen bg-[#08090b] text-white [background-image:radial-gradient(circle_at_0%_0%,rgba(229,57,53,.12),transparent_30rem),radial-gradient(circle_at_100%_10%,rgba(255,255,255,.07),transparent_24rem),linear-gradient(135deg,rgba(255,255,255,.025)_1px,transparent_1px)] [background-size:auto,auto,44px_44px]">
+      <header className="sticky top-3 z-40 mx-3 rounded-[1.65rem] border border-white/10 bg-[#08090b]/82 px-4 py-3 shadow-[0_18px_70px_rgba(0,0,0,.35)] backdrop-blur-2xl lg:mx-6 lg:px-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="grid h-12 w-12 place-items-center rounded-2xl bg-red-500 shadow-lg shadow-red-950/30"><CircleDot /></div>
+            <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-red-500 to-red-800 shadow-lg shadow-red-950/30"><CircleDot /></div>
             <div>
               <p className="text-sm font-black uppercase tracking-[.2em] text-red-300">Akron Tire Shop</p>
               <h1 className="text-xl font-black tracking-tight">Private POS Register</h1>
@@ -258,7 +258,7 @@ export function AkronTireShop({ initialScreen = 'checkout' }: { initialScreen?: 
                 key={String(key)}
                 onClick={() => setScreen(key as Screen)}
                 className={`flex min-h-12 items-center gap-2 rounded-2xl border px-4 text-sm font-black transition ${
-                  screen === key ? 'border-red-400 bg-red-500 text-white shadow-lg shadow-red-950/30' : 'border-white/10 bg-white/[.055] text-zinc-300 hover:bg-white/10'
+                  screen === key ? 'border-red-400 bg-gradient-to-r from-red-600 to-red-500 text-white shadow-lg shadow-red-950/30' : 'border-white/10 bg-white/[.055] text-zinc-300 hover:-translate-y-0.5 hover:bg-white/10'
                 }`}
               >
                 <Icon className="h-4 w-4" /> {String(label)}
@@ -353,13 +353,13 @@ export function AkronTireShop({ initialScreen = 'checkout' }: { initialScreen?: 
                 </>
               )}
               {!canComplete && <p className="rounded-2xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-100">Cash received is below the total. Complete Sale is locked.</p>}
-              <button disabled={!canComplete || status === 'Saving' || status === 'Printing'} onClick={completeSale} className="h-16 w-full rounded-2xl bg-red-500 text-lg font-black uppercase tracking-wide transition hover:bg-red-400 disabled:cursor-not-allowed disabled:bg-zinc-700">
+              <button disabled={!canComplete || status === 'Saving' || status === 'Printing'} onClick={completeSale} className="h-16 w-full rounded-2xl bg-gradient-to-r from-red-700 via-red-600 to-red-500 text-lg font-black uppercase tracking-wide shadow-lg shadow-red-950/30 transition hover:-translate-y-0.5 hover:from-red-600 hover:to-red-400 disabled:cursor-not-allowed disabled:from-zinc-700 disabled:to-zinc-700">
                 {status === 'Saving' ? 'Saving...' : status === 'Printing' ? 'Printing...' : 'Complete Sale'}
               </button>
             </div>
           </Panel>
 
-          <ReceiptPreview transaction={selectedTransaction} activeLines={lines} activeTotals={totals} customer={customer || 'Walk-in Customer'} tireSize={normalizedTire.value || tireSize} paymentMethod={paymentMethod} employee={employee.name} vehicle={vehicle} />
+          <ReceiptPreview transaction={selectedTransaction} activeLines={lines} activeTotals={totals} customer={customer || 'Walk-in Customer'} tireSize={normalizedTire.value || tireSize} paymentMethod={paymentMethod} employee={employee.name} />
         </aside>
       </section>
     </main>
@@ -377,7 +377,7 @@ function LoginStat({ value, label }: { value: string; label: string }) {
 
 function Panel({ title, icon, eyebrow, children }: { title: string; icon: ReactNode; eyebrow?: string; children: ReactNode }) {
   return (
-    <section className="rounded-[2rem] border border-white/10 bg-white/[.055] p-5 shadow-2xl shadow-black/30">
+    <section className="rounded-[2rem] border border-white/10 bg-[linear-gradient(145deg,rgba(255,255,255,.09),rgba(255,255,255,.035))] p-5 shadow-[0_24px_80px_rgba(0,0,0,.36)] ring-1 ring-white/[.03] backdrop-blur">
       <div className="mb-5 flex items-start justify-between gap-4">
         <div>
           <p className="text-xs font-black uppercase tracking-[.2em] text-red-300">{eyebrow}</p>
@@ -420,7 +420,7 @@ function MoneyRow({ label, value, danger = false }: { label: string; value: numb
   );
 }
 
-function ReceiptPreview({ transaction, activeLines, activeTotals, customer, tireSize, paymentMethod, employee, vehicle }: {
+function ReceiptPreview({ transaction, activeLines, activeTotals, customer, tireSize, paymentMethod, employee }: {
   transaction?: Transaction;
   activeLines: SaleLine[];
   activeTotals: ReturnType<typeof calculateSaleTotals>;
@@ -428,26 +428,23 @@ function ReceiptPreview({ transaction, activeLines, activeTotals, customer, tire
   tireSize: string;
   paymentMethod: PaymentMethod;
   employee: string;
-  vehicle: string;
 }) {
   const lines = activeLines.length ? activeLines : transaction?.lines ?? [];
   const total = activeLines.length ? activeTotals.totalCents : transaction?.totalCents ?? 0;
   return (
-    <Panel title="80mm receipt preview" icon={<Printer />} eyebrow="Monochrome thermal">
-      <div className="mx-auto max-w-[320px] rounded-sm bg-white p-5 font-mono text-xs text-black shadow-2xl">
+    <Panel title="80mm receipt preview" icon={<Printer />} eyebrow="Thermal receipt">
+      <div className="mx-auto max-w-[320px] rounded-xl bg-white p-5 font-mono text-xs text-black shadow-[0_24px_70px_rgba(0,0,0,.45)] ring-1 ring-white/60">
         <div className="text-center">
-          <div className="mx-auto mb-2 grid h-12 w-12 place-items-center rounded-full border-2 border-black font-black">ATS</div>
+          <div className="mx-auto mb-3 grid h-14 w-14 place-items-center rounded-full border-2 border-black bg-black text-sm font-black text-white">ATS</div>
           <h3 className="text-lg font-black">AKRON TIRE SHOP</h3>
           <p>Akron, Ohio</p>
           <p>(330) 555-0000</p>
-          <p>prestonhq.com</p>
         </div>
         <hr className="my-3 border-black" />
         <p>Receipt: {transaction?.receiptNumber ?? 'ATS-2026-DRAFT'}</p>
         <p>Date: {transaction?.createdAt ?? 'Draft'}</p>
         <p>Employee: {employee}</p>
         <p>Customer: {customer}</p>
-        <p>Vehicle: {vehicle}</p>
         <p>Tire: {tireSize}</p>
         <hr className="my-3 border-black" />
         {lines.map((line) => (
@@ -459,7 +456,6 @@ function ReceiptPreview({ transaction, activeLines, activeTotals, customer, tire
         <hr className="my-3 border-black" />
         <div className="flex justify-between"><b>Total</b><b>{formatMoney(total)}</b></div>
         <p>Payment: {paymentMethod}</p>
-        <div className="my-4 grid h-20 place-items-center border border-black text-center">QR<br />prestonhq.com</div>
         <p className="text-center">Thank you for supporting a local business</p>
       </div>
       <div className="mt-4 grid grid-cols-2 gap-3">
