@@ -118,6 +118,42 @@ npm run start
 
 Use HTTPS and restrict `pos.prestonhq.com` to trusted staff/network access when possible.
 
+### Plesk Node.js setup
+
+If Plesk shows the static fallback page, Node.js hosting is not running this app yet.
+
+In Plesk, open the domain or subdomain and go to **Node.js**:
+
+- **Node.js:** Enabled
+- **Application mode:** Production
+- **Application root:** the Git checkout folder for this repo
+- **Document root:** the same domain/subdomain document root Plesk created
+- **Application startup file:** `server.js`
+- **Package manager install command:** `npm install`
+- **Build command:** `npm run build`
+- **Run command:** `npm run start`
+
+Set these environment variables in Plesk:
+
+```env
+DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/akron_pos?schema=public
+SESSION_SECRET=use-a-long-random-secret-at-least-24-characters
+NEXT_PUBLIC_APP_URL=https://pos.prestonhq.com
+PRINTER_MODE=MOCK
+EPSON_PRINTER_IP=
+EPSON_PRINTER_PORT=8008
+EPSON_PRINTER_TIMEOUT_MS=5000
+```
+
+Then run these once from the Plesk terminal or SSH on the website host:
+
+```bash
+npm run db:migrate
+npm run db:seed
+```
+
+After that, restart the Node.js app in Plesk. If the fallback page is still visible, the domain is still pointing at static hosting instead of the Node.js app.
+
 ## 7. Connecting the Epson TM-m30III through Ethernet
 
 The target printer is Epson TM-m30III, 80 mm, Ethernet/USB.
