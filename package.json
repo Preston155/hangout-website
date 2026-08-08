@@ -14,7 +14,8 @@
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "legacy:build-static": "node scripts/build-httpdocs.js",
-    "auto-publish": "node auto-publish.js"
+    "auto-publish": "node auto-publish.js",
+    "build:httpdocs": "npm --prefix dashboard-src run build && node scripts/assemble-dashboard-static.js"
   },
   "dependencies": {
     "@auth/prisma-adapter": "latest",

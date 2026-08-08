@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-02T13:58:49.279Z",
+  "generatedAt": "2026-08-08T10:40:21.166Z",
   "categories": [
     "Slash commands",
     "Prefix commands",
@@ -23,14 +23,14 @@
         "pm2": "bot2",
         "online": true,
         "status": "online",
-        "uptime": 1782692807016,
-        "restarts": 9,
-        "memoryMb": 97,
-        "cpu": 0.2
+        "uptime": 1785977890196,
+        "restarts": 3,
+        "memoryMb": 99,
+        "cpu": 1.3
       },
       "stats": {
-        "total": 50,
-        "slash": 34,
+        "total": 51,
+        "slash": 35,
         "prefix": 4,
         "automation": 12
       },
@@ -255,6 +255,18 @@
           "category": "Prefix commands",
           "source": "utility/prefix-ping.js",
           "aliases": []
+        },
+        {
+          "id": "icesway-slash-poll",
+          "name": "poll",
+          "type": "slash",
+          "description": "Create and manage persistent polls",
+          "usage": "/poll <create|close>",
+          "permission": "Manage Messages",
+          "cooldown": null,
+          "enabled": true,
+          "category": "Utility",
+          "source": "utility/poll.js"
         },
         {
           "id": "icesway-slash-purge",
@@ -632,16 +644,16 @@
           "source": "systems/moderation-service.js"
         },
         {
-          "id": "icesway-auto-reaction-role-service",
-          "name": "reaction role service",
+          "id": "icesway-auto-poll-system",
+          "name": "poll system",
           "type": "auto",
-          "description": "Automated reaction role service feature.",
+          "description": "Automated poll system feature.",
           "usage": "Automatic / event-driven",
           "permission": "System",
           "cooldown": null,
           "enabled": true,
           "category": "Systems/Automation",
-          "source": "systems/reaction-role-service.js"
+          "source": "systems/poll-system.js"
         }
       ]
     },
@@ -810,10 +822,10 @@
         "pm2": "bot3",
         "online": true,
         "status": "online",
-        "uptime": 1782511070120,
-        "restarts": 6,
-        "memoryMb": 85,
-        "cpu": 0.5
+        "uptime": 1786185025487,
+        "restarts": 13,
+        "memoryMb": 78,
+        "cpu": 0.3
       },
       "stats": {
         "total": 34,
@@ -1244,16 +1256,16 @@
           "source": "systems/leveling-system.js"
         },
         {
-          "id": "veltrix-auto-session-system",
-          "name": "session system",
+          "id": "veltrix-auto-RobloxVerificationSystem",
+          "name": "Roblox Verification System",
           "type": "auto",
-          "description": "Automated session system feature.",
+          "description": "Automated roblox verification system feature.",
           "usage": "Automatic / event-driven",
           "permission": "System",
           "cooldown": null,
           "enabled": true,
           "category": "Systems/Automation",
-          "source": "systems/session-system.js"
+          "source": "systems/roblox-verification/RobloxVerificationSystem.js"
         }
       ]
     },
@@ -1460,10 +1472,10 @@
         "pm2": "bot4",
         "online": true,
         "status": "online",
-        "uptime": 1782863977237,
-        "restarts": 49,
-        "memoryMb": 95,
-        "cpu": 0.5
+        "uptime": 1785545510975,
+        "restarts": 0,
+        "memoryMb": 86,
+        "cpu": 0.3
       },
       "stats": {
         "total": 32,
