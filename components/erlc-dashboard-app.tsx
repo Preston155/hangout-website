@@ -250,7 +250,7 @@ export function App() {
             <AnimatePresence mode="wait">
               <motion.div key={page} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
                 {page === "overview" && <Overview showToast={showToast} setPage={setPage} serverData={serverData} logs={logData} onRefresh={loadLiveData} />}
-                {page === "connect" && <Connect showToast={showToast} />}
+                {page === "connect" && <Connect showToast={showToast} onConnected={async () => { await loadLiveData(); setPage("overview"); }} />}
                 {page === "players" && <Players players={playerData} selected={selectedPlayer} setSelected={setSelectedPlayer} openAction={(action, player) => setModal({ action, player })} />}
                 {page === "commands" && <CommandCenter openAction={(action) => setModal({ action })} sendCommand={sendCommand} busy={busy} />}
                 {page === "logs" && <Logs logs={logData} />}
@@ -413,27 +413,46 @@ function HeroCard({ serverData }: { serverData: ServerState }) {
   );
 }
 
-function Connect({ showToast }: { showToast: (m: string) => void }) {
+function Connect({ showToast, onConnected }: { showToast: (m: string) => void; onConnected: () => Promise<void> }) {
+  const [apiKey, setApiKey] = useState("");
+  const [busy, setBusy] = useState(false);
+  const connect = async () => {
+    setBusy(true);
+    try {
+      await api("/api/erlc/connect", { method: "POST", body: JSON.stringify({ apiKey }) });
+      setApiKey("");
+      showToast("ER:LC server connected successfully.");
+      await onConnected();
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "Connection failed.");
+    } finally {
+      setBusy(false);
+    }
+  };
   return (
     <div className="grid gap-5 xl:grid-cols-[1fr_430px]">
       <Card>
         <CardHeader title="Connect ER:LC Server" icon={<Cloud />} />
         <div className="mt-5 rounded-[1.5rem] border border-sky-300/15 bg-sky-300/10 p-5">
-          <div className="flex items-center gap-3"><div className="grid h-12 w-12 place-items-center rounded-2xl bg-sky-300 text-black"><KeyRound /></div><div><h2 className="text-2xl font-black">PRC API authorization</h2><p className="text-sm text-white/50">Placeholder flow ready for official PRC auth links.</p></div></div>
-          <Button className="mt-5" onClick={() => showToast("ER:LC credentials are managed securely on the VPS.")}><Cloud size={16} /> Check server connection</Button>
+          <div className="flex items-center gap-3"><div className="grid h-12 w-12 place-items-center rounded-2xl bg-sky-300 text-black"><KeyRound /></div><div><h2 className="text-2xl font-black">PRC API connection</h2><p className="text-sm text-white/50">Your key is validated server-side and never displayed after it is saved.</p></div></div>
         </div>
-        <div className="mt-5 grid gap-4 md:grid-cols-2">
-          <Field label="Manual API key fallback" placeholder="prc_live_xxxxxxxxx" />
-          <Field label="Server code" placeholder="ILCRPC" />
-          <Field label="Webhook URL" placeholder="https://discord.com/api/webhooks/..." />
-          <Field label="Discord guild ID" placeholder="1234567890" />
+        <label className="mt-5 block">
+          <span className="text-xs font-black uppercase tracking-[.18em] text-white/35">Private-server API key</span>
+          <input type="password" autoComplete="off" value={apiKey} onChange={(event) => setApiKey(event.target.value)} className="mt-2 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none transition placeholder:text-white/25 focus:border-sky-300/40" placeholder="Paste your PRC server key" />
+        </label>
+        <div className="mt-5 flex flex-wrap items-center gap-3">
+          <Button onClick={connect} className={busy || apiKey.length < 12 ? "pointer-events-none opacity-45" : ""}><Cloud size={16} />{busy ? "Validating&" : "Validate & connect"}</Button>
+          <p className="text-xs text-white/35">The key is stored only in the protected API environment.</p>
         </div>
-        <Button className="mt-5" onClick={() => showToast("For security, API keys can only be changed on the VPS.")}>Review connection</Button>
       </Card>
       <Card>
-        <CardHeader title="Setup checklist" icon={<CheckCircle2 />} />
+        <CardHeader title="Secure setup" icon={<CheckCircle2 />} />
         <div className="mt-5 space-y-3">
-          {[["Create PRC API token", true], ["Connect Discord bot bridge", true], ["Choose moderation log channel", false], ["Review staff role permissions", false], ["Run first sync", false]].map(([label, done]) => <Checklist key={String(label)} label={String(label)} done={Boolean(done)} />)}
+          <Checklist label="Dashboard authentication enabled" done />
+          <Checklist label="Discord bot bridge online" done />
+          <Checklist label="PRC key validated before saving" done />
+          <Checklist label="Moderation actions audited" done />
+          <Checklist label="Live players refresh every 15 seconds" done />
         </div>
       </Card>
     </div>
