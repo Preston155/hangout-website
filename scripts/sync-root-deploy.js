@@ -13,6 +13,10 @@ const DEPLOY_ENTRIES = [
   "data",
   "assets",
   "api",
+  "login",
+  "privacy",
+  "terms",
+  "static-fallback.html",
 ];
 
 function rimraf(dir) {
