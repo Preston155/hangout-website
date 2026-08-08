@@ -239,13 +239,13 @@ export function App() {
   if (auth === "guest") return <LoginScreen onSuccess={() => { setAuth("ready"); loadLiveData(); }} />;
 
   return (
-    <main className="min-h-screen bg-[#07090f] text-white selection:bg-sky-300 selection:text-black">
+    <main className="min-h-screen bg-[#080a0f] text-white selection:bg-sky-300 selection:text-black">
       <Background />
       <div className="relative flex min-h-screen">
         <Sidebar page={page} setPage={(next) => { setPage(next); setMobileOpen(false); }} mobileOpen={mobileOpen} close={() => setMobileOpen(false)} />
-        <section className="flex min-w-0 flex-1 flex-col lg:pl-[292px]">
+        <section className="flex min-w-0 flex-1 flex-col lg:pl-[272px]">
           <Topbar page={page} onMenu={() => setMobileOpen(true)} serverData={serverData} onRefresh={loadLiveData} />
-          <div className="mx-auto w-full max-w-[1500px] px-4 pb-10 pt-4 sm:px-6 lg:px-8">
+          <div className="mx-auto w-full max-w-[1480px] px-4 pb-10 pt-4 sm:px-6 lg:px-8">
             {syncError && <div className="mb-4 flex items-center justify-between gap-3 rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-sm text-amber-100"><span><AlertTriangle className="mr-2 inline" size={16} />{syncError}</span><button onClick={loadLiveData} className="font-black">Retry</button></div>}
             <AnimatePresence mode="wait">
               <motion.div key={page} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
@@ -269,7 +269,7 @@ export function App() {
 }
 
 function LoadingScreen() {
-  return <main className="grid min-h-screen place-items-center bg-[#07090f] text-white"><div className="text-center"><div className="mx-auto h-12 w-12 animate-spin rounded-full border-2 border-white/10 border-t-sky-300" /><p className="mt-4 text-sm font-bold text-white/45">Opening secure moderation panel…</p></div></main>;
+  return <main className="grid min-h-screen place-items-center bg-[#080a0f] text-white"><div className="text-center"><div className="mx-auto h-12 w-12 animate-spin rounded-full border-2 border-white/10 border-t-sky-300" /><p className="mt-4 text-sm font-bold text-white/45">Opening secure moderation panel…</p></div></main>;
 }
 
 function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
@@ -285,14 +285,14 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
     } catch (loginError) { setError(loginError instanceof Error ? loginError.message : "Login failed."); }
     finally { setBusy(false); }
   };
-  return <main className="relative grid min-h-screen place-items-center overflow-hidden bg-[#07090f] p-5 text-white"><Background /><motion.form onSubmit={login} initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} className="relative w-full max-w-md rounded-[2rem] border border-white/10 bg-[#0b0e16]/90 p-7 shadow-2xl backdrop-blur-2xl"><div className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-sky-300 to-indigo-400 font-black text-black">PHQ</div><div className="mt-6 text-xs font-black uppercase tracking-[.22em] text-sky-200">Restricted staff access</div><h1 className="mt-2 text-4xl font-black tracking-[-.06em]">ER:LC Moderation OS</h1><p className="mt-3 leading-6 text-white/50">Sign in to access live players, server commands, moderation cases, and protected staff controls.</p><label className="mt-6 block text-xs font-black uppercase tracking-[.18em] text-white/40">Dashboard password<input autoFocus type="password" value={password} onChange={(event) => setPassword(event.target.value)} className="mt-2 w-full rounded-2xl border border-white/10 bg-black/35 px-4 py-3.5 text-base text-white outline-none transition focus:border-sky-300/45" placeholder="Enter password" /></label>{error && <div className="mt-3 rounded-xl border border-rose-300/20 bg-rose-300/10 px-3 py-2 text-sm text-rose-100">{error}</div>}<button disabled={busy || !password} className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-sky-300 px-4 py-3.5 font-black text-black transition hover:bg-sky-200 disabled:cursor-not-allowed disabled:opacity-40"><Lock size={17} />{busy ? "Signing in…" : "Open moderation panel"}</button><p className="mt-4 text-center text-xs text-white/30">Actions are permission checked and permanently audited.</p><div className="mt-4 flex items-center justify-center gap-4 border-t border-white/10 pt-4 text-xs font-bold text-white/45"><a className="transition hover:text-white" href="/privacy">Privacy Policy</a><a className="transition hover:text-white" href="/terms">Terms of Service</a></div></motion.form></main>;
+  return <main className="relative grid min-h-screen place-items-center overflow-hidden bg-[#080a0f] p-5 text-white"><Background /><motion.form onSubmit={login} initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} className="relative w-full max-w-md rounded-2xl border border-white/10 bg-[#0b0e16]/90 p-7 shadow-2xl backdrop-blur-2xl"><div className="grid h-14 w-14 place-items-center rounded-xl bg-sky-300 font-black text-black">PHQ</div><div className="mt-6 text-xs font-black uppercase tracking-[.22em] text-sky-200">Restricted staff access</div><h1 className="mt-2 text-4xl font-black tracking-[-.06em]">ER:LC Moderation OS</h1><p className="mt-3 leading-6 text-white/50">Sign in to access live players, server commands, moderation cases, and protected staff controls.</p><label className="mt-6 block text-xs font-black uppercase tracking-[.18em] text-white/40">Dashboard password<input autoFocus type="password" value={password} onChange={(event) => setPassword(event.target.value)} className="mt-2 w-full rounded-xl border border-white/10 bg-[#07090f] px-4 py-3.5 text-base text-white outline-none transition focus:border-sky-300/45" placeholder="Enter password" /></label>{error && <div className="mt-3 rounded-xl border border-rose-300/20 bg-rose-300/10 px-3 py-2 text-sm text-rose-100">{error}</div>}<button disabled={busy || !password} className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-sky-300 px-4 py-3.5 font-black text-black transition hover:bg-sky-200 disabled:cursor-not-allowed disabled:opacity-40"><Lock size={17} />{busy ? "Signing in…" : "Open moderation panel"}</button><p className="mt-4 text-center text-xs text-white/30">Actions are permission checked and permanently audited.</p><div className="mt-4 flex items-center justify-center gap-4 border-t border-white/10 pt-4 text-xs font-bold text-white/45"><a className="transition hover:text-white" href="/privacy">Privacy Policy</a><a className="transition hover:text-white" href="/terms">Terms of Service</a></div></motion.form></main>;
 }
 
 function Background() {
   return (
     <div className="pointer-events-none fixed inset-0 overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_16%_10%,rgba(56,189,248,.20),transparent_32%),radial-gradient(circle_at_82%_0%,rgba(99,102,241,.20),transparent_30%),radial-gradient(circle_at_68%_88%,rgba(16,185,129,.10),transparent_38%)]" />
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.035)_1px,transparent_1px)] bg-[size:70px_70px] opacity-20" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_8%_0%,rgba(56,189,248,.10),transparent_28%),radial-gradient(circle_at_92%_4%,rgba(99,102,241,.08),transparent_25%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.025)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.025)_1px,transparent_1px)] bg-[size:70px_70px] opacity-20" />
     </div>
   );
 }
@@ -301,11 +301,11 @@ function Sidebar({ page, setPage, mobileOpen, close }: { page: Page; setPage: (p
   return (
     <>
       {mobileOpen && <button aria-label="Close menu" className="fixed inset-0 z-30 bg-black/60 lg:hidden" onClick={close} />}
-      <aside className={`fixed inset-y-0 left-0 z-40 w-[292px] border-r border-white/10 bg-[#090b12]/88 p-4 backdrop-blur-2xl transition lg:translate-x-0 ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}>
+      <aside className={`fixed inset-y-0 left-0 z-40 w-[272px] border-r border-white/[.08] bg-[#090b11]/96 p-3 backdrop-blur-xl transition lg:translate-x-0 ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}>
         <div className="flex h-full flex-col">
-          <div className="rounded-[1.55rem] border border-white/10 bg-white/[.055] p-4 shadow-2xl shadow-black/20">
+          <div className="rounded-xl border border-white/[.08] bg-white/[.035] p-4 shadow-2xl shadow-black/20">
             <div className="flex items-center gap-3">
-              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-sky-300 to-indigo-400 font-black text-black">PHQ</div>
+              <div className="grid h-12 w-12 place-items-center rounded-xl bg-sky-300 font-black text-black">PHQ</div>
               <div>
                 <div className="font-black tracking-[-.04em]">PrestonHQ</div>
                 <div className="text-xs text-white/45">ER:LC Moderation OS</div>
@@ -328,7 +328,7 @@ function Sidebar({ page, setPage, mobileOpen, close }: { page: Page; setPage: (p
               );
             })}
           </nav>
-          <div className="mt-auto rounded-[1.5rem] border border-white/10 bg-white/[.045] p-4">
+          <div className="mt-auto rounded-xl border border-white/10 bg-white/[.045] p-4">
             <div className="flex items-center gap-2 text-sm font-black"><ShieldAlert size={17} className="text-amber-200" /> Safety Mode</div>
             <p className="mt-2 text-xs leading-5 text-white/45">Dangerous ER:LC actions require confirmation and permission checks.</p>
           </div>
@@ -341,10 +341,10 @@ function Sidebar({ page, setPage, mobileOpen, close }: { page: Page; setPage: (p
 function Topbar({ page, onMenu, serverData, onRefresh }: { page: Page; onMenu: () => void; serverData: ServerState; onRefresh: () => void }) {
   const label = nav.find((item) => item.id === page)?.label || "Dashboard";
   return (
-    <header className="sticky top-0 z-20 border-b border-white/10 bg-[#07090f]/72 backdrop-blur-2xl">
-      <div className="mx-auto flex h-16 w-full max-w-[1500px] items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-20 border-b border-white/[.08] bg-[#080a0f]/90 backdrop-blur-xl">
+      <div className="mx-auto flex h-16 w-full max-w-[1480px] items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-3">
-          <button onClick={onMenu} className="grid h-10 w-10 place-items-center rounded-2xl border border-white/10 bg-white/[.045] lg:hidden"><Menu size={18} /></button>
+          <button onClick={onMenu} className="grid h-10 w-10 place-items-center rounded-xl border border-white/[.08] bg-white/[.03] lg:hidden"><Menu size={18} /></button>
           <div>
             <div className="text-xs font-black uppercase tracking-[.24em] text-white/35">ER:LC Control</div>
             <h1 className="text-xl font-black tracking-[-.04em]">{label}</h1>
@@ -370,7 +370,7 @@ function Overview({ showToast, setPage, serverData, logs, onRefresh }: { showToa
         <Metric title="Queue" value={serverData.queue} icon={<Activity />} tone="violet" />
         <Metric title="API Status" value={serverData.connected ? "Live" : "Offline"} icon={<Zap />} tone="amber" />
       </div>
-      <div className="grid gap-5 xl:grid-cols-[1fr_420px]">
+      <div className="grid gap-4 xl:grid-cols-[1fr_390px]">
         <Card>
           <CardHeader title="Recent moderation actions" icon={<ClipboardList />} action={<Button variant="ghost" onClick={() => setPage("logs")}>View logs</Button>} />
           <div className="mt-4 space-y-3">{logs.slice(0, 5).map((log) => <LogRow key={log.id} log={log} />)}{!logs.length && <EmptyState title="No moderation actions yet" text="Completed staff actions will appear here automatically." />}</div>
@@ -394,15 +394,15 @@ function Overview({ showToast, setPage, serverData, logs, onRefresh }: { showToa
 
 function HeroCard({ serverData }: { serverData: ServerState }) {
   return (
-    <section className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[.055] p-6 shadow-2xl shadow-black/25 backdrop-blur-2xl md:p-8">
-      <div className="absolute right-0 top-0 h-72 w-72 rounded-full bg-sky-400/20 blur-3xl" />
-      <div className="relative grid gap-6 xl:grid-cols-[1fr_420px] xl:items-end">
+    <section className="relative overflow-hidden rounded-xl border border-white/[.08] bg-white/[.035] p-6 shadow-2xl shadow-black/25 backdrop-blur-2xl md:p-8">
+      <div className="absolute -right-20 -top-24 h-72 w-72 rounded-full bg-sky-400/[.10] blur-3xl" />
+      <div className="relative grid gap-6 xl:grid-cols-[1fr_390px] xl:items-end">
         <div>
           <div className="inline-flex items-center gap-2 rounded-full border border-sky-300/20 bg-sky-300/10 px-3 py-1 text-xs font-black uppercase tracking-[.22em] text-sky-100"><Sparkles size={14} /> Live server overview</div>
-          <h2 className="mt-5 max-w-3xl text-5xl font-black leading-[.92] tracking-[-.075em] md:text-7xl">{serverData.name}</h2>
+          <h2 className="mt-4 max-w-3xl text-4xl font-black leading-[.98] tracking-[-.055em] md:text-6xl">{serverData.name}</h2>
           <p className="mt-4 max-w-2xl text-base leading-7 text-white/55">Connect ER:LC moderation, staff controls, player profiles, command dispatch, and audit logs from one polished PrestonHQ dashboard.</p>
         </div>
-        <div className="rounded-[1.5rem] border border-white/10 bg-black/30 p-4">
+        <div className="rounded-xl border border-white/10 bg-black/30 p-4">
           <Info label="Server Code" value={serverData.code} />
           <Info label="Owner" value={serverData.owner} />
           <Info label="Region" value={serverData.region} />
@@ -430,18 +430,18 @@ function Connect({ showToast, onConnected }: { showToast: (m: string) => void; o
     }
   };
   return (
-    <div className="grid gap-5 xl:grid-cols-[1fr_430px]">
+    <div className="grid gap-4 xl:grid-cols-[1fr_380px]">
       <Card>
         <CardHeader title="Connect ER:LC Server" icon={<Cloud />} />
-        <div className="mt-5 rounded-[1.5rem] border border-sky-300/15 bg-sky-300/10 p-5">
-          <div className="flex items-center gap-3"><div className="grid h-12 w-12 place-items-center rounded-2xl bg-sky-300 text-black"><KeyRound /></div><div><h2 className="text-2xl font-black">PRC API connection</h2><p className="text-sm text-white/50">Your key is validated server-side and never displayed after it is saved.</p></div></div>
+        <div className="mt-5 rounded-xl border border-sky-300/15 bg-sky-300/[.07] p-4">
+          <div className="flex items-center gap-3"><div className="grid h-12 w-12 place-items-center rounded-xl bg-sky-300 text-black"><KeyRound /></div><div><h2 className="text-2xl font-black">PRC API connection</h2><p className="text-sm text-white/50">Your key is validated server-side and never displayed after it is saved.</p></div></div>
         </div>
         <label className="mt-5 block">
           <span className="text-xs font-black uppercase tracking-[.18em] text-white/35">Private-server API key</span>
-          <input type="password" autoComplete="off" value={apiKey} onChange={(event) => setApiKey(event.target.value)} className="mt-2 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none transition placeholder:text-white/25 focus:border-sky-300/40" placeholder="Paste your PRC server key" />
+          <input type="password" autoComplete="off" value={apiKey} onChange={(event) => setApiKey(event.target.value)} className="mt-2 w-full rounded-xl border border-white/10 bg-[#07090f] px-4 py-3 text-sm outline-none transition placeholder:text-white/25 focus:border-sky-300/40" placeholder="Paste your PRC server key" />
         </label>
         <div className="mt-5 flex flex-wrap items-center gap-3">
-          <Button onClick={connect} className={busy || apiKey.length < 12 ? "pointer-events-none opacity-45" : ""}><Cloud size={16} />{busy ? "Validating&" : "Validate & connect"}</Button>
+          <Button onClick={connect} className={busy || apiKey.length < 12 ? "pointer-events-none opacity-45" : ""}><Cloud size={16} />{busy ? "Validating..." : "Validate & connect"}</Button>
           <p className="text-xs text-white/35">The key is stored only in the protected API environment.</p>
         </div>
       </Card>
@@ -463,10 +463,10 @@ function Players({ players, selected, setSelected, openAction }: { players: Play
   const [q, setQ] = useState("");
   const filtered = players.filter((p) => `${p.name} ${p.robloxId} ${p.team}`.toLowerCase().includes(q.toLowerCase()));
   return (
-    <div className="grid gap-5 xl:grid-cols-[1fr_420px]">
+    <div className="grid gap-4 xl:grid-cols-[1fr_390px]">
       <Card>
         <CardHeader title="Player management" icon={<Users />} action={<SearchBox value={q} setValue={setQ} placeholder="Search players..." />} />
-        <div className="mt-5 overflow-hidden rounded-[1.5rem] border border-white/10">
+        <div className="mt-5 overflow-hidden rounded-xl border border-white/10">
           {filtered.map((player) => <PlayerRow key={player.id} player={player} active={selected.id === player.id} onClick={() => setSelected(player)} />)}
         </div>
         {!filtered.length && <EmptyState title="No players found" text="Try a username, Roblox ID, or team." />}
@@ -491,7 +491,7 @@ function PlayerProfile({ player, openAction }: { player: Player; openAction: (a:
         <Info label="Playtime" value={player.playtime} />
         <Info label="Warnings" value={String(player.warnings)} />
       </div>
-      <div className="mt-5"><div className="text-xs font-black uppercase tracking-[.22em] text-white/35">Notes</div><div className="mt-3 space-y-2">{player.notes.map((note) => <div key={note} className="rounded-2xl border border-white/10 bg-white/[.04] p-3 text-sm text-white/60">{note}</div>)}</div></div>
+      <div className="mt-5"><div className="text-xs font-black uppercase tracking-[.22em] text-white/35">Notes</div><div className="mt-3 space-y-2">{player.notes.map((note) => <div key={note} className="rounded-xl border border-white/[.08] bg-white/[.03] p-3 text-sm text-white/60">{note}</div>)}</div></div>
       <div className="mt-5 grid grid-cols-2 gap-2">{actions.map(([action, icon, dangerous]) => <Button key={action} variant={dangerous ? "danger" : "ghost"} onClick={() => openAction(action, player)}>{icon}{action}</Button>)}</div>
     </Card>
   );
@@ -500,18 +500,18 @@ function PlayerProfile({ player, openAction }: { player: Player; openAction: (a:
 function CommandCenter({ openAction, sendCommand, busy }: { openAction: (a: ModActionType) => void; sendCommand: (command: string) => void; busy: boolean }) {
   const [cmd, setCmd] = useState(":h Welcome to ECRP. Follow staff instructions.");
   return (
-    <div className="grid gap-5 xl:grid-cols-[1fr_420px]">
+    <div className="grid gap-4 xl:grid-cols-[1fr_390px]">
       <Card>
         <CardHeader title="Remote command center" icon={<Terminal />} />
-        <div className="mt-5 rounded-[1.5rem] border border-white/10 bg-black/35 p-4">
+        <div className="mt-5 rounded-xl border border-white/10 bg-black/35 p-4">
           <label className="text-xs font-black uppercase tracking-[.22em] text-white/35">Command</label>
-          <textarea value={cmd} onChange={(e) => setCmd(e.target.value)} className="mt-3 min-h-36 w-full resize-none rounded-2xl border border-white/10 bg-[#07090f] p-4 font-mono text-sm outline-none transition focus:border-sky-300/40" />
+          <textarea value={cmd} onChange={(e) => setCmd(e.target.value)} className="mt-3 min-h-36 w-full resize-none rounded-2xl border border-white/10 bg-[#080a0f] p-4 font-mono text-sm outline-none transition focus:border-sky-300/40" />
           <div className="mt-4 flex flex-wrap gap-2"><Button onClick={() => sendCommand(cmd)}><Command size={16} /> {busy ? "Sending…" : "Send command"}</Button><Button variant="danger" onClick={() => openAction("Announcement")}><Lock size={16} /> Server announcement</Button></div>
         </div>
       </Card>
       <Card>
         <CardHeader title="Templates" icon={<Sparkles />} />
-        <div className="mt-5 space-y-3">{commandTemplates.map((template) => <button key={template.name} onClick={() => setCmd(template.command)} className="w-full rounded-2xl border border-white/10 bg-white/[.04] p-4 text-left transition hover:border-sky-300/30 hover:bg-sky-300/10"><div className="flex items-center justify-between gap-3"><b>{template.name}</b>{template.locked && <Lock size={15} className="text-amber-200" />}</div><code className="mt-2 block truncate text-xs text-white/45">{template.command}</code></button>)}</div>
+        <div className="mt-5 space-y-3">{commandTemplates.map((template) => <button key={template.name} onClick={() => setCmd(template.command)} className="w-full rounded-xl border border-white/[.08] bg-white/[.03] p-4 text-left transition hover:border-sky-300/30 hover:bg-sky-300/10"><div className="flex items-center justify-between gap-3"><b>{template.name}</b>{template.locked && <Lock size={15} className="text-amber-200" />}</div><code className="mt-2 block truncate text-xs text-white/45">{template.command}</code></button>)}</div>
       </Card>
     </div>
   );
@@ -525,37 +525,37 @@ function Logs({ logs }: { logs: ModAction[] }) {
 
 function StaffPermissions({ showToast }: { showToast: (m: string) => void }) {
   const all: Permission[] = ["Kick", "Ban", "Unban", "Kill", "Teleport", "PM", "Announce", "API Keys", "Staff Roles", "Export Logs"];
-  return <Card><CardHeader title="Staff permissions matrix" icon={<Shield />} action={<Button onClick={() => showToast("Permission matrix saved.")}>Save changes</Button>} /><div className="mt-5 overflow-x-auto"><table className="w-full min-w-[820px] border-separate border-spacing-y-2 text-sm"><thead><tr className="text-left text-xs uppercase tracking-[.18em] text-white/35"><th className="p-3">Role</th>{all.map((p) => <th key={p} className="p-3 text-center">{p}</th>)}</tr></thead><tbody>{Object.entries(permissions).map(([role, list]) => <tr key={role} className="rounded-2xl bg-white/[.035]"><td className="rounded-l-2xl p-3 font-black">{role}</td>{all.map((p) => <td key={p} className="p-3 text-center"><button className={`mx-auto grid h-7 w-11 place-items-center rounded-full border transition ${list.includes(p) ? "border-emerald-300/30 bg-emerald-300/20 text-emerald-100" : "border-white/10 bg-black/30 text-white/25"}`}>{list.includes(p) ? "✓" : ""}</button></td>)}<td className="rounded-r-2xl" /></tr>)}</tbody></table></div><div className="mt-5 rounded-2xl border border-white/10 bg-white/[.04] p-4 text-sm text-white/55">Audit: Preston updated Moderator permissions 14 minutes ago.</div></Card>;
+  return <Card><CardHeader title="Staff permissions matrix" icon={<Shield />} action={<Button onClick={() => showToast("Permission matrix saved.")}>Save changes</Button>} /><div className="mt-5 overflow-x-auto"><table className="w-full min-w-[820px] border-separate border-spacing-y-2 text-sm"><thead><tr className="text-left text-xs uppercase tracking-[.18em] text-white/35"><th className="p-3">Role</th>{all.map((p) => <th key={p} className="p-3 text-center">{p}</th>)}</tr></thead><tbody>{Object.entries(permissions).map(([role, list]) => <tr key={role} className="rounded-2xl bg-white/[.035]"><td className="rounded-l-2xl p-3 font-black">{role}</td>{all.map((p) => <td key={p} className="p-3 text-center"><button className={`mx-auto grid h-7 w-11 place-items-center rounded-full border transition ${list.includes(p) ? "border-emerald-300/30 bg-emerald-300/20 text-emerald-100" : "border-white/10 bg-black/30 text-white/25"}`}>{list.includes(p) ? "✓" : ""}</button></td>)}<td className="rounded-r-2xl" /></tr>)}</tbody></table></div><div className="mt-5 rounded-xl border border-white/[.08] bg-white/[.03] p-4 text-sm text-white/55">Audit: Preston updated Moderator permissions 14 minutes ago.</div></Card>;
 }
 
 function SettingsPage({ showToast }: { showToast: (m: string) => void }) {
-  return <div className="grid gap-5 xl:grid-cols-2"><Card><CardHeader title="ER:LC API connection" icon={<KeyRound />} /><div className="mt-5 grid gap-4"><Info label="API host" value="api.policeroleplay.community" /><Info label="Credential storage" value="Server-side only" good /><Info label="Refresh interval" value="15 seconds" /><Button onClick={() => showToast("API credentials are protected on the VPS.")}>Connection security</Button></div></Card><Card><CardHeader title="Integrations & branding" icon={<Bot />} /><div className="mt-5 grid gap-4"><Field label="Discord bot integration" placeholder="Veltrix" /><Field label="Moderation webhook" placeholder="Optional log webhook" /><Field label="Dashboard accent" placeholder="Sky / Indigo" /><Button variant="ghost" onClick={() => showToast("Branding preferences saved for this browser.")}>Save branding</Button></div></Card><Card><CardHeader title="Security" icon={<Lock />} /><div className="mt-5 space-y-3"><Checklist label="Require confirmation for bans" done /><Checklist label="Log every command execution" done /><Checklist label="Restrict API key visibility" done /><Checklist label="Use protected staff login" done /></div></Card><Card><CardHeader title="Service health" icon={<AlertTriangle />} /><EmptyState title="Automatic health monitoring" text="PRC API failures appear globally with a safe retry action." /></Card></div>;
+  return <div className="grid gap-5 xl:grid-cols-2"><Card><CardHeader title="ER:LC API connection" icon={<KeyRound />} /><div className="mt-5 grid gap-4"><Info label="API host" value="api.erlc.gg" /><Info label="Credential storage" value="Server-side only" good /><Info label="Refresh interval" value="15 seconds" /><Button onClick={() => showToast("API credentials are protected on the VPS.")}>Connection security</Button></div></Card><Card><CardHeader title="Integrations & branding" icon={<Bot />} /><div className="mt-5 grid gap-4"><Field label="Discord bot integration" placeholder="Veltrix" /><Field label="Moderation webhook" placeholder="Optional log webhook" /><Field label="Dashboard accent" placeholder="Sky / Indigo" /><Button variant="ghost" onClick={() => showToast("Branding preferences saved for this browser.")}>Save branding</Button></div></Card><Card><CardHeader title="Security" icon={<Lock />} /><div className="mt-5 space-y-3"><Checklist label="Require confirmation for bans" done /><Checklist label="Log every command execution" done /><Checklist label="Restrict API key visibility" done /><Checklist label="Use protected staff login" done /></div></Card><Card><CardHeader title="Service health" icon={<AlertTriangle />} /><EmptyState title="Automatic health monitoring" text="PRC API failures appear globally with a safe retry action." /></Card></div>;
 }
 
 function ActionModal({ modal, close, confirm, busy }: { modal: { action: ModActionType; player?: Player }; close: () => void; confirm: (reason: string) => void; busy: boolean }) {
   const dangerous = ["Kick", "Ban", "Unban", "Kill", "Announcement"].includes(modal.action);
   const [reason, setReason] = useState("");
-  return <motion.div className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4 backdrop-blur-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><motion.div initial={{ scale: .96, y: 12 }} animate={{ scale: 1, y: 0 }} exit={{ scale: .96, y: 12 }} className="w-full max-w-lg rounded-[2rem] border border-white/10 bg-[#0b0e16] p-6 shadow-2xl"><div className="flex items-start justify-between gap-4"><div><div className={`inline-flex rounded-full border px-3 py-1 text-xs font-black uppercase tracking-[.18em] ${dangerous ? "border-rose-300/25 bg-rose-300/10 text-rose-100" : "border-sky-300/25 bg-sky-300/10 text-sky-100"}`}>{dangerous ? "Confirmation required" : "Confirm action"}</div><h2 className="mt-4 text-3xl font-black">{modal.action}</h2><p className="mt-2 text-white/55">{modal.player ? `Run ${modal.action} on ${modal.player.name}?` : `Send a server-wide announcement?`} The command will execute immediately and be added to the audit log.</p></div><button onClick={close} className="grid h-10 w-10 place-items-center rounded-2xl border border-white/10 bg-white/[.04]"><X size={18} /></button></div><label className="mt-5 block text-xs font-black uppercase tracking-[.18em] text-white/35">{modal.action === "Announcement" || modal.action === "PM" ? "Message" : "Reason"}<textarea autoFocus value={reason} onChange={(event) => setReason(event.target.value)} className="mt-2 min-h-28 w-full resize-none rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-white outline-none focus:border-sky-300/40" placeholder={modal.action === "Announcement" ? "Message sent to the whole server…" : "Enter the moderation reason…"} /></label><div className="mt-5 flex gap-3"><Button variant="ghost" onClick={close}>Cancel</Button><Button variant={dangerous ? "danger" : "primary"} onClick={() => confirm(reason)}>{busy ? "Sending…" : `Confirm ${modal.action}`}</Button></div></motion.div></motion.div>;
+  return <motion.div className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4 backdrop-blur-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><motion.div initial={{ scale: .96, y: 12 }} animate={{ scale: 1, y: 0 }} exit={{ scale: .96, y: 12 }} className="w-full max-w-lg rounded-2xl border border-white/10 bg-[#0b0e16] p-6 shadow-2xl"><div className="flex items-start justify-between gap-4"><div><div className={`inline-flex rounded-full border px-3 py-1 text-xs font-black uppercase tracking-[.18em] ${dangerous ? "border-rose-300/25 bg-rose-300/10 text-rose-100" : "border-sky-300/25 bg-sky-300/10 text-sky-100"}`}>{dangerous ? "Confirmation required" : "Confirm action"}</div><h2 className="mt-4 text-3xl font-black">{modal.action}</h2><p className="mt-2 text-white/55">{modal.player ? `Run ${modal.action} on ${modal.player.name}?` : `Send a server-wide announcement?`} The command will execute immediately and be added to the audit log.</p></div><button onClick={close} className="grid h-10 w-10 place-items-center rounded-xl border border-white/[.08] bg-white/[.03]"><X size={18} /></button></div><label className="mt-5 block text-xs font-black uppercase tracking-[.18em] text-white/35">{modal.action === "Announcement" || modal.action === "PM" ? "Message" : "Reason"}<textarea autoFocus value={reason} onChange={(event) => setReason(event.target.value)} className="mt-2 min-h-28 w-full resize-none rounded-xl border border-white/10 bg-[#07090f] p-4 text-sm text-white outline-none focus:border-sky-300/40" placeholder={modal.action === "Announcement" ? "Message sent to the whole server…" : "Enter the moderation reason…"} /></label><div className="mt-5 flex gap-3"><Button variant="ghost" onClick={close}>Cancel</Button><Button variant={dangerous ? "danger" : "primary"} onClick={() => confirm(reason)}>{busy ? "Sending…" : `Confirm ${modal.action}`}</Button></div></motion.div></motion.div>;
 }
 
-function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) { return <section className={`rounded-[2rem] border border-white/10 bg-white/[.055] p-5 shadow-2xl shadow-black/20 backdrop-blur-2xl ${className}`}>{children}</section>; }
-function CardHeader({ title, icon, action }: { title: string; icon: React.ReactNode; action?: React.ReactNode }) { return <div className="flex flex-wrap items-center justify-between gap-3"><div className="flex items-center gap-2 text-sm font-black uppercase tracking-[.18em] text-white/45">{icon}{title}</div>{action}</div>; }
-function Button({ children, onClick, variant = "primary", className = "" }: { children: React.ReactNode; onClick?: () => void; variant?: "primary" | "ghost" | "danger"; className?: string }) { const styles = variant === "danger" ? "border-rose-300/25 bg-rose-400/15 text-rose-50 hover:bg-rose-400/22" : variant === "ghost" ? "border-white/10 bg-white/[.055] text-white/75 hover:border-white/18 hover:bg-white/[.08]" : "border-sky-300/25 bg-sky-300 text-black hover:bg-sky-200"; return <button onClick={onClick} className={`inline-flex items-center justify-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-black transition hover:-translate-y-0.5 ${styles} ${className}`}>{children}</button>; }
+function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) { return <section className={`rounded-xl border border-white/[.08] bg-white/[.035] p-5 shadow-[0_14px_44px_rgba(0,0,0,.16)] backdrop-blur-xl ${className}`}>{children}</section>; }
+function CardHeader({ title, icon, action }: { title: string; icon: React.ReactNode; action?: React.ReactNode }) { return <div className="flex flex-wrap items-center justify-between gap-3"><div className="flex items-center gap-2 text-xs font-black uppercase tracking-[.14em] text-white/50">{icon}{title}</div>{action}</div>; }
+function Button({ children, onClick, variant = "primary", className = "" }: { children: React.ReactNode; onClick?: () => void; variant?: "primary" | "ghost" | "danger"; className?: string }) { const styles = variant === "danger" ? "border-rose-300/25 bg-rose-400/15 text-rose-50 hover:bg-rose-400/22" : variant === "ghost" ? "border-white/10 bg-white/[.055] text-white/75 hover:border-white/18 hover:bg-white/[.08]" : "border-sky-300/25 bg-sky-300 text-black hover:bg-sky-200"; return <button onClick={onClick} className={`inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-black transition duration-200 hover:-translate-y-px ${styles} ${className}`}>{children}</button>; }
 function StatusPill({ icon, label, good }: { icon: React.ReactNode; label: string; good?: boolean }) { return <div className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-bold ${good ? "border-emerald-300/25 bg-emerald-300/10 text-emerald-100" : "border-white/10 bg-white/[.045] text-white/60"}`}>{icon}{label}</div>; }
-function Metric({ title, value, icon, tone }: { title: string; value: React.ReactNode; icon: React.ReactNode; tone: "sky" | "emerald" | "violet" | "amber" }) { const map = { sky: "from-sky-400/22", emerald: "from-emerald-400/22", violet: "from-violet-400/22", amber: "from-amber-400/22" }; return <Card className={`bg-gradient-to-br ${map[tone]} to-white/[.045]`}><div className="flex items-center justify-between"><div className="grid h-12 w-12 place-items-center rounded-2xl bg-white/[.08] text-white/75">{icon}</div><Sparkles size={16} className="text-white/30" /></div><div className="mt-6 text-4xl font-black tracking-[-.06em]">{value}</div><div className="mt-1 text-sm font-bold text-white/45">{title}</div></Card>; }
-function Info({ label, value, good }: { label: string; value: string; good?: boolean }) { return <div className="mb-3 flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[.045] px-3 py-2 last:mb-0"><span className="text-sm text-white/45">{label}</span><b className={good ? "text-emerald-200" : "text-white"}>{value}</b></div>; }
-function Health({ label, value, percent }: { label: string; value: string; percent: number }) { return <div className="rounded-2xl border border-white/10 bg-white/[.04] p-3"><div className="flex justify-between text-sm"><b>{label}</b><span className="text-white/45">{value}</span></div><div className="mt-3 h-2 overflow-hidden rounded-full bg-black/35"><div className="h-full rounded-full bg-gradient-to-r from-sky-300 to-emerald-300" style={{ width: `${percent}%` }} /></div></div>; }
-function Checklist({ label, done }: { label: string; done: boolean }) { return <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[.04] p-3"><span className={`grid h-8 w-8 place-items-center rounded-xl ${done ? "bg-emerald-300 text-black" : "bg-white/[.06] text-white/35"}`}>{done ? <CheckCircle2 size={16} /> : <CircleDot size={16} />}</span><span className="font-bold text-white/75">{label}</span></div>; }
-function Field({ label, placeholder }: { label: string; placeholder: string }) { return <label className="block"><span className="text-xs font-black uppercase tracking-[.18em] text-white/35">{label}</span><input className="mt-2 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none transition placeholder:text-white/25 focus:border-sky-300/40" placeholder={placeholder} /></label>; }
-function SearchBox({ value, setValue, placeholder }: { value: string; setValue: (v: string) => void; placeholder: string }) { return <div className="flex min-w-[260px] items-center gap-2 rounded-2xl border border-white/10 bg-black/30 px-3 py-2"><Search size={16} className="text-white/35" /><input value={value} onChange={(e) => setValue(e.target.value)} placeholder={placeholder} className="w-full bg-transparent text-sm outline-none placeholder:text-white/30" /></div>; }
-function PlayerRow({ player, active, onClick }: { player: Player; active: boolean; onClick: () => void }) { return <button onClick={onClick} className={`flex w-full items-center gap-3 border-b border-white/10 p-4 text-left last:border-b-0 transition ${active ? "bg-sky-300/10" : "hover:bg-white/[.04]"}`}><div className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-sky-300 to-indigo-400 font-black text-black">{player.name[0]}</div><div className="min-w-0 flex-1"><div className="truncate font-black">{player.name}</div><div className="text-xs text-white/45">{player.team} · {player.playtime} · {player.ping}ms</div></div><SeverityBadge severity={player.status === "banned" ? "critical" : player.status === "flagged" ? "high" : player.status === "staff" ? "low" : "medium"} label={player.status} /></button>; }
-function LogRow({ log }: { log: ModAction }) { return <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-white/10 bg-white/[.04] p-4"><SeverityBadge severity={log.severity} label={log.type} /><div className="min-w-0 flex-1"><div className="font-black">{log.player}</div><div className="text-sm text-white/45">{log.reason}</div></div><div className="text-right text-xs text-white/40"><b className="block text-white/65">{log.staff}</b>{log.time}</div></div>; }
+function Metric({ title, value, icon, tone }: { title: string; value: React.ReactNode; icon: React.ReactNode; tone: "sky" | "emerald" | "violet" | "amber" }) { const map = { sky: "from-sky-400/22", emerald: "from-emerald-400/22", violet: "from-violet-400/22", amber: "from-amber-400/22" }; return <Card className={`bg-gradient-to-br ${map[tone]} `}><div className="flex items-center justify-between"><div className="grid h-10 w-10 place-items-center rounded-xl bg-white/[.06] text-white/75">{icon}</div><Sparkles size={16} className="text-white/30" /></div><div className="mt-5 text-3xl font-black tracking-[-.06em]">{value}</div><div className="mt-1 text-sm font-bold text-white/45">{title}</div></Card>; }
+function Info({ label, value, good }: { label: string; value: string; good?: boolean }) { return <div className="mb-3 flex items-center justify-between gap-3 rounded-xl border border-white/[.08] bg-white/[.03] px-3 py-2 last:mb-0"><span className="text-sm text-white/45">{label}</span><b className={good ? "text-emerald-200" : "text-white"}>{value}</b></div>; }
+function Health({ label, value, percent }: { label: string; value: string; percent: number }) { return <div className="rounded-xl border border-white/[.08] bg-white/[.03] p-3"><div className="flex justify-between text-sm"><b>{label}</b><span className="text-white/45">{value}</span></div><div className="mt-3 h-2 overflow-hidden rounded-full bg-black/35"><div className="h-full rounded-full bg-gradient-to-r from-sky-300 to-emerald-300" style={{ width: `${percent}%` }} /></div></div>; }
+function Checklist({ label, done }: { label: string; done: boolean }) { return <div className="flex items-center gap-3 rounded-xl border border-white/[.08] bg-white/[.03] p-3"><span className={`grid h-8 w-8 place-items-center rounded-xl ${done ? "bg-emerald-300 text-black" : "bg-white/[.06] text-white/35"}`}>{done ? <CheckCircle2 size={16} /> : <CircleDot size={16} />}</span><span className="font-bold text-white/75">{label}</span></div>; }
+function Field({ label, placeholder }: { label: string; placeholder: string }) { return <label className="block"><span className="text-xs font-black uppercase tracking-[.18em] text-white/35">{label}</span><input className="mt-2 w-full rounded-xl border border-white/10 bg-[#07090f] px-4 py-3 text-sm outline-none transition placeholder:text-white/25 focus:border-sky-300/40" placeholder={placeholder} /></label>; }
+function SearchBox({ value, setValue, placeholder }: { value: string; setValue: (v: string) => void; placeholder: string }) { return <div className="flex min-w-[260px] items-center gap-2 rounded-xl border border-white/10 bg-[#07090f] px-3 py-2"><Search size={16} className="text-white/35" /><input value={value} onChange={(e) => setValue(e.target.value)} placeholder={placeholder} className="w-full bg-transparent text-sm outline-none placeholder:text-white/30" /></div>; }
+function PlayerRow({ player, active, onClick }: { player: Player; active: boolean; onClick: () => void }) { return <button onClick={onClick} className={`flex w-full items-center gap-3 border-b border-white/10 p-4 text-left last:border-b-0 transition ${active ? "bg-sky-300/10" : "hover:bg-white/[.04]"}`}><div className="grid h-11 w-11 place-items-center rounded-xl bg-sky-300 font-black text-black">{player.name[0]}</div><div className="min-w-0 flex-1"><div className="truncate font-black">{player.name}</div><div className="text-xs text-white/45">{player.team} · {player.playtime} · {player.ping}ms</div></div><SeverityBadge severity={player.status === "banned" ? "critical" : player.status === "flagged" ? "high" : player.status === "staff" ? "low" : "medium"} label={player.status} /></button>; }
+function LogRow({ log }: { log: ModAction }) { return <div className="flex flex-wrap items-center gap-3 rounded-xl border border-white/[.08] bg-white/[.03] p-4"><SeverityBadge severity={log.severity} label={log.type} /><div className="min-w-0 flex-1"><div className="font-black">{log.player}</div><div className="text-sm text-white/45">{log.reason}</div></div><div className="text-right text-xs text-white/40"><b className="block text-white/65">{log.staff}</b>{log.time}</div></div>; }
 function SeverityBadge({ severity, label }: { severity: Severity; label: string }) { const styles = { low: "border-emerald-300/25 bg-emerald-300/10 text-emerald-100", medium: "border-sky-300/25 bg-sky-300/10 text-sky-100", high: "border-amber-300/25 bg-amber-300/10 text-amber-100", critical: "border-rose-300/25 bg-rose-300/10 text-rose-100" }; return <span className={`rounded-full border px-3 py-1 text-xs font-black uppercase ${styles[severity]}`}>{label}</span>; }
-function EmptyState({ title, text }: { title: string; text: string }) { return <div className="mt-5 rounded-[1.5rem] border border-dashed border-white/15 bg-white/[.025] p-8 text-center"><div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-white/[.06] text-white/40"><AlertTriangle /></div><h3 className="mt-3 text-xl font-black">{title}</h3><p className="mt-1 text-sm text-white/45">{text}</p></div>; }
+function EmptyState({ title, text }: { title: string; text: string }) { return <div className="mt-5 rounded-xl border border-dashed border-white/15 bg-white/[.025] p-8 text-center"><div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-white/[.06] text-white/40"><AlertTriangle /></div><h3 className="mt-3 text-xl font-black">{title}</h3><p className="mt-1 text-sm text-white/45">{text}</p></div>; }
 function Toast({ message }: { message: string }) {
   const isError = /(failed|error|invalid|offline|unavailable|not configured|could not|unable|unauthorized|denied|must switch|no longer available)/i.test(message);
   return <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 18 }} className={`fixed bottom-5 right-5 z-50 max-w-[min(92vw,560px)] rounded-2xl border px-4 py-3 text-sm font-bold shadow-2xl backdrop-blur-xl ${isError ? "border-rose-300/25 bg-[#1b0d12]/95 text-rose-100" : "border-emerald-300/20 bg-[#0b1512]/95 text-emerald-100"}`}><span className="flex items-start gap-2">{isError ? <AlertTriangle className="mt-0.5 shrink-0" size={16} /> : <CheckCircle2 className="mt-0.5 shrink-0" size={16} />}<span>{message}</span></span></motion.div>;
 }
-function DashboardLegalFooter() { return <footer className="relative border-t border-white/10 bg-[#07090f]/80 py-5 pl-0 text-sm text-white/45 backdrop-blur-2xl lg:pl-[292px]"><div className="mx-auto flex max-w-[1500px] flex-col gap-3 px-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8"><p>© PrestonHQ. All rights reserved.</p><div className="flex gap-4"><a className="transition hover:text-white" href="/privacy">Privacy Policy</a><a className="transition hover:text-white" href="/terms">Terms of Service</a></div></div></footer>; }
+function DashboardLegalFooter() { return <footer className="relative border-t border-white/10 bg-[#080a0f]/80 py-5 pl-0 text-sm text-white/45 backdrop-blur-2xl lg:pl-[272px]"><div className="mx-auto flex max-w-[1480px] flex-col gap-3 px-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8"><p>© PrestonHQ. All rights reserved.</p><div className="flex gap-4"><a className="transition hover:text-white" href="/privacy">Privacy Policy</a><a className="transition hover:text-white" href="/terms">Terms of Service</a></div></div></footer>; }
 
 export default App;
