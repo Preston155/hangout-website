@@ -59,6 +59,115 @@ type Player = {
   lastSeen: string;
 };
 
+type RobloxThumbnailResponse = {
+  data?: Array<{
+    state?: string;
+    imageUrl?: string;
+  }>;
+};
+
+const robloxHeadshotCache = new Map<string, string | null>();
+
+function useRobloxHeadshot(robloxId: string) {
+  const normalizedId = robloxId.trim();
+  const isValidId = /^\d+$/.test(normalizedId);
+  const cached = isValidId ? robloxHeadshotCache.get(normalizedId) : null;
+  const [imageUrl, setImageUrl] = useState<string | null>(cached ?? null);
+  const [imageFailed, setImageFailed] = useState(!isValidId);
+
+  useEffect(() => {
+    if (!isValidId) {
+      setImageUrl(null);
+      setImageFailed(true);
+      return;
+    }
+
+    const cachedUrl = robloxHeadshotCache.get(normalizedId);
+    if (cachedUrl !== undefined) {
+      setImageUrl(cachedUrl);
+      setImageFailed(cachedUrl === null);
+      return;
+    }
+
+    const controller = new AbortController();
+    setImageUrl(null);
+    setImageFailed(false);
+
+    async function loadHeadshot() {
+      try {
+        const endpoint = new URL("https://thumbnails.roblox.com/v1/users/avatar-headshot");
+        endpoint.search = new URLSearchParams({
+          userIds: normalizedId,
+          size: "150x150",
+          format: "Png",
+          isCircular: "true",
+        }).toString();
+
+        const response = await fetch(endpoint, {
+          signal: controller.signal,
+          headers: { Accept: "application/json" },
+        });
+        if (!response.ok) throw new Error(`Roblox thumbnails returned ${response.status}`);
+
+        const payload = (await response.json()) as RobloxThumbnailResponse;
+        const thumbnail = payload.data?.[0];
+        const nextUrl = thumbnail?.state === "Completed" && thumbnail.imageUrl
+          ? thumbnail.imageUrl
+          : null;
+
+        robloxHeadshotCache.set(normalizedId, nextUrl);
+        setImageUrl(nextUrl);
+        setImageFailed(nextUrl === null);
+      } catch (error) {
+        if ((error as Error).name === "AbortError") return;
+        robloxHeadshotCache.set(normalizedId, null);
+        setImageUrl(null);
+        setImageFailed(true);
+      }
+    }
+
+    void loadHeadshot();
+    return () => controller.abort();
+  }, [isValidId, normalizedId]);
+
+  return {
+    imageUrl: imageFailed ? null : imageUrl,
+    markFailed: () => {
+      robloxHeadshotCache.set(normalizedId, null);
+      setImageFailed(true);
+    },
+  };
+}
+
+function PlayerAvatar({ player, large = false }: { player: Player; large?: boolean }) {
+  const { imageUrl, markFailed } = useRobloxHeadshot(player.robloxId);
+  const initial = player.name.trim().charAt(0).toUpperCase() || "?";
+  const size = large ? "h-20 w-20 text-2xl" : "h-10 w-10 text-sm";
+
+  return (
+    <div
+      className={`relative shrink-0 overflow-hidden rounded-full border border-white/10 bg-gradient-to-br from-slate-700 via-zinc-800 to-zinc-950 shadow-[0_10px_28px_rgba(0,0,0,0.32)] ${size}`}
+      aria-label={`${player.name}'s Roblox avatar`}
+    >
+      <div className="absolute inset-0 flex items-center justify-center font-semibold text-zinc-100">
+        {initial}
+      </div>
+      {imageUrl && (
+        <img
+          src={imageUrl}
+          alt=""
+          className="relative h-full w-full object-cover"
+          loading="lazy"
+          decoding="async"
+          referrerPolicy="no-referrer"
+          onError={markFailed}
+        />
+      )}
+      <span className={`absolute bottom-0 right-0 rounded-full border-2 border-zinc-950 bg-emerald-400 ${large ? "h-4 w-4" : "h-3 w-3"}`} />
+    </div>
+  );
+}
+
 type ModAction = {
   id: string;
   type: ModActionType;
@@ -629,9 +738,21 @@ function PlayerProfile({ player, openAction }: { player: Player; openAction: (a:
   return (
     <Card>
       <CardHeader title="Player Details" icon={<Eye className="h-4 w-4 text-zinc-400" />} />
-      <div className="mt-4 border-b border-zinc-800/80 pb-4">
-        <h3 className="text-base font-semibold text-white">{player.name}</h3>
-        <p className="text-xs text-zinc-500 mt-0.5">Roblox ID: {player.robloxId}</p>
+      <div className="mt-4 rounded-2xl border border-white/[0.07] bg-gradient-to-br from-slate-900/90 to-zinc-950/90 p-4 shadow-inner shadow-black/20 backdrop-blur">
+        <div className="flex items-center gap-4">
+          <PlayerAvatar player={player} large />
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="truncate text-lg font-semibold tracking-tight text-white">{player.name}</h3>
+              <span className="inline-flex items-center gap-1 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-300">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                Online
+              </span>
+            </div>
+            <p className="mt-1 font-mono text-[11px] text-zinc-500">Roblox ID · {player.robloxId || "Unavailable"}</p>
+            <p className="mt-2 truncate text-xs text-zinc-300">{player.team}</p>
+          </div>
+        </div>
       </div>
       <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
         <Info label="Team Assignment" value={player.team} />
@@ -656,17 +777,27 @@ function PlayerProfile({ player, openAction }: { player: Player; openAction: (a:
 
 function PlayerRow({ player, active, onClick }: { player: Player; active: boolean; onClick: () => void }) {
   return (
-    <button onClick={onClick} className={`flex w-full items-center justify-between p-3 text-left transition ${active ? "bg-zinc-800/60 text-white" : "hover:bg-zinc-900/40 text-zinc-300"}`}>
-      <div className="flex items-center gap-3">
-        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-800 text-xs font-semibold text-zinc-200">
-          {player.name[0]}
-        </div>
-        <div>
-          <div className="text-xs font-medium text-zinc-200">{player.name}</div>
-          <div className="text-[11px] text-zinc-500">{player.team}</div>
+    <button
+      onClick={onClick}
+      className={`group flex w-full items-center justify-between gap-3 px-3.5 py-3 text-left transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-sky-400/70 ${active ? "bg-slate-800/80 text-white shadow-[inset_3px_0_0_#38bdf8]" : "text-zinc-300 hover:bg-white/[0.035]"}`}
+    >
+      <div className="flex min-w-0 items-center gap-3">
+        <PlayerAvatar player={player} />
+        <div className="min-w-0">
+          <div className="truncate text-sm font-medium text-zinc-100">{player.name}</div>
+          <div className="mt-0.5 flex items-center gap-2 text-[11px] text-zinc-500">
+            <span className="truncate">{player.team}</span>
+            <span className="h-0.5 w-0.5 shrink-0 rounded-full bg-zinc-600" />
+            <span className="shrink-0 font-mono">ID {player.robloxId || "—"}</span>
+          </div>
         </div>
       </div>
-      <span className="text-xs text-zinc-500 font-mono">{player.ping}ms</span>
+      <div className="flex shrink-0 items-center gap-3">
+        <span className="hidden rounded-full border border-white/[0.06] bg-zinc-950/60 px-2 py-1 font-mono text-[10px] text-zinc-500 sm:inline">
+          {player.ping}ms
+        </span>
+        <ChevronRight className={`h-4 w-4 transition ${active ? "text-sky-300" : "text-zinc-700 group-hover:translate-x-0.5 group-hover:text-zinc-400"}`} />
+      </div>
     </button>
   );
 }
