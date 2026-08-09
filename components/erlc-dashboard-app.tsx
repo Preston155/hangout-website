@@ -12,7 +12,9 @@ import {
   ClipboardList,
   Command,
   Cpu,
+  Database,
   Eye,
+  FileText,
   Globe,
   KeyRound,
   Layers,
@@ -22,6 +24,7 @@ import {
   Megaphone,
   Menu,
   MessageSquare,
+  PhoneCall,
   Radio,
   RefreshCw,
   Search,
@@ -30,6 +33,7 @@ import {
   Shield,
   ShieldAlert,
   ShieldCheck,
+  Siren,
   Skull,
   Sparkles,
   Terminal,
@@ -40,7 +44,7 @@ import {
 } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 
-type Page = "overview" | "connect" | "players" | "commands" | "logs" | "staff" | "settings";
+type Page = "overview" | "connect" | "players" | "cad" | "commands" | "logs" | "staff" | "settings";
 type Severity = "low" | "medium" | "high" | "critical";
 type PlayerStatus = "online" | "flagged" | "banned" | "staff";
 type ModActionType = "Warn" | "Kick" | "Ban" | "Unban" | "Kill" | "Teleport" | "PM" | "Announcement";
@@ -60,10 +64,9 @@ type Player = {
 };
 
 type RobloxThumbnailResponse = {
-  data?: Array<{
-    state?: string;
-    imageUrl?: string;
-  }>;
+  data?: {
+    imageUrl?: string | null;
+  };
 };
 
 const robloxHeadshotCache = new Map<string, string | null>();
@@ -95,13 +98,7 @@ function useRobloxHeadshot(robloxId: string) {
 
     async function loadHeadshot() {
       try {
-        const endpoint = new URL("https://thumbnails.roblox.com/v1/users/avatar-headshot");
-        endpoint.search = new URLSearchParams({
-          userIds: normalizedId,
-          size: "150x150",
-          format: "Png",
-          isCircular: "true",
-        }).toString();
+        const endpoint = new URL(`/api/roblox/avatar/${encodeURIComponent(normalizedId)}`, API_BASE);
 
         const response = await fetch(endpoint, {
           signal: controller.signal,
@@ -110,10 +107,7 @@ function useRobloxHeadshot(robloxId: string) {
         if (!response.ok) throw new Error(`Roblox thumbnails returned ${response.status}`);
 
         const payload = (await response.json()) as RobloxThumbnailResponse;
-        const thumbnail = payload.data?.[0];
-        const nextUrl = thumbnail?.state === "Completed" && thumbnail.imageUrl
-          ? thumbnail.imageUrl
-          : null;
+        const nextUrl = payload.data?.imageUrl || null;
 
         robloxHeadshotCache.set(normalizedId, nextUrl);
         setImageUrl(nextUrl);
@@ -142,11 +136,11 @@ function useRobloxHeadshot(robloxId: string) {
 function PlayerAvatar({ player, large = false }: { player: Player; large?: boolean }) {
   const { imageUrl, markFailed } = useRobloxHeadshot(player.robloxId);
   const initial = player.name.trim().charAt(0).toUpperCase() || "?";
-  const size = large ? "h-20 w-20 text-2xl" : "h-10 w-10 text-sm";
+  const size = large ? "h-16 w-16 text-xl" : "h-9 w-9 text-xs";
 
   return (
     <div
-      className={`relative shrink-0 overflow-hidden rounded-full border border-white/10 bg-gradient-to-br from-slate-700 via-zinc-800 to-zinc-950 shadow-[0_10px_28px_rgba(0,0,0,0.32)] ${size}`}
+      className={`relative shrink-0 overflow-hidden rounded-full border border-white/10 bg-gradient-to-br from-slate-700 via-zinc-800 to-zinc-950 shadow-md ${size}`}
       aria-label={`${player.name}'s Roblox avatar`}
     >
       <div className="absolute inset-0 flex items-center justify-center font-semibold text-zinc-100">
@@ -163,7 +157,7 @@ function PlayerAvatar({ player, large = false }: { player: Player; large?: boole
           onError={markFailed}
         />
       )}
-      <span className={`absolute bottom-0 right-0 rounded-full border-2 border-zinc-950 bg-emerald-400 ${large ? "h-4 w-4" : "h-3 w-3"}`} />
+      <span className={`absolute bottom-0 right-0 rounded-full border-2 border-zinc-950 bg-emerald-400 ${large ? "h-3.5 w-3.5" : "h-2.5 w-2.5"}`} />
     </div>
   );
 }
@@ -190,6 +184,28 @@ type ServerState = {
   staff: number;
   queue: number;
   connected: boolean;
+};
+
+type CADCall = {
+  id: string;
+  caller: string;
+  location: string;
+  type: string;
+  description: string;
+  priority: "Code 1" | "Code 2" | "Code 3";
+  status: "Pending" | "Dispatched" | "Cleared";
+  assignedUnits: string[];
+  timestamp: string;
+};
+
+type CADRecord = {
+  id: string;
+  citizenName: string;
+  robloxId: string;
+  licenses: { drivers: boolean; firearm: boolean; commercial: boolean };
+  warrants: string[];
+  priors: string[];
+  vehicle: { plate: string; model: string; color: string; status: "Valid" | "Stolen" | "Expired" };
 };
 
 const API_BASE = "https://api.prestonhq.com";
@@ -220,6 +236,43 @@ const emptyPlayer: Player = {
   notes: ["Select an active player to view profile and issue moderation commands."],
   lastSeen: "—",
 };
+
+const mockCadCalls: CADCall[] = [
+  {
+    id: "CAD-91101",
+    caller: "LunarPeach0",
+    location: "River City Bank, Main St",
+    type: "10-90 Silent Alarm / Bank Robbery",
+    description: "Multiple armed suspects seen entering the vault area.",
+    priority: "Code 3",
+    status: "Pending",
+    assignedUnits: [],
+    timestamp: "2m ago",
+  },
+  {
+    id: "CAD-91102",
+    caller: "Civilian Dispatch",
+    location: "Interstate 80, Exit 4",
+    type: "10-50 Major Vehicle Accident",
+    description: "Two-vehicle collision with rollover. EMS requested on scene.",
+    priority: "Code 3",
+    status: "Dispatched",
+    assignedUnits: ["1-A-12", "E-1"],
+    timestamp: "8m ago",
+  },
+];
+
+const mockRecords: CADRecord[] = [
+  {
+    id: "REC-4401",
+    citizenName: "LunarPeach0",
+    robloxId: "8701907774",
+    licenses: { drivers: true, firearm: true, commercial: false },
+    warrants: ["Active Warrant: Evading Law Enforcement"],
+    priors: ["Reckless Driving (x2)", "Failure to Comply"],
+    vehicle: { plate: "ROBLOX1", model: "Bravado Buffalo", color: "Black", status: "Stolen" },
+  },
+];
 
 async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = sessionStorage.getItem("prestonhq_token");
@@ -266,6 +319,7 @@ const navItems = [
   { id: "overview" as Page, label: "Overview", icon: Layers },
   { id: "connect" as Page, label: "Server Connect", icon: Server },
   { id: "players" as Page, label: "Players", icon: Users },
+  { id: "cad" as Page, label: "MDT / CAD Center", icon: Siren },
   { id: "commands" as Page, label: "Console Dispatch", icon: Terminal },
   { id: "logs" as Page, label: "Audit Logs", icon: ClipboardList },
   { id: "staff" as Page, label: "Staff Matrix", icon: ShieldCheck },
@@ -435,6 +489,7 @@ export function App() {
                 {page === "overview" && <Overview showToast={showToast} setPage={setPage} serverData={serverData} logs={logData} onRefresh={loadLiveData} />}
                 {page === "connect" && <Connect showToast={showToast} onConnected={async () => { await loadLiveData(); setPage("overview"); }} />}
                 {page === "players" && <Players players={playerData} selected={selectedPlayer} setSelected={setSelectedPlayer} openAction={(action, player) => setModal({ action, player })} />}
+                {page === "cad" && <CadMdtCenter players={playerData} showToast={showToast} />}
                 {page === "commands" && <CommandCenter openAction={(action) => setModal({ action })} sendCommand={sendCommand} busy={busy} />}
                 {page === "logs" && <Logs logs={logData} />}
                 {page === "staff" && <StaffPermissions showToast={showToast} />}
@@ -738,20 +793,11 @@ function PlayerProfile({ player, openAction }: { player: Player; openAction: (a:
   return (
     <Card>
       <CardHeader title="Player Details" icon={<Eye className="h-4 w-4 text-zinc-400" />} />
-      <div className="mt-4 rounded-2xl border border-white/[0.07] bg-gradient-to-br from-slate-900/90 to-zinc-950/90 p-4 shadow-inner shadow-black/20 backdrop-blur">
-        <div className="flex items-center gap-4">
-          <PlayerAvatar player={player} large />
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <h3 className="truncate text-lg font-semibold tracking-tight text-white">{player.name}</h3>
-              <span className="inline-flex items-center gap-1 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-300">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                Online
-              </span>
-            </div>
-            <p className="mt-1 font-mono text-[11px] text-zinc-500">Roblox ID · {player.robloxId || "Unavailable"}</p>
-            <p className="mt-2 truncate text-xs text-zinc-300">{player.team}</p>
-          </div>
+      <div className="mt-4 flex items-center gap-3.5 border-b border-zinc-800/80 pb-4">
+        <PlayerAvatar player={player} large />
+        <div>
+          <h3 className="text-base font-semibold text-white">{player.name}</h3>
+          <p className="mt-0.5 text-xs text-zinc-500">Roblox ID: {player.robloxId}</p>
         </div>
       </div>
       <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
@@ -761,7 +807,7 @@ function PlayerProfile({ player, openAction }: { player: Player; openAction: (a:
         <Info label="Prior Warnings" value={String(player.warnings)} />
       </div>
       <div className="mt-6 space-y-2">
-        <span className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider">Quick Actions</span>
+        <span className="text-[11px] font-medium uppercase tracking-wider text-zinc-400">Quick Actions</span>
         <div className="grid grid-cols-2 gap-2">
           {actions.map(([action, icon, danger]) => (
             <Button key={action} variant={danger ? "danger" : "secondary"} onClick={() => openAction(action, player)}>
@@ -777,28 +823,242 @@ function PlayerProfile({ player, openAction }: { player: Player; openAction: (a:
 
 function PlayerRow({ player, active, onClick }: { player: Player; active: boolean; onClick: () => void }) {
   return (
-    <button
-      onClick={onClick}
-      className={`group flex w-full items-center justify-between gap-3 px-3.5 py-3 text-left transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-sky-400/70 ${active ? "bg-slate-800/80 text-white shadow-[inset_3px_0_0_#38bdf8]" : "text-zinc-300 hover:bg-white/[0.035]"}`}
-    >
-      <div className="flex min-w-0 items-center gap-3">
+    <button onClick={onClick} className={`flex w-full items-center justify-between p-3 text-left transition ${active ? "bg-zinc-800/60 text-white" : "hover:bg-zinc-900/40 text-zinc-300"}`}>
+      <div className="flex items-center gap-3">
         <PlayerAvatar player={player} />
-        <div className="min-w-0">
-          <div className="truncate text-sm font-medium text-zinc-100">{player.name}</div>
-          <div className="mt-0.5 flex items-center gap-2 text-[11px] text-zinc-500">
-            <span className="truncate">{player.team}</span>
-            <span className="h-0.5 w-0.5 shrink-0 rounded-full bg-zinc-600" />
-            <span className="shrink-0 font-mono">ID {player.robloxId || "—"}</span>
-          </div>
+        <div>
+          <div className="text-xs font-medium text-zinc-200">{player.name}</div>
+          <div className="text-[11px] text-zinc-500">{player.team}</div>
         </div>
       </div>
-      <div className="flex shrink-0 items-center gap-3">
-        <span className="hidden rounded-full border border-white/[0.06] bg-zinc-950/60 px-2 py-1 font-mono text-[10px] text-zinc-500 sm:inline">
-          {player.ping}ms
-        </span>
-        <ChevronRight className={`h-4 w-4 transition ${active ? "text-sky-300" : "text-zinc-700 group-hover:translate-x-0.5 group-hover:text-zinc-400"}`} />
-      </div>
+      <span className="font-mono text-xs text-zinc-500">{player.ping}ms</span>
     </button>
+  );
+}
+
+function CadMdtCenter({ players, showToast }: { players: Player[]; showToast: (m: string) => void }) {
+  const [activeTab, setActiveTab] = useState<"dispatch" | "lookup" | "units">("dispatch");
+  const [calls, setCalls] = useState<CADCall[]>(mockCadCalls);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [foundRecord, setFoundRecord] = useState<CADRecord | null>(mockRecords[0]);
+  const [unitStatus, setUnitStatus] = useState<Record<string, string>>({});
+
+  const handleUnitStatusChange = (playerName: string, status: string) => {
+    setUnitStatus((prev) => ({ ...prev, [playerName]: status }));
+    showToast(`Updated ${playerName} status to ${status}`);
+  };
+
+  const emergencyUnits = players.filter((p) =>
+    ["Police", "Sheriff", "State Police", "Fire", "EMS"].some((dept) => p.team.toLowerCase().includes(dept.toLowerCase()))
+  );
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between rounded-xl border border-blue-500/20 bg-blue-500/5 p-4 text-xs">
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500/10 text-blue-400">
+            <Siren className="h-5 w-5" />
+          </div>
+          <div>
+            <div className="font-semibold text-white">Emergency Services MDT / CAD Dispatch Terminal</div>
+            <div className="text-zinc-400 mt-0.5">Live emergency CAD routing, civilian NCIC warrants database, and officer status grid.</div>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setActiveTab("dispatch")} className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${activeTab === "dispatch" ? "bg-blue-600 text-white" : "border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white"}`}>
+            911 CAD Queue
+          </button>
+          <button onClick={() => setActiveTab("lookup")} className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${activeTab === "lookup" ? "bg-blue-600 text-white" : "border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white"}`}>
+            NCIC Lookup
+          </button>
+          <button onClick={() => setActiveTab("units")} className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${activeTab === "units" ? "bg-blue-600 text-white" : "border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white"}`}>
+            Unit Monitor ({emergencyUnits.length})
+          </button>
+        </div>
+      </div>
+
+      {activeTab === "dispatch" && (
+        <div className="grid gap-6 lg:grid-cols-3">
+          <div className="lg:col-span-2">
+            <Card>
+              <CardHeader title="Active CAD Calls Queue" icon={<PhoneCall className="h-4 w-4 text-blue-400" />} />
+              <div className="mt-4 space-y-3">
+                {calls.map((call) => (
+                  <div key={call.id} className="rounded-xl border border-zinc-800 bg-zinc-950/60 p-4">
+                    <div className="flex items-center justify-between border-b border-zinc-800/80 pb-2.5">
+                      <div className="flex items-center gap-2">
+                        <span className={`rounded px-2 py-0.5 text-[10px] font-semibold ${call.priority === "Code 3" ? "bg-red-500/20 text-red-400 border border-red-500/30" : "bg-amber-500/20 text-amber-400 border border-amber-500/30"}`}>
+                          {call.priority}
+                        </span>
+                        <span className="font-mono text-xs font-medium text-white">{call.id}</span>
+                        <span className="text-xs text-zinc-400">• {call.type}</span>
+                      </div>
+                      <span className="text-[11px] text-zinc-500">{call.timestamp}</span>
+                    </div>
+                    <div className="mt-3 space-y-1.5 text-xs">
+                      <div className="text-zinc-300"><span className="text-zinc-500 font-medium">Caller:</span> {call.caller}</div>
+                      <div className="text-zinc-300"><span className="text-zinc-500 font-medium">Location:</span> {call.location}</div>
+                      <div className="text-zinc-400 leading-relaxed mt-2">{call.description}</div>
+                    </div>
+                    <div className="mt-4 flex items-center justify-between border-t border-zinc-800/80 pt-3">
+                      <div className="text-xs text-zinc-500">
+                        Units Assigned: {call.assignedUnits.length ? call.assignedUnits.join(", ") : "None"}
+                      </div>
+                      <Button variant="secondary" onClick={() => showToast(`Dispatched backup to ${call.id}`)}>
+                        Dispatch Units
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+          <div>
+            <Card>
+              <CardHeader title="Create 911 CAD Dispatch" icon={<Radio className="h-4 w-4 text-zinc-400" />} />
+              <form onSubmit={(e) => { e.preventDefault(); showToast("New call broadcasted to active units."); }} className="mt-4 space-y-3 text-xs">
+                <div>
+                  <label className="block text-zinc-400 mb-1">Call Title / Type</label>
+                  <input type="text" placeholder="e.g. 10-80 Pursuit" className="w-full rounded-lg border border-zinc-800 bg-zinc-950 p-2.5 text-zinc-200 outline-none focus:border-blue-500" />
+                </div>
+                <div>
+                  <label className="block text-zinc-400 mb-1">Location</label>
+                  <input type="text" placeholder="e.g. Postal 104" className="w-full rounded-lg border border-zinc-800 bg-zinc-950 p-2.5 text-zinc-200 outline-none focus:border-blue-500" />
+                </div>
+                <div>
+                  <label className="block text-zinc-400 mb-1">Response Priority</label>
+                  <select className="w-full rounded-lg border border-zinc-800 bg-zinc-950 p-2.5 text-zinc-200 outline-none focus:border-blue-500">
+                    <option>Code 3 (Emergency)</option>
+                    <option>Code 2 (Urgent)</option>
+                    <option>Code 1 (Routine)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-zinc-400 mb-1">Details</label>
+                  <textarea placeholder="Describe scenario details..." className="h-20 w-full rounded-lg border border-zinc-800 bg-zinc-950 p-2.5 text-zinc-200 outline-none focus:border-blue-500" />
+                </div>
+                <Button className="w-full">Broadcast CAD Dispatch</Button>
+              </form>
+            </Card>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "lookup" && (
+        <div className="grid gap-6 lg:grid-cols-3">
+          <div className="lg:col-span-2">
+            <Card>
+              <CardHeader title="NCIC Records Database Search" icon={<Database className="h-4 w-4 text-blue-400" />} />
+              <div className="mt-4 flex gap-2">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search by Roblox username, ID, or vehicle plate..."
+                  className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2 text-xs text-zinc-200 outline-none focus:border-blue-500"
+                />
+                <Button onClick={() => showToast("Database query executed.")}>Search</Button>
+              </div>
+
+              {foundRecord && (
+                <div className="mt-6 space-y-4 rounded-xl border border-zinc-800 bg-zinc-950/40 p-5">
+                  <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
+                    <div>
+                      <h3 className="text-base font-semibold text-white">{foundRecord.citizenName}</h3>
+                      <p className="text-xs text-zinc-500">Roblox ID: {foundRecord.robloxId}</p>
+                    </div>
+                    <span className="rounded bg-red-500/20 px-2.5 py-1 text-xs font-semibold text-red-400 border border-red-500/30">
+                      Warrant Flagged
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-3 text-xs">
+                    <Info label="Driver License" value={foundRecord.licenses.drivers ? "Valid" : "None"} />
+                    <Info label="Firearm Permit" value={foundRecord.licenses.firearm ? "Valid" : "None"} />
+                    <Info label="Commercial Permit" value={foundRecord.licenses.commercial ? "Valid" : "None"} />
+                  </div>
+
+                  <div className="border-t border-zinc-800/80 pt-3">
+                    <div className="text-[11px] font-medium text-amber-400 uppercase tracking-wider mb-1.5">Active Warrants</div>
+                    {foundRecord.warrants.map((w, idx) => (
+                      <div key={idx} className="text-xs text-zinc-300 font-medium">{w}</div>
+                    ))}
+                  </div>
+
+                  <div className="border-t border-zinc-800/80 pt-3">
+                    <div className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider mb-1.5">Registered Vehicle</div>
+                    <div className="flex items-center justify-between text-xs text-zinc-300">
+                      <span>{foundRecord.vehicle.color} {foundRecord.vehicle.model} ({foundRecord.vehicle.plate})</span>
+                      <span className="text-red-400 font-semibold">{foundRecord.vehicle.status}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </Card>
+          </div>
+          <div>
+            <Card>
+              <CardHeader title="File Incident Report" icon={<FileText className="h-4 w-4 text-zinc-400" />} />
+              <form onSubmit={(e) => { e.preventDefault(); showToast("Report logged to citizen profile."); }} className="mt-4 space-y-3 text-xs">
+                <div>
+                  <label className="block text-zinc-400 mb-1">Target Citizen Username</label>
+                  <input type="text" placeholder="Username" className="w-full rounded-lg border border-zinc-800 bg-zinc-950 p-2.5 text-zinc-200 outline-none focus:border-blue-500" />
+                </div>
+                <div>
+                  <label className="block text-zinc-400 mb-1">Offense Classification</label>
+                  <select className="w-full rounded-lg border border-zinc-800 bg-zinc-950 p-2.5 text-zinc-200 outline-none focus:border-blue-500">
+                    <option>Traffic Citation</option>
+                    <option>Misdemeanor Charge</option>
+                    <option>Felony Arrest Warrant</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-zinc-400 mb-1">Officer Notes</label>
+                  <textarea placeholder="Include penal code citations..." className="h-20 w-full rounded-lg border border-zinc-800 bg-zinc-950 p-2.5 text-zinc-200 outline-none focus:border-blue-500" />
+                </div>
+                <Button className="w-full">File Record</Button>
+              </form>
+            </Card>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "units" && (
+        <Card>
+          <CardHeader title="On-Duty Emergency Personnel Unit Matrix" icon={<UserCheck className="h-4 w-4 text-blue-400" />} />
+          <div className="mt-4 divide-y divide-zinc-800/60 overflow-hidden rounded-lg border border-zinc-800/80 bg-zinc-950/40">
+            {emergencyUnits.map((unit) => {
+              const currentStatus = unitStatus[unit.name] || "10-8 Available";
+              return (
+                <div key={unit.id} className="flex items-center justify-between p-3.5 text-xs">
+                  <div className="flex items-center gap-3">
+                    <PlayerAvatar player={unit} />
+                    <div>
+                      <div className="font-medium text-white">{unit.name}</div>
+                      <div className="text-zinc-500 text-[11px]">{unit.team} • Ping: {unit.ping}ms</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {["10-8 Available", "10-97 On Scene", "10-6 Busy", "10-7 Out of Service"].map((st) => (
+                      <button
+                        key={st}
+                        onClick={() => handleUnitStatusChange(unit.name, st)}
+                        className={`rounded-lg px-2.5 py-1 text-[11px] font-medium transition ${currentStatus === st ? "bg-blue-600 text-white" : "border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white"}`}
+                      >
+                        {st}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+            {!emergencyUnits.length && (
+              <EmptyState title="No active law enforcement or EMS units" text="Units on Police or Fire/EMS teams will appear here automatically." />
+            )}
+          </div>
+        </Card>
+      )}
+    </div>
   );
 }
 
@@ -1034,4 +1294,5 @@ function Footer() {
     </footer>
   );
 }
+
 export default App;
