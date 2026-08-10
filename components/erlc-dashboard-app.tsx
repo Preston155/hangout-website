@@ -44,7 +44,7 @@ import {
 } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 
-type Page = "overview" | "connect" | "players" | "cad" | "commands" | "logs" | "staff" | "settings";
+type Page = "overview" | "bot" | "connect" | "players" | "cad" | "commands" | "logs" | "staff" | "settings";
 type Severity = "low" | "medium" | "high" | "critical";
 type PlayerStatus = "online" | "flagged" | "banned" | "staff";
 type ModActionType = "Warn" | "Kick" | "Ban" | "Unban" | "Kill" | "Teleport" | "PM" | "Announcement" | "CAD" | "System";
@@ -221,6 +221,50 @@ type UnitStatus = {
   updatedAt: string;
 };
 
+type VeltrixDashboardData = {
+  bot: {
+    id: string;
+    name: string;
+    status: string;
+    online: boolean;
+    restarts: number;
+    uptime: number | null;
+    cpu: number;
+    memoryMb: number;
+  };
+  database: { connected: boolean; integrity: string; sizeBytes: number };
+  summary: {
+    activeSessions: number;
+    staffOnDuty: number;
+    moderationCases: number;
+    activeWarnings: number;
+    verifiedMembers: number;
+    staffProfiles: number;
+    pendingLeaveRequests: number;
+    activeStrikes: number;
+    activeGiveaways: number;
+  };
+  giveaways: Array<{
+    id: string;
+    prize: string;
+    status: string;
+    hostName: string;
+    winnerCount: number;
+    endTime: number;
+    entries: { users: number; weighted: number };
+  }>;
+  recentStaffActivity: Array<{
+    id: number;
+    actorId: string;
+    targetId: string | null;
+    action: string;
+    details: string | null;
+    createdAt: number;
+  }>;
+  systems: Array<{ id: string; name: string; healthy: boolean }>;
+  updatedAt: string;
+};
+
 const API_BASE = "https://api.prestonhq.com";
 
 const defaultServer: ServerState = {
@@ -330,6 +374,7 @@ const permissions: Record<string, Permission[]> = {
 
 const navItems = [
   { id: "overview" as Page, label: "Overview", icon: Layers },
+  { id: "bot" as Page, label: "Veltrix Bot", icon: Cpu },
   { id: "connect" as Page, label: "Server Connect", icon: Server },
   { id: "players" as Page, label: "Players", icon: Users },
   { id: "cad" as Page, label: "MDT / CAD Center", icon: Siren },
@@ -513,6 +558,7 @@ export function App() {
             <AnimatePresence mode="wait">
               <motion.div key={page} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.15 }}>
                 {page === "overview" && <Overview showToast={showToast} setPage={setPage} serverData={serverData} logs={logData} onRefresh={loadLiveData} />}
+                {page === "bot" && <VeltrixBotDashboard showToast={showToast} />}
                 {page === "connect" && <Connect showToast={showToast} onConnected={async () => { await loadLiveData(); setPage("overview"); }} />}
                 {page === "players" && <Players players={playerData} selected={selectedPlayer} setSelected={setSelectedPlayer} openAction={(action, player) => setModal({ action, player })} />}
                 {page === "cad" && <CadMdtCenter players={playerData} showToast={showToast} />}
@@ -1300,6 +1346,199 @@ function StaffPermissions({ showToast }: { showToast: (m: string) => void }) {
         </table>
       </div>
     </Card>
+  );
+}
+
+function formatBotUptime(startedAt: number | null) {
+  if (!startedAt) return "Offline";
+  const elapsed = Math.max(0, Date.now() - startedAt);
+  const days = Math.floor(elapsed / 86400000);
+  const hours = Math.floor((elapsed % 86400000) / 3600000);
+  const minutes = Math.floor((elapsed % 3600000) / 60000);
+  if (days) return `${days}d ${hours}h`;
+  if (hours) return `${hours}h ${minutes}m`;
+  return `${minutes}m`;
+}
+
+function formatActivityName(value: string) {
+  return value.replace(/_/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function formatEndsAt(value: number) {
+  const remaining = value - Date.now();
+  if (!Number.isFinite(remaining) || remaining <= 0) return "soon";
+  const days = Math.floor(remaining / 86400000);
+  const hours = Math.floor((remaining % 86400000) / 3600000);
+  const minutes = Math.floor((remaining % 3600000) / 60000);
+  if (days) return `in ${days}d ${hours}h`;
+  if (hours) return `in ${hours}h ${minutes}m`;
+  return `in ${Math.max(1, minutes)}m`;
+}
+
+function VeltrixBotDashboard({ showToast }: { showToast: (m: string) => void }) {
+  const [data, setData] = useState<VeltrixDashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const load = useCallback(async (notify = false) => {
+    try {
+      const next = await api<VeltrixDashboardData>("/api/erlc/bot-dashboard/veltrix");
+      setData(next);
+      setError("");
+      if (notify) showToast("Veltrix dashboard refreshed.");
+    } catch (loadError) {
+      const message = loadError instanceof Error ? loadError.message : "Veltrix data could not be loaded.";
+      setError(message);
+      if (notify) showToast(message);
+    } finally {
+      setLoading(false);
+    }
+  }, [showToast]);
+
+  useEffect(() => {
+    void load();
+    const timer = window.setInterval(() => void load(), 15000);
+    return () => window.clearInterval(timer);
+  }, [load]);
+
+  if (loading && !data) {
+    return (
+      <Card>
+        <div className="flex min-h-72 items-center justify-center gap-3 text-xs text-zinc-500">
+          <RefreshCw className="h-4 w-4 animate-spin" /> Loading Veltrix telemetry...
+        </div>
+      </Card>
+    );
+  }
+
+  if (!data) {
+    return (
+      <Card>
+        <EmptyState title="Veltrix telemetry unavailable" text={error || "The dashboard API did not return bot data."} />
+        <div className="flex justify-center"><Button variant="secondary" onClick={() => void load(true)}>Retry</Button></div>
+      </Card>
+    );
+  }
+
+  const operationalSystems = data.systems.filter((system) => system.healthy).length;
+  const stats = [
+    { label: "Uptime", value: formatBotUptime(data.bot.uptime), detail: `${data.bot.restarts} lifetime restarts`, icon: Activity },
+    { label: "Memory", value: `${data.bot.memoryMb} MB`, detail: `${data.bot.cpu.toFixed(1)}% CPU`, icon: Cpu },
+    { label: "Staff On Duty", value: String(data.summary.staffOnDuty), detail: `${data.summary.staffProfiles} staff profiles`, icon: UserCheck },
+    { label: "Active Sessions", value: String(data.summary.activeSessions), detail: `${data.summary.activeGiveaways} live giveaways`, icon: Radio },
+  ];
+
+  return (
+    <div className="space-y-6">
+      <section className="overflow-hidden rounded-xl border border-zinc-800/80 bg-zinc-900/30 shadow-sm backdrop-blur-xl">
+        <div className="relative p-6 sm:p-7">
+          <div className="pointer-events-none absolute right-0 top-0 h-40 w-40 rounded-full bg-blue-500/5 blur-3xl" />
+          <div className="relative flex flex-col justify-between gap-5 md:flex-row md:items-center">
+            <div className="flex items-center gap-4">
+              <div className="grid h-12 w-12 place-items-center rounded-xl border border-blue-400/20 bg-blue-500/10 text-blue-300 shadow-inner">
+                <Cpu className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <h1 className="text-xl font-semibold tracking-tight text-white sm:text-2xl">Veltrix Operations</h1>
+                  <span className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${data.bot.online ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-300" : "border-red-400/20 bg-red-400/10 text-red-300"}`}>
+                    <span className={`h-1.5 w-1.5 rounded-full ${data.bot.online ? "bg-emerald-400" : "bg-red-400"}`} />
+                    {data.bot.online ? "Online" : data.bot.status}
+                  </span>
+                </div>
+                <p className="mt-1 text-xs leading-relaxed text-zinc-400">Live health, persistent systems, giveaways, sessions, moderation, and Staff Operations V2.</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="hidden text-right sm:block">
+                <div className="text-[10px] uppercase tracking-wider text-zinc-600">Last synchronized</div>
+                <div className="mt-0.5 text-xs text-zinc-300">{relativeTime(data.updatedAt)}</div>
+              </div>
+              <Button variant="secondary" onClick={() => void load(true)}><RefreshCw className="h-3.5 w-3.5" /> Refresh</Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {error && <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-xs text-amber-300">{error}</div>}
+
+      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {stats.map((stat) => {
+          const Icon = stat.icon;
+          return (
+            <div key={stat.label} className="rounded-xl border border-zinc-800/80 bg-zinc-900/30 p-4 transition hover:border-zinc-700 hover:bg-zinc-900/50">
+              <div className="flex items-center justify-between text-zinc-500"><span className="text-[10px] font-semibold uppercase tracking-wider">{stat.label}</span><Icon className="h-4 w-4" /></div>
+              <div className="mt-3 text-2xl font-semibold tracking-tight text-white">{stat.value}</div>
+              <div className="mt-1 text-[11px] text-zinc-500">{stat.detail}</div>
+            </div>
+          );
+        })}
+      </section>
+
+      <section className="grid gap-6 xl:grid-cols-[1.1fr_.9fr]">
+        <Card>
+          <CardHeader title="System Health" icon={<Activity className="h-4 w-4 text-emerald-400" />} action={<span className="text-[10px] font-medium text-zinc-500">{operationalSystems}/{data.systems.length} operational</span>} />
+          <div className="mt-4 grid gap-2 sm:grid-cols-2">
+            {data.systems.map((system) => (
+              <div key={system.id} className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-950/50 px-3 py-2.5">
+                <span className="text-xs font-medium text-zinc-300">{system.name}</span>
+                <span className={`flex items-center gap-1 text-[10px] font-semibold uppercase ${system.healthy ? "text-emerald-400" : "text-red-400"}`}>
+                  <span className={`h-1.5 w-1.5 rounded-full ${system.healthy ? "bg-emerald-400" : "bg-red-400"}`} /> {system.healthy ? "Ready" : "Issue"}
+                </span>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        <Card>
+          <CardHeader title="Persistent Data" icon={<Database className="h-4 w-4 text-blue-400" />} action={<span className={`text-[10px] font-semibold uppercase ${data.database.integrity === "ok" ? "text-emerald-400" : "text-amber-400"}`}>{data.database.integrity}</span>} />
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            {[
+              ["Moderation cases", data.summary.moderationCases],
+              ["Active warnings", data.summary.activeWarnings],
+              ["Verified members", data.summary.verifiedMembers],
+              ["Active strikes", data.summary.activeStrikes],
+              ["Pending LOAs", data.summary.pendingLeaveRequests],
+              ["Database", `${Math.max(0.1, data.database.sizeBytes / 1024 / 1024).toFixed(1)} MB`],
+            ].map(([label, value]) => (
+              <div key={String(label)} className="rounded-lg border border-zinc-800/80 bg-zinc-950/40 p-3">
+                <div className="text-lg font-semibold text-zinc-100">{value}</div>
+                <div className="mt-0.5 text-[10px] uppercase tracking-wider text-zinc-600">{label}</div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </section>
+
+      <section className="grid gap-6 xl:grid-cols-2">
+        <Card>
+          <CardHeader title="Active Giveaways" icon={<Sparkles className="h-4 w-4 text-violet-400" />} action={<span className="rounded-md bg-zinc-800 px-2 py-1 text-[10px] text-zinc-400">{data.giveaways.length} live</span>} />
+          <div className="mt-4 space-y-2">
+            {data.giveaways.length === 0 ? <EmptyState title="No active giveaways" text="New Veltrix giveaways will appear here automatically." /> : data.giveaways.map((giveaway) => (
+              <div key={giveaway.id} className="rounded-lg border border-zinc-800 bg-zinc-950/50 p-3.5">
+                <div className="flex items-start justify-between gap-3">
+                  <div><div className="text-xs font-semibold text-white">{giveaway.prize}</div><div className="mt-1 text-[11px] text-zinc-500">Hosted by {giveaway.hostName} • {giveaway.winnerCount} winner{giveaway.winnerCount === 1 ? "" : "s"}</div></div>
+                  <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2 py-0.5 text-[9px] font-semibold uppercase text-emerald-300">{giveaway.status}</span>
+                </div>
+                <div className="mt-3 flex items-center justify-between border-t border-zinc-800/80 pt-2 text-[10px] text-zinc-500"><span>{giveaway.entries.users} entered</span><span>Ends {formatEndsAt(giveaway.endTime)}</span></div>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        <Card>
+          <CardHeader title="Staff Operations Activity" icon={<ShieldCheck className="h-4 w-4 text-blue-400" />} action={<span className="text-[10px] text-zinc-600">Persistent audit trail</span>} />
+          <div className="mt-4 divide-y divide-zinc-800/70">
+            {data.recentStaffActivity.length === 0 ? <EmptyState title="No staff activity yet" text="Shift, quota, strike, and LOA actions will be recorded here." /> : data.recentStaffActivity.slice(0, 7).map((activity) => (
+              <div key={activity.id} className="flex items-center justify-between gap-4 py-2.5 first:pt-0 last:pb-0">
+                <div className="min-w-0"><div className="truncate text-xs font-medium text-zinc-300">{formatActivityName(activity.action)}</div><div className="mt-0.5 truncate text-[10px] text-zinc-600">Actor {activity.actorId}{activity.targetId ? ` • Target ${activity.targetId}` : ""}</div></div>
+                <span className="shrink-0 text-[10px] text-zinc-600">{relativeTime(new Date(activity.createdAt).toISOString())}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </section>
+    </div>
   );
 }
 
