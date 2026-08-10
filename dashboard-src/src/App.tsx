@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   ChevronRight,
   ClipboardList,
+  Clock3,
   Command,
   Cpu,
   Database,
@@ -25,6 +26,7 @@ import {
   Menu,
   MessageSquare,
   PhoneCall,
+  Play,
   Radio,
   RefreshCw,
   Search,
@@ -36,6 +38,7 @@ import {
   Siren,
   Skull,
   Sparkles,
+  Square,
   Terminal,
   UserCheck,
   Users,
@@ -254,12 +257,20 @@ type VeltrixDashboardData = {
     endTime: number;
     entries: { users: number; weighted: number };
   }>;
+  guildId: string | null;
+  users: Record<string, { id: string; name: string; username: string; avatarUrl: string | null }>;
+  activeShifts: Array<{ guildId: string; userId: string; startedAt: number; points: number; totalMs: number; completedShifts: number }>;
+  shiftHistory: Array<{ id: number; guildId: string; userId: string; startedAt: number; endedAt: number; durationMs: number; points: number; endedBy: string; reason: string | null }>;
+  warningHistory: Array<{ id: string; caseId: string; guildId: string; userId: string; moderatorId: string; reason: string; createdAt: number; active: number; removedBy: string | null; removedAt: number | null; removalReason: string | null }>;
+  strikeHistory: Array<{ id: string; guildId: string; userId: string; points: number; reason: string; issuedBy: string; createdAt: number; active: number; removedBy: string | null; removedAt: number | null; removalReason: string | null }>;
+  moderationHistory: Array<{ id: string; caseNumber: number; userId: string; moderatorId: string; action: string; reason: string; createdAt: number; active: number; removed: number }>;
+  staffProfiles: Array<{ guildId: string; userId: string; points: number; totalMs: number; completedShifts: number; lastStart: number | null; lastEnd: number | null }>;
   recentStaffActivity: Array<{
     id: number;
     actorId: string;
     targetId: string | null;
     action: string;
-    details: string | null;
+    details: Record<string, unknown> | null;
     createdAt: number;
   }>;
   systems: Array<{ id: string; name: string; healthy: boolean }>;
@@ -378,6 +389,19 @@ function LiveRelativeTime({ value }: { value: string | number }) {
 function LiveUptime({ startedAt }: { startedAt: number | null }) {
   React.useContext(DashboardClockContext);
   return <>{formatBotUptime(startedAt)}</>;
+}
+
+function formatShiftDuration(durationMs: number) {
+  const totalSeconds = Math.max(0, Math.floor(durationMs / 1000));
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  return hours ? `${hours}h ${minutes}m ${seconds}s` : `${minutes}m ${seconds}s`;
+}
+
+function LiveShiftDuration({ startedAt }: { startedAt: number }) {
+  React.useContext(DashboardClockContext);
+  return <>{formatShiftDuration(Date.now() - startedAt)}</>;
 }
 
 function LiveEndsAt({ value }: { value: number }) {
@@ -1450,9 +1474,12 @@ function VeltrixBotDashboard({ showToast }: { showToast: (m: string) => void }) 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [refreshing, setRefreshing] = useState(false);
+  const [shiftUserId, setShiftUserId] = useState("");
+  const [shiftReason, setShiftReason] = useState("");
+  const [shiftAction, setShiftAction] = useState<"start" | "end" | null>(null);
 
   const load = useCallback(async (notify = false) => {
-    setRefreshing(true);
+    if (notify) setRefreshing(true);
     try {
       const next = await api<VeltrixDashboardData>("/api/erlc/bot-dashboard/veltrix");
       setData(next);
@@ -1464,7 +1491,7 @@ function VeltrixBotDashboard({ showToast }: { showToast: (m: string) => void }) 
       if (notify) showToast(message);
     } finally {
       setLoading(false);
-      setRefreshing(false);
+      if (notify) setRefreshing(false);
     }
   }, [showToast]);
 
@@ -1473,6 +1500,29 @@ function VeltrixBotDashboard({ showToast }: { showToast: (m: string) => void }) 
     const timer = window.setInterval(() => void load(), 5000);
     return () => window.clearInterval(timer);
   }, [load]);
+
+  const runShiftAction = async (action: "start" | "end", targetUserId?: string) => {
+    const userId = (targetUserId || shiftUserId).trim();
+    if (!/^\d{17,20}$/.test(userId)) {
+      showToast("Enter or select a valid Discord user ID.");
+      return;
+    }
+    setShiftAction(action);
+    try {
+      await api(`/api/erlc/bot-dashboard/veltrix/shifts/${action}`, {
+        method: "POST",
+        body: JSON.stringify({ userId, reason: shiftReason.trim() || undefined }),
+      });
+      showToast(action === "start" ? "Shift started and logged." : "Shift ended, scored, and logged.");
+      setShiftUserId("");
+      setShiftReason("");
+      await load();
+    } catch (actionError) {
+      showToast(actionError instanceof Error ? actionError.message : "Shift action failed.");
+    } finally {
+      setShiftAction(null);
+    }
+  };
 
   if (loading && !data) {
     return (
@@ -1494,6 +1544,7 @@ function VeltrixBotDashboard({ showToast }: { showToast: (m: string) => void }) 
   }
 
   const operationalSystems = data.systems.filter((system) => system.healthy).length;
+  const userName = (userId: string | null | undefined) => userId ? (data.users[userId]?.name || `User ${userId.slice(-4)}`) : "Dashboard Admin";
   const stats = [
     { label: "Uptime", value: data.bot.uptime, liveUptime: true, detail: <><AnimatedNumber value={data.bot.restarts} /> lifetime restarts</>, icon: Activity },
     { label: "Memory", value: data.bot.memoryMb, suffix: " MB", detail: <><AnimatedNumber value={data.bot.cpu} decimals={1} suffix="%" /> CPU</>, icon: Cpu },
@@ -1601,6 +1652,82 @@ function VeltrixBotDashboard({ showToast }: { showToast: (m: string) => void }) 
                 <div className="text-lg font-semibold text-zinc-100"><AnimatedNumber value={value} decimals={decimals} suffix={suffix} /></div>
                 <div className="mt-0.5 text-[10px] uppercase tracking-wider text-zinc-600">{label}</div>
               </div>
+            ))}
+          </div>
+        </Card>
+      </section>
+
+      <section className="grid gap-6 xl:grid-cols-[.85fr_1.15fr]">
+        <Card>
+          <CardHeader title="Shift Control" icon={<Clock3 className="h-4 w-4 text-blue-400" />} action={<span className="text-[10px] uppercase tracking-wider text-zinc-600">Staff Operations V2</span>} />
+          <div className="mt-4 space-y-3">
+            <div>
+              <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-zinc-500">Staff member</label>
+              <select value={shiftUserId} onChange={(event) => setShiftUserId(event.target.value)} className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2.5 text-xs text-zinc-200 outline-none transition focus:border-blue-500">
+                <option value="">Select a known staff profile</option>
+                {data.staffProfiles.map((profile) => <option key={profile.userId} value={profile.userId}>{userName(profile.userId)} — {profile.userId}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-zinc-500">Discord user ID</label>
+              <input value={shiftUserId} onChange={(event) => setShiftUserId(event.target.value.replace(/\D/g, "").slice(0, 20))} inputMode="numeric" placeholder="805501165981794305" className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2.5 font-mono text-xs text-zinc-200 outline-none transition focus:border-blue-500" />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-zinc-500">Reason / note</label>
+              <input value={shiftReason} onChange={(event) => setShiftReason(event.target.value.slice(0, 240))} placeholder="Optional management note" className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2.5 text-xs text-zinc-200 outline-none transition focus:border-blue-500" />
+            </div>
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              <button disabled={shiftAction !== null} onClick={() => void runShiftAction("start")} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-emerald-400/20 bg-emerald-400/10 px-3 text-xs font-semibold text-emerald-300 transition hover:bg-emerald-400/15 disabled:opacity-50"><Play className="h-3.5 w-3.5" /> {shiftAction === "start" ? "Starting..." : "Start Shift"}</button>
+              <button disabled={shiftAction !== null} onClick={() => void runShiftAction("end")} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-red-400/20 bg-red-400/10 px-3 text-xs font-semibold text-red-300 transition hover:bg-red-400/15 disabled:opacity-50"><Square className="h-3.5 w-3.5" /> {shiftAction === "end" ? "Ending..." : "End Shift"}</button>
+            </div>
+            <p className="text-[10px] leading-relaxed text-zinc-600">Shift state, points, duration, history, and audit records are saved directly to Veltrix and survive every restart.</p>
+          </div>
+        </Card>
+
+        <Card>
+          <CardHeader title="Active Duty Roster" icon={<UserCheck className="h-4 w-4 text-emerald-400" />} action={<span className="rounded-md border border-emerald-400/15 bg-emerald-400/10 px-2 py-1 text-[10px] font-semibold text-emerald-300"><AnimatedNumber value={data.activeShifts.length} /> on duty</span>} />
+          <div className="mt-4 space-y-2">
+            {data.activeShifts.length === 0 ? <EmptyState title="No active shifts" text="Start a shift here or through Veltrix and it will appear instantly." /> : data.activeShifts.map((shift) => (
+              <div key={`${shift.guildId}-${shift.userId}`} className="flex flex-col gap-3 rounded-lg border border-zinc-800 bg-zinc-950/50 p-3.5 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex min-w-0 items-center gap-3">
+                  {data.users[shift.userId]?.avatarUrl ? <img src={data.users[shift.userId].avatarUrl || ""} alt="" className="h-9 w-9 rounded-full border border-zinc-700 object-cover" /> : <div className="grid h-9 w-9 place-items-center rounded-full border border-zinc-700 bg-zinc-900 text-xs font-semibold text-zinc-300">{userName(shift.userId).charAt(0).toUpperCase()}</div>}
+                  <div className="min-w-0"><div className="truncate text-xs font-semibold text-white">{userName(shift.userId)}</div><div className="mt-0.5 font-mono text-[9px] text-zinc-600">{shift.userId}</div></div>
+                </div>
+                <div className="flex items-center justify-between gap-4 sm:justify-end">
+                  <div className="text-right"><div className="font-mono text-sm font-semibold tabular-nums text-emerald-300"><LiveShiftDuration startedAt={shift.startedAt} /></div><div className="text-[9px] uppercase tracking-wider text-zinc-600">live duration</div></div>
+                  <button disabled={shiftAction !== null} onClick={() => void runShiftAction("end", shift.userId)} className="rounded-md border border-red-400/20 bg-red-400/10 px-3 py-2 text-[10px] font-semibold text-red-300 transition hover:bg-red-400/15 disabled:opacity-50">End</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </section>
+
+      <section className="grid gap-6 xl:grid-cols-3">
+        <Card>
+          <CardHeader title="Shift History" icon={<Clock3 className="h-4 w-4 text-blue-400" />} action={<span className="text-[10px] text-zinc-600">Latest {data.shiftHistory.length}</span>} />
+          <div className="mt-4 divide-y divide-zinc-800/70">
+            {data.shiftHistory.length === 0 ? <EmptyState title="No completed shifts" text="Completed shifts will stay recorded here." /> : data.shiftHistory.slice(0, 8).map((shift) => (
+              <div key={shift.id} className="py-2.5 first:pt-0 last:pb-0"><div className="flex items-center justify-between gap-3"><span className="truncate text-xs font-medium text-zinc-300">{userName(shift.userId)}</span><span className="shrink-0 font-mono text-[10px] text-blue-300">{formatShiftDuration(shift.durationMs)}</span></div><div className="mt-1 flex items-center justify-between gap-2 text-[10px] text-zinc-600"><span className="truncate">{shift.reason || `Ended by ${userName(shift.endedBy)}`}</span><span className="shrink-0">+{shift.points} pts</span></div></div>
+            ))}
+          </div>
+        </Card>
+
+        <Card>
+          <CardHeader title="Warnings & Strikes" icon={<ShieldAlert className="h-4 w-4 text-amber-400" />} action={<span className="text-[10px] text-zinc-600">Persistent discipline</span>} />
+          <div className="mt-4 space-y-2">
+            {[...data.warningHistory.map((item) => ({ ...item, kind: "Warning", points: null })), ...data.strikeHistory.map((item) => ({ ...item, kind: "Strike", moderatorId: item.issuedBy }))].sort((a, b) => b.createdAt - a.createdAt).slice(0, 8).map((item) => (
+              <div key={`${item.kind}-${item.id}`} className="rounded-lg border border-zinc-800 bg-zinc-950/45 p-3"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><div className="flex items-center gap-2"><span className={`rounded px-1.5 py-0.5 text-[9px] font-semibold uppercase ${item.active ? "bg-amber-400/10 text-amber-300" : "bg-zinc-800 text-zinc-500"}`}>{item.kind}</span><span className="truncate text-xs font-medium text-zinc-300">{userName(item.userId)}</span></div><p className="mt-1.5 line-clamp-2 text-[10px] leading-relaxed text-zinc-500">{item.reason}</p></div>{item.points !== null && <span className="shrink-0 text-[10px] font-semibold text-red-300">{item.points} pts</span>}</div><div className="mt-2 text-[9px] text-zinc-700">By {userName(item.moderatorId)} · <LiveRelativeTime value={item.createdAt} /></div></div>
+            ))}
+            {data.warningHistory.length + data.strikeHistory.length === 0 && <EmptyState title="No discipline records" text="Warnings and staff strikes will appear here automatically." />}
+          </div>
+        </Card>
+
+        <Card>
+          <CardHeader title="Moderation Log" icon={<ClipboardList className="h-4 w-4 text-violet-400" />} action={<span className="text-[10px] text-zinc-600">All actions</span>} />
+          <div className="mt-4 divide-y divide-zinc-800/70">
+            {data.moderationHistory.length === 0 ? <EmptyState title="No moderation cases" text="Warns, kicks, bans, and other actions will show here." /> : data.moderationHistory.slice(0, 9).map((item) => (
+              <div key={item.id} className="py-2.5 first:pt-0 last:pb-0"><div className="flex items-center justify-between gap-2"><span className="truncate text-xs font-semibold text-zinc-300">{item.action} · {userName(item.userId)}</span><span className={`h-1.5 w-1.5 shrink-0 rounded-full ${item.active && !item.removed ? "bg-emerald-400" : "bg-zinc-700"}`} /></div><div className="mt-1 truncate text-[10px] text-zinc-600">{item.reason} · {userName(item.moderatorId)}</div></div>
             ))}
           </div>
         </Card>
