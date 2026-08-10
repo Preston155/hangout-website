@@ -1424,9 +1424,10 @@ function formatBotUptime(startedAt: number | null) {
   const days = Math.floor(elapsed / 86400000);
   const hours = Math.floor((elapsed % 86400000) / 3600000);
   const minutes = Math.floor((elapsed % 3600000) / 60000);
-  if (days) return `${days}d ${hours}h`;
-  if (hours) return `${hours}h ${minutes}m`;
-  return `${minutes}m`;
+  const seconds = Math.floor((elapsed % 60000) / 1000);
+  if (days) return `${days}d ${hours}h ${minutes}m ${seconds}s`;
+  if (hours) return `${hours}h ${minutes}m ${seconds}s`;
+  return `${minutes}m ${seconds}s`;
 }
 
 function formatActivityName(value: string) {
@@ -1511,7 +1512,10 @@ function VeltrixBotDashboard({ showToast }: { showToast: (m: string) => void }) 
                 <div className="flex flex-wrap items-center gap-2">
                   <h1 className="text-xl font-semibold tracking-tight text-white sm:text-2xl">Veltrix Operations</h1>
                   <span className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${data.bot.online ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-300" : "border-red-400/20 bg-red-400/10 text-red-300"}`}>
-                    <span className={`h-1.5 w-1.5 rounded-full ${data.bot.online ? "bg-emerald-400" : "bg-red-400"}`} />
+                    <span className="relative flex h-1.5 w-1.5">
+                      {data.bot.online && <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" />}
+                      <span className={`relative inline-flex h-1.5 w-1.5 rounded-full ${data.bot.online ? "bg-emerald-400" : "bg-red-400"}`} />
+                    </span>
                     {data.bot.online ? "Online" : data.bot.status}
                   </span>
                 </div>
@@ -1532,14 +1536,38 @@ function VeltrixBotDashboard({ showToast }: { showToast: (m: string) => void }) 
       {error && <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-xs text-amber-300">{error}</div>}
 
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        {stats.map((stat) => {
+        {stats.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <div key={stat.label} className="rounded-xl border border-zinc-800/80 bg-zinc-900/30 p-4 transition hover:border-zinc-700 hover:bg-zinc-900/50">
-              <div className="flex items-center justify-between text-zinc-500"><span className="text-[10px] font-semibold uppercase tracking-wider">{stat.label}</span><Icon className="h-4 w-4" /></div>
-              <div className="mt-3 text-2xl font-semibold tracking-tight text-white">{stat.liveUptime ? <LiveUptime startedAt={stat.value} /> : <AnimatedNumber value={stat.value || 0} suffix={stat.suffix} />}</div>
-              <div className="mt-1 text-[11px] text-zinc-500">{stat.detail}</div>
-            </div>
+            <motion.div
+              key={stat.label}
+              layout
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: index * 0.05 }}
+              whileHover={{ y: -2, borderColor: "rgba(113,113,122,.65)" }}
+              className="group relative overflow-hidden rounded-xl border border-zinc-800/80 bg-zinc-900/30 p-4"
+            >
+              <motion.div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-y-0 w-20 bg-gradient-to-r from-transparent via-blue-400/[0.06] to-transparent"
+                animate={{ x: ["-180%", "650%"] }}
+                transition={{ duration: 3.8, delay: index * 0.45, repeat: Infinity, repeatDelay: 1.2, ease: "linear" }}
+              />
+              <div className="relative flex items-center justify-between text-zinc-500">
+                <span className="text-[10px] font-semibold uppercase tracking-wider">{stat.label}</span>
+                <motion.div animate={{ opacity: [0.45, 1, 0.45] }} transition={{ duration: 2.2, repeat: Infinity, delay: index * 0.2 }}><Icon className="h-4 w-4" /></motion.div>
+              </div>
+              <div className="relative mt-3 whitespace-nowrap text-2xl font-semibold tracking-tight text-white">{stat.liveUptime ? <LiveUptime startedAt={stat.value} /> : <AnimatedNumber value={stat.value || 0} suffix={stat.suffix} />}</div>
+              <div className="relative mt-1 text-[11px] text-zinc-500">{stat.detail}</div>
+              <div className="relative mt-3 flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-wider text-zinc-600">
+                <span className="relative flex h-1.5 w-1.5"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400 opacity-50" /><span className="relative h-1.5 w-1.5 rounded-full bg-blue-400" /></span>
+                Live telemetry
+              </div>
+              <div className="absolute inset-x-0 bottom-0 h-px overflow-hidden bg-zinc-800">
+                <motion.div className="h-full w-1/3 bg-gradient-to-r from-transparent via-blue-400 to-transparent" animate={{ x: ["-100%", "400%"] }} transition={{ duration: 2.4, repeat: Infinity, delay: index * 0.25, ease: "linear" }} />
+              </div>
+            </motion.div>
           );
         })}
       </section>
