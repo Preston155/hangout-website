@@ -47,7 +47,7 @@ import React, { useCallback, useEffect, useState } from "react";
 type Page = "overview" | "connect" | "players" | "cad" | "commands" | "logs" | "staff" | "settings";
 type Severity = "low" | "medium" | "high" | "critical";
 type PlayerStatus = "online" | "flagged" | "banned" | "staff";
-type ModActionType = "Warn" | "Kick" | "Ban" | "Unban" | "Kill" | "Teleport" | "PM" | "Announcement";
+type ModActionType = "Warn" | "Kick" | "Ban" | "Unban" | "Kill" | "Teleport" | "PM" | "Announcement" | "CAD" | "System";
 type Permission = "Kick" | "Ban" | "Unban" | "Kill" | "Teleport" | "PM" | "Announce" | "API Keys" | "Staff Roles" | "Export Logs";
 
 type Player = {
@@ -195,7 +195,10 @@ type CADCall = {
   priority: "Code 1" | "Code 2" | "Code 3";
   status: "Pending" | "Dispatched" | "Cleared";
   assignedUnits: string[];
-  timestamp: string;
+  timestamp?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  source?: string;
 };
 
 type CADRecord = {
@@ -206,6 +209,16 @@ type CADRecord = {
   warrants: string[];
   priors: string[];
   vehicle: { plate: string; model: string; color: string; status: "Valid" | "Stolen" | "Expired" };
+  classification?: string;
+  notes?: string;
+  createdAt?: string;
+};
+
+type UnitStatus = {
+  unitId: string;
+  unitName: string;
+  status: string;
+  updatedAt: string;
 };
 
 const API_BASE = "https://api.prestonhq.com";
@@ -388,8 +401,9 @@ export function App() {
         connected: true,
       });
       const cases = Array.isArray(logResponse.cases) ? logResponse.cases : [];
+      const audit = Array.isArray(logResponse.audit) ? logResponse.audit : [];
       setLogData(
-        cases.map((item: any) => ({
+        [...cases.map((item: any) => ({
           id: String(item.id),
           type: item.type as ModActionType,
           staff: String(item.staff?.name || "Admin"),
@@ -404,7 +418,19 @@ export function App() {
               ? "low"
               : "medium",
           time: relativeTime(item.createdAt),
-        }))
+          sortTime: item.createdAt,
+        })), ...audit.map((item: any) => ({
+          id: String(item.id),
+          type: String(item.action || "").startsWith("cad_") ? "CAD" as ModActionType : "System" as ModActionType,
+          staff: String(item.actor?.name || "System"),
+          player: String(item.details?.caller || item.details?.unitName || item.entityId || "Dashboard"),
+          reason: String(item.details?.location || item.details?.classification || String(item.action || "System event").replaceAll("_", " ")),
+          severity: String(item.action || "").includes("created") ? "medium" as Severity : "low" as Severity,
+          time: relativeTime(item.timestamp),
+          sortTime: item.timestamp,
+        }))]
+          .sort((a: any, b: any) => String(b.sortTime || "").localeCompare(String(a.sortTime || "")))
+          .slice(0, 200)
       );
       setSyncError(overview.warnings?.[0] || "");
     } catch (error) {
@@ -838,19 +864,110 @@ function PlayerRow({ player, active, onClick }: { player: Player; active: boolea
 
 function CadMdtCenter({ players, showToast }: { players: Player[]; showToast: (m: string) => void }) {
   const [activeTab, setActiveTab] = useState<"dispatch" | "lookup" | "units">("dispatch");
-  const [calls, setCalls] = useState<CADCall[]>(mockCadCalls);
+  const [calls, setCalls] = useState<CADCall[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [foundRecord, setFoundRecord] = useState<CADRecord | null>(mockRecords[0]);
-  const [unitStatus, setUnitStatus] = useState<Record<string, string>>({});
+  const [foundRecord, setFoundRecord] = useState<CADRecord | null>(null);
+  const [unitStatus, setUnitStatus] = useState<Record<string, UnitStatus>>({});
+  const [busy, setBusy] = useState(false);
+  const [callForm, setCallForm] = useState({ type: "", location: "", priority: "Code 3", description: "" });
+  const [recordForm, setRecordForm] = useState({ citizenName: "", classification: "Traffic Citation", notes: "" });
 
-  const handleUnitStatusChange = (playerName: string, status: string) => {
-    setUnitStatus((prev) => ({ ...prev, [playerName]: status }));
-    showToast(`Updated ${playerName} status to ${status}`);
+  const refreshCad = useCallback(async (silent = false) => {
+    try {
+      const response = await api<any>("/api/erlc/cad");
+      setCalls(Array.isArray(response.calls) ? response.calls : []);
+      setUnitStatus(response.unitStatuses || {});
+      if (response.ingested && !silent) showToast(`${response.ingested} new in-game call${response.ingested === 1 ? "" : "s"} received.`);
+    } catch (error) {
+      if (!silent) showToast(error instanceof Error ? error.message : "CAD synchronization failed.");
+    }
+  }, [showToast]);
+
+  useEffect(() => {
+    void refreshCad(true);
+    const timer = window.setInterval(() => void refreshCad(true), 10000);
+    return () => window.clearInterval(timer);
+  }, [refreshCad]);
+
+  const createCall = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setBusy(true);
+    try {
+      const response = await api<any>("/api/erlc/cad/calls", { method: "POST", body: JSON.stringify(callForm) });
+      setCalls((current) => [response.call, ...current.filter((item) => item.id !== response.call.id)]);
+      setCallForm({ type: "", location: "", priority: "Code 3", description: "" });
+      showToast(response.broadcast?.delivered ? "CAD call saved and broadcast in game." : response.broadcast?.error ? `Call saved. Broadcast warning: ${response.broadcast.error}` : "CAD call saved.");
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "The CAD call could not be created.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const updateCall = async (call: CADCall, changes: Record<string, unknown>) => {
+    setBusy(true);
+    try {
+      const response = await api<any>(`/api/erlc/cad/calls/${encodeURIComponent(call.id)}`, { method: "PATCH", body: JSON.stringify(changes) });
+      setCalls((current) => current.map((item) => item.id === response.call.id ? response.call : item));
+      showToast(`${response.call.id} updated.`);
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "CAD call update failed.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const dispatchUnits = (call: CADCall) => {
+    const value = window.prompt("Enter unit callsigns separated by commas:", call.assignedUnits.join(", "));
+    if (value === null) return;
+    const assignedUnits = value.split(",").map((item) => item.trim()).filter(Boolean);
+    void updateCall(call, { assignedUnits, status: "Dispatched", announce: true });
+  };
+
+  const searchRecords = async () => {
+    setBusy(true);
+    try {
+      const response = await api<any>(`/api/erlc/cad/records?q=${encodeURIComponent(searchQuery)}`);
+      const records = Array.isArray(response.records) ? response.records : [];
+      setFoundRecord(records[0] || null);
+      showToast(records.length ? `${records.length} matching record${records.length === 1 ? "" : "s"} found.` : "No matching records found.");
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "NCIC search failed.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const createRecord = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setBusy(true);
+    try {
+      const response = await api<any>("/api/erlc/cad/records", { method: "POST", body: JSON.stringify(recordForm) });
+      setFoundRecord(response.record);
+      setSearchQuery(response.record.citizenName);
+      setRecordForm({ citizenName: "", classification: "Traffic Citation", notes: "" });
+      showToast("Incident report saved to the NCIC database.");
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "Incident report could not be saved.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleUnitStatusChange = async (unit: Player, status: string) => {
+    try {
+      const response = await api<any>(`/api/erlc/cad/units/${encodeURIComponent(unit.id)}`, { method: "PATCH", body: JSON.stringify({ unitName: unit.name, status }) });
+      setUnitStatus((current) => ({ ...current, [unit.id]: response.unit }));
+      showToast(`Updated ${unit.name} status to ${status}`);
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "Unit status update failed.");
+    }
   };
 
   const emergencyUnits = players.filter((p) =>
     ["Police", "Sheriff", "State Police", "Fire", "EMS"].some((dept) => p.team.toLowerCase().includes(dept.toLowerCase()))
   );
+  const activeCalls = calls.filter((call) => call.status !== "Cleared");
 
   return (
     <div className="space-y-6">
@@ -866,7 +983,7 @@ function CadMdtCenter({ players, showToast }: { players: Player[]; showToast: (m
         </div>
         <div className="flex items-center gap-2">
           <button onClick={() => setActiveTab("dispatch")} className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${activeTab === "dispatch" ? "bg-blue-600 text-white" : "border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white"}`}>
-            911 CAD Queue
+            911 CAD Queue ({activeCalls.length})
           </button>
           <button onClick={() => setActiveTab("lookup")} className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${activeTab === "lookup" ? "bg-blue-600 text-white" : "border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white"}`}>
             NCIC Lookup
@@ -883,7 +1000,7 @@ function CadMdtCenter({ players, showToast }: { players: Player[]; showToast: (m
             <Card>
               <CardHeader title="Active CAD Calls Queue" icon={<PhoneCall className="h-4 w-4 text-blue-400" />} />
               <div className="mt-4 space-y-3">
-                {calls.map((call) => (
+                {activeCalls.map((call) => (
                   <div key={call.id} className="rounded-xl border border-zinc-800 bg-zinc-950/60 p-4">
                     <div className="flex items-center justify-between border-b border-zinc-800/80 pb-2.5">
                       <div className="flex items-center gap-2">
@@ -893,7 +1010,7 @@ function CadMdtCenter({ players, showToast }: { players: Player[]; showToast: (m
                         <span className="font-mono text-xs font-medium text-white">{call.id}</span>
                         <span className="text-xs text-zinc-400">• {call.type}</span>
                       </div>
-                      <span className="text-[11px] text-zinc-500">{call.timestamp}</span>
+                      <span className="text-[11px] text-zinc-500">{call.createdAt ? relativeTime(call.createdAt) : call.timestamp || "Just now"}</span>
                     </div>
                     <div className="mt-3 space-y-1.5 text-xs">
                       <div className="text-zinc-300"><span className="text-zinc-500 font-medium">Caller:</span> {call.caller}</div>
@@ -904,40 +1021,42 @@ function CadMdtCenter({ players, showToast }: { players: Player[]; showToast: (m
                       <div className="text-xs text-zinc-500">
                         Units Assigned: {call.assignedUnits.length ? call.assignedUnits.join(", ") : "None"}
                       </div>
-                      <Button variant="secondary" onClick={() => showToast(`Dispatched backup to ${call.id}`)}>
-                        Dispatch Units
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button disabled={busy} variant="secondary" onClick={() => dispatchUnits(call)}>Dispatch Units</Button>
+                        <Button disabled={busy} variant="ghost" onClick={() => void updateCall(call, { status: "Cleared", announce: true })}>Clear</Button>
+                      </div>
                     </div>
                   </div>
                 ))}
+                {!activeCalls.length && <EmptyState title="No active CAD calls" text="New dashboard dispatches and incoming ER:LC calls will appear here automatically." />}
               </div>
             </Card>
           </div>
           <div>
             <Card>
               <CardHeader title="Create 911 CAD Dispatch" icon={<Radio className="h-4 w-4 text-zinc-400" />} />
-              <form onSubmit={(e) => { e.preventDefault(); showToast("New call broadcasted to active units."); }} className="mt-4 space-y-3 text-xs">
+              <form onSubmit={createCall} className="mt-4 space-y-3 text-xs">
                 <div>
                   <label className="block text-zinc-400 mb-1">Call Title / Type</label>
-                  <input type="text" placeholder="e.g. 10-80 Pursuit" className="w-full rounded-lg border border-zinc-800 bg-zinc-950 p-2.5 text-zinc-200 outline-none focus:border-blue-500" />
+                  <input required minLength={3} value={callForm.type} onChange={(event) => setCallForm({ ...callForm, type: event.target.value })} type="text" placeholder="e.g. 10-80 Pursuit" className="w-full rounded-lg border border-zinc-800 bg-zinc-950 p-2.5 text-zinc-200 outline-none focus:border-blue-500" />
                 </div>
                 <div>
                   <label className="block text-zinc-400 mb-1">Location</label>
-                  <input type="text" placeholder="e.g. Postal 104" className="w-full rounded-lg border border-zinc-800 bg-zinc-950 p-2.5 text-zinc-200 outline-none focus:border-blue-500" />
+                  <input required value={callForm.location} onChange={(event) => setCallForm({ ...callForm, location: event.target.value })} type="text" placeholder="e.g. Postal 104" className="w-full rounded-lg border border-zinc-800 bg-zinc-950 p-2.5 text-zinc-200 outline-none focus:border-blue-500" />
                 </div>
                 <div>
                   <label className="block text-zinc-400 mb-1">Response Priority</label>
-                  <select className="w-full rounded-lg border border-zinc-800 bg-zinc-950 p-2.5 text-zinc-200 outline-none focus:border-blue-500">
-                    <option>Code 3 (Emergency)</option>
-                    <option>Code 2 (Urgent)</option>
-                    <option>Code 1 (Routine)</option>
+                  <select value={callForm.priority} onChange={(event) => setCallForm({ ...callForm, priority: event.target.value })} className="w-full rounded-lg border border-zinc-800 bg-zinc-950 p-2.5 text-zinc-200 outline-none focus:border-blue-500">
+                    <option value="Code 3">Code 3 (Emergency)</option>
+                    <option value="Code 2">Code 2 (Urgent)</option>
+                    <option value="Code 1">Code 1 (Routine)</option>
                   </select>
                 </div>
                 <div>
                   <label className="block text-zinc-400 mb-1">Details</label>
-                  <textarea placeholder="Describe scenario details..." className="h-20 w-full rounded-lg border border-zinc-800 bg-zinc-950 p-2.5 text-zinc-200 outline-none focus:border-blue-500" />
+                  <textarea required minLength={3} value={callForm.description} onChange={(event) => setCallForm({ ...callForm, description: event.target.value })} placeholder="Describe scenario details..." className="h-20 w-full rounded-lg border border-zinc-800 bg-zinc-950 p-2.5 text-zinc-200 outline-none focus:border-blue-500" />
                 </div>
-                <Button className="w-full">Broadcast CAD Dispatch</Button>
+                <Button disabled={busy} className="w-full">{busy ? "Broadcasting..." : "Broadcast CAD Dispatch"}</Button>
               </form>
             </Card>
           </div>
@@ -949,7 +1068,7 @@ function CadMdtCenter({ players, showToast }: { players: Player[]; showToast: (m
           <div className="lg:col-span-2">
             <Card>
               <CardHeader title="NCIC Records Database Search" icon={<Database className="h-4 w-4 text-blue-400" />} />
-              <div className="mt-4 flex gap-2">
+              <form onSubmit={(event) => { event.preventDefault(); void searchRecords(); }} className="mt-4 flex gap-2">
                 <input
                   type="text"
                   value={searchQuery}
@@ -957,19 +1076,17 @@ function CadMdtCenter({ players, showToast }: { players: Player[]; showToast: (m
                   placeholder="Search by Roblox username, ID, or vehicle plate..."
                   className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2 text-xs text-zinc-200 outline-none focus:border-blue-500"
                 />
-                <Button onClick={() => showToast("Database query executed.")}>Search</Button>
-              </div>
+                <Button disabled={busy}>Search</Button>
+              </form>
 
               {foundRecord && (
                 <div className="mt-6 space-y-4 rounded-xl border border-zinc-800 bg-zinc-950/40 p-5">
                   <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
                     <div>
                       <h3 className="text-base font-semibold text-white">{foundRecord.citizenName}</h3>
-                      <p className="text-xs text-zinc-500">Roblox ID: {foundRecord.robloxId}</p>
+                      <p className="text-xs text-zinc-500">Record: {foundRecord.id}{foundRecord.robloxId ? ` • Roblox ID: ${foundRecord.robloxId}` : ""}</p>
                     </div>
-                    <span className="rounded bg-red-500/20 px-2.5 py-1 text-xs font-semibold text-red-400 border border-red-500/30">
-                      Warrant Flagged
-                    </span>
+                    {foundRecord.warrants.length > 0 && <span className="rounded bg-red-500/20 px-2.5 py-1 text-xs font-semibold text-red-400 border border-red-500/30">Warrant Flagged</span>}
                   </div>
 
                   <div className="grid grid-cols-3 gap-3 text-xs">
@@ -983,6 +1100,9 @@ function CadMdtCenter({ players, showToast }: { players: Player[]; showToast: (m
                     {foundRecord.warrants.map((w, idx) => (
                       <div key={idx} className="text-xs text-zinc-300 font-medium">{w}</div>
                     ))}
+                    {!foundRecord.warrants.length && <div className="text-xs text-zinc-500">No active warrants recorded.</div>}
+                    {foundRecord.classification && <div className="mt-2 text-xs font-medium text-zinc-300">{foundRecord.classification}</div>}
+                    {foundRecord.notes && <div className="mt-1 text-xs text-zinc-400">{foundRecord.notes}</div>}
                   </div>
 
                   <div className="border-t border-zinc-800/80 pt-3">
@@ -999,24 +1119,26 @@ function CadMdtCenter({ players, showToast }: { players: Player[]; showToast: (m
           <div>
             <Card>
               <CardHeader title="File Incident Report" icon={<FileText className="h-4 w-4 text-zinc-400" />} />
-              <form onSubmit={(e) => { e.preventDefault(); showToast("Report logged to citizen profile."); }} className="mt-4 space-y-3 text-xs">
+              <form onSubmit={createRecord} className="mt-4 space-y-3 text-xs">
                 <div>
                   <label className="block text-zinc-400 mb-1">Target Citizen Username</label>
-                  <input type="text" placeholder="Username" className="w-full rounded-lg border border-zinc-800 bg-zinc-950 p-2.5 text-zinc-200 outline-none focus:border-blue-500" />
+                  <input required pattern="[A-Za-z0-9_]{3,20}" value={recordForm.citizenName} onChange={(event) => setRecordForm({ ...recordForm, citizenName: event.target.value })} type="text" placeholder="Username" className="w-full rounded-lg border border-zinc-800 bg-zinc-950 p-2.5 text-zinc-200 outline-none focus:border-blue-500" />
                 </div>
                 <div>
                   <label className="block text-zinc-400 mb-1">Offense Classification</label>
-                  <select className="w-full rounded-lg border border-zinc-800 bg-zinc-950 p-2.5 text-zinc-200 outline-none focus:border-blue-500">
+                  <select value={recordForm.classification} onChange={(event) => setRecordForm({ ...recordForm, classification: event.target.value })} className="w-full rounded-lg border border-zinc-800 bg-zinc-950 p-2.5 text-zinc-200 outline-none focus:border-blue-500">
                     <option>Traffic Citation</option>
                     <option>Misdemeanor Charge</option>
                     <option>Felony Arrest Warrant</option>
+                    <option>BOLO / Alert</option>
+                    <option>Incident Report</option>
                   </select>
                 </div>
                 <div>
                   <label className="block text-zinc-400 mb-1">Officer Notes</label>
-                  <textarea placeholder="Include penal code citations..." className="h-20 w-full rounded-lg border border-zinc-800 bg-zinc-950 p-2.5 text-zinc-200 outline-none focus:border-blue-500" />
+                  <textarea required minLength={3} value={recordForm.notes} onChange={(event) => setRecordForm({ ...recordForm, notes: event.target.value })} placeholder="Include penal code citations..." className="h-20 w-full rounded-lg border border-zinc-800 bg-zinc-950 p-2.5 text-zinc-200 outline-none focus:border-blue-500" />
                 </div>
-                <Button className="w-full">File Record</Button>
+                <Button disabled={busy} className="w-full">{busy ? "Saving..." : "File Record"}</Button>
               </form>
             </Card>
           </div>
@@ -1028,7 +1150,7 @@ function CadMdtCenter({ players, showToast }: { players: Player[]; showToast: (m
           <CardHeader title="On-Duty Emergency Personnel Unit Matrix" icon={<UserCheck className="h-4 w-4 text-blue-400" />} />
           <div className="mt-4 divide-y divide-zinc-800/60 overflow-hidden rounded-lg border border-zinc-800/80 bg-zinc-950/40">
             {emergencyUnits.map((unit) => {
-              const currentStatus = unitStatus[unit.name] || "10-8 Available";
+              const currentStatus = unitStatus[unit.id]?.status || "10-8 Available";
               return (
                 <div key={unit.id} className="flex items-center justify-between p-3.5 text-xs">
                   <div className="flex items-center gap-3">
@@ -1042,7 +1164,7 @@ function CadMdtCenter({ players, showToast }: { players: Player[]; showToast: (m
                     {["10-8 Available", "10-97 On Scene", "10-6 Busy", "10-7 Out of Service"].map((st) => (
                       <button
                         key={st}
-                        onClick={() => handleUnitStatusChange(unit.name, st)}
+                        onClick={() => void handleUnitStatusChange(unit, st)}
                         className={`rounded-lg px-2.5 py-1 text-[11px] font-medium transition ${currentStatus === st ? "bg-blue-600 text-white" : "border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white"}`}
                       >
                         {st}
@@ -1124,9 +1246,37 @@ function LogRow({ log }: { log: ModAction }) {
 
 function StaffPermissions({ showToast }: { showToast: (m: string) => void }) {
   const all: Permission[] = ["Kick", "Ban", "Unban", "Kill", "Teleport", "PM", "Announce", "API Keys", "Staff Roles", "Export Logs"];
+  const [matrix, setMatrix] = useState<Record<string, Permission[]>>(permissions);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    api<any>("/api/erlc/dashboard-config")
+      .then((response) => setMatrix(response.permissions || permissions))
+      .catch((error) => showToast(error instanceof Error ? error.message : "Permission sync failed."));
+  }, [showToast]);
+
+  const toggle = (role: string, permission: Permission) => {
+    setMatrix((current) => {
+      const existing = current[role] || [];
+      return { ...current, [role]: existing.includes(permission) ? existing.filter((item) => item !== permission) : [...existing, permission] };
+    });
+  };
+
+  const save = async () => {
+    setBusy(true);
+    try {
+      const response = await api<any>("/api/erlc/dashboard-config", { method: "PATCH", body: JSON.stringify({ permissions: matrix }) });
+      setMatrix(response.permissions || matrix);
+      showToast("Staff permissions saved permanently.");
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "Permissions could not be saved.");
+    } finally {
+      setBusy(false);
+    }
+  };
   return (
     <Card>
-      <CardHeader title="Staff Authorization Matrix" icon={<ShieldCheck className="h-4 w-4 text-zinc-400" />} action={<Button onClick={() => showToast("Permissions updated.")}>Save Changes</Button>} />
+      <CardHeader title="Staff Authorization Matrix" icon={<ShieldCheck className="h-4 w-4 text-zinc-400" />} action={<Button disabled={busy} onClick={() => void save()}>{busy ? "Saving..." : "Save Changes"}</Button>} />
       <div className="mt-4 overflow-x-auto">
         <table className="w-full text-left text-xs">
           <thead>
@@ -1136,12 +1286,12 @@ function StaffPermissions({ showToast }: { showToast: (m: string) => void }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-800/60 text-zinc-300">
-            {Object.entries(permissions).map(([role, perms]) => (
+            {Object.entries(matrix).map(([role, perms]) => (
               <tr key={role}>
                 <td className="py-3 font-medium text-white">{role}</td>
                 {all.map((p) => (
                   <td key={p} className="py-3 text-center">
-                    <input type="checkbox" defaultChecked={perms.includes(p)} className="rounded border-zinc-800 bg-zinc-950 text-zinc-200 focus:ring-0" />
+                    <input type="checkbox" checked={perms.includes(p)} onChange={() => toggle(role, p)} className="rounded border-zinc-800 bg-zinc-950 text-zinc-200 focus:ring-0" />
                   </td>
                 ))}
               </tr>
@@ -1154,16 +1304,63 @@ function StaffPermissions({ showToast }: { showToast: (m: string) => void }) {
 }
 
 function SettingsPage({ showToast }: { showToast: (m: string) => void }) {
+  const [settings, setSettings] = useState({ broadcastCadToServer: true, ingestModCalls: true, eventWebhookEnabled: true, autoRefreshSeconds: 15 });
+  const [eventWebhook, setEventWebhook] = useState<{ configured: boolean; url: string | null }>({ configured: false, url: null });
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    api<any>("/api/erlc/dashboard-config")
+      .then((response) => {
+        setSettings((current) => ({ ...current, ...(response.settings || {}) }));
+        setEventWebhook(response.eventWebhook || { configured: false, url: null });
+      })
+      .catch((error) => showToast(error instanceof Error ? error.message : "Settings sync failed."));
+  }, [showToast]);
+
+  const save = async () => {
+    setBusy(true);
+    try {
+      const response = await api<any>("/api/erlc/dashboard-config", { method: "PATCH", body: JSON.stringify({ settings }) });
+      setSettings((current) => ({ ...current, ...(response.settings || {}) }));
+      showToast("Dashboard settings saved permanently.");
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "Settings could not be saved.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const switchSetting = (key: "broadcastCadToServer" | "ingestModCalls" | "eventWebhookEnabled") => {
+    setSettings((current) => ({ ...current, [key]: !current[key] }));
+  };
+
   return (
     <Card>
-      <CardHeader title="System Settings" icon={<Settings className="h-4 w-4 text-zinc-400" />} />
+      <CardHeader title="System Settings" icon={<Settings className="h-4 w-4 text-zinc-400" />} action={<Button disabled={busy} onClick={() => void save()}>{busy ? "Saving..." : "Save Settings"}</Button>} />
       <div className="mt-4 space-y-4">
         <div className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-950/40 p-4">
           <div>
-            <div className="text-xs font-medium text-white">Discord Webhook Stream</div>
-            <div className="text-[11px] text-zinc-500">Route all audit events directly to Discord channels.</div>
+            <div className="text-xs font-medium text-white">Broadcast CAD Calls In Game</div>
+            <div className="text-[11px] text-zinc-500">Send newly created dashboard calls through the live ER:LC command API.</div>
           </div>
-          <Button variant="secondary" onClick={() => showToast("Settings updated.")}>Configure</Button>
+          <button onClick={() => switchSetting("broadcastCadToServer")} className={`relative h-6 w-11 rounded-full transition ${settings.broadcastCadToServer ? "bg-emerald-500" : "bg-zinc-700"}`}><span className={`absolute top-1 h-4 w-4 rounded-full bg-white transition ${settings.broadcastCadToServer ? "left-6" : "left-1"}`} /></button>
+        </div>
+        <div className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-950/40 p-4">
+          <div>
+            <div className="text-xs font-medium text-white">Automatic In-Game Call Intake</div>
+            <div className="text-[11px] text-zinc-500">Import only new ER:LC mod calls after the first baseline sync.</div>
+          </div>
+          <button onClick={() => switchSetting("ingestModCalls")} className={`relative h-6 w-11 rounded-full transition ${settings.ingestModCalls ? "bg-emerald-500" : "bg-zinc-700"}`}><span className={`absolute top-1 h-4 w-4 rounded-full bg-white transition ${settings.ingestModCalls ? "left-6" : "left-1"}`} /></button>
+        </div>
+        <div className="rounded-lg border border-zinc-800 bg-zinc-950/40 p-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <div className="text-xs font-medium text-white">ER:LC Event Log Webhook</div>
+              <div className="text-[11px] text-zinc-500">Receives new 911 and emergency events without exposing dashboard credentials.</div>
+            </div>
+            <button onClick={() => switchSetting("eventWebhookEnabled")} className={`rounded border px-2 py-1 text-[10px] font-semibold ${eventWebhook.configured && settings.eventWebhookEnabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-amber-500/30 bg-amber-500/10 text-amber-300"}`}>{!eventWebhook.configured ? "NOT CONFIGURED" : settings.eventWebhookEnabled ? "ENABLED" : "DISABLED"}</button>
+          </div>
+          {eventWebhook.url && <div className="mt-3 flex gap-2"><input readOnly value={eventWebhook.url} className="min-w-0 flex-1 rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 font-mono text-[11px] text-zinc-400 outline-none" /><Button variant="secondary" onClick={() => { void navigator.clipboard.writeText(eventWebhook.url || ""); showToast("Webhook URL copied."); }}>Copy URL</Button></div>}
         </div>
       </div>
     </Card>

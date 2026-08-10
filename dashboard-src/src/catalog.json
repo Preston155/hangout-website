@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-09T02:32:17.592Z",
+  "generatedAt": "2026-08-10T01:44:37.135Z",
   "categories": [
     "Slash commands",
     "Prefix commands",
@@ -25,8 +25,8 @@
         "status": "online",
         "uptime": 1785977890196,
         "restarts": 3,
-        "memoryMb": 98,
-        "cpu": 0.5
+        "memoryMb": 103,
+        "cpu": 0.4
       },
       "stats": {
         "total": 51,
@@ -822,14 +822,14 @@
         "pm2": "bot3",
         "online": true,
         "status": "online",
-        "uptime": 1786242451949,
-        "restarts": 18,
-        "memoryMb": 77,
-        "cpu": 0.2
+        "uptime": 1786325435200,
+        "restarts": 22,
+        "memoryMb": 78,
+        "cpu": 0.3
       },
       "stats": {
-        "total": 34,
-        "slash": 9,
+        "total": 35,
+        "slash": 10,
         "prefix": 13,
         "automation": 14
       },
@@ -1081,6 +1081,18 @@
           "category": "Sessions",
           "source": "index.js",
           "id": "veltrix-prefix-ss"
+        },
+        {
+          "id": "veltrix-slash-staff",
+          "name": "staff",
+          "type": "slash",
+          "description": "Staff Operations V2 management center.",
+          "usage": "/staff <profile|report|leaderboard|leave|strike|quota|audit>",
+          "permission": "Everyone",
+          "cooldown": null,
+          "enabled": true,
+          "category": "Slash commands",
+          "source": "staff.js"
         },
         {
           "id": "veltrix-prefix-status",
@@ -1474,8 +1486,8 @@
         "status": "online",
         "uptime": 1785545510975,
         "restarts": 0,
-        "memoryMb": 87,
-        "cpu": 0.3
+        "memoryMb": 86,
+        "cpu": 0.4
       },
       "stats": {
         "total": 32,
