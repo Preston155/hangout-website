@@ -42,7 +42,7 @@ import {
   X,
   Zap,
 } from "lucide-react";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 type Page = "overview" | "bot" | "connect" | "players" | "cad" | "commands" | "logs" | "staff" | "settings";
 type Severity = "low" | "medium" | "high" | "critical";
@@ -170,6 +170,7 @@ type ModAction = {
   reason: string;
   severity: Severity;
   time: string;
+  timestamp?: string;
 };
 
 type ServerState = {
@@ -358,6 +359,67 @@ function relativeTime(value: string) {
   return hours < 24 ? `${hours}h ago` : `${Math.floor(hours / 24)}d ago`;
 }
 
+const DashboardClockContext = React.createContext(Date.now());
+
+function DashboardClockProvider({ children }: { children: React.ReactNode }) {
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+  return <DashboardClockContext.Provider value={now}>{children}</DashboardClockContext.Provider>;
+}
+
+function LiveRelativeTime({ value }: { value: string | number }) {
+  React.useContext(DashboardClockContext);
+  return <>{relativeTime(new Date(value).toISOString())}</>;
+}
+
+function LiveUptime({ startedAt }: { startedAt: number | null }) {
+  React.useContext(DashboardClockContext);
+  return <>{formatBotUptime(startedAt)}</>;
+}
+
+function LiveEndsAt({ value }: { value: number }) {
+  React.useContext(DashboardClockContext);
+  return <>{formatEndsAt(value)}</>;
+}
+
+function AnimatedNumber({ value, decimals = 0, suffix = "", className = "" }: { value: number; decimals?: number; suffix?: string; className?: string }) {
+  const displayed = useRef(0);
+  const frame = useRef<number | null>(null);
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    if (frame.current !== null) window.cancelAnimationFrame(frame.current);
+    const from = displayed.current;
+    const difference = value - from;
+    const started = performance.now();
+    const duration = Math.min(900, Math.max(350, Math.abs(difference) * 45));
+
+    const tick = (time: number) => {
+      const progress = Math.min(1, (time - started) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const next = from + difference * eased;
+      displayed.current = next;
+      setCurrent(next);
+      if (progress < 1) frame.current = window.requestAnimationFrame(tick);
+      else {
+        displayed.current = value;
+        setCurrent(value);
+        frame.current = null;
+      }
+    };
+
+    frame.current = window.requestAnimationFrame(tick);
+    return () => {
+      if (frame.current !== null) window.cancelAnimationFrame(frame.current);
+    };
+  }, [value]);
+
+  return <span className={className}>{current.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}{suffix}</span>;
+}
+
 const commandTemplates = [
   { name: "Peacetime Enabled", command: ":h Peacetime is now active. All priority scenes are paused.", locked: false },
   { name: "Server Restart", command: ":shutdown Server undergoing scheduled maintenance. Rejoin in 2 mins.", locked: true },
@@ -396,6 +458,7 @@ export function App() {
   const [toast, setToast] = useState("");
   const [busy, setBusy] = useState(false);
   const [syncError, setSyncError] = useState("");
+  const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
 
   const showToast = (message: string) => {
     setToast(message);
@@ -463,6 +526,7 @@ export function App() {
               ? "low"
               : "medium",
           time: relativeTime(item.createdAt),
+          timestamp: item.createdAt,
           sortTime: item.createdAt,
         })), ...audit.map((item: any) => ({
           id: String(item.id),
@@ -472,12 +536,14 @@ export function App() {
           reason: String(item.details?.location || item.details?.classification || String(item.action || "System event").replaceAll("_", " ")),
           severity: String(item.action || "").includes("created") ? "medium" as Severity : "low" as Severity,
           time: relativeTime(item.timestamp),
+          timestamp: item.timestamp,
           sortTime: item.timestamp,
         }))]
           .sort((a: any, b: any) => String(b.sortTime || "").localeCompare(String(a.sortTime || "")))
           .slice(0, 200)
       );
       setSyncError(overview.warnings?.[0] || "");
+      setLastSyncedAt(new Date().toISOString());
     } catch (error) {
       setServerData((current) => ({ ...current, apiStatus: "Disconnected", connected: false }));
       setSyncError(error instanceof Error ? error.message : "Synchronization failure.");
@@ -499,7 +565,7 @@ export function App() {
 
   useEffect(() => {
     if (auth !== "ready") return;
-    const timer = window.setInterval(loadLiveData, 15000);
+    const timer = window.setInterval(loadLiveData, 10000);
     return () => window.clearInterval(timer);
   }, [auth, loadLiveData]);
 
@@ -538,11 +604,12 @@ export function App() {
   if (auth === "guest") return <LoginScreen onSuccess={() => { setAuth("ready"); loadLiveData(); }} />;
 
   return (
+    <DashboardClockProvider>
     <div className="min-h-screen bg-[#09090b] font-sans text-zinc-100 antialiased selection:bg-zinc-800 selection:text-zinc-100">
       <div className="flex min-h-screen">
         <Sidebar page={page} setPage={(next) => { setPage(next); setMobileOpen(false); }} mobileOpen={mobileOpen} close={() => setMobileOpen(false)} />
         <main className="flex min-w-0 flex-1 flex-col lg:pl-64">
-          <Topbar page={page} onMenu={() => setMobileOpen(true)} serverData={serverData} onRefresh={loadLiveData} />
+          <Topbar page={page} onMenu={() => setMobileOpen(true)} serverData={serverData} onRefresh={loadLiveData} lastSyncedAt={lastSyncedAt} />
           <div className="mx-auto w-full max-w-[1400px] flex-1 p-4 sm:p-6 lg:p-8">
             {syncError && (
               <div className="mb-6 flex items-center justify-between gap-4 rounded-lg border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-xs font-medium text-amber-300">
@@ -575,6 +642,7 @@ export function App() {
       <AnimatePresence>{modal && <ActionModal modal={modal} close={() => setModal(null)} confirm={executeAction} busy={busy} />}</AnimatePresence>
       <AnimatePresence>{toast && <Toast message={toast} />}</AnimatePresence>
     </div>
+    </DashboardClockProvider>
   );
 }
 
@@ -679,7 +747,7 @@ function Sidebar({ page, setPage, mobileOpen, close }: { page: Page; setPage: (p
   );
 }
 
-function Topbar({ page, onMenu, serverData, onRefresh }: { page: Page; onMenu: () => void; serverData: ServerState; onRefresh: () => void }) {
+function Topbar({ page, onMenu, serverData, onRefresh, lastSyncedAt }: { page: Page; onMenu: () => void; serverData: ServerState; onRefresh: () => void; lastSyncedAt: string | null }) {
   const currentNav = navItems.find((item) => item.id === page);
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center border-b border-zinc-800/80 bg-[#09090b]/80 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
@@ -692,12 +760,13 @@ function Topbar({ page, onMenu, serverData, onRefresh }: { page: Page; onMenu: (
         <span className="text-zinc-100">{currentNav?.label}</span>
       </div>
       <div className="ml-auto flex items-center gap-3">
+        {lastSyncedAt && <div className="hidden text-[10px] text-zinc-600 md:block">Synced <LiveRelativeTime value={lastSyncedAt} /></div>}
         <div className="hidden sm:flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/60 px-3 py-1 text-[11px] text-zinc-300">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
           </span>
-          <span>{serverData.players}/{serverData.maxPlayers} Online</span>
+          <span><AnimatedNumber value={serverData.players} />/<AnimatedNumber value={serverData.maxPlayers} /> Online</span>
         </div>
         <button onClick={onRefresh} className="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-400 transition hover:bg-zinc-800 hover:text-white">
           <RefreshCw className="h-3.5 w-3.5" />
@@ -733,10 +802,10 @@ function Overview({ showToast, setPage, serverData, logs, onRefresh }: { showToa
       </section>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Metric title="Active Players" value={`${serverData.players}/${serverData.maxPlayers}`} sub="Capacity" icon={<Users className="h-4 w-4 text-zinc-400" />} />
+        <Metric title="Active Players" value={serverData.players} max={serverData.maxPlayers} sub="Capacity" icon={<Users className="h-4 w-4 text-zinc-400" />} />
         <Metric title="Staff Online" value={serverData.staff} sub="Active Administrators" icon={<Shield className="h-4 w-4 text-zinc-400" />} />
         <Metric title="Server Queue" value={serverData.queue} sub="Waiting Connection" icon={<Activity className="h-4 w-4 text-zinc-400" />} />
-        <Metric title="API Health" value={serverData.connected ? "100%" : "0%"} sub="Response Time ~24ms" icon={<Zap className="h-4 w-4 text-zinc-400" />} />
+        <Metric title="API Health" value={serverData.connected ? 100 : 0} suffix="%" sub="Response Time ~24ms" icon={<Zap className="h-4 w-4 text-zinc-400" />} />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -767,14 +836,14 @@ function Overview({ showToast, setPage, serverData, logs, onRefresh }: { showToa
   );
 }
 
-function Metric({ title, value, sub, icon }: { title: string; value: string | number; sub: string; icon: React.ReactNode }) {
+function Metric({ title, value, max, suffix = "", sub, icon }: { title: string; value: number; max?: number; suffix?: string; sub: string; icon: React.ReactNode }) {
   return (
     <div className="rounded-xl border border-zinc-800/80 bg-zinc-900/30 p-4 backdrop-blur-xl">
       <div className="flex items-center justify-between text-zinc-400">
         <span className="text-xs font-medium">{title}</span>
         {icon}
       </div>
-      <div className="mt-2 text-2xl font-semibold text-white tracking-tight">{value}</div>
+      <div className="mt-2 text-2xl font-semibold text-white tracking-tight"><AnimatedNumber value={value} suffix={suffix} />{typeof max === "number" && <>/<AnimatedNumber value={max} /></>}</div>
       <div className="mt-1 text-[11px] text-zinc-500">{sub}</div>
     </div>
   );
@@ -874,9 +943,9 @@ function PlayerProfile({ player, openAction }: { player: Player; openAction: (a:
       </div>
       <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
         <Info label="Team Assignment" value={player.team} />
-        <Info label="Ping Latency" value={`${player.ping}ms`} />
+        <div><div className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider">Ping Latency</div><div className="mt-0.5 text-xs font-medium text-zinc-200"><AnimatedNumber value={player.ping} suffix="ms" /></div></div>
         <Info label="Session Time" value={player.playtime} />
-        <Info label="Prior Warnings" value={String(player.warnings)} />
+        <div><div className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider">Prior Warnings</div><div className="mt-0.5 text-xs font-medium text-zinc-200"><AnimatedNumber value={player.warnings} /></div></div>
       </div>
       <div className="mt-6 space-y-2">
         <span className="text-[11px] font-medium uppercase tracking-wider text-zinc-400">Quick Actions</span>
@@ -903,7 +972,7 @@ function PlayerRow({ player, active, onClick }: { player: Player; active: boolea
           <div className="text-[11px] text-zinc-500">{player.team}</div>
         </div>
       </div>
-      <span className="font-mono text-xs text-zinc-500">{player.ping}ms</span>
+      <span className="font-mono text-xs text-zinc-500"><AnimatedNumber value={player.ping} suffix="ms" /></span>
     </button>
   );
 }
@@ -931,7 +1000,7 @@ function CadMdtCenter({ players, showToast }: { players: Player[]; showToast: (m
 
   useEffect(() => {
     void refreshCad(true);
-    const timer = window.setInterval(() => void refreshCad(true), 10000);
+    const timer = window.setInterval(() => void refreshCad(true), 5000);
     return () => window.clearInterval(timer);
   }, [refreshCad]);
 
@@ -1029,13 +1098,13 @@ function CadMdtCenter({ players, showToast }: { players: Player[]; showToast: (m
         </div>
         <div className="flex items-center gap-2">
           <button onClick={() => setActiveTab("dispatch")} className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${activeTab === "dispatch" ? "bg-blue-600 text-white" : "border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white"}`}>
-            911 CAD Queue ({activeCalls.length})
+            911 CAD Queue (<AnimatedNumber value={activeCalls.length} />)
           </button>
           <button onClick={() => setActiveTab("lookup")} className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${activeTab === "lookup" ? "bg-blue-600 text-white" : "border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white"}`}>
             NCIC Lookup
           </button>
           <button onClick={() => setActiveTab("units")} className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${activeTab === "units" ? "bg-blue-600 text-white" : "border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white"}`}>
-            Unit Monitor ({emergencyUnits.length})
+            Unit Monitor (<AnimatedNumber value={emergencyUnits.length} />)
           </button>
         </div>
       </div>
@@ -1056,7 +1125,7 @@ function CadMdtCenter({ players, showToast }: { players: Player[]; showToast: (m
                         <span className="font-mono text-xs font-medium text-white">{call.id}</span>
                         <span className="text-xs text-zinc-400">• {call.type}</span>
                       </div>
-                      <span className="text-[11px] text-zinc-500">{call.createdAt ? relativeTime(call.createdAt) : call.timestamp || "Just now"}</span>
+                      <span className="text-[11px] text-zinc-500">{call.createdAt ? <LiveRelativeTime value={call.createdAt} /> : call.timestamp || "Just now"}</span>
                     </div>
                     <div className="mt-3 space-y-1.5 text-xs">
                       <div className="text-zinc-300"><span className="text-zinc-500 font-medium">Caller:</span> {call.caller}</div>
@@ -1203,7 +1272,7 @@ function CadMdtCenter({ players, showToast }: { players: Player[]; showToast: (m
                     <PlayerAvatar player={unit} />
                     <div>
                       <div className="font-medium text-white">{unit.name}</div>
-                      <div className="text-zinc-500 text-[11px]">{unit.team} • Ping: {unit.ping}ms</div>
+                      <div className="text-zinc-500 text-[11px]">{unit.team} • Ping: <AnimatedNumber value={unit.ping} suffix="ms" /></div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -1285,7 +1354,7 @@ function LogRow({ log }: { log: ModAction }) {
         <span className="font-medium text-white">{log.staff}</span> executed <span className="font-semibold text-zinc-300">{log.type}</span> on <span className="font-medium text-white">{log.player}</span>
         <div className="text-[11px] text-zinc-500 mt-0.5">{log.reason}</div>
       </div>
-      <span className="text-[11px] text-zinc-600">{log.time}</span>
+      <span className="text-[11px] text-zinc-600">{log.timestamp ? <LiveRelativeTime value={log.timestamp} /> : log.time}</span>
     </div>
   );
 }
@@ -1397,7 +1466,7 @@ function VeltrixBotDashboard({ showToast }: { showToast: (m: string) => void }) 
 
   useEffect(() => {
     void load();
-    const timer = window.setInterval(() => void load(), 15000);
+    const timer = window.setInterval(() => void load(), 5000);
     return () => window.clearInterval(timer);
   }, [load]);
 
@@ -1422,10 +1491,10 @@ function VeltrixBotDashboard({ showToast }: { showToast: (m: string) => void }) 
 
   const operationalSystems = data.systems.filter((system) => system.healthy).length;
   const stats = [
-    { label: "Uptime", value: formatBotUptime(data.bot.uptime), detail: `${data.bot.restarts} lifetime restarts`, icon: Activity },
-    { label: "Memory", value: `${data.bot.memoryMb} MB`, detail: `${data.bot.cpu.toFixed(1)}% CPU`, icon: Cpu },
-    { label: "Staff On Duty", value: String(data.summary.staffOnDuty), detail: `${data.summary.staffProfiles} staff profiles`, icon: UserCheck },
-    { label: "Active Sessions", value: String(data.summary.activeSessions), detail: `${data.summary.activeGiveaways} live giveaways`, icon: Radio },
+    { label: "Uptime", value: data.bot.uptime, liveUptime: true, detail: <><AnimatedNumber value={data.bot.restarts} /> lifetime restarts</>, icon: Activity },
+    { label: "Memory", value: data.bot.memoryMb, suffix: " MB", detail: <><AnimatedNumber value={data.bot.cpu} decimals={1} suffix="%" /> CPU</>, icon: Cpu },
+    { label: "Staff On Duty", value: data.summary.staffOnDuty, detail: <><AnimatedNumber value={data.summary.staffProfiles} /> staff profiles</>, icon: UserCheck },
+    { label: "Active Sessions", value: data.summary.activeSessions, detail: <><AnimatedNumber value={data.summary.activeGiveaways} /> live giveaways</>, icon: Radio },
   ];
 
   return (
@@ -1452,7 +1521,7 @@ function VeltrixBotDashboard({ showToast }: { showToast: (m: string) => void }) 
             <div className="flex items-center gap-3">
               <div className="hidden text-right sm:block">
                 <div className="text-[10px] uppercase tracking-wider text-zinc-600">Last synchronized</div>
-                <div className="mt-0.5 text-xs text-zinc-300">{relativeTime(data.updatedAt)}</div>
+                <div className="mt-0.5 text-xs text-zinc-300"><LiveRelativeTime value={data.updatedAt} /></div>
               </div>
               <Button variant="secondary" onClick={() => void load(true)}><RefreshCw className="h-3.5 w-3.5" /> Refresh</Button>
             </div>
@@ -1468,7 +1537,7 @@ function VeltrixBotDashboard({ showToast }: { showToast: (m: string) => void }) 
           return (
             <div key={stat.label} className="rounded-xl border border-zinc-800/80 bg-zinc-900/30 p-4 transition hover:border-zinc-700 hover:bg-zinc-900/50">
               <div className="flex items-center justify-between text-zinc-500"><span className="text-[10px] font-semibold uppercase tracking-wider">{stat.label}</span><Icon className="h-4 w-4" /></div>
-              <div className="mt-3 text-2xl font-semibold tracking-tight text-white">{stat.value}</div>
+              <div className="mt-3 text-2xl font-semibold tracking-tight text-white">{stat.liveUptime ? <LiveUptime startedAt={stat.value} /> : <AnimatedNumber value={stat.value || 0} suffix={stat.suffix} />}</div>
               <div className="mt-1 text-[11px] text-zinc-500">{stat.detail}</div>
             </div>
           );
@@ -1477,7 +1546,7 @@ function VeltrixBotDashboard({ showToast }: { showToast: (m: string) => void }) 
 
       <section className="grid gap-6 xl:grid-cols-[1.1fr_.9fr]">
         <Card>
-          <CardHeader title="System Health" icon={<Activity className="h-4 w-4 text-emerald-400" />} action={<span className="text-[10px] font-medium text-zinc-500">{operationalSystems}/{data.systems.length} operational</span>} />
+          <CardHeader title="System Health" icon={<Activity className="h-4 w-4 text-emerald-400" />} action={<span className="text-[10px] font-medium text-zinc-500"><AnimatedNumber value={operationalSystems} />/<AnimatedNumber value={data.systems.length} /> operational</span>} />
           <div className="mt-4 grid gap-2 sm:grid-cols-2">
             {data.systems.map((system) => (
               <div key={system.id} className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-950/50 px-3 py-2.5">
@@ -1494,15 +1563,15 @@ function VeltrixBotDashboard({ showToast }: { showToast: (m: string) => void }) 
           <CardHeader title="Persistent Data" icon={<Database className="h-4 w-4 text-blue-400" />} action={<span className={`text-[10px] font-semibold uppercase ${data.database.integrity === "ok" ? "text-emerald-400" : "text-amber-400"}`}>{data.database.integrity}</span>} />
           <div className="mt-4 grid grid-cols-2 gap-3">
             {[
-              ["Moderation cases", data.summary.moderationCases],
-              ["Active warnings", data.summary.activeWarnings],
-              ["Verified members", data.summary.verifiedMembers],
-              ["Active strikes", data.summary.activeStrikes],
-              ["Pending LOAs", data.summary.pendingLeaveRequests],
-              ["Database", `${Math.max(0.1, data.database.sizeBytes / 1024 / 1024).toFixed(1)} MB`],
-            ].map(([label, value]) => (
-              <div key={String(label)} className="rounded-lg border border-zinc-800/80 bg-zinc-950/40 p-3">
-                <div className="text-lg font-semibold text-zinc-100">{value}</div>
+              { label: "Moderation cases", value: data.summary.moderationCases },
+              { label: "Active warnings", value: data.summary.activeWarnings },
+              { label: "Verified members", value: data.summary.verifiedMembers },
+              { label: "Active strikes", value: data.summary.activeStrikes },
+              { label: "Pending LOAs", value: data.summary.pendingLeaveRequests },
+              { label: "Database", value: Math.max(0.1, data.database.sizeBytes / 1024 / 1024), decimals: 1, suffix: " MB" },
+            ].map(({ label, value, decimals, suffix }) => (
+              <div key={label} className="rounded-lg border border-zinc-800/80 bg-zinc-950/40 p-3">
+                <div className="text-lg font-semibold text-zinc-100"><AnimatedNumber value={value} decimals={decimals} suffix={suffix} /></div>
                 <div className="mt-0.5 text-[10px] uppercase tracking-wider text-zinc-600">{label}</div>
               </div>
             ))}
@@ -1512,7 +1581,7 @@ function VeltrixBotDashboard({ showToast }: { showToast: (m: string) => void }) 
 
       <section className="grid gap-6 xl:grid-cols-2">
         <Card>
-          <CardHeader title="Active Giveaways" icon={<Sparkles className="h-4 w-4 text-violet-400" />} action={<span className="rounded-md bg-zinc-800 px-2 py-1 text-[10px] text-zinc-400">{data.giveaways.length} live</span>} />
+          <CardHeader title="Active Giveaways" icon={<Sparkles className="h-4 w-4 text-violet-400" />} action={<span className="rounded-md bg-zinc-800 px-2 py-1 text-[10px] text-zinc-400"><AnimatedNumber value={data.giveaways.length} /> live</span>} />
           <div className="mt-4 space-y-2">
             {data.giveaways.length === 0 ? <EmptyState title="No active giveaways" text="New Veltrix giveaways will appear here automatically." /> : data.giveaways.map((giveaway) => (
               <div key={giveaway.id} className="rounded-lg border border-zinc-800 bg-zinc-950/50 p-3.5">
@@ -1520,7 +1589,7 @@ function VeltrixBotDashboard({ showToast }: { showToast: (m: string) => void }) 
                   <div><div className="text-xs font-semibold text-white">{giveaway.prize}</div><div className="mt-1 text-[11px] text-zinc-500">Hosted by {giveaway.hostName} • {giveaway.winnerCount} winner{giveaway.winnerCount === 1 ? "" : "s"}</div></div>
                   <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2 py-0.5 text-[9px] font-semibold uppercase text-emerald-300">{giveaway.status}</span>
                 </div>
-                <div className="mt-3 flex items-center justify-between border-t border-zinc-800/80 pt-2 text-[10px] text-zinc-500"><span>{giveaway.entries.users} entered</span><span>Ends {formatEndsAt(giveaway.endTime)}</span></div>
+                <div className="mt-3 flex items-center justify-between border-t border-zinc-800/80 pt-2 text-[10px] text-zinc-500"><span><AnimatedNumber value={giveaway.entries.users} /> entered</span><span>Ends <LiveEndsAt value={giveaway.endTime} /></span></div>
               </div>
             ))}
           </div>
@@ -1532,7 +1601,7 @@ function VeltrixBotDashboard({ showToast }: { showToast: (m: string) => void }) 
             {data.recentStaffActivity.length === 0 ? <EmptyState title="No staff activity yet" text="Shift, quota, strike, and LOA actions will be recorded here." /> : data.recentStaffActivity.slice(0, 7).map((activity) => (
               <div key={activity.id} className="flex items-center justify-between gap-4 py-2.5 first:pt-0 last:pb-0">
                 <div className="min-w-0"><div className="truncate text-xs font-medium text-zinc-300">{formatActivityName(activity.action)}</div><div className="mt-0.5 truncate text-[10px] text-zinc-600">Actor {activity.actorId}{activity.targetId ? ` • Target ${activity.targetId}` : ""}</div></div>
-                <span className="shrink-0 text-[10px] text-zinc-600">{relativeTime(new Date(activity.createdAt).toISOString())}</span>
+                <span className="shrink-0 text-[10px] text-zinc-600"><LiveRelativeTime value={activity.createdAt} /></span>
               </div>
             ))}
           </div>
