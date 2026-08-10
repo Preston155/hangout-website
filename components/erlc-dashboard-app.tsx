@@ -612,12 +612,12 @@ export function App() {
           <Topbar page={page} onMenu={() => setMobileOpen(true)} serverData={serverData} onRefresh={loadLiveData} lastSyncedAt={lastSyncedAt} />
           <div className="mx-auto w-full max-w-[1400px] flex-1 p-4 sm:p-6 lg:p-8">
             {syncError && (
-              <div className="mb-6 flex items-center justify-between gap-4 rounded-lg border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-xs font-medium text-amber-300">
+              <div className="mb-6 flex flex-col items-stretch justify-between gap-3 rounded-lg border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-xs font-medium text-amber-300 sm:flex-row sm:items-center sm:gap-4">
                 <div className="flex items-center gap-2.5">
                   <AlertTriangle className="h-4 w-4 shrink-0 text-amber-400" />
                   <span>{syncError}</span>
                 </div>
-                <button onClick={loadLiveData} className="rounded bg-amber-500/20 px-2.5 py-1 text-[11px] font-semibold text-amber-200 transition hover:bg-amber-500/30">
+                <button onClick={loadLiveData} className="w-full shrink-0 rounded bg-amber-500/20 px-3 py-2 text-[11px] font-semibold text-amber-200 transition hover:bg-amber-500/30 sm:w-auto sm:py-1">
                   Retry Sync
                 </button>
               </div>
@@ -1449,8 +1449,10 @@ function VeltrixBotDashboard({ showToast }: { showToast: (m: string) => void }) 
   const [data, setData] = useState<VeltrixDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
 
   const load = useCallback(async (notify = false) => {
+    setRefreshing(true);
     try {
       const next = await api<VeltrixDashboardData>("/api/erlc/bot-dashboard/veltrix");
       setData(next);
@@ -1462,6 +1464,7 @@ function VeltrixBotDashboard({ showToast }: { showToast: (m: string) => void }) 
       if (notify) showToast(message);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   }, [showToast]);
 
@@ -1527,7 +1530,7 @@ function VeltrixBotDashboard({ showToast }: { showToast: (m: string) => void }) 
                 <div className="text-[10px] uppercase tracking-wider text-zinc-600">Last synchronized</div>
                 <div className="mt-0.5 text-xs text-zinc-300"><LiveRelativeTime value={data.updatedAt} /></div>
               </div>
-              <Button variant="secondary" onClick={() => void load(true)}><RefreshCw className="h-3.5 w-3.5" /> Refresh</Button>
+              <Button variant="secondary" disabled={refreshing} onClick={() => void load(true)}><RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} /> {refreshing ? "Syncing" : "Refresh"}</Button>
             </div>
           </div>
         </div>
@@ -1541,31 +1544,27 @@ function VeltrixBotDashboard({ showToast }: { showToast: (m: string) => void }) 
           return (
             <motion.div
               key={stat.label}
-              layout
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
-              whileHover={{ y: -2, borderColor: "rgba(113,113,122,.65)" }}
-              className="group relative overflow-hidden rounded-xl border border-zinc-800/80 bg-zinc-900/30 p-4"
+              className="relative overflow-hidden rounded-xl border border-zinc-800/80 bg-zinc-900/30 p-4 transition-colors hover:border-zinc-700"
             >
-              <motion.div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-y-0 w-20 bg-gradient-to-r from-transparent via-blue-400/[0.06] to-transparent"
-                animate={{ x: ["-180%", "650%"] }}
-                transition={{ duration: 3.8, delay: index * 0.45, repeat: Infinity, repeatDelay: 1.2, ease: "linear" }}
-              />
               <div className="relative flex items-center justify-between text-zinc-500">
                 <span className="text-[10px] font-semibold uppercase tracking-wider">{stat.label}</span>
-                <motion.div animate={{ opacity: [0.45, 1, 0.45] }} transition={{ duration: 2.2, repeat: Infinity, delay: index * 0.2 }}><Icon className="h-4 w-4" /></motion.div>
+                <Icon className="h-4 w-4" />
               </div>
-              <div className="relative mt-3 whitespace-nowrap text-2xl font-semibold tracking-tight text-white">{stat.liveUptime ? <LiveUptime startedAt={stat.value} /> : <AnimatedNumber value={stat.value || 0} suffix={stat.suffix} />}</div>
+              <div className="relative mt-3 whitespace-nowrap text-2xl font-semibold tabular-nums tracking-tight text-white">{stat.liveUptime ? <LiveUptime startedAt={stat.value} /> : <AnimatedNumber value={stat.value || 0} suffix={stat.suffix} />}</div>
               <div className="relative mt-1 text-[11px] text-zinc-500">{stat.detail}</div>
               <div className="relative mt-3 flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-wider text-zinc-600">
                 <span className="relative flex h-1.5 w-1.5"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400 opacity-50" /><span className="relative h-1.5 w-1.5 rounded-full bg-blue-400" /></span>
                 Live telemetry
               </div>
               <div className="absolute inset-x-0 bottom-0 h-px overflow-hidden bg-zinc-800">
-                <motion.div className="h-full w-1/3 bg-gradient-to-r from-transparent via-blue-400 to-transparent" animate={{ x: ["-100%", "400%"] }} transition={{ duration: 2.4, repeat: Infinity, delay: index * 0.25, ease: "linear" }} />
+                <motion.div
+                  className="h-full origin-left bg-blue-400/80 will-change-transform"
+                  animate={{ scaleX: [0, 1], opacity: [0.35, 0.9] }}
+                  transition={{ duration: 5, repeat: Infinity, delay: index * 0.15, ease: "linear" }}
+                />
               </div>
             </motion.div>
           );
