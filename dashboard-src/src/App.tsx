@@ -47,7 +47,7 @@ import {
 } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
-type Page = "overview" | "bot" | "connect" | "players" | "cad" | "commands" | "logs" | "staff" | "settings";
+type Page = "overview" | "bot" | "operations" | "connect" | "players" | "cad" | "commands" | "logs" | "staff" | "settings";
 type Severity = "low" | "medium" | "high" | "critical";
 type PlayerStatus = "online" | "flagged" | "banned" | "staff";
 type ModActionType = "Warn" | "Kick" | "Ban" | "Unban" | "Kill" | "Teleport" | "PM" | "Announcement" | "CAD" | "System";
@@ -461,6 +461,7 @@ const permissions: Record<string, Permission[]> = {
 const navItems = [
   { id: "overview" as Page, label: "Overview", icon: Layers },
   { id: "bot" as Page, label: "Veltrix Bot", icon: Cpu },
+  { id: "operations" as Page, label: "Staff Operations", icon: Clock3 },
   { id: "connect" as Page, label: "Server Connect", icon: Server },
   { id: "players" as Page, label: "Players", icon: Users },
   { id: "cad" as Page, label: "MDT / CAD Center", icon: Siren },
@@ -649,7 +650,8 @@ export function App() {
             <AnimatePresence mode="wait">
               <motion.div key={page} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.15 }}>
                 {page === "overview" && <Overview showToast={showToast} setPage={setPage} serverData={serverData} logs={logData} onRefresh={loadLiveData} />}
-                {page === "bot" && <VeltrixBotDashboard showToast={showToast} />}
+                {page === "bot" && <VeltrixBotDashboard showToast={showToast} mode="overview" />}
+                {page === "operations" && <VeltrixBotDashboard showToast={showToast} mode="staff" />}
                 {page === "connect" && <Connect showToast={showToast} onConnected={async () => { await loadLiveData(); setPage("overview"); }} />}
                 {page === "players" && <Players players={playerData} selected={selectedPlayer} setSelected={setSelectedPlayer} openAction={(action, player) => setModal({ action, player })} />}
                 {page === "cad" && <CadMdtCenter players={playerData} showToast={showToast} />}
@@ -1469,7 +1471,7 @@ function formatEndsAt(value: number) {
   return `in ${Math.max(1, minutes)}m`;
 }
 
-function VeltrixBotDashboard({ showToast }: { showToast: (m: string) => void }) {
+function VeltrixBotDashboard({ showToast, mode = "overview" }: { showToast: (m: string) => void; mode?: "overview" | "staff" }) {
   const [data, setData] = useState<VeltrixDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -1545,7 +1547,12 @@ function VeltrixBotDashboard({ showToast }: { showToast: (m: string) => void }) 
 
   const operationalSystems = data.systems.filter((system) => system.healthy).length;
   const userName = (userId: string | null | undefined) => userId ? (data.users[userId]?.name || `User ${userId.slice(-4)}`) : "Dashboard Admin";
-  const stats = [
+  const stats: Array<{ label: string; value: number | null; detail: React.ReactNode; icon: React.ComponentType<{ className?: string }>; liveUptime?: boolean; suffix?: string }> = mode === "staff" ? [
+    { label: "Staff On Duty", value: data.summary.staffOnDuty, detail: <><AnimatedNumber value={data.summary.staffProfiles} /> staff profiles</>, icon: UserCheck },
+    { label: "Completed Shifts", value: data.staffProfiles.reduce((total, profile) => total + profile.completedShifts, 0), detail: "All-time persistent history", icon: Clock3 },
+    { label: "Active Warnings", value: data.summary.activeWarnings, detail: <><AnimatedNumber value={data.summary.moderationCases} /> moderation cases</>, icon: ShieldAlert },
+    { label: "Active Strikes", value: data.summary.activeStrikes, detail: <><AnimatedNumber value={data.summary.pendingLeaveRequests} /> pending LOAs</>, icon: AlertTriangle },
+  ] : [
     { label: "Uptime", value: data.bot.uptime, liveUptime: true, detail: <><AnimatedNumber value={data.bot.restarts} /> lifetime restarts</>, icon: Activity },
     { label: "Memory", value: data.bot.memoryMb, suffix: " MB", detail: <><AnimatedNumber value={data.bot.cpu} decimals={1} suffix="%" /> CPU</>, icon: Cpu },
     { label: "Staff On Duty", value: data.summary.staffOnDuty, detail: <><AnimatedNumber value={data.summary.staffProfiles} /> staff profiles</>, icon: UserCheck },
@@ -1564,7 +1571,7 @@ function VeltrixBotDashboard({ showToast }: { showToast: (m: string) => void }) 
               </div>
               <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <h1 className="text-xl font-semibold tracking-tight text-white sm:text-2xl">Veltrix Operations</h1>
+                  <h1 className="text-xl font-semibold tracking-tight text-white sm:text-2xl">{mode === "staff" ? "Staff Operations V2" : "Veltrix Operations"}</h1>
                   <span className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${data.bot.online ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-300" : "border-red-400/20 bg-red-400/10 text-red-300"}`}>
                     <span className="relative flex h-1.5 w-1.5">
                       {data.bot.online && <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" />}
@@ -1573,7 +1580,7 @@ function VeltrixBotDashboard({ showToast }: { showToast: (m: string) => void }) 
                     {data.bot.online ? "Online" : data.bot.status}
                   </span>
                 </div>
-                <p className="mt-1 text-xs leading-relaxed text-zinc-400">Live health, persistent systems, giveaways, sessions, moderation, and Staff Operations V2.</p>
+                <p className="mt-1 text-xs leading-relaxed text-zinc-400">{mode === "staff" ? "Manage live shifts, duty status, discipline records, moderation history, and staff audits." : "Live bot health, persistent systems, giveaways, sessions, and database telemetry."}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -1622,7 +1629,7 @@ function VeltrixBotDashboard({ showToast }: { showToast: (m: string) => void }) 
         })}
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[1.1fr_.9fr]">
+      {mode === "overview" && (<section className="grid gap-6 xl:grid-cols-[1.1fr_.9fr]">
         <Card>
           <CardHeader title="System Health" icon={<Activity className="h-4 w-4 text-emerald-400" />} action={<span className="text-[10px] font-medium text-zinc-500"><AnimatedNumber value={operationalSystems} />/<AnimatedNumber value={data.systems.length} /> operational</span>} />
           <div className="mt-4 grid gap-2 sm:grid-cols-2">
@@ -1655,9 +1662,9 @@ function VeltrixBotDashboard({ showToast }: { showToast: (m: string) => void }) 
             ))}
           </div>
         </Card>
-      </section>
+      </section>)}
 
-      <section className="grid gap-6 xl:grid-cols-[.85fr_1.15fr]">
+      {mode === "staff" && (<><section className="grid gap-6 xl:grid-cols-[.85fr_1.15fr]">
         <Card>
           <CardHeader title="Shift Control" icon={<Clock3 className="h-4 w-4 text-blue-400" />} action={<span className="text-[10px] uppercase tracking-wider text-zinc-600">Staff Operations V2</span>} />
           <div className="mt-4 space-y-3">
@@ -1731,10 +1738,10 @@ function VeltrixBotDashboard({ showToast }: { showToast: (m: string) => void }) 
             ))}
           </div>
         </Card>
-      </section>
+      </section></>)}
 
       <section className="grid gap-6 xl:grid-cols-2">
-        <Card>
+        {mode === "overview" && <Card>
           <CardHeader title="Active Giveaways" icon={<Sparkles className="h-4 w-4 text-violet-400" />} action={<span className="rounded-md bg-zinc-800 px-2 py-1 text-[10px] text-zinc-400"><AnimatedNumber value={data.giveaways.length} /> live</span>} />
           <div className="mt-4 space-y-2">
             {data.giveaways.length === 0 ? <EmptyState title="No active giveaways" text="New Veltrix giveaways will appear here automatically." /> : data.giveaways.map((giveaway) => (
@@ -1747,9 +1754,9 @@ function VeltrixBotDashboard({ showToast }: { showToast: (m: string) => void }) 
               </div>
             ))}
           </div>
-        </Card>
+        </Card>}
 
-        <Card>
+        {mode === "staff" && <Card>
           <CardHeader title="Staff Operations Activity" icon={<ShieldCheck className="h-4 w-4 text-blue-400" />} action={<span className="text-[10px] text-zinc-600">Persistent audit trail</span>} />
           <div className="mt-4 divide-y divide-zinc-800/70">
             {data.recentStaffActivity.length === 0 ? <EmptyState title="No staff activity yet" text="Shift, quota, strike, and LOA actions will be recorded here." /> : data.recentStaffActivity.slice(0, 7).map((activity) => (
@@ -1759,7 +1766,7 @@ function VeltrixBotDashboard({ showToast }: { showToast: (m: string) => void }) 
               </div>
             ))}
           </div>
-        </Card>
+        </Card>}
       </section>
     </div>
   );
