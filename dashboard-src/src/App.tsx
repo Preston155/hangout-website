@@ -397,8 +397,10 @@ const mockRecords: CADRecord[] = [
 
 async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = sessionStorage.getItem("prestonhq_token");
+  const method = String(options.method || "GET").toUpperCase();
   const response = await fetch(API_BASE + path, {
     ...options,
+    cache: options.cache || (method === "GET" ? "no-store" : undefined),
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
@@ -2364,12 +2366,30 @@ function TireSalesReportPage({ showToast, setPage }: { showToast: (m: string) =>
   const currentMonthKey = easternDateKey(new Date()).slice(0, 7);
   const [monthKey, setMonthKey] = useState(currentMonthKey);
   const [data, setData] = useState<TireShopData | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const load = useCallback(async () => {
-    try { setData(await api<TireShopData>("/api/tire-shop")); }
+    setRefreshing(true);
+    try {
+      setData(await api<TireShopData>(`/api/tire-shop?fresh=${Date.now()}`, { cache: "no-store" }));
+      setLastUpdated(new Date());
+    }
     catch (error) { showToast(error instanceof Error ? error.message : "Tire sales could not be loaded."); }
+    finally { setRefreshing(false); }
   }, [showToast]);
-  useEffect(() => { void load(); }, [load]);
+  useEffect(() => {
+    void load();
+    const timer = window.setInterval(() => void load(), 10000);
+    const refreshOnFocus = () => void load();
+    window.addEventListener("focus", refreshOnFocus);
+    document.addEventListener("visibilitychange", refreshOnFocus);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener("focus", refreshOnFocus);
+      document.removeEventListener("visibilitychange", refreshOnFocus);
+    };
+  }, [load]);
 
   const sales = (data?.sales || []).filter((sale) => (sale.serviceType || "tire") === "tire" && easternDateKey(sale.soldAt).slice(0, 7) === monthKey);
   const revenue = sales.reduce((sum, sale) => sum + Number(sale.total || 0), 0);
@@ -2384,7 +2404,7 @@ function TireSalesReportPage({ showToast, setPage }: { showToast: (m: string) =>
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><h1 className="text-2xl font-semibold tracking-tight text-white">Monthly Tire Sales</h1><p className="mt-1 text-xs text-zinc-400">Tire sales only. Services are excluded from this report.</p></div><Button variant="secondary" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record Sale</Button></div>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><h1 className="text-2xl font-semibold tracking-tight text-white">Monthly Tire Sales</h1><p className="mt-1 text-xs text-zinc-400">Tire sales only. Updates automatically every 10 seconds.</p>{lastUpdated && <p className="mt-1 text-[10px] text-zinc-600">Last updated {lastUpdated.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", second: "2-digit" })}</p>}</div><div className="flex gap-2"><Button variant="ghost" disabled={refreshing} onClick={() => void load()}><RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} /> Refresh</Button><Button variant="secondary" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record Sale</Button></div></div>
 
       <section className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-4 sm:p-5">
         <div className="flex items-center justify-between gap-3"><button aria-label="Previous month" onClick={() => setMonthKey((current) => shiftMonthKey(current, -1))} className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-zinc-800 bg-zinc-950 text-zinc-300 transition hover:border-zinc-600 hover:text-white"><ChevronRight className="h-5 w-5 rotate-180" /></button><div className="min-w-0 text-center"><div className="text-[10px] font-semibold uppercase tracking-wider text-emerald-400">Viewing month</div><h2 className="mt-1 truncate text-xl font-semibold text-white sm:text-2xl">{monthKeyLabel(monthKey)}</h2></div><button aria-label="Next month" disabled={!canGoForward} onClick={() => setMonthKey((current) => shiftMonthKey(current, 1))} className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-zinc-800 bg-zinc-950 text-zinc-300 transition hover:border-zinc-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"><ChevronRight className="h-5 w-5" /></button></div>
