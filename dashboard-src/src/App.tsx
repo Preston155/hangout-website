@@ -49,7 +49,7 @@ import {
 } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
-type Page = "overview" | "bot" | "operations" | "connect" | "players" | "cad" | "commands" | "logs" | "staff" | "tire-inventory" | "inventory-view" | "tire-sales" | "settings";
+type Page = "overview" | "bot" | "operations" | "connect" | "players" | "cad" | "commands" | "logs" | "staff" | "tire-inventory" | "inventory-view" | "tire-sales" | "tire-sales-report" | "settings";
 type Severity = "low" | "medium" | "high" | "critical";
 type PlayerStatus = "online" | "flagged" | "banned" | "staff";
 type ModActionType = "Warn" | "Kick" | "Ban" | "Unban" | "Kill" | "Teleport" | "PM" | "Announcement" | "CAD" | "System";
@@ -523,6 +523,7 @@ const navItems = [
   { id: "tire-inventory" as Page, label: "Tire Inventory", icon: Package },
   { id: "inventory-view" as Page, label: "Inventory View", icon: Eye },
   { id: "tire-sales" as Page, label: "Sales & Services", icon: ShoppingCart },
+  { id: "tire-sales-report" as Page, label: "Monthly Tire Sales", icon: ClipboardList },
   { id: "settings" as Page, label: "System Settings", icon: Settings },
 ];
 
@@ -735,6 +736,7 @@ export function App() {
                 {page === "tire-inventory" && <TireInventoryPage showToast={showToast} setPage={setPage} />}
                 {page === "inventory-view" && <TireInventoryViewPage showToast={showToast} />}
                 {page === "tire-sales" && <TireSalesPage showToast={showToast} setPage={setPage} />}
+                {page === "tire-sales-report" && <TireSalesReportPage showToast={showToast} setPage={setPage} />}
                 {page === "settings" && <SettingsPage showToast={showToast} />}
               </motion.div>
             </AnimatePresence>
@@ -2038,6 +2040,23 @@ function easternDateKey(value: string | number | Date) {
   return `${get("year")}-${get("month")}-${get("day")}`;
 }
 
+function shiftMonthKey(monthKey: string, amount: number) {
+  const [year, month] = monthKey.split("-").map(Number);
+  const shifted = new Date(Date.UTC(year, month - 1 + amount, 1));
+  return `${shifted.getUTCFullYear()}-${String(shifted.getUTCMonth() + 1).padStart(2, "0")}`;
+}
+
+function monthKeyLabel(monthKey: string) {
+  const [year, month] = monthKey.split("-").map(Number);
+  return new Date(Date.UTC(year, month - 1, 1)).toLocaleDateString("en-US", { timeZone: "UTC", month: "long", year: "numeric" });
+}
+
+function paymentMethodTotal(sales: TireSale[], method: string) {
+  return sales
+    .filter((sale) => String(sale.paymentMethod || "").toLowerCase() === method.toLowerCase())
+    .reduce((sum, sale) => sum + Number(sale.total || 0), 0);
+}
+
 function easternTimeValue(value: string | number | Date = new Date()) {
   const parts = new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(new Date(value));
   const get = (type: string) => parts.find((part) => part.type === type)?.value || "00";
@@ -2198,6 +2217,8 @@ function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void;
   const [inventoryPickerOpen, setInventoryPickerOpen] = useState(false);
   const [editingSaleId, setEditingSaleId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [paymentPeriod, setPaymentPeriod] = useState<"today" | "month">("today");
+  const [selectedPayment, setSelectedPayment] = useState<"Cash" | "Cashapp" | "Chime">("Cash");
 
   const load = useCallback(async () => {
     try { setData(await api<TireShopData>("/api/tire-shop")); }
@@ -2283,6 +2304,8 @@ function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void;
   const monthRevenue = monthSales.reduce((sum, sale) => sum + sale.total, 0);
   const monthItems = monthSales.reduce((sum, sale) => sum + sale.quantity, 0);
   const monthAverage = monthSales.length ? monthRevenue / monthSales.length : 0;
+  const paymentSales = paymentPeriod === "today" ? todaySales : monthSales;
+  const selectedPaymentTotal = paymentMethodTotal(paymentSales, selectedPayment);
   const currentMonthLabel = new Date().toLocaleDateString("en-US", { timeZone: "America/New_York", month: "long", year: "numeric" });
   const currentSaleTotal = Math.max(0, Number(form.unitPrice) || 0);
   const isTireSale = form.serviceType === "tire";
@@ -2299,6 +2322,11 @@ function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void;
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end"><div><h1 className="text-2xl font-semibold tracking-tight text-white">Sales & Services</h1><p className="mt-1 text-xs text-zinc-400">Record tire sales, mounts, plugs, rotations, and brake work.</p></div><Button variant="secondary" onClick={() => setPage("tire-inventory")}><Package className="h-3.5 w-3.5" /> Open Inventory</Button></div>
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4"><TireStat label="Today's revenue" value={money(summary?.todayRevenue || 0)} detail="Calculated automatically" /><TireStat label="Jobs / items" value={summary?.todayUnits || 0} detail="Today's quantity" /><TireStat label="Transactions" value={todaySales.length} detail="Work recorded today" /><TireStat label="Average sale" value={money(averageSale)} detail="Revenue per transaction" /></div>
       <section className="rounded-xl border border-emerald-500/15 bg-emerald-500/[.04] p-4 sm:p-5"><div className="mb-4 flex items-end justify-between gap-3"><div><div className="text-[10px] font-semibold uppercase tracking-wider text-emerald-400">This Month</div><h2 className="mt-1 text-lg font-semibold text-white">{currentMonthLabel}</h2></div><div className="text-right"><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-500">Monthly revenue</div><div className="mt-1 text-2xl font-semibold tracking-tight text-emerald-300">{money(monthRevenue)}</div></div></div><div className="grid grid-cols-3 gap-2 border-t border-emerald-500/10 pt-4"><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Jobs / items</div><div className="mt-1 text-base font-semibold text-zinc-200">{monthItems}</div></div><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Transactions</div><div className="mt-1 text-base font-semibold text-zinc-200">{monthSales.length}</div></div><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Average sale</div><div className="mt-1 text-base font-semibold text-zinc-200">{money(monthAverage)}</div></div></div></section>
+      <section className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-4 sm:p-5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><div className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">Payment totals</div><div className="mt-1 text-sm font-semibold text-white">{paymentPeriod === "today" ? "Today" : currentMonthLabel}</div></div><div className="grid grid-cols-2 rounded-lg border border-zinc-800 bg-zinc-950 p-1"><button onClick={() => setPaymentPeriod("today")} className={`rounded-md px-3 py-2 text-xs font-semibold transition ${paymentPeriod === "today" ? "bg-zinc-800 text-white" : "text-zinc-500"}`}>Today</button><button onClick={() => setPaymentPeriod("month")} className={`rounded-md px-3 py-2 text-xs font-semibold transition ${paymentPeriod === "month" ? "bg-zinc-800 text-white" : "text-zinc-500"}`}>This Month</button></div></div>
+        <div className="mt-4 grid gap-2 sm:grid-cols-3">{(["Cash", "Cashapp", "Chime"] as const).map((method) => <button key={method} onClick={() => setSelectedPayment(method)} className={`rounded-xl border p-3 text-left transition ${selectedPayment === method ? "border-emerald-500/35 bg-emerald-500/10" : "border-zinc-800 bg-zinc-950/40 hover:border-zinc-700"}`}><div className={`text-[10px] font-semibold uppercase tracking-wider ${selectedPayment === method ? "text-emerald-400" : "text-zinc-500"}`}>{method}</div><div className="mt-1 text-xl font-semibold text-white">{money(paymentMethodTotal(paymentSales, method))}</div></button>)}</div>
+        <div className="mt-3 flex items-center justify-between rounded-lg bg-zinc-950/60 px-3 py-2.5 text-xs"><span className="text-zinc-500">Selected: {selectedPayment}</span><span className="font-semibold text-emerald-300">{money(selectedPaymentTotal)}</span></div>
+      </section>
       <Card>
         <CardHeader title={editingSaleId ? "Edit Work Entry" : "Record Work"} icon={<ShoppingCart className="h-4 w-4 text-emerald-400" />} action={<div className="text-right"><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Total</div><div className="text-sm font-semibold text-emerald-300">{money(currentSaleTotal)}</div></div>} />
         <form onSubmit={recordSale} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -2318,6 +2346,48 @@ function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void;
       <Card>
         <CardHeader title="Daily Work History" icon={<ClipboardList className="h-4 w-4 text-zinc-400" />} />
         {!data ? <EmptyState title="Loading work history" text="Reading saved sales and services..." /> : groups.length === 0 ? <EmptyState title="No work recorded" text="Your daily sales and service history will appear here." /> : <div className="mt-4 space-y-5">{groups.map(([date, sales]) => { const revenue = sales.reduce((sum, sale) => sum + sale.total, 0); const units = sales.reduce((sum, sale) => sum + sale.quantity, 0); return <section key={date} className="overflow-hidden rounded-xl border border-zinc-800"><div className="flex flex-col justify-between gap-2 border-b border-zinc-800 bg-zinc-950/70 px-4 py-3 sm:flex-row sm:items-center"><div><div className="text-sm font-semibold text-white">{new Date(`${date}T12:00:00`).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}</div><div className="mt-0.5 text-[10px] text-zinc-500">{sales.length} transaction{sales.length === 1 ? "" : "s"} • {units} job/item{units === 1 ? "" : "s"}</div></div><div className="text-lg font-semibold text-emerald-300">{money(revenue)}</div></div><div className="divide-y divide-zinc-800/70">{sales.map((sale) => { const isTire = (sale.serviceType || "tire") === "tire"; return <div key={sale.id} className="grid gap-3 px-4 py-3 text-xs sm:grid-cols-[1fr_auto_auto_auto] sm:items-center"><div><div className="flex items-center gap-2"><span className={`font-semibold text-zinc-200 ${isTire ? "font-mono" : ""}`}>{isTire ? sale.size : workTypeLabel(sale.serviceType)}</span><span className={`rounded border px-1.5 py-0.5 text-[9px] font-semibold ${isTire ? tirePackageClass(sale.packageType) : "border-cyan-500/25 bg-cyan-500/10 text-cyan-300"}`}>{isTire ? tirePackageLabel(sale.packageType) : "Service"}</span></div><div className="mt-1 flex flex-wrap items-center gap-1.5 text-[10px] text-zinc-500"><span>{new Date(sale.soldAt).toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" })} • {sale.customer || "Walk-in"} • {sale.paymentMethod} • Recorded by {sale.recordedBy}</span><span className={`rounded border px-1.5 py-0.5 ${isTire && sale.adjustInventory !== false ? "border-zinc-700 text-zinc-500" : "border-blue-500/20 bg-blue-500/10 text-blue-300"}`}>{isTire ? sale.adjustInventory === false ? "Historical entry" : "Stock adjusted" : "Inventory unchanged"}</span></div></div><div className="text-zinc-400">{sale.quantity} {isTire ? tirePackageLabel(sale.packageType, sale.quantity !== 1) : workTypeLabel(sale.serviceType)}</div><div className="font-semibold text-white sm:text-right">{money(sale.total)} total</div><div className="flex gap-2 sm:justify-end"><button onClick={() => editSale(sale)} className="rounded-md border border-zinc-700 px-2.5 py-1.5 text-[10px] font-medium text-zinc-300 hover:bg-zinc-800">Edit</button><button disabled={busy} onClick={() => void removeSale(sale)} className="rounded-md border border-red-500/20 px-2.5 py-1.5 text-[10px] font-medium text-red-400 hover:bg-red-500/10">Remove</button></div></div>; })}</div></section>; })}</div>}
+      </Card>
+    </div>
+  );
+}
+
+function TireSalesReportPage({ showToast, setPage }: { showToast: (m: string) => void; setPage: (p: Page) => void }) {
+  const currentMonthKey = easternDateKey(new Date()).slice(0, 7);
+  const [monthKey, setMonthKey] = useState(currentMonthKey);
+  const [data, setData] = useState<TireShopData | null>(null);
+
+  const load = useCallback(async () => {
+    try { setData(await api<TireShopData>("/api/tire-shop")); }
+    catch (error) { showToast(error instanceof Error ? error.message : "Tire sales could not be loaded."); }
+  }, [showToast]);
+  useEffect(() => { void load(); }, [load]);
+
+  const sales = (data?.sales || []).filter((sale) => (sale.serviceType || "tire") === "tire" && easternDateKey(sale.soldAt).slice(0, 7) === monthKey);
+  const revenue = sales.reduce((sum, sale) => sum + Number(sale.total || 0), 0);
+  const quantity = sales.reduce((sum, sale) => sum + Number(sale.quantity || 0), 0);
+  const average = sales.length ? revenue / sales.length : 0;
+  const days = Object.entries(sales.reduce<Record<string, TireSale[]>>((result, sale) => {
+    const day = easternDateKey(sale.soldAt);
+    (result[day] ||= []).push(sale);
+    return result;
+  }, {})).sort(([a], [b]) => b.localeCompare(a));
+  const canGoForward = monthKey < currentMonthKey;
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><h1 className="text-2xl font-semibold tracking-tight text-white">Monthly Tire Sales</h1><p className="mt-1 text-xs text-zinc-400">Tire sales only. Services are excluded from this report.</p></div><Button variant="secondary" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record Sale</Button></div>
+
+      <section className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-4 sm:p-5">
+        <div className="flex items-center justify-between gap-3"><button aria-label="Previous month" onClick={() => setMonthKey((current) => shiftMonthKey(current, -1))} className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-zinc-800 bg-zinc-950 text-zinc-300 transition hover:border-zinc-600 hover:text-white"><ChevronRight className="h-5 w-5 rotate-180" /></button><div className="min-w-0 text-center"><div className="text-[10px] font-semibold uppercase tracking-wider text-emerald-400">Viewing month</div><h2 className="mt-1 truncate text-xl font-semibold text-white sm:text-2xl">{monthKeyLabel(monthKey)}</h2></div><button aria-label="Next month" disabled={!canGoForward} onClick={() => setMonthKey((current) => shiftMonthKey(current, 1))} className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-zinc-800 bg-zinc-950 text-zinc-300 transition hover:border-zinc-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"><ChevronRight className="h-5 w-5" /></button></div>
+      </section>
+
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4"><TireStat label="Tire revenue" value={money(revenue)} detail={monthKeyLabel(monthKey)} /><TireStat label="Quantity sold" value={quantity} detail="Tires, pairs, and sets" /><TireStat label="Tire transactions" value={sales.length} detail="Services excluded" /><TireStat label="Average sale" value={money(average)} detail="Per transaction" /></div>
+
+      <section className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-4 sm:p-5"><div className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">Payment breakdown</div><div className="mt-3 grid gap-2 sm:grid-cols-3">{(["Cash", "Cashapp", "Chime"] as const).map((method) => <div key={method} className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-3"><div className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">{method}</div><div className="mt-1 text-xl font-semibold text-white">{money(paymentMethodTotal(sales, method))}</div></div>)}</div></section>
+
+      <Card>
+        <CardHeader title={`${monthKeyLabel(monthKey)} Tire Sales`} icon={<ClipboardList className="h-4 w-4 text-zinc-400" />} />
+        {!data ? <EmptyState title="Loading tire sales" text="Reading saved monthly records..." /> : days.length === 0 ? <EmptyState title="No tire sales this month" text="Use the arrows to check another month." /> : <div className="mt-4 space-y-4">{days.map(([date, daySales]) => { const dayTotal = daySales.reduce((sum, sale) => sum + sale.total, 0); return <section key={date} className="overflow-hidden rounded-xl border border-zinc-800"><div className="flex items-center justify-between gap-3 border-b border-zinc-800 bg-zinc-950/70 px-4 py-3"><div><div className="text-sm font-semibold text-white">{new Date(`${date}T12:00:00`).toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" })}</div><div className="mt-0.5 text-[10px] text-zinc-500">{daySales.length} tire sale{daySales.length === 1 ? "" : "s"}</div></div><div className="text-base font-semibold text-emerald-300">{money(dayTotal)}</div></div><div className="divide-y divide-zinc-800/70">{daySales.map((sale) => <div key={sale.id} className="grid gap-2 px-4 py-3 text-xs sm:grid-cols-[1fr_auto_auto] sm:items-center"><div><div className="flex flex-wrap items-center gap-2"><span className="font-mono font-semibold text-zinc-200">{sale.size}</span><span className={`rounded border px-1.5 py-0.5 text-[9px] font-semibold ${tirePackageClass(sale.packageType)}`}>{tirePackageLabel(sale.packageType)}</span></div><div className="mt-1 text-[10px] text-zinc-500">{new Date(sale.soldAt).toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" })} • {sale.customer || "Walk-in"} • {sale.paymentMethod}</div></div><div className="text-zinc-400">Qty {sale.quantity}</div><div className="font-semibold text-white sm:text-right">{money(sale.total)}</div></div>)}</div></section>; })}</div>}
       </Card>
     </div>
   );
