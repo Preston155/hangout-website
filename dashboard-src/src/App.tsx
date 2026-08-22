@@ -525,7 +525,7 @@ const navItems = [
 ];
 
 export function App() {
-  const [page, setPage] = useState<Page>("overview");
+  const [page, setPage] = useState<Page>("tire-inventory");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [auth, setAuth] = useState<"checking" | "guest" | "ready">("checking");
   const [serverData, setServerData] = useState<ServerState>(defaultServer);
