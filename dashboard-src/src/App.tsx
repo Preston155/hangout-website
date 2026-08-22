@@ -2166,6 +2166,8 @@ function TireInventoryViewPage({ showToast }: { showToast: (m: string) => void }
 function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void; setPage: (p: Page) => void }) {
   const [data, setData] = useState<TireShopData | null>(null);
   const [form, setForm] = useState({ inventoryId: "", quantity: "1", unitPrice: "", soldDate: easternDateKey(new Date()), soldTime: easternTimeValue(), customer: "", paymentMethod: "Card", notes: "", adjustInventory: true });
+  const [inventorySearch, setInventorySearch] = useState("");
+  const [inventoryPickerOpen, setInventoryPickerOpen] = useState(false);
   const [editingSaleId, setEditingSaleId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -2189,6 +2191,8 @@ function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void;
   const selectInventory = (id: string) => {
     const item = data?.inventory.find((entry) => entry.id === id);
     setForm((current) => ({ ...current, inventoryId: id, unitPrice: item ? String(item.price) : "" }));
+    setInventorySearch(item ? `${item.size} — ${tirePackageLabel(item.packageType)}` : "");
+    setInventoryPickerOpen(false);
   };
 
   const recordSale = async (event: React.FormEvent) => {
@@ -2201,6 +2205,7 @@ function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void;
       const next = await api<TireShopData>(path, { method: editingSaleId ? "PATCH" : "POST", body: JSON.stringify({ ...form, quantity: Number(form.quantity), unitPrice: Number(form.unitPrice), soldAt }) });
       setData(next);
       setForm((current) => ({ ...current, inventoryId: "", quantity: "1", unitPrice: "", soldTime: easternTimeValue(), customer: "", notes: "" }));
+      setInventorySearch("");
       setEditingSaleId(null);
       showToast(editingSaleId ? "Sale updated and inventory reconciled." : "Sale recorded and inventory updated.");
     } catch (error) {
@@ -2210,8 +2215,10 @@ function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void;
 
   const editSale = (sale: TireSale) => {
     const soldDate = easternDateKey(sale.soldAt);
+    const item = data?.inventory.find((entry) => entry.id === sale.inventoryId);
     setEditingSaleId(sale.id);
     setForm({ inventoryId: sale.inventoryId, quantity: String(sale.quantity), unitPrice: String(sale.unitPrice), soldDate, soldTime: easternTimeValue(sale.soldAt), customer: sale.customer, paymentMethod: sale.paymentMethod, notes: sale.notes, adjustInventory: soldDate === easternDateKey(new Date()) });
+    setInventorySearch(item ? `${item.size} — ${tirePackageLabel(item.packageType)}` : `${sale.size} — ${tirePackageLabel(sale.packageType)}`);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -2224,6 +2231,7 @@ function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void;
       if (editingSaleId === sale.id) {
         setEditingSaleId(null);
         setForm((current) => ({ ...current, inventoryId: "", quantity: "1", unitPrice: "", soldTime: easternTimeValue(), customer: "", notes: "" }));
+        setInventorySearch("");
       }
       showToast("Sale removed and inventory reconciled.");
     } catch (error) {
@@ -2237,15 +2245,24 @@ function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void;
     return result;
   }, {})).sort(([a], [b]) => b.localeCompare(a));
   const summary = data?.summary;
+  const todayKey = easternDateKey(new Date());
+  const todaySales = (data?.sales || []).filter((sale) => easternDateKey(sale.soldAt) === todayKey);
+  const averageSale = todaySales.length ? todaySales.reduce((sum, sale) => sum + sale.total, 0) / todaySales.length : 0;
+  const currentSaleTotal = Math.max(0, Number(form.quantity) || 0) * Math.max(0, Number(form.unitPrice) || 0);
+  const inventoryMatches = (data?.inventory || []).filter((item) => {
+    if (form.adjustInventory && item.quantity <= 0 && item.id !== form.inventoryId) return false;
+    const query = inventorySearch.trim().toLowerCase();
+    return !query || `${item.size} ${tirePackageLabel(item.packageType)}`.toLowerCase().includes(query);
+  }).slice(0, 12);
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end"><div><h1 className="text-2xl font-semibold tracking-tight text-white">Tire Sales</h1><p className="mt-1 text-xs text-zinc-400">Enter today's sales or choose an earlier date to add your past sales history.</p></div><Button variant="secondary" onClick={() => setPage("tire-inventory")}><Package className="h-3.5 w-3.5" /> Open Inventory</Button></div>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"><TireStat label="Today's revenue" value={money(summary?.todayRevenue || 0)} detail="Eastern Time" /><TireStat label="Tires sold today" value={summary?.todayUnits || 0} detail="Units recorded today" /><TireStat label="All-time revenue" value={money(summary?.allTimeRevenue || 0)} detail="All recorded sales" /><TireStat label="Units remaining" value={summary?.units || 0} detail="Current inventory" /></div>
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4"><TireStat label="Today's revenue" value={money(summary?.todayRevenue || 0)} detail="Calculated automatically" /><TireStat label="Items sold" value={summary?.todayUnits || 0} detail="Today's quantity" /><TireStat label="Transactions" value={todaySales.length} detail="Sales recorded today" /><TireStat label="Average sale" value={money(averageSale)} detail="Revenue per transaction" /></div>
       <Card>
-        <CardHeader title={editingSaleId ? "Edit Tire Sale" : "Record a Tire Sale"} icon={<ShoppingCart className="h-4 w-4 text-emerald-400" />} />
+        <CardHeader title={editingSaleId ? "Edit Tire Sale" : "Record a Tire Sale"} icon={<ShoppingCart className="h-4 w-4 text-emerald-400" />} action={<div className="text-right"><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Sale total</div><div className="text-sm font-semibold text-emerald-300">{money(currentSaleTotal)}</div></div>} />
         <form onSubmit={recordSale} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <label className="text-[11px] font-medium text-zinc-400 sm:col-span-2">Inventory item<select required value={form.inventoryId} onChange={(event) => selectInventory(event.target.value)} className={`mt-1.5 ${tireFieldClass}`}><option value="">Select a tire...</option>{(data?.inventory || []).filter((item) => !form.adjustInventory || item.quantity > 0 || item.id === form.inventoryId).map((item) => <option key={item.id} value={item.id}>{item.size} • {tirePackageLabel(item.packageType)} • {item.quantity} in stock</option>)}</select></label>
+          <label className="relative text-[11px] font-medium text-zinc-400 sm:col-span-2">Tire size<input required autoComplete="off" value={inventorySearch} onFocus={() => setInventoryPickerOpen(true)} onBlur={() => window.setTimeout(() => setInventoryPickerOpen(false), 180)} onChange={(event) => { setInventorySearch(event.target.value); setInventoryPickerOpen(true); setForm((current) => ({ ...current, inventoryId: "", unitPrice: "" })); }} placeholder="Type a size, like 185/65/14" className={`mt-1.5 ${tireFieldClass}`} />{inventoryPickerOpen && <div className="absolute left-0 right-0 top-full z-40 mt-1 max-h-72 overflow-y-auto rounded-xl border border-zinc-700 bg-zinc-900 p-1.5 shadow-2xl">{inventoryMatches.length ? inventoryMatches.map((item) => <button type="button" key={item.id} onPointerDown={(event) => event.preventDefault()} onClick={() => selectInventory(item.id)} className="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-3 text-left hover:bg-zinc-800"><span><span className="block font-mono text-xs font-semibold text-white">{item.size}</span><span className={`mt-1 inline-flex rounded border px-1.5 py-0.5 text-[9px] font-semibold ${tirePackageClass(item.packageType)}`}>{tirePackageLabel(item.packageType)}</span></span><span className="shrink-0 text-right"><span className={`block text-xs font-semibold ${item.quantity <= 5 ? "text-amber-300" : "text-emerald-300"}`}>{item.quantity} available</span><span className="mt-0.5 block text-[10px] text-zinc-500">{money(item.price)}</span></span></button>) : <div className="px-3 py-5 text-center text-xs text-zinc-500">No matching tire size found.</div>}</div>}</label>
           <label className="text-[11px] font-medium text-zinc-400">Quantity<input required min="1" step="1" type="number" value={form.quantity} onChange={(event) => setForm((current) => ({ ...current, quantity: event.target.value }))} className={`mt-1.5 ${tireFieldClass}`} /></label>
           <label className="text-[11px] font-medium text-zinc-400">Price per tire<input required min="0" step="0.01" type="number" value={form.unitPrice} onChange={(event) => setForm((current) => ({ ...current, unitPrice: event.target.value }))} placeholder="0.00" className={`mt-1.5 ${tireFieldClass}`} /></label>
           <label className="text-[11px] font-medium text-zinc-400">Sale date<input required type="date" max={easternDateKey(new Date())} value={form.soldDate} onChange={(event) => setForm((current) => ({ ...current, soldDate: event.target.value, adjustInventory: event.target.value === easternDateKey(new Date()) }))} className={`mt-1.5 ${tireFieldClass}`} /><span className="mt-1 block text-[10px] font-normal text-zinc-600">Past dates are allowed.</span></label>
@@ -2254,7 +2271,7 @@ function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void;
           <label className="text-[11px] font-medium text-zinc-400">Payment<select value={form.paymentMethod} onChange={(event) => setForm((current) => ({ ...current, paymentMethod: event.target.value }))} className={`mt-1.5 ${tireFieldClass}`}><option>Card</option><option>Cash</option><option>Financing</option><option>Other</option></select></label>
           <label className="text-[11px] font-medium text-zinc-400">Notes<input value={form.notes} onChange={(event) => setForm((current) => ({ ...current, notes: event.target.value }))} placeholder="Optional" className={`mt-1.5 ${tireFieldClass}`} /></label>
           <div className={`rounded-lg border p-3 sm:col-span-2 lg:col-span-4 ${form.soldDate === easternDateKey(new Date()) ? "border-emerald-500/20 bg-emerald-500/10" : "border-blue-500/20 bg-blue-500/10"}`}><div className={`text-xs font-medium ${form.soldDate === easternDateKey(new Date()) ? "text-emerald-300" : "text-blue-300"}`}>{form.soldDate === easternDateKey(new Date()) ? "Today's sale — inventory will be reduced automatically" : "Past sale — current inventory will not be changed"}</div><div className="mt-1 text-[10px] leading-relaxed text-zinc-500">{form.soldDate === easternDateKey(new Date()) ? "The quantity sold will be removed from this tire size." : "Your inventory is already current, so older sales are saved only in sales history."}</div></div>
-          <div className="flex gap-2 sm:col-span-2 lg:col-span-4"><button disabled={busy || !data?.inventory.length} className="rounded-lg bg-zinc-100 px-4 py-2.5 text-xs font-semibold text-zinc-900 transition hover:bg-white disabled:opacity-40">{busy ? "Saving..." : editingSaleId ? "Save Sale Changes" : form.soldDate === easternDateKey(new Date()) ? "Record Today's Sale" : "Add Past Sale"}</button>{editingSaleId && <button type="button" onClick={() => { setEditingSaleId(null); setForm((current) => ({ ...current, inventoryId: "", quantity: "1", unitPrice: "", soldTime: easternTimeValue(), customer: "", notes: "" })); }} className="rounded-lg px-4 py-2.5 text-xs font-medium text-zinc-400 hover:bg-zinc-800 hover:text-white">Cancel</button>}</div>
+          <div className="flex gap-2 sm:col-span-2 lg:col-span-4"><button disabled={busy || !form.inventoryId} className="rounded-lg bg-zinc-100 px-4 py-2.5 text-xs font-semibold text-zinc-900 transition hover:bg-white disabled:opacity-40">{busy ? "Saving..." : editingSaleId ? "Save Sale Changes" : form.soldDate === easternDateKey(new Date()) ? `Record Sale — ${money(currentSaleTotal)}` : `Add Past Sale — ${money(currentSaleTotal)}`}</button>{editingSaleId && <button type="button" onClick={() => { setEditingSaleId(null); setInventorySearch(""); setForm((current) => ({ ...current, inventoryId: "", quantity: "1", unitPrice: "", soldTime: easternTimeValue(), customer: "", notes: "" })); }} className="rounded-lg px-4 py-2.5 text-xs font-medium text-zinc-400 hover:bg-zinc-800 hover:text-white">Cancel</button>}</div>
         </form>
       </Card>
       <Card>
