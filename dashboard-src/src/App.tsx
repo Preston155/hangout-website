@@ -787,7 +787,7 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
         </div>
         <form onSubmit={login} className="rounded-xl border border-white/[.08] bg-white/[.035] p-5 shadow-2xl">
           <div className="space-y-4">
-            {passkeyAvailable && <><button type="button" disabled={busy} onClick={() => void loginWithPasskey()} className="flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-400 py-3 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-300 active:scale-[0.99] disabled:opacity-40"><KeyRound className="h-4 w-4" />{busy ? "Waiting for passkey..." : "Continue with a passkey"}</button><p className="-mt-1 text-center text-[10px] leading-relaxed text-zinc-600">Works with Windows Hello, security keys, or a nearby phone.</p><div className="flex items-center gap-3"><span className="h-px flex-1 bg-zinc-800" /><span className="text-[10px] uppercase tracking-wider text-zinc-600">Backup passcode</span><span className="h-px flex-1 bg-zinc-800" /></div></>}
+            {passkeyAvailable && <><button type="button" disabled={busy} onClick={() => void loginWithPasskey()} className="flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-400 py-3 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-300 active:scale-[0.99] disabled:opacity-40"><KeyRound className="h-4 w-4" />{busy ? "Waiting for passkey..." : "Continue with a passkey"}</button><p className="-mt-1 text-center text-[10px] leading-relaxed text-zinc-600">To use your Windows PIN, sign in once with the backup passcode, then open Account and select Set Up Windows PIN.</p><div className="flex items-center gap-3"><span className="h-px flex-1 bg-zinc-800" /><span className="text-[10px] uppercase tracking-wider text-zinc-600">Backup passcode</span><span className="h-px flex-1 bg-zinc-800" /></div></>}
             <div>
               <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1.5">Access Passcode</label>
               <input autoFocus={!passkeyAvailable} type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••••••" className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-xs text-zinc-200 placeholder-zinc-600 outline-none transition focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500" />
@@ -1921,6 +1921,7 @@ function VeltrixBotDashboard({ showToast, mode = "overview" }: { showToast: (m: 
 function SettingsPage({ showToast }: { showToast: (m: string) => void }) {
   const [passkeyCount, setPasskeyCount] = useState(0);
   const [passkeyBusy, setPasskeyBusy] = useState(false);
+  const isWindows = typeof navigator !== "undefined" && /Windows/i.test(navigator.userAgent);
 
   useEffect(() => {
     api<{ count: number }>("/api/auth/passkeys/status").then((status) => setPasskeyCount(status.count)).catch(() => undefined);
@@ -1956,8 +1957,8 @@ function SettingsPage({ showToast }: { showToast: (m: string) => void }) {
         <div className="border-b border-white/[.07] px-5 py-4"><div className="text-sm font-semibold text-white">Sign-in security</div><div className="mt-1 text-[11px] text-zinc-500">Use Face ID or your passcode to access shop records.</div></div>
         <div className="p-5">
           <div className="flex flex-col gap-4 rounded-lg border border-emerald-500/20 bg-emerald-500/[.06] p-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-start gap-3"><div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-emerald-500/10"><KeyRound className="h-4 w-4 text-emerald-300" /></div><div><div className="text-xs font-medium text-white">Passkeys</div><div className="mt-1 max-w-xl text-[11px] leading-relaxed text-zinc-500">Add a passkey on each device you use. PCs can use Windows Hello or a security key; iPhone can use Face ID.</div><div className="mt-1.5 text-[10px] font-medium text-emerald-400">{passkeyCount} passkey{passkeyCount === 1 ? "" : "s"} registered</div></div></div>
-            <button disabled={passkeyBusy} onClick={() => void addPasskey()} className="shrink-0 rounded-lg bg-emerald-400 px-4 py-2.5 text-xs font-semibold text-zinc-950 transition hover:bg-emerald-300 disabled:opacity-40">{passkeyBusy ? "Waiting for passkey..." : passkeyCount > 0 ? "Add Another Passkey" : "Add a Passkey"}</button>
+            <div className="flex items-start gap-3"><div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-emerald-500/10"><KeyRound className="h-4 w-4 text-emerald-300" /></div><div><div className="text-xs font-medium text-white">Device sign-in</div><div className="mt-1 max-w-xl text-[11px] leading-relaxed text-zinc-500">On Windows, this creates a Windows Hello passkey unlocked with your PC PIN. iPhone passkeys use Face ID.</div><div className="mt-1.5 text-[10px] font-medium text-emerald-400">{passkeyCount} passkey{passkeyCount === 1 ? "" : "s"} registered</div></div></div>
+            <button disabled={passkeyBusy} onClick={() => void addPasskey()} className="shrink-0 rounded-lg bg-emerald-400 px-4 py-2.5 text-xs font-semibold text-zinc-950 transition hover:bg-emerald-300 disabled:opacity-40">{passkeyBusy ? "Waiting for Windows..." : isWindows ? "Set Up Windows PIN" : passkeyCount > 0 ? "Add Another Passkey" : "Add a Passkey"}</button>
           </div>
         </div>
       </section>
