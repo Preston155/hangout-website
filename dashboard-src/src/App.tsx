@@ -2005,7 +2005,7 @@ function TireStat({ label, value, detail }: { label: string; value: string | num
 }
 
 function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => void; setPage: (p: Page) => void }) {
-  const blank = { brand: "", model: "", size: "", quantity: "", cost: "", price: "", location: "", notes: "" };
+  const blank = { size: "", quantity: "", price: "" };
   const [data, setData] = useState<TireShopData | null>(null);
   const [form, setForm] = useState(blank);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -2030,7 +2030,7 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
     event.preventDefault();
     setBusy(true);
     try {
-      const payload = { ...form, quantity: Number(form.quantity), cost: Number(form.cost), price: Number(form.price) };
+      const payload = { ...form, quantity: Number(form.quantity), price: Number(form.price) };
       const path = editingId ? `/api/tire-shop/inventory/${editingId}` : "/api/tire-shop/inventory";
       const next = await api<TireShopData>(path, { method: editingId ? "PATCH" : "POST", body: JSON.stringify(payload) });
       setData(next);
@@ -2046,11 +2046,11 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
 
   const editItem = (item: TireInventoryItem) => {
     setEditingId(item.id);
-    setForm({ brand: item.brand, model: item.model, size: item.size, quantity: String(item.quantity), cost: String(item.cost), price: String(item.price), location: item.location, notes: item.notes });
+    setForm({ size: item.size, quantity: String(item.quantity), price: String(item.price) });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const inventory = (data?.inventory || []).filter((item) => `${item.brand} ${item.model} ${item.size} ${item.location}`.toLowerCase().includes(search.toLowerCase()));
+  const inventory = (data?.inventory || []).filter((item) => item.size.toLowerCase().includes(search.toLowerCase()));
   const summary = data?.summary;
 
   return (
@@ -2067,16 +2067,11 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
       </div>
       <Card>
         <CardHeader title={editingId ? "Edit Inventory Item" : "Add Inventory Item"} icon={<Package className="h-4 w-4 text-emerald-400" />} />
-        <form onSubmit={saveItem} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <label className="text-[11px] font-medium text-zinc-400">Brand<input required name="brand" value={form.brand} onChange={updateField} placeholder="Michelin" className={`mt-1.5 ${tireFieldClass}`} /></label>
-          <label className="text-[11px] font-medium text-zinc-400">Model<input name="model" value={form.model} onChange={updateField} placeholder="Defender LTX" className={`mt-1.5 ${tireFieldClass}`} /></label>
+        <form onSubmit={saveItem} className="mt-4 grid gap-3 sm:grid-cols-3">
           <label className="text-[11px] font-medium text-zinc-400">Size<input required name="size" value={form.size} onChange={updateField} placeholder="275/60R20" className={`mt-1.5 ${tireFieldClass}`} /></label>
           <label className="text-[11px] font-medium text-zinc-400">Quantity<input required min="0" step="1" type="number" name="quantity" value={form.quantity} onChange={updateField} placeholder="4" className={`mt-1.5 ${tireFieldClass}`} /></label>
-          <label className="text-[11px] font-medium text-zinc-400">Cost per tire<input min="0" step="0.01" type="number" name="cost" value={form.cost} onChange={updateField} placeholder="0.00" className={`mt-1.5 ${tireFieldClass}`} /></label>
           <label className="text-[11px] font-medium text-zinc-400">Selling price<input required min="0" step="0.01" type="number" name="price" value={form.price} onChange={updateField} placeholder="0.00" className={`mt-1.5 ${tireFieldClass}`} /></label>
-          <label className="text-[11px] font-medium text-zinc-400">Storage location<input name="location" value={form.location} onChange={updateField} placeholder="Rack A3" className={`mt-1.5 ${tireFieldClass}`} /></label>
-          <label className="text-[11px] font-medium text-zinc-400">Notes<input name="notes" value={form.notes} onChange={updateField} placeholder="Optional details" className={`mt-1.5 ${tireFieldClass}`} /></label>
-          <div className="flex gap-2 sm:col-span-2 lg:col-span-4">
+          <div className="flex gap-2 sm:col-span-3">
             <button disabled={busy} className="rounded-lg bg-zinc-100 px-4 py-2.5 text-xs font-semibold text-zinc-900 transition hover:bg-white disabled:opacity-50">{busy ? "Saving..." : editingId ? "Save Changes" : "Add to Inventory"}</button>
             {editingId && <button type="button" onClick={() => { setEditingId(null); setForm(blank); }} className="rounded-lg px-4 py-2.5 text-xs font-medium text-zinc-400 hover:bg-zinc-800 hover:text-white">Cancel</button>}
           </div>
@@ -2086,8 +2081,8 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
         <CardHeader title="All Inventory" icon={<Package className="h-4 w-4 text-zinc-400" />} action={<input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search inventory..." className="w-44 rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-zinc-500 sm:w-64" />} />
         {!data ? <EmptyState title="Loading inventory" text="Reading the tire shop database..." /> : inventory.length === 0 ? <EmptyState title="No tires found" text={search ? "Try another search." : "Use the form above to enter your first inventory item."} /> : (
           <div className="mt-4 overflow-x-auto rounded-xl border border-zinc-800">
-            <table className="w-full min-w-[850px] text-left text-xs"><thead className="border-b border-zinc-800 bg-zinc-950/70 text-[10px] uppercase tracking-wider text-zinc-500"><tr><th className="px-4 py-3">Tire</th><th className="px-4 py-3">Size</th><th className="px-4 py-3">Stock</th><th className="px-4 py-3">Cost</th><th className="px-4 py-3">Price</th><th className="px-4 py-3">Location</th><th className="px-4 py-3 text-right">Action</th></tr></thead>
-              <tbody className="divide-y divide-zinc-800/70">{inventory.map((item) => <tr key={item.id} className="hover:bg-zinc-900/60"><td className="px-4 py-3"><div className="font-semibold text-white">{item.brand}</div><div className="text-[10px] text-zinc-500">{item.model || "—"}</div></td><td className="px-4 py-3 font-mono text-zinc-300">{item.size}</td><td className="px-4 py-3"><span className={`rounded-md border px-2 py-1 font-semibold ${item.quantity <= 5 ? "border-amber-500/30 bg-amber-500/10 text-amber-300" : "border-emerald-500/20 bg-emerald-500/10 text-emerald-300"}`}>{item.quantity}</span></td><td className="px-4 py-3 text-zinc-400">{money(item.cost)}</td><td className="px-4 py-3 font-semibold text-zinc-200">{money(item.price)}</td><td className="px-4 py-3 text-zinc-400">{item.location || "—"}</td><td className="px-4 py-3 text-right"><button onClick={() => editItem(item)} className="rounded-md border border-zinc-700 px-3 py-1.5 text-[11px] font-medium text-zinc-300 hover:bg-zinc-800 hover:text-white">Edit</button></td></tr>)}</tbody>
+            <table className="w-full min-w-[520px] text-left text-xs"><thead className="border-b border-zinc-800 bg-zinc-950/70 text-[10px] uppercase tracking-wider text-zinc-500"><tr><th className="px-4 py-3">Tire Size</th><th className="px-4 py-3">Stock</th><th className="px-4 py-3">Price</th><th className="px-4 py-3 text-right">Action</th></tr></thead>
+              <tbody className="divide-y divide-zinc-800/70">{inventory.map((item) => <tr key={item.id} className="hover:bg-zinc-900/60"><td className="px-4 py-3 font-mono font-semibold text-white">{item.size}</td><td className="px-4 py-3"><span className={`rounded-md border px-2 py-1 font-semibold ${item.quantity <= 5 ? "border-amber-500/30 bg-amber-500/10 text-amber-300" : "border-emerald-500/20 bg-emerald-500/10 text-emerald-300"}`}>{item.quantity}</span></td><td className="px-4 py-3 font-semibold text-zinc-200">{money(item.price)}</td><td className="px-4 py-3 text-right"><button onClick={() => editItem(item)} className="rounded-md border border-zinc-700 px-3 py-1.5 text-[11px] font-medium text-zinc-300 hover:bg-zinc-800 hover:text-white">Edit</button></td></tr>)}</tbody>
             </table>
           </div>
         )}
@@ -2139,7 +2134,7 @@ function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void;
       <Card>
         <CardHeader title="Record a Tire Sale" icon={<ShoppingCart className="h-4 w-4 text-emerald-400" />} />
         <form onSubmit={recordSale} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <label className="text-[11px] font-medium text-zinc-400 sm:col-span-2">Inventory item<select required value={form.inventoryId} onChange={(event) => selectInventory(event.target.value)} className={`mt-1.5 ${tireFieldClass}`}><option value="">Select a tire...</option>{(data?.inventory || []).filter((item) => !form.adjustInventory || item.quantity > 0).map((item) => <option key={item.id} value={item.id}>{item.brand} {item.model} • {item.size} • {item.quantity} in stock</option>)}</select></label>
+          <label className="text-[11px] font-medium text-zinc-400 sm:col-span-2">Inventory item<select required value={form.inventoryId} onChange={(event) => selectInventory(event.target.value)} className={`mt-1.5 ${tireFieldClass}`}><option value="">Select a tire...</option>{(data?.inventory || []).filter((item) => !form.adjustInventory || item.quantity > 0).map((item) => <option key={item.id} value={item.id}>{item.size} • {item.quantity} in stock</option>)}</select></label>
           <label className="text-[11px] font-medium text-zinc-400">Quantity<input required min="1" step="1" type="number" value={form.quantity} onChange={(event) => setForm((current) => ({ ...current, quantity: event.target.value }))} className={`mt-1.5 ${tireFieldClass}`} /></label>
           <label className="text-[11px] font-medium text-zinc-400">Price per tire<input required min="0" step="0.01" type="number" value={form.unitPrice} onChange={(event) => setForm((current) => ({ ...current, unitPrice: event.target.value }))} placeholder="0.00" className={`mt-1.5 ${tireFieldClass}`} /></label>
           <label className="text-[11px] font-medium text-zinc-400">Sale date<input required type="date" max={easternDateKey(new Date())} value={form.soldDate} onChange={(event) => setForm((current) => ({ ...current, soldDate: event.target.value }))} className={`mt-1.5 ${tireFieldClass}`} /><span className="mt-1 block text-[10px] font-normal text-zinc-600">Past dates are allowed.</span></label>
@@ -2152,7 +2147,7 @@ function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void;
       </Card>
       <Card>
         <CardHeader title="Daily Sales History" icon={<ClipboardList className="h-4 w-4 text-zinc-400" />} />
-        {!data ? <EmptyState title="Loading sales" text="Reading the tire shop database..." /> : groups.length === 0 ? <EmptyState title="No sales recorded" text="Your daily sales history will appear here." /> : <div className="mt-4 space-y-5">{groups.map(([date, sales]) => { const revenue = sales.reduce((sum, sale) => sum + sale.total, 0); const units = sales.reduce((sum, sale) => sum + sale.quantity, 0); return <section key={date} className="overflow-hidden rounded-xl border border-zinc-800"><div className="flex flex-col justify-between gap-2 border-b border-zinc-800 bg-zinc-950/70 px-4 py-3 sm:flex-row sm:items-center"><div><div className="text-sm font-semibold text-white">{new Date(`${date}T12:00:00`).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}</div><div className="mt-0.5 text-[10px] text-zinc-500">{sales.length} transaction{sales.length === 1 ? "" : "s"} • {units} tire{units === 1 ? "" : "s"}</div></div><div className="text-lg font-semibold text-emerald-300">{money(revenue)}</div></div><div className="divide-y divide-zinc-800/70">{sales.map((sale) => <div key={sale.id} className="grid gap-3 px-4 py-3 text-xs sm:grid-cols-[1fr_auto_auto] sm:items-center"><div><div className="font-semibold text-zinc-200">{sale.brand} {sale.model} <span className="font-mono text-zinc-400">{sale.size}</span></div><div className="mt-1 flex flex-wrap items-center gap-1.5 text-[10px] text-zinc-500"><span>{sale.customer || "Walk-in"} • {sale.paymentMethod} • Recorded by {sale.recordedBy}</span><span className={`rounded border px-1.5 py-0.5 ${sale.adjustInventory === false ? "border-blue-500/20 bg-blue-500/10 text-blue-300" : "border-zinc-700 text-zinc-500"}`}>{sale.adjustInventory === false ? "Historical entry" : "Stock adjusted"}</span></div></div><div className="text-zinc-400">{sale.quantity} × {money(sale.unitPrice)}</div><div className="font-semibold text-white sm:text-right">{money(sale.total)}</div></div>)}</div></section>; })}</div>}
+        {!data ? <EmptyState title="Loading sales" text="Reading the tire shop database..." /> : groups.length === 0 ? <EmptyState title="No sales recorded" text="Your daily sales history will appear here." /> : <div className="mt-4 space-y-5">{groups.map(([date, sales]) => { const revenue = sales.reduce((sum, sale) => sum + sale.total, 0); const units = sales.reduce((sum, sale) => sum + sale.quantity, 0); return <section key={date} className="overflow-hidden rounded-xl border border-zinc-800"><div className="flex flex-col justify-between gap-2 border-b border-zinc-800 bg-zinc-950/70 px-4 py-3 sm:flex-row sm:items-center"><div><div className="text-sm font-semibold text-white">{new Date(`${date}T12:00:00`).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}</div><div className="mt-0.5 text-[10px] text-zinc-500">{sales.length} transaction{sales.length === 1 ? "" : "s"} • {units} tire{units === 1 ? "" : "s"}</div></div><div className="text-lg font-semibold text-emerald-300">{money(revenue)}</div></div><div className="divide-y divide-zinc-800/70">{sales.map((sale) => <div key={sale.id} className="grid gap-3 px-4 py-3 text-xs sm:grid-cols-[1fr_auto_auto] sm:items-center"><div><div className="font-mono font-semibold text-zinc-200">{sale.size}</div><div className="mt-1 flex flex-wrap items-center gap-1.5 text-[10px] text-zinc-500"><span>{sale.customer || "Walk-in"} • {sale.paymentMethod} • Recorded by {sale.recordedBy}</span><span className={`rounded border px-1.5 py-0.5 ${sale.adjustInventory === false ? "border-blue-500/20 bg-blue-500/10 text-blue-300" : "border-zinc-700 text-zinc-500"}`}>{sale.adjustInventory === false ? "Historical entry" : "Stock adjusted"}</span></div></div><div className="text-zinc-400">{sale.quantity} × {money(sale.unitPrice)}</div><div className="font-semibold text-white sm:text-right">{money(sale.total)}</div></div>)}</div></section>; })}</div>}
       </Card>
     </div>
   );
