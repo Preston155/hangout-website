@@ -25,6 +25,7 @@ import {
   Megaphone,
   Menu,
   MessageSquare,
+  Package,
   PhoneCall,
   Play,
   Radio,
@@ -35,6 +36,7 @@ import {
   Shield,
   ShieldAlert,
   ShieldCheck,
+  ShoppingCart,
   Siren,
   Skull,
   Sparkles,
@@ -47,7 +49,7 @@ import {
 } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
-type Page = "overview" | "bot" | "operations" | "connect" | "players" | "cad" | "commands" | "logs" | "staff" | "settings";
+type Page = "overview" | "bot" | "operations" | "connect" | "players" | "cad" | "commands" | "logs" | "staff" | "tire-inventory" | "tire-sales" | "settings";
 type Severity = "low" | "medium" | "high" | "critical";
 type PlayerStatus = "online" | "flagged" | "banned" | "staff";
 type ModActionType = "Warn" | "Kick" | "Ban" | "Unban" | "Kill" | "Teleport" | "PM" | "Announcement" | "CAD" | "System";
@@ -277,6 +279,52 @@ type VeltrixDashboardData = {
   updatedAt: string;
 };
 
+type TireInventoryItem = {
+  id: string;
+  brand: string;
+  model: string;
+  size: string;
+  quantity: number;
+  cost: number;
+  price: number;
+  location: string;
+  notes: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+type TireSale = {
+  id: string;
+  inventoryId: string;
+  brand: string;
+  model: string;
+  size: string;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+  soldAt: string;
+  customer: string;
+  paymentMethod: string;
+  notes: string;
+  recordedBy: string;
+  createdAt: string;
+};
+
+type TireShopData = {
+  inventory: TireInventoryItem[];
+  sales: TireSale[];
+  summary: {
+    skus: number;
+    units: number;
+    lowStock: number;
+    inventoryValue: number;
+    todayUnits: number;
+    todayRevenue: number;
+    allTimeRevenue: number;
+  };
+  updatedAt: string;
+};
+
 const API_BASE = "https://api.prestonhq.com";
 
 const defaultServer: ServerState = {
@@ -468,6 +516,8 @@ const navItems = [
   { id: "commands" as Page, label: "Console Dispatch", icon: Terminal },
   { id: "logs" as Page, label: "Audit Logs", icon: ClipboardList },
   { id: "staff" as Page, label: "Staff Matrix", icon: ShieldCheck },
+  { id: "tire-inventory" as Page, label: "Tire Inventory", icon: Package },
+  { id: "tire-sales" as Page, label: "Tire Sales", icon: ShoppingCart },
   { id: "settings" as Page, label: "System Settings", icon: Settings },
 ];
 
@@ -658,6 +708,8 @@ export function App() {
                 {page === "commands" && <CommandCenter openAction={(action) => setModal({ action })} sendCommand={sendCommand} busy={busy} />}
                 {page === "logs" && <Logs logs={logData} />}
                 {page === "staff" && <StaffPermissions showToast={showToast} />}
+                {page === "tire-inventory" && <TireInventoryPage showToast={showToast} setPage={setPage} />}
+                {page === "tire-sales" && <TireSalesPage showToast={showToast} setPage={setPage} />}
                 {page === "settings" && <SettingsPage showToast={showToast} />}
               </motion.div>
             </AnimatePresence>
@@ -1562,12 +1614,71 @@ function VeltrixBotDashboard({ showToast, mode = "overview" }: { showToast: (m: 
   const visibleStrikes = data.strikeHistory.filter((strike) => matchesStaffFilter(strike.userId) && inStaffTimeframe(strike.createdAt));
   const visibleModeration = data.moderationHistory.filter((item) => matchesStaffFilter(item.userId) && inStaffTimeframe(item.createdAt));
   const visibleProfiles = data.staffProfiles.filter((profile) => matchesStaffFilter(profile.userId));
-  const stats: Array<{ label: string; value: number | null; detail: React.ReactNode; icon: React.ComponentType<{ className?: string }>; liveUptime?: boolean; suffix?: string }> = mode === "staff" ? [
-    { label: "Staff On Duty", value: data.summary.staffOnDuty, detail: <><AnimatedNumber value={data.summary.staffProfiles} /> staff profiles</>, icon: UserCheck },
-    { label: "Completed Shifts", value: data.staffProfiles.reduce((total, profile) => total + profile.completedShifts, 0), detail: "All-time persistent history", icon: Clock3 },
-    { label: "Active Warnings", value: data.summary.activeWarnings, detail: <><AnimatedNumber value={data.summary.moderationCases} /> moderation cases</>, icon: ShieldAlert },
-    { label: "Active Strikes", value: data.summary.activeStrikes, detail: <><AnimatedNumber value={data.summary.pendingLeaveRequests} /> pending LOAs</>, icon: AlertTriangle },
-  ] : [
+
+  if (mode === "staff") {
+    const discipline = [
+      ...visibleWarnings.map((item) => ({ ...item, kind: "Warning" as const, points: null, issuerId: item.moderatorId })),
+      ...visibleStrikes.map((item) => ({ ...item, kind: "Strike" as const, issuerId: item.issuedBy })),
+    ].sort((a, b) => b.createdAt - a.createdAt);
+
+    return (
+      <div className="space-y-5">
+        <section className="relative overflow-hidden rounded-3xl border border-indigo-400/20 bg-[radial-gradient(circle_at_top_right,rgba(99,102,241,.24),transparent_34%),linear-gradient(135deg,rgba(24,24,27,.98),rgba(9,9,11,.98))] p-6 shadow-2xl sm:p-8">
+          <div className="pointer-events-none absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-violet-600/10 blur-3xl" />
+          <div className="relative flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
+            <div className="flex items-center gap-4">
+              <div className="relative grid h-16 w-16 shrink-0 place-items-center rounded-2xl border border-indigo-400/30 bg-indigo-500/15 shadow-lg shadow-indigo-500/10"><ShieldCheck className="h-8 w-8 text-indigo-300" /><span className="absolute -bottom-1 -right-1 grid h-5 w-5 place-items-center rounded-full bg-indigo-400 ring-4 ring-zinc-950"><Zap className="h-3 w-3 fill-zinc-950 text-zinc-950" /></span></div>
+              <div><div className="flex flex-wrap items-center gap-2"><h1 className="text-2xl font-black tracking-tight text-white sm:text-3xl">Staff Operations Command</h1><span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/25 bg-emerald-400/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-300"><span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />Live Matrix</span></div><p className="mt-2 max-w-2xl text-xs leading-relaxed text-zinc-400">Manage duty shifts, performance, discipline, and staff audit intelligence through Veltrix's persistent operations database.</p></div>
+            </div>
+            <Button variant="secondary" disabled={refreshing} onClick={() => void load(true)}><RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} />{refreshing ? "Synchronizing..." : "Sync Staff Data"}</Button>
+          </div>
+          <div className="relative mt-6 grid gap-2 border-t border-white/10 pt-5 md:grid-cols-3">
+            <div className="relative"><Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-600" /><input value={staffSearch} onChange={(event) => setStaffSearch(event.target.value)} placeholder="Search staff name or Discord ID" className="w-full rounded-xl border border-white/10 bg-black/25 py-3 pl-9 pr-3 text-xs text-zinc-200 outline-none backdrop-blur focus:border-indigo-400/50" /></div>
+            <select value={staffFilter} onChange={(event) => setStaffFilter(event.target.value)} className="rounded-xl border border-white/10 bg-black/25 px-3 py-3 text-xs text-zinc-300 outline-none focus:border-indigo-400/50"><option value="all">All staff members</option>{data.staffProfiles.map((profile) => <option key={profile.userId} value={profile.userId}>{userName(profile.userId)}</option>)}</select>
+            <select value={staffTimeframe} onChange={(event) => setStaffTimeframe(event.target.value as "all" | "7d" | "30d")} className="rounded-xl border border-white/10 bg-black/25 px-3 py-3 text-xs text-zinc-300 outline-none focus:border-indigo-400/50"><option value="all">Timeframe: All Time</option><option value="7d">Timeframe: Past 7 Days</option><option value="30d">Timeframe: Past 30 Days</option></select>
+          </div>
+        </section>
+
+        {error && <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-xs text-amber-300">{error}</div>}
+
+        <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {[
+            { label: "Active Duty", value: data.summary.staffOnDuty, detail: "Staff clocked in now", icon: Radio, color: "indigo" },
+            { label: "Completed Shifts", value: data.staffProfiles.reduce((sum, profile) => sum + profile.completedShifts, 0), detail: "Persistent all-time history", icon: Clock3, color: "cyan" },
+            { label: "Active Infractions", value: data.summary.activeWarnings + data.summary.activeStrikes, detail: `${data.summary.activeWarnings} warnings / ${data.summary.activeStrikes} strikes`, icon: ShieldAlert, color: "amber" },
+            { label: "Staff Profiles", value: data.summary.staffProfiles, detail: `${data.summary.pendingLeaveRequests} pending leave requests`, icon: Users, color: "emerald" },
+          ].map((stat, index) => {
+            const Icon = stat.icon;
+            const colors: Record<string, string> = { indigo: "border-indigo-400/20 bg-indigo-500/5 text-indigo-300", cyan: "border-cyan-400/20 bg-cyan-500/5 text-cyan-300", amber: "border-amber-400/20 bg-amber-500/5 text-amber-300", emerald: "border-emerald-400/20 bg-emerald-500/5 text-emerald-300" };
+            return <motion.div key={stat.label} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * .05 }} className={`rounded-2xl border p-5 shadow-lg ${colors[stat.color]}`}><div className="flex items-center justify-between"><span className="text-[10px] font-bold uppercase tracking-[.16em] opacity-80">{stat.label}</span><Icon className="h-4 w-4" /></div><div className="mt-4 text-3xl font-black tracking-tight text-white"><AnimatedNumber value={stat.value} /></div><p className="mt-1 text-[10px] text-zinc-500">{stat.detail}</p></motion.div>;
+          })}
+        </section>
+
+        <section className="grid gap-5 xl:grid-cols-[380px_1fr]">
+          <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/35 p-5 shadow-xl">
+            <div className="flex items-center gap-3 border-b border-zinc-800 pb-4"><div className="grid h-10 w-10 place-items-center rounded-xl border border-indigo-400/20 bg-indigo-500/10"><Terminal className="h-5 w-5 text-indigo-300" /></div><div><h2 className="text-sm font-bold text-white">Shift Control Terminal</h2><p className="text-[10px] text-zinc-500">Persistent management override</p></div></div>
+            <div className="mt-4 space-y-3"><div><label className="mb-1.5 block text-[9px] font-bold uppercase tracking-wider text-zinc-600">Staff profile</label><select value={shiftUserId} onChange={(event) => setShiftUserId(event.target.value)} className="w-full rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-3 text-xs text-zinc-300 outline-none focus:border-indigo-500/50"><option value="">Select staff member</option>{data.staffProfiles.map((profile) => <option key={profile.userId} value={profile.userId}>{userName(profile.userId)} - {profile.userId}</option>)}</select></div><div><label className="mb-1.5 block text-[9px] font-bold uppercase tracking-wider text-zinc-600">Discord user ID</label><input value={shiftUserId} onChange={(event) => setShiftUserId(event.target.value.replace(/\D/g, "").slice(0, 20))} inputMode="numeric" placeholder="805501165981794305" className="w-full rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-3 font-mono text-xs text-zinc-300 outline-none focus:border-indigo-500/50" /></div><div><label className="mb-1.5 block text-[9px] font-bold uppercase tracking-wider text-zinc-600">Management note</label><input value={shiftReason} onChange={(event) => setShiftReason(event.target.value.slice(0, 240))} placeholder="Optional shift reason" className="w-full rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-3 text-xs text-zinc-300 outline-none focus:border-indigo-500/50" /></div><div className="grid grid-cols-2 gap-2 pt-1"><button disabled={shiftAction !== null} onClick={() => void runShiftAction("start")} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-emerald-400/25 bg-emerald-400/10 text-xs font-bold text-emerald-300 transition hover:bg-emerald-400/20 disabled:opacity-50"><Play className="h-3.5 w-3.5" />{shiftAction === "start" ? "Starting" : "Start Shift"}</button><button disabled={shiftAction !== null} onClick={() => void runShiftAction("end")} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-red-400/25 bg-red-400/10 text-xs font-bold text-red-300 transition hover:bg-red-400/20 disabled:opacity-50"><Square className="h-3.5 w-3.5" />{shiftAction === "end" ? "Ending" : "End Shift"}</button></div></div>
+          </div>
+
+          <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/35 p-5 shadow-xl">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-4"><div><h2 className="flex items-center gap-2 text-sm font-bold text-white"><span className="relative flex h-2 w-2"><span className="absolute h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" /><span className="relative h-2 w-2 rounded-full bg-emerald-400" /></span>Active Shift Operations</h2><p className="mt-1 text-[10px] text-zinc-500">Live duty telemetry updates automatically</p></div><span className="rounded-full border border-indigo-400/20 bg-indigo-400/10 px-2.5 py-1 text-[10px] font-bold text-indigo-300">{visibleActiveShifts.length} ACTIVE</span></div>
+            <div className="mt-4 grid gap-3 md:grid-cols-2">{visibleActiveShifts.length === 0 ? <div className="md:col-span-2"><EmptyState title="No active shifts found" text="Start a shift from the control terminal or change your filters." /></div> : visibleActiveShifts.map((shift) => <div key={shift.userId} className="group rounded-xl border border-zinc-800 bg-zinc-950/60 p-4 transition hover:border-indigo-400/35"><div className="flex items-start justify-between gap-3"><div className="flex min-w-0 items-center gap-3">{data.users[shift.userId]?.avatarUrl ? <img src={data.users[shift.userId].avatarUrl || ""} alt="" className="h-10 w-10 rounded-xl border border-indigo-400/20 object-cover" /> : <div className="grid h-10 w-10 place-items-center rounded-xl border border-indigo-400/20 bg-indigo-500/10 font-bold text-indigo-300">{userName(shift.userId).charAt(0)}</div>}<div className="min-w-0"><div className="truncate text-xs font-bold text-white">{userName(shift.userId)}</div><div className="truncate font-mono text-[9px] text-zinc-600">{shift.userId}</div></div></div><span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2 py-0.5 text-[9px] font-bold text-emerald-300">ON DUTY</span></div><div className="mt-4 grid grid-cols-2 gap-2 rounded-lg bg-zinc-900/70 p-3 text-center"><div><div className="text-[9px] uppercase text-zinc-600">Duration</div><div className="mt-1 font-mono text-xs font-bold text-indigo-300"><LiveShiftDuration startedAt={shift.startedAt} /></div></div><div><div className="text-[9px] uppercase text-zinc-600">Performance</div><div className="mt-1 text-xs font-bold text-zinc-300">{shift.points} pts / {shift.completedShifts} shifts</div></div></div><button disabled={shiftAction !== null} onClick={() => void runShiftAction("end", shift.userId)} className="mt-3 w-full rounded-lg border border-red-400/20 bg-red-400/5 py-2 text-[10px] font-bold text-red-300 transition hover:bg-red-400/15">Force End Shift</button></div>)}</div>
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-zinc-800/80 bg-zinc-900/35 p-5 shadow-xl">
+          <div className="flex items-center justify-between border-b border-zinc-800 pb-4"><div><h2 className="text-sm font-bold text-white">Staff Performance Database</h2><p className="mt-1 text-[10px] text-zinc-500">Points, completed shifts, total duty time, and last activity</p></div><span className="text-[10px] font-bold text-cyan-300">{visibleProfiles.length} PROFILES</span></div>
+          {visibleProfiles.length === 0 ? <EmptyState title="No profiles found" text="No staff profiles match the current command filters." /> : <div className="mt-4 overflow-x-auto rounded-xl border border-zinc-800 bg-zinc-950/60"><table className="w-full min-w-[700px] text-left text-xs"><thead className="border-b border-zinc-800 bg-zinc-900/80 text-[9px] uppercase tracking-wider text-zinc-500"><tr><th className="px-4 py-3">Staff identity</th><th className="px-4 py-3">Points</th><th className="px-4 py-3">Shifts</th><th className="px-4 py-3">Total duty</th><th className="px-4 py-3">Last active</th></tr></thead><tbody className="divide-y divide-zinc-800/70">{visibleProfiles.map((profile) => <tr key={profile.userId} className="transition hover:bg-zinc-900/70"><td className="px-4 py-3"><div className="font-bold text-zinc-200">{userName(profile.userId)}</div><div className="font-mono text-[9px] text-zinc-600">{profile.userId}</div></td><td className="px-4 py-3 font-black text-amber-300">{profile.points}</td><td className="px-4 py-3 font-bold text-zinc-300">{profile.completedShifts}</td><td className="px-4 py-3 font-mono text-indigo-300">{formatShiftDuration(profile.totalMs)}</td><td className="px-4 py-3 text-zinc-500">{profile.lastStart ? <LiveRelativeTime value={profile.lastStart} /> : "Never"}</td></tr>)}</tbody></table></div>}
+        </section>
+
+        <section className="grid gap-5 xl:grid-cols-[1fr_1fr]">
+          <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/35 p-5 shadow-xl"><div className="flex items-center justify-between border-b border-zinc-800 pb-4"><h2 className="flex items-center gap-2 text-sm font-bold text-white"><ShieldAlert className="h-4 w-4 text-amber-400" />Disciplinary Intelligence</h2><span className="text-[10px] text-zinc-500">{discipline.length} records</span></div><div className="mt-4 max-h-[360px] space-y-2 overflow-y-auto pr-1">{discipline.length === 0 ? <EmptyState title="No discipline records" text="Warnings and strikes matching your filters will appear here." /> : discipline.map((item) => <div key={`${item.kind}-${item.id}`} className="rounded-xl border border-zinc-800 bg-zinc-950/60 p-3.5"><div className="flex items-center justify-between gap-2"><div className="flex items-center gap-2"><span className={`rounded px-2 py-0.5 text-[9px] font-bold uppercase ${item.kind === "Strike" ? "bg-red-400/10 text-red-300" : "bg-amber-400/10 text-amber-300"}`}>{item.kind}</span><span className="text-xs font-bold text-zinc-200">{userName(item.userId)}</span></div><span className={`h-2 w-2 rounded-full ${item.active ? "bg-emerald-400" : "bg-zinc-700"}`} /></div><p className="mt-2 text-[11px] leading-relaxed text-zinc-400">{item.reason}</p><div className="mt-2 border-t border-zinc-800 pt-2 text-[9px] text-zinc-600">Issued by {userName(item.issuerId)} - <LiveRelativeTime value={item.createdAt} /></div></div>)}</div></div>
+          <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/35 p-5 shadow-xl"><div className="flex items-center justify-between border-b border-zinc-800 pb-4"><h2 className="flex items-center gap-2 text-sm font-bold text-white"><Activity className="h-4 w-4 text-violet-400" />Operations Audit Feed</h2><span className="text-[10px] text-zinc-500">Persistent events</span></div><div className="mt-4 max-h-[360px] space-y-2 overflow-y-auto pr-1">{data.recentStaffActivity.length === 0 ? <EmptyState title="No audit events" text="Veltrix staff actions will appear here automatically." /> : data.recentStaffActivity.filter((item) => matchesStaffFilter(item.actorId) || matchesStaffFilter(item.targetId)).map((activity) => <div key={activity.id} className="flex items-center justify-between gap-4 rounded-xl border border-zinc-800 bg-zinc-950/60 p-3"><div className="min-w-0"><div className="truncate text-xs font-bold text-zinc-200">{formatActivityName(activity.action)}</div><div className="mt-1 truncate text-[9px] text-zinc-600">{userName(activity.actorId)}{activity.targetId ? ` on ${userName(activity.targetId)}` : ""}</div></div><span className="shrink-0 text-[9px] text-zinc-600"><LiveRelativeTime value={activity.createdAt} /></span></div>)}</div></div>
+        </section>
+      </div>
+    );
+  }
+  const stats: Array<{ label: string; value: number | null; detail: React.ReactNode; icon: React.ComponentType<{ className?: string }>; liveUptime?: boolean; suffix?: string }> = [
     { label: "Uptime", value: data.bot.uptime, liveUptime: true, detail: <><AnimatedNumber value={data.bot.restarts} /> lifetime restarts</>, icon: Activity },
     { label: "Memory", value: data.bot.memoryMb, suffix: " MB", detail: <><AnimatedNumber value={data.bot.cpu} decimals={1} suffix="%" /> CPU</>, icon: Cpu },
     { label: "Staff On Duty", value: data.summary.staffOnDuty, detail: <><AnimatedNumber value={data.summary.staffProfiles} /> staff profiles</>, icon: UserCheck },
@@ -1586,7 +1697,7 @@ function VeltrixBotDashboard({ showToast, mode = "overview" }: { showToast: (m: 
               </div>
               <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <h1 className="text-xl font-semibold tracking-tight text-white sm:text-2xl">{mode === "staff" ? "Staff Operations V2" : "Veltrix Operations"}</h1>
+                  <h1 className="text-xl font-semibold tracking-tight text-white sm:text-2xl">Veltrix Operations</h1>
                   <span className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${data.bot.online ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-300" : "border-red-400/20 bg-red-400/10 text-red-300"}`}>
                     <span className="relative flex h-1.5 w-1.5">
                       {data.bot.online && <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" />}
@@ -1595,7 +1706,7 @@ function VeltrixBotDashboard({ showToast, mode = "overview" }: { showToast: (m: 
                     {data.bot.online ? "Online" : data.bot.status}
                   </span>
                 </div>
-                <p className="mt-1 text-xs leading-relaxed text-zinc-400">{mode === "staff" ? "Manage live shifts, duty status, discipline records, moderation history, and staff audits." : "Live bot health, persistent systems, giveaways, sessions, and database telemetry."}</p>
+                <p className="mt-1 text-xs leading-relaxed text-zinc-400">Live bot health, persistent systems, giveaways, sessions, and database telemetry.</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -1644,7 +1755,7 @@ function VeltrixBotDashboard({ showToast, mode = "overview" }: { showToast: (m: 
         })}
       </section>
 
-      {mode === "overview" && (<section className="grid gap-6 xl:grid-cols-[1.1fr_.9fr]">
+      {(mode as string) === "overview" && (<section className="grid gap-6 xl:grid-cols-[1.1fr_.9fr]">
         <Card>
           <CardHeader title="System Health" icon={<Activity className="h-4 w-4 text-emerald-400" />} action={<span className="text-[10px] font-medium text-zinc-500"><AnimatedNumber value={operationalSystems} />/<AnimatedNumber value={data.systems.length} /> operational</span>} />
           <div className="mt-4 grid gap-2 sm:grid-cols-2">
@@ -1679,7 +1790,7 @@ function VeltrixBotDashboard({ showToast, mode = "overview" }: { showToast: (m: 
         </Card>
       </section>)}
 
-      {mode === "staff" && (<>
+      {(mode as string) === "staff" && (<>
       <section className="relative overflow-hidden rounded-2xl border border-indigo-500/20 bg-gradient-to-r from-zinc-950 via-indigo-950/25 to-zinc-950 p-5 shadow-xl">
         <div className="pointer-events-none absolute -right-20 -top-20 h-60 w-60 rounded-full bg-indigo-500/10 blur-3xl" />
         <div className="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -1775,7 +1886,7 @@ function VeltrixBotDashboard({ showToast, mode = "overview" }: { showToast: (m: 
       </>)}
 
       <section className="grid gap-6 xl:grid-cols-2">
-        {mode === "overview" && <Card>
+        {(mode as string) === "overview" && <Card>
           <CardHeader title="Active Giveaways" icon={<Sparkles className="h-4 w-4 text-violet-400" />} action={<span className="rounded-md bg-zinc-800 px-2 py-1 text-[10px] text-zinc-400"><AnimatedNumber value={data.giveaways.length} /> live</span>} />
           <div className="mt-4 space-y-2">
             {data.giveaways.length === 0 ? <EmptyState title="No active giveaways" text="New Veltrix giveaways will appear here automatically." /> : data.giveaways.map((giveaway) => (
@@ -1790,7 +1901,7 @@ function VeltrixBotDashboard({ showToast, mode = "overview" }: { showToast: (m: 
           </div>
         </Card>}
 
-        {mode === "staff" && <Card>
+        {(mode as string) === "staff" && <Card>
           <CardHeader title="Staff Operations Activity" icon={<ShieldCheck className="h-4 w-4 text-blue-400" />} action={<span className="text-[10px] text-zinc-600">Persistent audit trail</span>} />
           <div className="mt-4 divide-y divide-zinc-800/70">
             {data.recentStaffActivity.length === 0 ? <EmptyState title="No staff activity yet" text="Shift, quota, strike, and LOA actions will be recorded here." /> : data.recentStaffActivity.slice(0, 7).map((activity) => (
@@ -1867,6 +1978,181 @@ function SettingsPage({ showToast }: { showToast: (m: string) => void }) {
         </div>
       </div>
     </Card>
+  );
+}
+
+const tireFieldClass = "w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2.5 text-xs text-zinc-200 placeholder-zinc-600 outline-none transition focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500";
+
+function money(value: number) {
+  return value.toLocaleString("en-US", { style: "currency", currency: "USD" });
+}
+
+function easternDateKey(value: string | number | Date) {
+  const parts = new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date(value));
+  const get = (type: string) => parts.find((part) => part.type === type)?.value || "";
+  return `${get("year")}-${get("month")}-${get("day")}`;
+}
+
+function TireStat({ label, value, detail }: { label: string; value: string | number; detail: string }) {
+  return (
+    <div className="rounded-xl border border-zinc-800/80 bg-zinc-900/30 p-4">
+      <div className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">{label}</div>
+      <div className="mt-1.5 text-2xl font-semibold tracking-tight text-white">{value}</div>
+      <div className="mt-1 text-[11px] text-zinc-500">{detail}</div>
+    </div>
+  );
+}
+
+function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => void; setPage: (p: Page) => void }) {
+  const blank = { brand: "", model: "", size: "", quantity: "", cost: "", price: "", location: "", notes: "" };
+  const [data, setData] = useState<TireShopData | null>(null);
+  const [form, setForm] = useState(blank);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const load = useCallback(async () => {
+    try {
+      setData(await api<TireShopData>("/api/tire-shop"));
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "Inventory could not be loaded.");
+    }
+  }, [showToast]);
+
+  useEffect(() => { void load(); }, [load]);
+
+  const updateField = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setForm((current) => ({ ...current, [event.target.name]: event.target.value }));
+  };
+
+  const saveItem = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setBusy(true);
+    try {
+      const payload = { ...form, quantity: Number(form.quantity), cost: Number(form.cost), price: Number(form.price) };
+      const path = editingId ? `/api/tire-shop/inventory/${editingId}` : "/api/tire-shop/inventory";
+      const next = await api<TireShopData>(path, { method: editingId ? "PATCH" : "POST", body: JSON.stringify(payload) });
+      setData(next);
+      setForm(blank);
+      setEditingId(null);
+      showToast(editingId ? "Inventory item updated." : "Tire added to inventory.");
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "Inventory item could not be saved.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const editItem = (item: TireInventoryItem) => {
+    setEditingId(item.id);
+    setForm({ brand: item.brand, model: item.model, size: item.size, quantity: String(item.quantity), cost: String(item.cost), price: String(item.price), location: item.location, notes: item.notes });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const inventory = (data?.inventory || []).filter((item) => `${item.brand} ${item.model} ${item.size} ${item.location}`.toLowerCase().includes(search.toLowerCase()));
+  const summary = data?.summary;
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <div><h1 className="text-2xl font-semibold tracking-tight text-white">Tire Inventory</h1><p className="mt-1 text-xs text-zinc-400">Every tire in stock, with live quantities and pricing. No separate PIN required.</p></div>
+        <Button variant="secondary" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Open Tire Sales</Button>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <TireStat label="Tire types" value={summary?.skus || 0} detail="Active inventory lines" />
+        <TireStat label="Units in stock" value={summary?.units || 0} detail="Total tires available" />
+        <TireStat label="Low stock" value={summary?.lowStock || 0} detail="Five or fewer remaining" />
+        <TireStat label="Retail value" value={money(summary?.inventoryValue || 0)} detail="Current price × quantity" />
+      </div>
+      <Card>
+        <CardHeader title={editingId ? "Edit Inventory Item" : "Add Inventory Item"} icon={<Package className="h-4 w-4 text-emerald-400" />} />
+        <form onSubmit={saveItem} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <label className="text-[11px] font-medium text-zinc-400">Brand<input required name="brand" value={form.brand} onChange={updateField} placeholder="Michelin" className={`mt-1.5 ${tireFieldClass}`} /></label>
+          <label className="text-[11px] font-medium text-zinc-400">Model<input name="model" value={form.model} onChange={updateField} placeholder="Defender LTX" className={`mt-1.5 ${tireFieldClass}`} /></label>
+          <label className="text-[11px] font-medium text-zinc-400">Size<input required name="size" value={form.size} onChange={updateField} placeholder="275/60R20" className={`mt-1.5 ${tireFieldClass}`} /></label>
+          <label className="text-[11px] font-medium text-zinc-400">Quantity<input required min="0" step="1" type="number" name="quantity" value={form.quantity} onChange={updateField} placeholder="4" className={`mt-1.5 ${tireFieldClass}`} /></label>
+          <label className="text-[11px] font-medium text-zinc-400">Cost per tire<input min="0" step="0.01" type="number" name="cost" value={form.cost} onChange={updateField} placeholder="0.00" className={`mt-1.5 ${tireFieldClass}`} /></label>
+          <label className="text-[11px] font-medium text-zinc-400">Selling price<input required min="0" step="0.01" type="number" name="price" value={form.price} onChange={updateField} placeholder="0.00" className={`mt-1.5 ${tireFieldClass}`} /></label>
+          <label className="text-[11px] font-medium text-zinc-400">Storage location<input name="location" value={form.location} onChange={updateField} placeholder="Rack A3" className={`mt-1.5 ${tireFieldClass}`} /></label>
+          <label className="text-[11px] font-medium text-zinc-400">Notes<input name="notes" value={form.notes} onChange={updateField} placeholder="Optional details" className={`mt-1.5 ${tireFieldClass}`} /></label>
+          <div className="flex gap-2 sm:col-span-2 lg:col-span-4">
+            <button disabled={busy} className="rounded-lg bg-zinc-100 px-4 py-2.5 text-xs font-semibold text-zinc-900 transition hover:bg-white disabled:opacity-50">{busy ? "Saving..." : editingId ? "Save Changes" : "Add to Inventory"}</button>
+            {editingId && <button type="button" onClick={() => { setEditingId(null); setForm(blank); }} className="rounded-lg px-4 py-2.5 text-xs font-medium text-zinc-400 hover:bg-zinc-800 hover:text-white">Cancel</button>}
+          </div>
+        </form>
+      </Card>
+      <Card>
+        <CardHeader title="All Inventory" icon={<Package className="h-4 w-4 text-zinc-400" />} action={<input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search inventory..." className="w-44 rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-zinc-500 sm:w-64" />} />
+        {!data ? <EmptyState title="Loading inventory" text="Reading the tire shop database..." /> : inventory.length === 0 ? <EmptyState title="No tires found" text={search ? "Try another search." : "Use the form above to enter your first inventory item."} /> : (
+          <div className="mt-4 overflow-x-auto rounded-xl border border-zinc-800">
+            <table className="w-full min-w-[850px] text-left text-xs"><thead className="border-b border-zinc-800 bg-zinc-950/70 text-[10px] uppercase tracking-wider text-zinc-500"><tr><th className="px-4 py-3">Tire</th><th className="px-4 py-3">Size</th><th className="px-4 py-3">Stock</th><th className="px-4 py-3">Cost</th><th className="px-4 py-3">Price</th><th className="px-4 py-3">Location</th><th className="px-4 py-3 text-right">Action</th></tr></thead>
+              <tbody className="divide-y divide-zinc-800/70">{inventory.map((item) => <tr key={item.id} className="hover:bg-zinc-900/60"><td className="px-4 py-3"><div className="font-semibold text-white">{item.brand}</div><div className="text-[10px] text-zinc-500">{item.model || "—"}</div></td><td className="px-4 py-3 font-mono text-zinc-300">{item.size}</td><td className="px-4 py-3"><span className={`rounded-md border px-2 py-1 font-semibold ${item.quantity <= 5 ? "border-amber-500/30 bg-amber-500/10 text-amber-300" : "border-emerald-500/20 bg-emerald-500/10 text-emerald-300"}`}>{item.quantity}</span></td><td className="px-4 py-3 text-zinc-400">{money(item.cost)}</td><td className="px-4 py-3 font-semibold text-zinc-200">{money(item.price)}</td><td className="px-4 py-3 text-zinc-400">{item.location || "—"}</td><td className="px-4 py-3 text-right"><button onClick={() => editItem(item)} className="rounded-md border border-zinc-700 px-3 py-1.5 text-[11px] font-medium text-zinc-300 hover:bg-zinc-800 hover:text-white">Edit</button></td></tr>)}</tbody>
+            </table>
+          </div>
+        )}
+      </Card>
+    </div>
+  );
+}
+
+function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void; setPage: (p: Page) => void }) {
+  const [data, setData] = useState<TireShopData | null>(null);
+  const [form, setForm] = useState({ inventoryId: "", quantity: "1", unitPrice: "", soldDate: easternDateKey(new Date()), customer: "", paymentMethod: "Card", notes: "" });
+  const [busy, setBusy] = useState(false);
+
+  const load = useCallback(async () => {
+    try { setData(await api<TireShopData>("/api/tire-shop")); }
+    catch (error) { showToast(error instanceof Error ? error.message : "Sales could not be loaded."); }
+  }, [showToast]);
+  useEffect(() => { void load(); }, [load]);
+
+  const selectInventory = (id: string) => {
+    const item = data?.inventory.find((entry) => entry.id === id);
+    setForm((current) => ({ ...current, inventoryId: id, unitPrice: item ? String(item.price) : "" }));
+  };
+
+  const recordSale = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setBusy(true);
+    try {
+      const next = await api<TireShopData>("/api/tire-shop/sales", { method: "POST", body: JSON.stringify({ ...form, quantity: Number(form.quantity), unitPrice: Number(form.unitPrice), soldAt: `${form.soldDate}T12:00:00-04:00` }) });
+      setData(next);
+      setForm((current) => ({ ...current, inventoryId: "", quantity: "1", unitPrice: "", customer: "", notes: "" }));
+      showToast("Sale recorded and inventory updated.");
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "Sale could not be recorded.");
+    } finally { setBusy(false); }
+  };
+
+  const groups = Object.entries((data?.sales || []).reduce<Record<string, TireSale[]>>((result, sale) => {
+    const key = easternDateKey(sale.soldAt);
+    (result[key] ||= []).push(sale);
+    return result;
+  }, {})).sort(([a], [b]) => b.localeCompare(a));
+  const summary = data?.summary;
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end"><div><h1 className="text-2xl font-semibold tracking-tight text-white">Tire Sales</h1><p className="mt-1 text-xs text-zinc-400">Sales are organized by day and automatically reduce inventory.</p></div><Button variant="secondary" onClick={() => setPage("tire-inventory")}><Package className="h-3.5 w-3.5" /> Open Inventory</Button></div>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"><TireStat label="Today's revenue" value={money(summary?.todayRevenue || 0)} detail="Eastern Time" /><TireStat label="Tires sold today" value={summary?.todayUnits || 0} detail="Units recorded today" /><TireStat label="All-time revenue" value={money(summary?.allTimeRevenue || 0)} detail="All recorded sales" /><TireStat label="Units remaining" value={summary?.units || 0} detail="Current inventory" /></div>
+      <Card>
+        <CardHeader title="Record a Tire Sale" icon={<ShoppingCart className="h-4 w-4 text-emerald-400" />} />
+        <form onSubmit={recordSale} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <label className="text-[11px] font-medium text-zinc-400 sm:col-span-2">Inventory item<select required value={form.inventoryId} onChange={(event) => selectInventory(event.target.value)} className={`mt-1.5 ${tireFieldClass}`}><option value="">Select a tire...</option>{(data?.inventory || []).filter((item) => item.quantity > 0).map((item) => <option key={item.id} value={item.id}>{item.brand} {item.model} • {item.size} • {item.quantity} in stock</option>)}</select></label>
+          <label className="text-[11px] font-medium text-zinc-400">Quantity<input required min="1" step="1" type="number" value={form.quantity} onChange={(event) => setForm((current) => ({ ...current, quantity: event.target.value }))} className={`mt-1.5 ${tireFieldClass}`} /></label>
+          <label className="text-[11px] font-medium text-zinc-400">Price per tire<input required min="0" step="0.01" type="number" value={form.unitPrice} onChange={(event) => setForm((current) => ({ ...current, unitPrice: event.target.value }))} placeholder="0.00" className={`mt-1.5 ${tireFieldClass}`} /></label>
+          <label className="text-[11px] font-medium text-zinc-400">Sale date<input required type="date" value={form.soldDate} onChange={(event) => setForm((current) => ({ ...current, soldDate: event.target.value }))} className={`mt-1.5 ${tireFieldClass}`} /></label>
+          <label className="text-[11px] font-medium text-zinc-400">Customer / invoice<input value={form.customer} onChange={(event) => setForm((current) => ({ ...current, customer: event.target.value }))} placeholder="Optional" className={`mt-1.5 ${tireFieldClass}`} /></label>
+          <label className="text-[11px] font-medium text-zinc-400">Payment<select value={form.paymentMethod} onChange={(event) => setForm((current) => ({ ...current, paymentMethod: event.target.value }))} className={`mt-1.5 ${tireFieldClass}`}><option>Card</option><option>Cash</option><option>Financing</option><option>Other</option></select></label>
+          <label className="text-[11px] font-medium text-zinc-400">Notes<input value={form.notes} onChange={(event) => setForm((current) => ({ ...current, notes: event.target.value }))} placeholder="Optional" className={`mt-1.5 ${tireFieldClass}`} /></label>
+          <div className="sm:col-span-2 lg:col-span-4"><button disabled={busy || !data?.inventory.some((item) => item.quantity > 0)} className="rounded-lg bg-zinc-100 px-4 py-2.5 text-xs font-semibold text-zinc-900 transition hover:bg-white disabled:opacity-40">{busy ? "Recording..." : "Record Sale"}</button></div>
+        </form>
+      </Card>
+      <Card>
+        <CardHeader title="Daily Sales History" icon={<ClipboardList className="h-4 w-4 text-zinc-400" />} />
+        {!data ? <EmptyState title="Loading sales" text="Reading the tire shop database..." /> : groups.length === 0 ? <EmptyState title="No sales recorded" text="Your daily sales history will appear here." /> : <div className="mt-4 space-y-5">{groups.map(([date, sales]) => { const revenue = sales.reduce((sum, sale) => sum + sale.total, 0); const units = sales.reduce((sum, sale) => sum + sale.quantity, 0); return <section key={date} className="overflow-hidden rounded-xl border border-zinc-800"><div className="flex flex-col justify-between gap-2 border-b border-zinc-800 bg-zinc-950/70 px-4 py-3 sm:flex-row sm:items-center"><div><div className="text-sm font-semibold text-white">{new Date(`${date}T12:00:00`).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}</div><div className="mt-0.5 text-[10px] text-zinc-500">{sales.length} transaction{sales.length === 1 ? "" : "s"} • {units} tire{units === 1 ? "" : "s"}</div></div><div className="text-lg font-semibold text-emerald-300">{money(revenue)}</div></div><div className="divide-y divide-zinc-800/70">{sales.map((sale) => <div key={sale.id} className="grid gap-3 px-4 py-3 text-xs sm:grid-cols-[1fr_auto_auto] sm:items-center"><div><div className="font-semibold text-zinc-200">{sale.brand} {sale.model} <span className="font-mono text-zinc-400">{sale.size}</span></div><div className="mt-1 text-[10px] text-zinc-500">{sale.customer || "Walk-in"} • {sale.paymentMethod} • Recorded by {sale.recordedBy}</div></div><div className="text-zinc-400">{sale.quantity} × {money(sale.unitPrice)}</div><div className="font-semibold text-white sm:text-right">{money(sale.total)}</div></div>)}</div></section>; })}</div>}
+      </Card>
+    </div>
   );
 }
 
