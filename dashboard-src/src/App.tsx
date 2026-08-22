@@ -2176,6 +2176,8 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
   const [editingId, setEditingId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [busy, setBusy] = useState(false);
+  const [adjustingId, setAdjustingId] = useState<string | null>(null);
+  const adjustmentLock = useRef(false);
 
   const load = useCallback(async () => {
     try {
@@ -2209,10 +2211,25 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
     }
   };
 
-  const editItem = (item: TireInventoryItem) => {
-    setEditingId(item.id);
-    setForm({ size: item.size, packageType: item.packageType || "single", quantity: String(item.quantity), price: String(item.price) });
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  const adjustItem = async (item: TireInventoryItem, amount: -1 | 1) => {
+    if (adjustmentLock.current) return;
+    const nextQuantity = item.quantity + amount;
+    if (nextQuantity < 0) {
+      showToast(`${item.size} is already at zero.`);
+      return;
+    }
+    adjustmentLock.current = true;
+    setAdjustingId(item.id);
+    try {
+      const next = await api<TireShopData>(`/api/tire-shop/inventory/${item.id}`, { method: "PATCH", body: JSON.stringify({ quantity: nextQuantity }) });
+      setData(next);
+      showToast(`${item.size}: ${nextQuantity} in stock.`);
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "Inventory quantity could not be updated.");
+    } finally {
+      adjustmentLock.current = false;
+      setAdjustingId(null);
+    }
   };
 
   const removeItem = async (item: TireInventoryItem) => {
@@ -2260,11 +2277,11 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
         <CardHeader title="All Inventory" icon={<Package className="h-4 w-4 text-zinc-400" />} action={<input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search inventory..." className="w-44 rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-zinc-500 sm:w-64" />} />
         {!data ? <EmptyState title="Loading inventory" text="Reading the tire shop database..." /> : inventory.length === 0 ? <EmptyState title="No tires found" text={search ? "Try another search." : "Use the form above to enter your first inventory item."} /> : (<>
           <div className="mt-4 space-y-3 sm:hidden">
-            {inventory.map((item) => <article key={item.id} className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-4"><div className="flex items-start justify-between gap-3"><div><div className="font-mono text-base font-semibold text-white">{item.size}</div><span className={`mt-2 inline-flex rounded-md border px-2 py-1 text-[10px] font-semibold ${tirePackageClass(item.packageType)}`}>{tirePackageLabel(item.packageType)}</span></div><div className="text-right"><div className={`text-lg font-semibold ${item.quantity <= 5 ? "text-amber-300" : "text-emerald-300"}`}>{item.quantity}</div><div className="text-[10px] text-zinc-500">{tirePackageLabel(item.packageType, true)}</div></div></div><div className="mt-4 flex items-center justify-between border-t border-zinc-800 pt-3"><div><div className="text-[10px] uppercase tracking-wider text-zinc-600">Selling price</div><div className="mt-0.5 font-semibold text-zinc-200">{money(item.price)}</div></div><div className="flex gap-2"><button onClick={() => editItem(item)} className="rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2 text-xs font-medium text-zinc-200">Edit</button><button disabled={busy} onClick={() => void removeItem(item)} className="rounded-lg border border-red-500/20 px-3 py-2 text-xs font-medium text-red-400">Remove</button></div></div></article>)}
+            {inventory.map((item) => <article key={item.id} className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-4"><div className="flex items-start justify-between gap-3"><div><div className="font-mono text-base font-semibold text-white">{item.size}</div><span className={`mt-2 inline-flex rounded-md border px-2 py-1 text-[10px] font-semibold ${tirePackageClass(item.packageType)}`}>{tirePackageLabel(item.packageType)}</span></div><div className="text-right"><div className={`text-lg font-semibold ${item.quantity <= 5 ? "text-amber-300" : "text-emerald-300"}`}>{item.quantity}</div><div className="text-[10px] text-zinc-500">{tirePackageLabel(item.packageType, true)}</div></div></div><div className="mt-4 flex items-center justify-between border-t border-zinc-800 pt-3"><div><div className="text-[10px] uppercase tracking-wider text-zinc-600">Selling price</div><div className="mt-0.5 font-semibold text-zinc-200">{money(item.price)}</div></div><div className="flex gap-2"><button disabled={adjustingId !== null || item.quantity === 0} onClick={() => void adjustItem(item, -1)} className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-xs font-semibold text-zinc-200 disabled:cursor-not-allowed disabled:opacity-35" aria-label={`Remove one ${item.size} tire`}>−1</button><button disabled={adjustingId !== null} onClick={() => void adjustItem(item, 1)} className="rounded-lg border border-emerald-500/25 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-300 disabled:cursor-not-allowed disabled:opacity-35" aria-label={`Add one ${item.size} tire`}>+1</button><button disabled={busy} onClick={() => void removeItem(item)} className="rounded-lg border border-red-500/20 px-3 py-2 text-xs font-medium text-red-400">Remove</button></div></div></article>)}
           </div>
           <div className="mt-4 hidden overflow-x-auto rounded-xl border border-zinc-800 sm:block">
             <table className="w-full min-w-[640px] text-left text-xs"><thead className="border-b border-zinc-800 bg-zinc-950/70 text-[10px] uppercase tracking-wider text-zinc-500"><tr><th className="px-4 py-3">Tire Size</th><th className="px-4 py-3">Sold As</th><th className="px-4 py-3">Stock</th><th className="px-4 py-3">Price</th><th className="px-4 py-3 text-right">Action</th></tr></thead>
-              <tbody className="divide-y divide-zinc-800/70">{inventory.map((item) => <tr key={item.id} className="hover:bg-zinc-900/60"><td className="px-4 py-3 font-mono font-semibold text-white">{item.size}</td><td className="px-4 py-3"><span className={`rounded-md border px-2 py-1 text-[10px] font-semibold ${tirePackageClass(item.packageType)}`}>{tirePackageLabel(item.packageType)}</span></td><td className="px-4 py-3"><div className={`font-semibold ${item.quantity <= 5 ? "text-amber-300" : "text-emerald-300"}`}>{item.quantity} <span className="text-[10px] font-normal text-zinc-500">{tirePackageLabel(item.packageType, true)}</span></div></td><td className="px-4 py-3 font-semibold text-zinc-200">{money(item.price)}</td><td className="px-4 py-3 text-right"><div className="flex justify-end gap-2"><button onClick={() => editItem(item)} className="rounded-md border border-zinc-700 px-3 py-1.5 text-[11px] font-medium text-zinc-300 hover:bg-zinc-800 hover:text-white">Edit</button><button disabled={busy} onClick={() => void removeItem(item)} className="rounded-md border border-red-500/20 px-3 py-1.5 text-[11px] font-medium text-red-400 hover:bg-red-500/10">Remove</button></div></td></tr>)}</tbody>
+              <tbody className="divide-y divide-zinc-800/70">{inventory.map((item) => <tr key={item.id} className="hover:bg-zinc-900/60"><td className="px-4 py-3 font-mono font-semibold text-white">{item.size}</td><td className="px-4 py-3"><span className={`rounded-md border px-2 py-1 text-[10px] font-semibold ${tirePackageClass(item.packageType)}`}>{tirePackageLabel(item.packageType)}</span></td><td className="px-4 py-3"><div className={`font-semibold ${item.quantity <= 5 ? "text-amber-300" : "text-emerald-300"}`}>{item.quantity} <span className="text-[10px] font-normal text-zinc-500">{tirePackageLabel(item.packageType, true)}</span></div></td><td className="px-4 py-3 font-semibold text-zinc-200">{money(item.price)}</td><td className="px-4 py-3 text-right"><div className="flex justify-end gap-2"><button disabled={adjustingId !== null || item.quantity === 0} onClick={() => void adjustItem(item, -1)} className="rounded-md border border-zinc-700 px-3 py-1.5 text-[11px] font-semibold text-zinc-300 hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-35" aria-label={`Remove one ${item.size} tire`}>−1</button><button disabled={adjustingId !== null} onClick={() => void adjustItem(item, 1)} className="rounded-md border border-emerald-500/25 bg-emerald-500/10 px-3 py-1.5 text-[11px] font-semibold text-emerald-300 hover:bg-emerald-500/15 disabled:cursor-not-allowed disabled:opacity-35" aria-label={`Add one ${item.size} tire`}>+1</button><button disabled={busy} onClick={() => void removeItem(item)} className="rounded-md border border-red-500/20 px-3 py-1.5 text-[11px] font-medium text-red-400 hover:bg-red-500/10">Remove</button></div></td></tr>)}</tbody>
             </table>
           </div>
         </>)}
