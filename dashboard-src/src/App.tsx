@@ -48,6 +48,7 @@ import {
   Zap,
 } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { browserSupportsWebAuthn, startAuthentication, startRegistration } from "@simplewebauthn/browser";
 
 type Page = "overview" | "bot" | "operations" | "connect" | "players" | "cad" | "commands" | "logs" | "staff" | "tire-inventory" | "inventory-view" | "tire-sales" | "tire-sales-report" | "settings";
 type Severity = "low" | "medium" | "high" | "critical";
@@ -396,7 +397,7 @@ const mockRecords: CADRecord[] = [
 ];
 
 async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const token = sessionStorage.getItem("prestonhq_token");
+  const token = localStorage.getItem("prestonhq_token") || sessionStorage.getItem("prestonhq_token");
   const method = String(options.method || "GET").toUpperCase();
   const response = await fetch(API_BASE + path, {
     ...options,
@@ -544,6 +545,8 @@ export function App() {
   const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
 
   useEffect(() => {
+    const existingToken = sessionStorage.getItem("prestonhq_token");
+    if (existingToken && !localStorage.getItem("prestonhq_token")) localStorage.setItem("prestonhq_token", existingToken);
     const styleId = "prestonhq-mobile-form-no-zoom";
     if (document.getElementById(styleId)) return;
     const style = document.createElement("style");
@@ -655,14 +658,14 @@ export function App() {
   useEffect(() => {
     api<any>("/api/auth/me")
       .then((data) => {
-        if (!data.authenticated && !sessionStorage.getItem("prestonhq_token")) {
+        if (!data.authenticated && !(localStorage.getItem("prestonhq_token") || sessionStorage.getItem("prestonhq_token"))) {
           setAuth("guest");
           return;
         }
         setAuth("ready");
         loadLiveData();
       })
-      .catch(() => setAuth(sessionStorage.getItem("prestonhq_token") ? "ready" : "guest"));
+      .catch(() => setAuth(localStorage.getItem("prestonhq_token") || sessionStorage.getItem("prestonhq_token") ? "ready" : "guest"));
   }, [loadLiveData]);
 
   useEffect(() => {
@@ -768,6 +771,14 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [passkeyAvailable, setPasskeyAvailable] = useState(false);
+
+  useEffect(() => {
+    if (!browserSupportsWebAuthn()) return;
+    api<{ available: boolean }>("/api/auth/passkeys/status")
+      .then((status) => setPasskeyAvailable(status.available))
+      .catch(() => setPasskeyAvailable(false));
+  }, []);
 
   const login = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -775,10 +786,26 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
     setError("");
     try {
       const data = await api<any>("/api/auth/login", { method: "POST", body: JSON.stringify({ password }) });
-      if (data.token) sessionStorage.setItem("prestonhq_token", data.token);
+      if (data.token) localStorage.setItem("prestonhq_token", data.token);
       onSuccess();
     } catch (loginError) {
       setError(loginError instanceof Error ? loginError.message : "Invalid access token.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const loginWithPasskey = async () => {
+    setBusy(true);
+    setError("");
+    try {
+      const optionsJSON = await api<any>("/api/auth/passkeys/authenticate/options", { method: "POST" });
+      const credential = await startAuthentication({ optionsJSON });
+      const data = await api<any>("/api/auth/passkeys/authenticate/verify", { method: "POST", body: JSON.stringify(credential) });
+      if (data.token) localStorage.setItem("prestonhq_token", data.token);
+      onSuccess();
+    } catch (passkeyError) {
+      setError(passkeyError instanceof Error ? passkeyError.message : "Face ID or passkey login was cancelled.");
     } finally {
       setBusy(false);
     }
@@ -792,13 +819,14 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
             <Lock className="h-5 w-5 text-zinc-300" />
           </div>
           <h1 className="text-lg font-semibold tracking-tight text-white">PrestonHQ Terminal</h1>
-          <p className="mt-1 text-xs text-zinc-400">Enter operator authorization key to access management controls.</p>
+          <p className="mt-1 text-xs text-zinc-400">Use Face ID, a passkey, or your backup passcode.</p>
         </div>
         <form onSubmit={login} className="rounded-xl border border-zinc-800/80 bg-zinc-900/50 p-5 shadow-xl backdrop-blur-xl">
           <div className="space-y-4">
+            {passkeyAvailable && <><button type="button" disabled={busy} onClick={() => void loginWithPasskey()} className="flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-400 py-3 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-300 active:scale-[0.99] disabled:opacity-40"><KeyRound className="h-4 w-4" />{busy ? "Waiting for Face ID..." : "Continue with Face ID"}</button><div className="flex items-center gap-3"><span className="h-px flex-1 bg-zinc-800" /><span className="text-[10px] uppercase tracking-wider text-zinc-600">Backup passcode</span><span className="h-px flex-1 bg-zinc-800" /></div></>}
             <div>
               <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1.5">Access Passcode</label>
-              <input autoFocus type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••••••" className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-xs text-zinc-200 placeholder-zinc-600 outline-none transition focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500" />
+              <input autoFocus={!passkeyAvailable} type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••••••" className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-xs text-zinc-200 placeholder-zinc-600 outline-none transition focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500" />
             </div>
             {error && <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-2.5 text-xs text-red-400">{error}</div>}
             <button disabled={busy || !password} className="w-full rounded-lg bg-zinc-100 py-2.5 text-xs font-semibold text-zinc-900 transition hover:bg-white active:scale-[0.99] disabled:opacity-40 disabled:hover:bg-zinc-100">
@@ -1950,6 +1978,8 @@ function SettingsPage({ showToast }: { showToast: (m: string) => void }) {
   const [settings, setSettings] = useState({ broadcastCadToServer: true, ingestModCalls: true, eventWebhookEnabled: true, autoRefreshSeconds: 15 });
   const [eventWebhook, setEventWebhook] = useState<{ configured: boolean; url: string | null }>({ configured: false, url: null });
   const [busy, setBusy] = useState(false);
+  const [passkeyCount, setPasskeyCount] = useState(0);
+  const [passkeyBusy, setPasskeyBusy] = useState(false);
 
   useEffect(() => {
     api<any>("/api/erlc/dashboard-config")
@@ -1958,7 +1988,25 @@ function SettingsPage({ showToast }: { showToast: (m: string) => void }) {
         setEventWebhook(response.eventWebhook || { configured: false, url: null });
       })
       .catch((error) => showToast(error instanceof Error ? error.message : "Settings sync failed."));
+    api<{ count: number }>("/api/auth/passkeys/status").then((status) => setPasskeyCount(status.count)).catch(() => undefined);
   }, [showToast]);
+
+  const addPasskey = async () => {
+    if (!browserSupportsWebAuthn()) return showToast("This browser does not support Face ID or passkeys.");
+    setPasskeyBusy(true);
+    try {
+      const optionsJSON = await api<any>("/api/auth/passkeys/register/options", { method: "POST" });
+      const credential = await startRegistration({ optionsJSON });
+      await api("/api/auth/passkeys/register/verify", { method: "POST", body: JSON.stringify(credential) });
+      const status = await api<{ count: number }>("/api/auth/passkeys/status");
+      setPasskeyCount(status.count);
+      showToast("Face ID / passkey added successfully.");
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "Passkey setup was cancelled.");
+    } finally {
+      setPasskeyBusy(false);
+    }
+  };
 
   const save = async () => {
     setBusy(true);
@@ -1981,6 +2029,7 @@ function SettingsPage({ showToast }: { showToast: (m: string) => void }) {
     <Card>
       <CardHeader title="System Settings" icon={<Settings className="h-4 w-4 text-zinc-400" />} action={<Button disabled={busy} onClick={() => void save()}>{busy ? "Saving..." : "Save Settings"}</Button>} />
       <div className="mt-4 space-y-4">
+        <div className="flex flex-col gap-4 rounded-lg border border-emerald-500/20 bg-emerald-500/[.06] p-4 sm:flex-row sm:items-center sm:justify-between"><div className="flex items-start gap-3"><div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-emerald-500/20 bg-emerald-500/10"><KeyRound className="h-4 w-4 text-emerald-300" /></div><div><div className="text-xs font-medium text-white">Face ID & Passkey Login</div><div className="mt-1 text-[11px] leading-relaxed text-zinc-500">Add this phone so future sign-ins use Face ID. Your passcode stays available as a backup.</div><div className="mt-1.5 text-[10px] font-medium text-emerald-400">{passkeyCount} passkey{passkeyCount === 1 ? "" : "s"} registered</div></div></div><button disabled={passkeyBusy} onClick={() => void addPasskey()} className="shrink-0 rounded-lg bg-emerald-400 px-4 py-2.5 text-xs font-semibold text-zinc-950 transition hover:bg-emerald-300 disabled:opacity-40">{passkeyBusy ? "Waiting for Face ID..." : "Add Face ID / Passkey"}</button></div>
         <div className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-950/40 p-4">
           <div>
             <div className="text-xs font-medium text-white">Broadcast CAD Calls In Game</div>
