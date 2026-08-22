@@ -515,25 +515,15 @@ const permissions: Record<string, Permission[]> = {
 };
 
 const navItems = [
-  { id: "overview" as Page, label: "Overview", icon: Layers },
-  { id: "bot" as Page, label: "Veltrix Bot", icon: Cpu },
-  { id: "operations" as Page, label: "Staff Operations", icon: Clock3 },
-  { id: "connect" as Page, label: "Server Connect", icon: Server },
-  { id: "players" as Page, label: "Players", icon: Users },
-  { id: "cad" as Page, label: "MDT / CAD Center", icon: Siren },
-  { id: "commands" as Page, label: "Console Dispatch", icon: Terminal },
-  { id: "logs" as Page, label: "Audit Logs", icon: ClipboardList },
-  { id: "staff" as Page, label: "Staff Matrix", icon: ShieldCheck },
-  { id: "tire-inventory" as Page, label: "Tire Inventory", icon: Package },
-  { id: "inventory-view" as Page, label: "Inventory View", icon: Eye },
-  { id: "tire-sales" as Page, label: "Sales & Services", icon: ShoppingCart },
-  { id: "tire-sales-report" as Page, label: "Monthly Sales Report", icon: ClipboardList },
-  { id: "settings" as Page, label: "System Settings", icon: Settings },
+  { id: "tire-inventory" as Page, label: "Manage Inventory", shortLabel: "Manage", icon: Package },
+  { id: "inventory-view" as Page, label: "Inventory", shortLabel: "Inventory", icon: Eye },
+  { id: "tire-sales" as Page, label: "Sales & Services", shortLabel: "Sales", icon: ShoppingCart },
+  { id: "tire-sales-report" as Page, label: "Sales Reports", shortLabel: "Reports", icon: ClipboardList },
+  { id: "settings" as Page, label: "Account", shortLabel: "Account", icon: Settings },
 ];
 
 export function App() {
   const [page, setPage] = useState<Page>("tire-inventory");
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [auth, setAuth] = useState<"checking" | "guest" | "ready">("checking");
   const [serverData, setServerData] = useState<ServerState>(defaultServer);
   const [playerData, setPlayerData] = useState<Player[]>([]);
@@ -664,16 +654,9 @@ export function App() {
           return;
         }
         setAuth("ready");
-        loadLiveData();
       })
       .catch(() => setAuth(localStorage.getItem("prestonhq_token") || sessionStorage.getItem("prestonhq_token") ? "ready" : "guest"));
   }, [loadLiveData]);
-
-  useEffect(() => {
-    if (auth !== "ready") return;
-    const timer = window.setInterval(loadLiveData, 10000);
-    return () => window.clearInterval(timer);
-  }, [auth, loadLiveData]);
 
   const executeAction = async (reason: string) => {
     if (!modal) return;
@@ -707,38 +690,18 @@ export function App() {
   };
 
   if (auth === "checking") return <LoadingScreen />;
-  if (auth === "guest") return <LoginScreen onSuccess={() => { setAuth("ready"); loadLiveData(); }} />;
+  if (auth === "guest") return <LoginScreen onSuccess={() => setAuth("ready")} />;
 
   return (
     <DashboardClockProvider>
-    <div className="min-h-screen bg-[#09090b] font-sans text-zinc-100 antialiased selection:bg-zinc-800 selection:text-zinc-100">
+    <div className="min-h-screen bg-[#0a0c0b] font-sans text-zinc-100 antialiased selection:bg-emerald-500/30 selection:text-white">
       <div className="flex min-h-screen">
-        <Sidebar page={page} setPage={(next) => { setPage(next); setMobileOpen(false); }} mobileOpen={mobileOpen} close={() => setMobileOpen(false)} />
+        <Sidebar page={page} setPage={setPage} />
         <main className="flex min-w-0 flex-1 flex-col lg:pl-64">
-          <Topbar page={page} onMenu={() => setMobileOpen(true)} serverData={serverData} onRefresh={loadLiveData} lastSyncedAt={lastSyncedAt} />
-          <div className="mx-auto w-full max-w-[1400px] flex-1 p-4 sm:p-6 lg:p-8">
-            {syncError && (
-              <div className="mb-6 flex flex-col items-stretch justify-between gap-3 rounded-lg border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-xs font-medium text-amber-300 sm:flex-row sm:items-center sm:gap-4">
-                <div className="flex items-center gap-2.5">
-                  <AlertTriangle className="h-4 w-4 shrink-0 text-amber-400" />
-                  <span>{syncError}</span>
-                </div>
-                <button onClick={loadLiveData} className="w-full shrink-0 rounded bg-amber-500/20 px-3 py-2 text-[11px] font-semibold text-amber-200 transition hover:bg-amber-500/30 sm:w-auto sm:py-1">
-                  Retry Sync
-                </button>
-              </div>
-            )}
+          <Topbar page={page} />
+          <div className="mx-auto w-full max-w-[1240px] flex-1 p-4 pb-28 sm:p-6 sm:pb-28 lg:p-8 lg:pb-8">
             <AnimatePresence mode="wait">
               <motion.div key={page} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.15 }}>
-                {page === "overview" && <Overview showToast={showToast} setPage={setPage} serverData={serverData} logs={logData} onRefresh={loadLiveData} />}
-                {page === "bot" && <VeltrixBotDashboard showToast={showToast} mode="overview" />}
-                {page === "operations" && <VeltrixBotDashboard showToast={showToast} mode="staff" />}
-                {page === "connect" && <Connect showToast={showToast} onConnected={async () => { await loadLiveData(); setPage("overview"); }} />}
-                {page === "players" && <Players players={playerData} selected={selectedPlayer} setSelected={setSelectedPlayer} openAction={(action, player) => setModal({ action, player })} />}
-                {page === "cad" && <CadMdtCenter players={playerData} showToast={showToast} />}
-                {page === "commands" && <CommandCenter openAction={(action) => setModal({ action })} sendCommand={sendCommand} busy={busy} />}
-                {page === "logs" && <Logs logs={logData} />}
-                {page === "staff" && <StaffPermissions showToast={showToast} />}
                 {page === "tire-inventory" && <TireInventoryPage showToast={showToast} setPage={setPage} />}
                 {page === "inventory-view" && <TireInventoryViewPage showToast={showToast} />}
                 {page === "tire-sales" && <TireSalesPage showToast={showToast} setPage={setPage} />}
@@ -750,6 +713,7 @@ export function App() {
           <Footer />
         </main>
       </div>
+      <MobileShopNav page={page} setPage={setPage} />
       <AnimatePresence>{modal && <ActionModal modal={modal} close={() => setModal(null)} confirm={executeAction} busy={busy} />}</AnimatePresence>
       <AnimatePresence>{toast && <Toast message={toast} />}</AnimatePresence>
     </div>
@@ -759,10 +723,10 @@ export function App() {
 
 function LoadingScreen() {
   return (
-    <div className="grid min-h-screen place-items-center bg-[#09090b] text-zinc-400">
+    <div className="grid min-h-screen place-items-center bg-[#0a0c0b] text-zinc-400">
       <div className="flex flex-col items-center gap-3">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-zinc-700 border-t-zinc-200" />
-        <span className="text-xs font-medium tracking-wide">Connecting to platform...</span>
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-zinc-800 border-t-emerald-400" />
+        <span className="text-xs font-medium tracking-wide">Opening Akron Tire Shop...</span>
       </div>
     </div>
   );
@@ -813,16 +777,14 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
   };
 
   return (
-    <div className="grid min-h-screen place-items-center bg-[#09090b] p-4 text-zinc-100">
+    <div className="grid min-h-screen place-items-center bg-[#0a0c0b] p-4 text-zinc-100">
       <div className="w-full max-w-sm">
         <div className="mb-6 text-center">
-          <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 shadow-sm">
-            <Lock className="h-5 w-5 text-zinc-300" />
-          </div>
-          <h1 className="text-lg font-semibold tracking-tight text-white">PrestonHQ Terminal</h1>
-          <p className="mt-1 text-xs text-zinc-400">Use Face ID, a passkey, or your backup passcode.</p>
+          <div className="text-[10px] font-bold uppercase tracking-[.2em] text-emerald-400">Akron</div>
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-white">Tire Shop</h1>
+          <p className="mt-2 text-xs text-zinc-500">Sign in to manage inventory, sales, and services.</p>
         </div>
-        <form onSubmit={login} className="rounded-xl border border-zinc-800/80 bg-zinc-900/50 p-5 shadow-xl backdrop-blur-xl">
+        <form onSubmit={login} className="rounded-xl border border-white/[.08] bg-white/[.035] p-5 shadow-2xl">
           <div className="space-y-4">
             {passkeyAvailable && <><button type="button" disabled={busy} onClick={() => void loginWithPasskey()} className="flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-400 py-3 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-300 active:scale-[0.99] disabled:opacity-40"><KeyRound className="h-4 w-4" />{busy ? "Waiting for Face ID..." : "Continue with Face ID"}</button><div className="flex items-center gap-3"><span className="h-px flex-1 bg-zinc-800" /><span className="text-[10px] uppercase tracking-wider text-zinc-600">Backup passcode</span><span className="h-px flex-1 bg-zinc-800" /></div></>}
             <div>
@@ -830,85 +792,65 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
               <input autoFocus={!passkeyAvailable} type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••••••" className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-xs text-zinc-200 placeholder-zinc-600 outline-none transition focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500" />
             </div>
             {error && <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-2.5 text-xs text-red-400">{error}</div>}
-            <button disabled={busy || !password} className="w-full rounded-lg bg-zinc-100 py-2.5 text-xs font-semibold text-zinc-900 transition hover:bg-white active:scale-[0.99] disabled:opacity-40 disabled:hover:bg-zinc-100">
+            <button disabled={busy || !password} className="w-full rounded-lg bg-emerald-400 py-2.5 text-xs font-semibold text-zinc-950 transition hover:bg-emerald-300 active:scale-[0.99] disabled:opacity-40">
               {busy ? "Authenticating..." : "Authorize Access"}
             </button>
           </div>
         </form>
-        <div className="mt-6 text-center text-[11px] text-zinc-600">
-          <span>Protected Infrastructure • ER:LC API Gateway</span>
-        </div>
+        <div className="mt-6 text-center text-[10px] text-zinc-700">Private shop management</div>
       </div>
     </div>
   );
 }
 
-function Sidebar({ page, setPage, mobileOpen, close }: { page: Page; setPage: (p: Page) => void; mobileOpen: boolean; close: () => void }) {
+function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) {
   return (
-    <>
-      {mobileOpen && <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden" onClick={close} />}
-      <aside className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-zinc-800/80 bg-[#0c0c0e] p-4 transition-transform duration-200 lg:translate-x-0 ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}>
-        <div className="flex items-center gap-2.5 px-2 py-1.5">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-100 font-bold text-zinc-900 text-xs">
-            P
-          </div>
-          <div className="flex flex-col">
-            <span className="text-xs font-semibold text-white tracking-tight">PrestonHQ</span>
-            <span className="text-[10px] text-zinc-500">ER:LC Control Center</span>
-          </div>
-        </div>
-        <div className="my-4 h-px bg-zinc-800/60" />
-        <nav className="space-y-0.5">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const active = item.id === page;
-            return (
-              <button key={item.id} onClick={() => setPage(item.id)} className={`flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs font-medium transition ${active ? "bg-zinc-800/80 text-white shadow-sm" : "text-zinc-400 hover:bg-zinc-900/60 hover:text-zinc-200"}`}>
-                <Icon className={`h-4 w-4 ${active ? "text-zinc-100" : "text-zinc-500"}`} />
-                <span>{item.label}</span>
-              </button>
-            );
-          })}
-        </nav>
-        <div className="mt-auto pt-4">
-          <div className="rounded-lg border border-zinc-800/80 bg-zinc-900/40 p-3">
-            <div className="flex items-center gap-2 text-xs font-medium text-zinc-300">
-              <ShieldAlert className="h-3.5 w-3.5 text-amber-400" /> High-Level Audit Active
-            </div>
-            <p className="mt-1 text-[11px] leading-relaxed text-zinc-500">All administrative operations are permanently logged and verified.</p>
-          </div>
-        </div>
-      </aside>
-    </>
+    <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-white/[.07] bg-[#0d100e] px-4 py-5 lg:flex">
+      <div className="px-2">
+        <div className="text-[10px] font-bold uppercase tracking-[.2em] text-emerald-400">Akron</div>
+        <div className="mt-1 text-lg font-semibold tracking-tight text-white">Tire Shop</div>
+        <div className="mt-1 text-[11px] text-zinc-500">Inventory & sales</div>
+      </div>
+      <div className="my-5 h-px bg-white/[.07]" />
+      <nav className="space-y-1">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          const active = item.id === page;
+          return (
+            <button key={item.id} onClick={() => setPage(item.id)} className={`group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-xs font-medium transition ${active ? "bg-white/[.08] text-white" : "text-zinc-500 hover:bg-white/[.04] hover:text-zinc-200"}`}>
+              <Icon className={`h-4 w-4 ${active ? "text-emerald-400" : "text-zinc-600 group-hover:text-zinc-400"}`} />
+              <span>{item.label}</span>
+              {active && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-emerald-400" />}
+            </button>
+          );
+        })}
+      </nav>
+      <div className="mt-auto rounded-lg border border-white/[.07] bg-white/[.025] p-3">
+        <div className="flex items-center gap-2 text-[11px] font-medium text-zinc-300"><span className="h-2 w-2 rounded-full bg-emerald-400" /> Data saves automatically</div>
+        <p className="mt-1.5 text-[10px] leading-relaxed text-zinc-600">Inventory, sales, and service history are stored securely.</p>
+      </div>
+    </aside>
   );
 }
 
-function Topbar({ page, onMenu, serverData, onRefresh, lastSyncedAt }: { page: Page; onMenu: () => void; serverData: ServerState; onRefresh: () => void; lastSyncedAt: string | null }) {
+function Topbar({ page }: { page: Page }) {
   const currentNav = navItems.find((item) => item.id === page);
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center border-b border-zinc-800/80 bg-[#09090b]/80 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
-      <button onClick={onMenu} className="mr-3 rounded-lg border border-zinc-800 p-1.5 text-zinc-400 hover:text-white lg:hidden">
-        <Menu className="h-4 w-4" />
-      </button>
-      <div className="flex items-center gap-2 text-xs font-medium text-zinc-400">
-        <span>Console</span>
-        <ChevronRight className="h-3.5 w-3.5 text-zinc-600" />
-        <span className="text-zinc-100">{currentNav?.label}</span>
-      </div>
-      <div className="ml-auto flex items-center gap-3">
-        {lastSyncedAt && <div className="hidden text-[10px] text-zinc-600 md:block">Synced <LiveRelativeTime value={lastSyncedAt} /></div>}
-        <div className="hidden sm:flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/60 px-3 py-1 text-[11px] text-zinc-300">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-          </span>
-          <span><AnimatedNumber value={serverData.players} />/<AnimatedNumber value={serverData.maxPlayers} /> Online</span>
-        </div>
-        <button onClick={onRefresh} className="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-400 transition hover:bg-zinc-800 hover:text-white">
-          <RefreshCw className="h-3.5 w-3.5" />
-        </button>
-      </div>
+    <header className="sticky top-0 z-30 flex h-16 items-center border-b border-white/[.07] bg-[#0a0c0b]/90 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
+      <div className="lg:hidden"><div className="text-[9px] font-bold uppercase tracking-[.18em] text-emerald-400">Akron Tire Shop</div><div className="mt-0.5 text-sm font-semibold text-white">{currentNav?.label}</div></div>
+      <div className="hidden lg:block"><div className="text-sm font-semibold text-white">{currentNav?.label}</div><div className="mt-0.5 text-[10px] text-zinc-600">Akron Tire Shop</div></div>
+      <div className="ml-auto flex items-center gap-2 text-[10px] font-medium text-zinc-500"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /><span>Saved automatically</span></div>
     </header>
+  );
+}
+
+function MobileShopNav({ page, setPage }: { page: Page; setPage: (p: Page) => void }) {
+  return (
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-white/[.08] bg-[#0d100e]/95 px-1 pb-[max(8px,env(safe-area-inset-bottom))] pt-2 backdrop-blur-xl lg:hidden">
+      <div className="mx-auto grid max-w-lg grid-cols-5">
+        {navItems.map((item) => { const Icon = item.icon; const active = item.id === page; return <button key={item.id} onClick={() => setPage(item.id)} className={`flex min-w-0 flex-col items-center gap-1 rounded-lg px-1 py-1.5 text-[9px] font-medium transition ${active ? "text-emerald-300" : "text-zinc-600"}`}><Icon className={`h-[18px] w-[18px] ${active ? "text-emerald-400" : "text-zinc-600"}`} /><span className="truncate">{item.shortLabel}</span></button>; })}
+      </div>
+    </nav>
   );
 }
 
@@ -1976,21 +1918,12 @@ function VeltrixBotDashboard({ showToast, mode = "overview" }: { showToast: (m: 
 }
 
 function SettingsPage({ showToast }: { showToast: (m: string) => void }) {
-  const [settings, setSettings] = useState({ broadcastCadToServer: true, ingestModCalls: true, eventWebhookEnabled: true, autoRefreshSeconds: 15 });
-  const [eventWebhook, setEventWebhook] = useState<{ configured: boolean; url: string | null }>({ configured: false, url: null });
-  const [busy, setBusy] = useState(false);
   const [passkeyCount, setPasskeyCount] = useState(0);
   const [passkeyBusy, setPasskeyBusy] = useState(false);
 
   useEffect(() => {
-    api<any>("/api/erlc/dashboard-config")
-      .then((response) => {
-        setSettings((current) => ({ ...current, ...(response.settings || {}) }));
-        setEventWebhook(response.eventWebhook || { configured: false, url: null });
-      })
-      .catch((error) => showToast(error instanceof Error ? error.message : "Settings sync failed."));
     api<{ count: number }>("/api/auth/passkeys/status").then((status) => setPasskeyCount(status.count)).catch(() => undefined);
-  }, [showToast]);
+  }, []);
 
   const addPasskey = async () => {
     if (!browserSupportsWebAuthn()) return showToast("This browser does not support Face ID or passkeys.");
@@ -2009,58 +1942,30 @@ function SettingsPage({ showToast }: { showToast: (m: string) => void }) {
     }
   };
 
-  const save = async () => {
-    setBusy(true);
-    try {
-      const response = await api<any>("/api/erlc/dashboard-config", { method: "PATCH", body: JSON.stringify({ settings }) });
-      setSettings((current) => ({ ...current, ...(response.settings || {}) }));
-      showToast("Dashboard settings saved permanently.");
-    } catch (error) {
-      showToast(error instanceof Error ? error.message : "Settings could not be saved.");
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const switchSetting = (key: "broadcastCadToServer" | "ingestModCalls" | "eventWebhookEnabled") => {
-    setSettings((current) => ({ ...current, [key]: !current[key] }));
+  const signOut = () => {
+    localStorage.removeItem("prestonhq_token");
+    sessionStorage.removeItem("prestonhq_token");
+    window.location.reload();
   };
 
   return (
-    <Card>
-      <CardHeader title="System Settings" icon={<Settings className="h-4 w-4 text-zinc-400" />} action={<Button disabled={busy} onClick={() => void save()}>{busy ? "Saving..." : "Save Settings"}</Button>} />
-      <div className="mt-4 space-y-4">
-        <div className="flex flex-col gap-4 rounded-lg border border-emerald-500/20 bg-emerald-500/[.06] p-4 sm:flex-row sm:items-center sm:justify-between"><div className="flex items-start gap-3"><div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-emerald-500/20 bg-emerald-500/10"><KeyRound className="h-4 w-4 text-emerald-300" /></div><div><div className="text-xs font-medium text-white">Face ID & Passkey Login</div><div className="mt-1 text-[11px] leading-relaxed text-zinc-500">{passkeyCount > 0 ? "Face ID is set up. Use normal Safari—not Private Browsing—to stay authorized on this phone." : "Add this phone so future sign-ins use Face ID. Your passcode stays available as a backup."}</div><div className="mt-1.5 text-[10px] font-medium text-emerald-400">{passkeyCount} passkey{passkeyCount === 1 ? "" : "s"} registered</div></div></div>{passkeyCount > 0 ? <div className="flex shrink-0 items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-4 py-2.5 text-xs font-semibold text-emerald-300"><CheckCircle2 className="h-4 w-4" /> Face ID is Ready</div> : <button disabled={passkeyBusy} onClick={() => void addPasskey()} className="shrink-0 rounded-lg bg-emerald-400 px-4 py-2.5 text-xs font-semibold text-zinc-950 transition hover:bg-emerald-300 disabled:opacity-40">{passkeyBusy ? "Waiting for Face ID..." : "Add Face ID / Passkey"}</button>}</div>
-        <div className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-950/40 p-4">
-          <div>
-            <div className="text-xs font-medium text-white">Broadcast CAD Calls In Game</div>
-            <div className="text-[11px] text-zinc-500">Send newly created dashboard calls through the live ER:LC command API.</div>
+    <div className="space-y-6">
+      <div><h1 className="text-2xl font-semibold tracking-tight text-white">Account</h1><p className="mt-1 text-xs text-zinc-500">Manage secure access to Akron Tire Shop.</p></div>
+      <section className="overflow-hidden rounded-xl border border-white/[.08] bg-white/[.025]">
+        <div className="border-b border-white/[.07] px-5 py-4"><div className="text-sm font-semibold text-white">Sign-in security</div><div className="mt-1 text-[11px] text-zinc-500">Use Face ID or your passcode to access shop records.</div></div>
+        <div className="p-5">
+          <div className="flex flex-col gap-4 rounded-lg border border-emerald-500/20 bg-emerald-500/[.06] p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3"><div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-emerald-500/10"><KeyRound className="h-4 w-4 text-emerald-300" /></div><div><div className="text-xs font-medium text-white">Face ID & Passkey</div><div className="mt-1 max-w-xl text-[11px] leading-relaxed text-zinc-500">{passkeyCount > 0 ? "Face ID is ready. Use regular Safari instead of Private Browsing when signing in." : "Add this phone for faster, secure sign-in. Your passcode remains available as a backup."}</div><div className="mt-1.5 text-[10px] font-medium text-emerald-400">{passkeyCount} passkey{passkeyCount === 1 ? "" : "s"} registered</div></div></div>
+            {passkeyCount > 0 ? <div className="flex shrink-0 items-center gap-2 text-xs font-semibold text-emerald-300"><CheckCircle2 className="h-4 w-4" /> Ready</div> : <button disabled={passkeyBusy} onClick={() => void addPasskey()} className="shrink-0 rounded-lg bg-emerald-400 px-4 py-2.5 text-xs font-semibold text-zinc-950 transition hover:bg-emerald-300 disabled:opacity-40">{passkeyBusy ? "Waiting for Face ID..." : "Add Face ID / Passkey"}</button>}
           </div>
-          <button onClick={() => switchSetting("broadcastCadToServer")} className={`relative h-6 w-11 rounded-full transition ${settings.broadcastCadToServer ? "bg-emerald-500" : "bg-zinc-700"}`}><span className={`absolute top-1 h-4 w-4 rounded-full bg-white transition ${settings.broadcastCadToServer ? "left-6" : "left-1"}`} /></button>
         </div>
-        <div className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-950/40 p-4">
-          <div>
-            <div className="text-xs font-medium text-white">Automatic In-Game Call Intake</div>
-            <div className="text-[11px] text-zinc-500">Import only new ER:LC mod calls after the first baseline sync.</div>
-          </div>
-          <button onClick={() => switchSetting("ingestModCalls")} className={`relative h-6 w-11 rounded-full transition ${settings.ingestModCalls ? "bg-emerald-500" : "bg-zinc-700"}`}><span className={`absolute top-1 h-4 w-4 rounded-full bg-white transition ${settings.ingestModCalls ? "left-6" : "left-1"}`} /></button>
-        </div>
-        <div className="rounded-lg border border-zinc-800 bg-zinc-950/40 p-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <div className="text-xs font-medium text-white">ER:LC Event Log Webhook</div>
-              <div className="text-[11px] text-zinc-500">Receives new 911 and emergency events without exposing dashboard credentials.</div>
-            </div>
-            <button onClick={() => switchSetting("eventWebhookEnabled")} className={`rounded border px-2 py-1 text-[10px] font-semibold ${eventWebhook.configured && settings.eventWebhookEnabled ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-amber-500/30 bg-amber-500/10 text-amber-300"}`}>{!eventWebhook.configured ? "NOT CONFIGURED" : settings.eventWebhookEnabled ? "ENABLED" : "DISABLED"}</button>
-          </div>
-          {eventWebhook.url && <div className="mt-3 flex gap-2"><input readOnly value={eventWebhook.url} className="min-w-0 flex-1 rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 font-mono text-[11px] text-zinc-400 outline-none" /><Button variant="secondary" onClick={() => { void navigator.clipboard.writeText(eventWebhook.url || ""); showToast("Webhook URL copied."); }}>Copy URL</Button></div>}
-        </div>
-      </div>
-    </Card>
+      </section>
+      <section className="flex flex-col gap-4 rounded-xl border border-white/[.08] bg-white/[.025] p-5 sm:flex-row sm:items-center sm:justify-between"><div><div className="text-sm font-semibold text-white">Sign out</div><div className="mt-1 text-[11px] text-zinc-500">You will need Face ID or the shop passcode to get back in.</div></div><button onClick={signOut} className="rounded-lg border border-red-500/20 px-4 py-2.5 text-xs font-semibold text-red-400 transition hover:bg-red-500/10">Sign Out</button></section>
+    </div>
   );
 }
 
-const tireFieldClass = "w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2.5 text-xs text-zinc-200 placeholder-zinc-600 outline-none transition focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500";
+const tireFieldClass = "w-full rounded-lg border border-white/[.09] bg-[#0d100e] px-3 py-2.5 text-xs text-zinc-100 placeholder-zinc-700 outline-none transition focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/10";
 
 function money(value: number) {
   return value.toLocaleString("en-US", { style: "currency", currency: "USD" });
@@ -2161,7 +2066,7 @@ function easternDateTimeToIso(date: string, time: string) {
 
 function TireStat({ label, value, detail }: { label: string; value: string | number; detail: string }) {
   return (
-    <div className="rounded-xl border border-zinc-800/80 bg-zinc-900/30 p-4">
+    <div className="rounded-xl border border-white/[.07] bg-white/[.025] p-4 shadow-sm">
       <div className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">{label}</div>
       <div className="mt-1.5 text-2xl font-semibold tracking-tight text-white">{value}</div>
       <div className="mt-1 text-[11px] text-zinc-500">{detail}</div>
@@ -2251,7 +2156,7 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
   return (
     <div className="space-y-6">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-        <div><h1 className="text-2xl font-semibold tracking-tight text-white">Tire Inventory</h1><p className="mt-1 text-xs text-zinc-400">Every tire in stock, with live quantities and pricing. No separate PIN required.</p></div>
+        <div><h1 className="text-2xl font-semibold tracking-tight text-white">Manage Inventory</h1><p className="mt-1 text-xs text-zinc-500">Add tires, update stock, and keep pricing organized.</p></div>
         <Button variant="secondary" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Open Tire Sales</Button>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -2268,7 +2173,7 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
           <label className="text-[11px] font-medium text-zinc-400">Quantity<input required min="0" step="1" type="number" name="quantity" value={form.quantity} onChange={updateField} placeholder="4" className={`mt-1.5 ${tireFieldClass}`} /></label>
           <label className="text-[11px] font-medium text-zinc-400">Selling price<input required min="0" step="0.01" type="number" name="price" value={form.price} onChange={updateField} placeholder="0.00" className={`mt-1.5 ${tireFieldClass}`} /></label>
           <div className="flex gap-2 sm:col-span-2 lg:col-span-4">
-            <button disabled={busy} className="rounded-lg bg-zinc-100 px-4 py-2.5 text-xs font-semibold text-zinc-900 transition hover:bg-white disabled:opacity-50">{busy ? "Saving..." : editingId ? "Save Changes" : "Add to Inventory"}</button>
+            <button disabled={busy} className="rounded-lg bg-emerald-400 px-4 py-2.5 text-xs font-semibold text-zinc-950 transition hover:bg-emerald-300 disabled:opacity-50">{busy ? "Saving..." : editingId ? "Save Changes" : "Add to Inventory"}</button>
             {editingId && <button type="button" onClick={() => { setEditingId(null); setForm(blank); }} className="rounded-lg px-4 py-2.5 text-xs font-medium text-zinc-400 hover:bg-zinc-800 hover:text-white">Cancel</button>}
           </div>
         </form>
@@ -2448,7 +2353,7 @@ function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void;
           <label className="text-[11px] font-medium text-zinc-400">Payment<select value={form.paymentMethod} onChange={(event) => setForm((current) => ({ ...current, paymentMethod: event.target.value }))} className={`mt-1.5 ${tireFieldClass}`}><option>Cash</option><option>Cashapp</option><option>Chime</option></select></label>
           <label className="text-[11px] font-medium text-zinc-400">Notes<input value={form.notes} onChange={(event) => setForm((current) => ({ ...current, notes: event.target.value }))} placeholder="Optional" className={`mt-1.5 ${tireFieldClass}`} /></label>
           <div className={`rounded-lg border p-3 sm:col-span-2 lg:col-span-4 ${isTireSale && form.soldDate === easternDateKey(new Date()) ? "border-emerald-500/20 bg-emerald-500/10" : "border-blue-500/20 bg-blue-500/10"}`}><div className={`text-xs font-medium ${isTireSale && form.soldDate === easternDateKey(new Date()) ? "text-emerald-300" : "text-blue-300"}`}>{!isTireSale ? `${workTypeLabel(form.serviceType)} service — tire inventory will not change` : form.soldDate === easternDateKey(new Date()) ? "Today's tire sale — inventory will be reduced automatically" : "Past tire sale — current inventory will not be changed"}</div><div className="mt-1 text-[10px] leading-relaxed text-zinc-500">{!isTireSale ? "This job is saved in daily and monthly revenue totals without removing tires." : form.soldDate === easternDateKey(new Date()) ? "The quantity sold will be removed from this tire size." : "Your inventory is already current, so older sales are saved only in history."}</div></div>
-          <div className="flex gap-2 sm:col-span-2 lg:col-span-4"><button disabled={busy || tireSelectionMissing || !form.unitPrice} className="rounded-lg bg-zinc-100 px-4 py-2.5 text-xs font-semibold text-zinc-900 transition hover:bg-white disabled:opacity-40">{busy ? "Saving..." : editingSaleId ? "Save Changes" : `Record ${workTypeLabel(form.serviceType)} — ${money(currentSaleTotal)}`}</button>{editingSaleId && <button type="button" onClick={() => { setEditingSaleId(null); setInventorySearch(""); setForm((current) => ({ ...current, inventoryId: "", quantity: "1", unitPrice: "", soldTime: easternTimeValue(), customer: "", notes: "" })); }} className="rounded-lg px-4 py-2.5 text-xs font-medium text-zinc-400 hover:bg-zinc-800 hover:text-white">Cancel</button>}</div>
+          <div className="flex gap-2 sm:col-span-2 lg:col-span-4"><button disabled={busy || tireSelectionMissing || !form.unitPrice} className="rounded-lg bg-emerald-400 px-4 py-2.5 text-xs font-semibold text-zinc-950 transition hover:bg-emerald-300 disabled:opacity-40">{busy ? "Saving..." : editingSaleId ? "Save Changes" : `Record ${workTypeLabel(form.serviceType)} — ${money(currentSaleTotal)}`}</button>{editingSaleId && <button type="button" onClick={() => { setEditingSaleId(null); setInventorySearch(""); setForm((current) => ({ ...current, inventoryId: "", quantity: "1", unitPrice: "", soldTime: easternTimeValue(), customer: "", notes: "" })); }} className="rounded-lg px-4 py-2.5 text-xs font-medium text-zinc-400 hover:bg-zinc-800 hover:text-white">Cancel</button>}</div>
         </form>
       </Card>
       <Card>
@@ -2551,7 +2456,7 @@ function Toast({ message }: { message: string }) {
 }
 
 function Card({ children }: { children: React.ReactNode }) {
-  return <div className="rounded-xl border border-zinc-800/80 bg-zinc-900/30 p-5 backdrop-blur-xl">{children}</div>;
+  return <div className="rounded-xl border border-white/[.07] bg-white/[.025] p-4 shadow-sm sm:p-5">{children}</div>;
 }
 
 function CardHeader({ title, icon, action }: { title: string; icon: React.ReactNode; action?: React.ReactNode }) {
@@ -2559,7 +2464,7 @@ function CardHeader({ title, icon, action }: { title: string; icon: React.ReactN
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2">
         {icon}
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-zinc-300">{title}</h2>
+        <h2 className="text-sm font-semibold tracking-tight text-zinc-100">{title}</h2>
       </div>
       {action}
     </div>
@@ -2568,9 +2473,9 @@ function CardHeader({ title, icon, action }: { title: string; icon: React.ReactN
 
 function Button({ children, variant = "primary", onClick, disabled, className = "" }: { children: React.ReactNode; variant?: "primary" | "secondary" | "ghost" | "danger"; onClick?: () => void; disabled?: boolean; className?: string }) {
   const styles = {
-    primary: "bg-zinc-100 text-zinc-900 hover:bg-white",
-    secondary: "border border-zinc-800 bg-zinc-900/60 text-zinc-200 hover:bg-zinc-800",
-    ghost: "text-zinc-400 hover:text-white hover:bg-zinc-800/40",
+    primary: "bg-emerald-400 text-zinc-950 hover:bg-emerald-300",
+    secondary: "border border-white/[.09] bg-white/[.035] text-zinc-200 hover:bg-white/[.07]",
+    ghost: "text-zinc-400 hover:text-white hover:bg-white/[.05]",
     danger: "bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20",
   };
   return (
@@ -2632,9 +2537,9 @@ function EmptyState({ title, text }: { title: string; text: string }) {
 
 function Footer() {
   return (
-    <footer className="mt-auto border-t border-zinc-800/80 bg-[#09090b] py-4 text-center text-[11px] text-zinc-500">
-      <div className="mx-auto flex max-w-[1400px] flex-col items-center justify-between gap-2 px-4 sm:flex-row sm:px-6 lg:px-8">
-        <div>PrestonHQ &copy; 2026. All rights reserved.</div>
+    <footer className="mt-auto border-t border-white/[.06] bg-[#0a0c0b] py-5 pb-24 text-center text-[10px] text-zinc-700 lg:pb-5">
+      <div className="mx-auto flex max-w-[1240px] flex-col items-center justify-between gap-2 px-4 sm:flex-row sm:px-6 lg:px-8">
+        <div>Akron Tire Shop &copy; 2026</div>
         <div className="flex gap-4">
           <a href="/privacy" className="hover:text-zinc-300 transition">Privacy Policy</a>
           <a href="/terms" className="hover:text-zinc-300 transition">Terms of Service</a>
