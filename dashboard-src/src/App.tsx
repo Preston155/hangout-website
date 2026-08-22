@@ -49,7 +49,7 @@ import {
 } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
-type Page = "overview" | "bot" | "operations" | "connect" | "players" | "cad" | "commands" | "logs" | "staff" | "tire-inventory" | "tire-sales" | "settings";
+type Page = "overview" | "bot" | "operations" | "connect" | "players" | "cad" | "commands" | "logs" | "staff" | "tire-inventory" | "inventory-view" | "tire-sales" | "settings";
 type Severity = "low" | "medium" | "high" | "critical";
 type PlayerStatus = "online" | "flagged" | "banned" | "staff";
 type ModActionType = "Warn" | "Kick" | "Ban" | "Unban" | "Kill" | "Teleport" | "PM" | "Announcement" | "CAD" | "System";
@@ -520,6 +520,7 @@ const navItems = [
   { id: "logs" as Page, label: "Audit Logs", icon: ClipboardList },
   { id: "staff" as Page, label: "Staff Matrix", icon: ShieldCheck },
   { id: "tire-inventory" as Page, label: "Tire Inventory", icon: Package },
+  { id: "inventory-view" as Page, label: "Inventory View", icon: Eye },
   { id: "tire-sales" as Page, label: "Tire Sales", icon: ShoppingCart },
   { id: "settings" as Page, label: "System Settings", icon: Settings },
 ];
@@ -712,6 +713,7 @@ export function App() {
                 {page === "logs" && <Logs logs={logData} />}
                 {page === "staff" && <StaffPermissions showToast={showToast} />}
                 {page === "tire-inventory" && <TireInventoryPage showToast={showToast} setPage={setPage} />}
+                {page === "inventory-view" && <TireInventoryViewPage showToast={showToast} />}
                 {page === "tire-sales" && <TireSalesPage showToast={showToast} setPage={setPage} />}
                 {page === "settings" && <SettingsPage showToast={showToast} />}
               </motion.div>
@@ -2130,6 +2132,32 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
             </table>
           </div>
         </>)}
+      </Card>
+    </div>
+  );
+}
+
+function TireInventoryViewPage({ showToast }: { showToast: (m: string) => void }) {
+  const [data, setData] = useState<TireShopData | null>(null);
+  const [search, setSearch] = useState("");
+
+  const load = useCallback(async () => {
+    try { setData(await api<TireShopData>("/api/tire-shop")); }
+    catch (error) { showToast(error instanceof Error ? error.message : "Inventory could not be loaded."); }
+  }, [showToast]);
+
+  useEffect(() => { void load(); }, [load]);
+
+  const inventory = (data?.inventory || []).filter((item) => `${item.size} ${tirePackageLabel(item.packageType)}`.toLowerCase().includes(search.toLowerCase()));
+  const summary = data?.summary;
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end"><div><div className="mb-2 inline-flex items-center gap-1.5 rounded-md border border-zinc-800 bg-zinc-900 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-400"><Eye className="h-3 w-3" /> Read only</div><h1 className="text-2xl font-semibold tracking-tight text-white">Inventory View</h1><p className="mt-1 text-xs text-zinc-400">A clean list of what is available and the current selling price.</p></div><button onClick={() => void load()} className="inline-flex items-center justify-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs font-medium text-zinc-300 hover:bg-zinc-800"><RefreshCw className="h-3.5 w-3.5" /> Refresh Stock</button></div>
+      <div className="grid gap-4 sm:grid-cols-3"><TireStat label="Inventory types" value={summary?.skus || 0} detail="Sizes and package types" /><TireStat label="Available quantity" value={summary?.units || 0} detail="Sets, pairs, and individuals" /><TireStat label="Low stock" value={summary?.lowStock || 0} detail="Five or fewer remaining" /></div>
+      <Card>
+        <CardHeader title="Available Inventory" icon={<Package className="h-4 w-4 text-zinc-400" />} action={<input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search tire size..." className="w-40 rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-zinc-500 sm:w-64" />} />
+        {!data ? <EmptyState title="Loading inventory" text="Reading current stock..." /> : inventory.length === 0 ? <EmptyState title="No tires found" text={search ? "Try another tire size." : "There is no inventory to display yet."} /> : <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{inventory.map((item) => <article key={item.id} className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-4"><div className="flex items-start justify-between gap-3"><div><div className="font-mono text-lg font-semibold text-white">{item.size}</div><span className={`mt-2 inline-flex rounded-md border px-2 py-1 text-[10px] font-semibold ${tirePackageClass(item.packageType)}`}>{tirePackageLabel(item.packageType)}</span></div><div className="text-right"><div className={`text-2xl font-semibold ${item.quantity === 0 ? "text-red-400" : item.quantity <= 5 ? "text-amber-300" : "text-emerald-300"}`}>{item.quantity}</div><div className="text-[10px] text-zinc-500">available</div></div></div><div className="mt-4 flex items-end justify-between border-t border-zinc-800 pt-3"><div><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Selling price</div><div className="mt-1 text-lg font-semibold text-zinc-100">{money(item.price)}</div></div><div className={`rounded-md px-2 py-1 text-[9px] font-semibold uppercase tracking-wider ${item.quantity === 0 ? "bg-red-500/10 text-red-400" : item.quantity <= 5 ? "bg-amber-500/10 text-amber-300" : "bg-emerald-500/10 text-emerald-300"}`}>{item.quantity === 0 ? "Out of stock" : item.quantity <= 5 ? "Low stock" : "In stock"}</div></div></article>)}</div>}
       </Card>
     </div>
   );
