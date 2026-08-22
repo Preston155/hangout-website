@@ -540,6 +540,25 @@ export function App() {
   const [syncError, setSyncError] = useState("");
   const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
 
+  useEffect(() => {
+    const styleId = "prestonhq-mobile-form-no-zoom";
+    if (document.getElementById(styleId)) return;
+    const style = document.createElement("style");
+    style.id = styleId;
+    style.textContent = `
+      @media (max-width: 767px) {
+        input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+        select,
+        textarea {
+          font-size: 16px !important;
+          touch-action: manipulation;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+    return () => style.remove();
+  }, []);
+
   const showToast = (message: string) => {
     setToast(message);
     window.setTimeout(() => setToast(""), 3000);
