@@ -2248,6 +2248,12 @@ function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void;
   const todayKey = easternDateKey(new Date());
   const todaySales = (data?.sales || []).filter((sale) => easternDateKey(sale.soldAt) === todayKey);
   const averageSale = todaySales.length ? todaySales.reduce((sum, sale) => sum + sale.total, 0) / todaySales.length : 0;
+  const currentMonthKey = todayKey.slice(0, 7);
+  const monthSales = (data?.sales || []).filter((sale) => easternDateKey(sale.soldAt).slice(0, 7) === currentMonthKey);
+  const monthRevenue = monthSales.reduce((sum, sale) => sum + sale.total, 0);
+  const monthItems = monthSales.reduce((sum, sale) => sum + sale.quantity, 0);
+  const monthAverage = monthSales.length ? monthRevenue / monthSales.length : 0;
+  const currentMonthLabel = new Date().toLocaleDateString("en-US", { timeZone: "America/New_York", month: "long", year: "numeric" });
   const currentSaleTotal = Math.max(0, Number(form.quantity) || 0) * Math.max(0, Number(form.unitPrice) || 0);
   const inventoryMatches = (data?.inventory || []).filter((item) => {
     if (form.adjustInventory && item.quantity <= 0 && item.id !== form.inventoryId) return false;
@@ -2259,6 +2265,7 @@ function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void;
     <div className="space-y-6">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end"><div><h1 className="text-2xl font-semibold tracking-tight text-white">Tire Sales</h1><p className="mt-1 text-xs text-zinc-400">Enter today's sales or choose an earlier date to add your past sales history.</p></div><Button variant="secondary" onClick={() => setPage("tire-inventory")}><Package className="h-3.5 w-3.5" /> Open Inventory</Button></div>
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4"><TireStat label="Today's revenue" value={money(summary?.todayRevenue || 0)} detail="Calculated automatically" /><TireStat label="Items sold" value={summary?.todayUnits || 0} detail="Today's quantity" /><TireStat label="Transactions" value={todaySales.length} detail="Sales recorded today" /><TireStat label="Average sale" value={money(averageSale)} detail="Revenue per transaction" /></div>
+      <section className="rounded-xl border border-emerald-500/15 bg-emerald-500/[.04] p-4 sm:p-5"><div className="mb-4 flex items-end justify-between gap-3"><div><div className="text-[10px] font-semibold uppercase tracking-wider text-emerald-400">This Month</div><h2 className="mt-1 text-lg font-semibold text-white">{currentMonthLabel}</h2></div><div className="text-right"><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-500">Monthly revenue</div><div className="mt-1 text-2xl font-semibold tracking-tight text-emerald-300">{money(monthRevenue)}</div></div></div><div className="grid grid-cols-3 gap-2 border-t border-emerald-500/10 pt-4"><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Items sold</div><div className="mt-1 text-base font-semibold text-zinc-200">{monthItems}</div></div><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Transactions</div><div className="mt-1 text-base font-semibold text-zinc-200">{monthSales.length}</div></div><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Average sale</div><div className="mt-1 text-base font-semibold text-zinc-200">{money(monthAverage)}</div></div></div></section>
       <Card>
         <CardHeader title={editingSaleId ? "Edit Tire Sale" : "Record a Tire Sale"} icon={<ShoppingCart className="h-4 w-4 text-emerald-400" />} action={<div className="text-right"><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Sale total</div><div className="text-sm font-semibold text-emerald-300">{money(currentSaleTotal)}</div></div>} />
         <form onSubmit={recordSale} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
