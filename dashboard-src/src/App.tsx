@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   Activity,
   AlertCircle,
@@ -523,6 +523,7 @@ const navItems = [
 ];
 
 export function App() {
+  const reduceMotion = useReducedMotion();
   const [page, setPage] = useState<Page>("tire-inventory");
   const [auth, setAuth] = useState<"checking" | "guest" | "ready">("checking");
   const [serverData, setServerData] = useState<ServerState>(defaultServer);
@@ -550,6 +551,33 @@ export function App() {
           font-size: 16px !important;
           touch-action: manipulation;
         }
+        .mobile-page > * {
+          animation: mobile-soft-rise .34s cubic-bezier(.2,.8,.2,1) both;
+        }
+        .mobile-page > *:nth-child(2) { animation-delay: 45ms; }
+        .mobile-page > *:nth-child(3) { animation-delay: 80ms; }
+        .mobile-page > *:nth-child(4) { animation-delay: 115ms; }
+        .mobile-page > *:nth-child(n+5) { animation-delay: 140ms; }
+        .mobile-surface {
+          box-shadow: 0 12px 34px rgba(0,0,0,.16);
+          transition: border-color .2s ease, background-color .2s ease, transform .16s ease;
+        }
+        button, a { -webkit-tap-highlight-color: transparent; }
+        .mobile-tap { transition: transform .14s ease, background-color .18s ease, border-color .18s ease; }
+        .mobile-tap:active { transform: scale(.97); }
+        @keyframes mobile-soft-rise {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes mobile-status-pulse {
+          0%, 100% { opacity: .45; transform: scale(.85); }
+          50% { opacity: 1; transform: scale(1.15); }
+        }
+        .mobile-status-pulse { animation: mobile-status-pulse 2.2s ease-in-out infinite; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .mobile-page > *, .mobile-status-pulse { animation: none !important; }
+        .mobile-surface, .mobile-tap { transition: none !important; }
       }
     `;
     document.head.appendChild(style);
@@ -701,7 +729,7 @@ export function App() {
           <Topbar page={page} />
           <div className="mx-auto w-full max-w-[1240px] flex-1 p-4 pb-28 sm:p-6 sm:pb-28 lg:p-8 lg:pb-8">
             <AnimatePresence mode="wait">
-              <motion.div key={page} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.15 }}>
+              <motion.div className="mobile-page" key={page} initial={{ opacity: 0, y: reduceMotion ? 0 : 10, scale: reduceMotion ? 1 : 0.995 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: reduceMotion ? 0 : -6 }} transition={{ duration: reduceMotion ? 0 : 0.22, ease: [0.2, 0.8, 0.2, 1] }}>
                 {page === "tire-inventory" && <TireInventoryPage showToast={showToast} setPage={setPage} />}
                 {page === "inventory-view" && <TireInventoryViewPage showToast={showToast} />}
                 {page === "tire-sales" && <TireSalesPage showToast={showToast} setPage={setPage} />}
@@ -837,19 +865,19 @@ function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) 
 function Topbar({ page }: { page: Page }) {
   const currentNav = navItems.find((item) => item.id === page);
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center border-b border-white/[.07] bg-[#0a0c0b]/90 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
-      <div className="lg:hidden"><div className="text-[9px] font-bold uppercase tracking-[.18em] text-emerald-400">Akron Tire Shop</div><div className="mt-0.5 text-sm font-semibold text-white">{currentNav?.label}</div></div>
+    <header className="sticky top-0 z-30 flex h-16 items-center border-b border-white/[.07] bg-[#0a0c0b]/90 px-4 shadow-[0_8px_28px_rgba(0,0,0,.12)] backdrop-blur-xl sm:px-6 lg:shadow-none lg:px-8">
+      <div className="flex items-center gap-2.5 lg:hidden"><div className="grid h-8 w-8 place-items-center rounded-lg border border-emerald-400/15 bg-emerald-400/[.07] text-[10px] font-bold text-emerald-300">AT</div><div><div className="text-[9px] font-bold uppercase tracking-[.18em] text-emerald-400">Akron Tire Shop</div><div className="mt-0.5 text-sm font-semibold text-white">{currentNav?.label}</div></div></div>
       <div className="hidden lg:block"><div className="text-sm font-semibold text-white">{currentNav?.label}</div><div className="mt-0.5 text-[10px] text-zinc-600">Akron Tire Shop</div></div>
-      <div className="ml-auto flex items-center gap-2 text-[10px] font-medium text-zinc-500"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /><span>Saved automatically</span></div>
+      <div className="ml-auto flex items-center gap-2 rounded-full border border-white/[.06] bg-white/[.025] px-2.5 py-1.5 text-[9px] font-medium text-zinc-500 sm:text-[10px]"><span className="mobile-status-pulse h-1.5 w-1.5 rounded-full bg-emerald-400" /><span className="hidden min-[390px]:inline">Saved automatically</span><span className="min-[390px]:hidden">Saved</span></div>
     </header>
   );
 }
 
 function MobileShopNav({ page, setPage }: { page: Page; setPage: (p: Page) => void }) {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-white/[.08] bg-[#0d100e]/95 px-1 pb-[max(8px,env(safe-area-inset-bottom))] pt-2 backdrop-blur-xl lg:hidden">
-      <div className="mx-auto grid max-w-lg grid-cols-5">
-        {navItems.map((item) => { const Icon = item.icon; const active = item.id === page; return <button key={item.id} onClick={() => setPage(item.id)} className={`flex min-w-0 flex-col items-center gap-1 rounded-lg px-1 py-1.5 text-[9px] font-medium transition ${active ? "bg-emerald-500/10 text-emerald-300" : "text-zinc-600"}`}><Icon className={`h-[18px] w-[18px] ${active ? "text-emerald-400" : "text-zinc-600"}`} /><span className="truncate">{item.shortLabel}</span></button>; })}
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-white/[.08] bg-[#0d100e]/90 px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-2 shadow-[0_-14px_36px_rgba(0,0,0,.3)] backdrop-blur-2xl lg:hidden">
+      <div className="mx-auto grid max-w-lg grid-cols-5 gap-1">
+        {navItems.map((item) => { const Icon = item.icon; const active = item.id === page; return <motion.button whileTap={{ scale: 0.92 }} key={item.id} onClick={() => setPage(item.id)} className={`relative flex min-w-0 flex-col items-center gap-1 overflow-hidden rounded-xl px-1 py-2 text-[9px] font-medium ${active ? "text-emerald-300" : "text-zinc-600"}`}>{active && <motion.span layoutId="mobile-shop-active" className="absolute inset-0 rounded-xl border border-emerald-400/10 bg-emerald-500/10" transition={{ type: "spring", stiffness: 420, damping: 34 }} />}<motion.span className="relative" animate={{ y: active ? -1 : 0, scale: active ? 1.08 : 1 }} transition={{ type: "spring", stiffness: 420, damping: 28 }}><Icon className={`h-[18px] w-[18px] ${active ? "text-emerald-400" : "text-zinc-600"}`} /></motion.span><span className="relative truncate">{item.shortLabel}</span>{active && <motion.span layoutId="mobile-shop-dot" className="absolute bottom-0.5 h-0.5 w-4 rounded-full bg-emerald-400" />}</motion.button>; })}
       </div>
     </nav>
   );
@@ -2068,9 +2096,9 @@ function easternDateTimeToIso(date: string, time: string) {
 
 function TireStat({ label, value, detail }: { label: string; value: string | number; detail: string }) {
   return (
-    <div className="min-w-0 rounded-xl border border-white/[.07] bg-white/[.025] p-3 shadow-sm sm:p-4">
+    <div className="mobile-surface min-w-0 rounded-xl border border-white/[.07] bg-white/[.025] p-3 shadow-sm sm:p-4">
       <div className="truncate text-[9px] font-semibold uppercase tracking-wider text-zinc-500 sm:text-[10px]">{label}</div>
-      <div className="mt-1 truncate text-xl font-semibold tracking-tight text-white sm:mt-1.5 sm:text-2xl">{value}</div>
+      <AnimatePresence mode="popLayout" initial={false}><motion.div key={String(value)} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: .18 }} className="mt-1 truncate text-xl font-semibold tracking-tight text-white sm:mt-1.5 sm:text-2xl">{value}</motion.div></AnimatePresence>
       <div className="mt-1 hidden text-[11px] text-zinc-500 sm:block">{detail}</div>
     </div>
   );
@@ -2458,7 +2486,7 @@ function Toast({ message }: { message: string }) {
 }
 
 function Card({ children }: { children: React.ReactNode }) {
-  return <div className="rounded-xl border border-white/[.07] bg-white/[.025] p-4 shadow-sm sm:p-5">{children}</div>;
+  return <div className="mobile-surface rounded-xl border border-white/[.07] bg-white/[.025] p-4 shadow-sm sm:p-5">{children}</div>;
 }
 
 function CardHeader({ title, icon, action }: { title: string; icon: React.ReactNode; action?: React.ReactNode }) {
@@ -2481,7 +2509,7 @@ function Button({ children, variant = "primary", onClick, disabled, className = 
     danger: "bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20",
   };
   return (
-    <button disabled={disabled} onClick={onClick} className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition active:scale-[0.99] disabled:opacity-40 ${styles[variant]} ${className}`}>
+    <button disabled={disabled} onClick={onClick} className={`mobile-tap inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition active:scale-[0.97] disabled:opacity-40 ${styles[variant]} ${className}`}>
       {children}
     </button>
   );
