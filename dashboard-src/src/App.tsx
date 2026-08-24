@@ -442,6 +442,11 @@ function LiveRelativeTime({ value }: { value: string | number }) {
   return <>{relativeTime(new Date(value).toISOString())}</>;
 }
 
+function LiveShopTime() {
+  const now = React.useContext(DashboardClockContext);
+  return <>{new Date(now).toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" })}</>;
+}
+
 function LiveUptime({ startedAt }: { startedAt: number | null }) {
   React.useContext(DashboardClockContext);
   return <>{formatBotUptime(startedAt)}</>;
@@ -531,7 +536,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_FEATURES_V7";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_ALIVE_V8";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -563,10 +568,29 @@ export function App() {
       .inflatable-guy__arm--right { transform-box:fill-box; transform-origin:left center; animation:guy-right-arm .92s ease-in-out infinite alternate; }
       .inflatable-guy__shine { fill:none; stroke:rgba(255,255,255,.26); stroke-width:4; stroke-linecap:round; }
       .inflatable-guy__crease { fill:none; stroke:rgba(0,0,0,.12); stroke-width:2; stroke-linecap:round; }
+      .shop-shell { isolation:isolate; }
+      .shop-ambient { position:fixed; inset:0; z-index:-1; overflow:hidden; pointer-events:none; }
+      .shop-ambient::before, .shop-ambient::after { content:""; position:absolute; width:42vw; height:42vw; min-width:320px; min-height:320px; border-radius:999px; filter:blur(110px); opacity:.075; animation:ambient-drift 16s ease-in-out infinite alternate; }
+      .shop-ambient::before { left:-15vw; top:4vh; background:#38bdf8; }
+      .shop-ambient::after { right:-17vw; bottom:-5vh; background:#34d399; animation-delay:-8s; animation-direction:alternate-reverse; }
+      .alive-scan { position:relative; overflow:hidden; }
+      .alive-scan::after { content:""; position:absolute; inset:-2px auto -2px -38%; width:24%; transform:skewX(-18deg); background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent); animation:button-sheen 5.5s ease-in-out infinite; pointer-events:none; }
+      .mobile-surface { position:relative; }
+      .mobile-surface::before { content:""; position:absolute; inset:0; border-radius:inherit; background:linear-gradient(115deg,rgba(255,255,255,.022),transparent 38%); pointer-events:none; }
+      .live-dot { position:relative; }
+      .live-dot::after { content:""; position:absolute; inset:-4px; border:1px solid currentColor; border-radius:999px; opacity:0; animation:live-ring 2.4s ease-out infinite; }
       @keyframes guy-sway { 0%,100%{transform:rotate(-4deg) translateY(1px)} 50%{transform:rotate(5deg) translateY(-2px)} }
       @keyframes guy-body-bend { from{transform:rotate(-3deg) skewX(-3deg) scaleY(.985)} to{transform:rotate(3deg) skewX(4deg) scaleY(1.01)} }
       @keyframes guy-left-arm { from{transform:rotate(-22deg)} to{transform:rotate(24deg)} }
       @keyframes guy-right-arm { from{transform:rotate(20deg)} to{transform:rotate(-26deg)} }
+      @keyframes ambient-drift { from{transform:translate3d(-2%, -2%, 0) scale(.96)} to{transform:translate3d(9%, 7%, 0) scale(1.08)} }
+      @keyframes button-sheen { 0%,70%{left:-38%;opacity:0} 76%{opacity:1} 94%,100%{left:118%;opacity:0} }
+      @keyframes live-ring { 0%{transform:scale(.65);opacity:.55} 75%,100%{transform:scale(1.9);opacity:0} }
+      @keyframes shop-float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
+      @media (min-width: 768px) {
+        .mobile-surface { transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease,background-color .22s ease; }
+        .mobile-surface:hover { transform:translateY(-2px); box-shadow:0 18px 48px rgba(0,0,0,.22); }
+      }
       @media (max-width: 767px) {
         input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
         select,
@@ -599,7 +623,7 @@ export function App() {
         .mobile-status-pulse { animation: mobile-status-pulse 2.2s ease-in-out infinite; }
       }
       @media (prefers-reduced-motion: reduce) {
-        .mobile-page > *, .mobile-status-pulse, .inflatable-guy, .inflatable-guy__arm { animation: none !important; }
+        .mobile-page > *, .mobile-status-pulse, .inflatable-guy, .inflatable-guy__arm, .shop-ambient::before, .shop-ambient::after, .alive-scan::after, .live-dot::after { animation: none !important; }
         .mobile-surface, .mobile-tap { transition: none !important; }
       }
     `;
@@ -762,7 +786,8 @@ export function App() {
 
   return (
     <DashboardClockProvider>
-    <div className="min-h-screen bg-[#080a09] font-sans text-zinc-100 antialiased selection:bg-emerald-400/25 selection:text-white">
+    <div className="shop-shell relative min-h-screen bg-[#080a09] font-sans text-zinc-100 antialiased selection:bg-emerald-400/25 selection:text-white">
+      <div className="shop-ambient" aria-hidden="true" />
       <div className="flex min-h-screen">
         <Sidebar page={page} setPage={setPage} />
         <main className="flex min-w-0 flex-1 flex-col lg:pl-60">
@@ -871,12 +896,13 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
   };
 
   return (
-    <div className="relative grid min-h-screen place-items-center overflow-hidden bg-[#090b0a] p-4 text-zinc-100 sm:p-6">
+    <div className="shop-shell relative grid min-h-screen place-items-center overflow-hidden bg-[#090b0a] p-4 text-zinc-100 sm:p-6">
+      <div className="shop-ambient" aria-hidden="true" />
       <InflatableGuy color="#38bdf8" className="absolute bottom-5 left-[9vw] hidden opacity-70 sm:block" />
       <InflatableGuy color="#fbbf24" delay={-1.1} className="absolute bottom-5 right-[9vw] hidden opacity-70 sm:block" />
       <div className="w-full max-w-[420px]">
         <div className="mb-7 text-center">
-          <div className="text-[10px] font-bold uppercase tracking-[.24em] text-emerald-400">Akron</div>
+          <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-[10px] font-bold uppercase tracking-[.24em] text-emerald-400">Akron</motion.div>
           <div className="mt-1 text-sm font-semibold tracking-[-.015em] text-zinc-300">Tire Shop</div>
           <h1 className="mt-5 text-[26px] font-semibold tracking-[-.035em] text-white sm:text-[30px]">Welcome back</h1>
           <p className="mx-auto mt-2 max-w-xs text-xs leading-relaxed text-zinc-500">Secure access to inventory, sales, services, and reports.</p>
@@ -939,7 +965,7 @@ function Topbar({ page }: { page: Page }) {
       <div className="lg:hidden"><div className="text-[9px] font-bold uppercase tracking-[.18em] text-emerald-400">Akron Tire Shop</div><div className="mt-0.5 text-sm font-semibold tracking-[-.015em] text-white">{currentNav?.label}</div></div>
       <div className="hidden lg:block"><div className="text-sm font-semibold tracking-[-.01em] text-zinc-200">{currentNav?.label}</div></div>
       <div className="ml-auto h-11 w-8 overflow-visible lg:hidden"><div className="origin-top-left scale-[.26]"><InflatableGuy color="#fbbf24" delay={-.6} /></div></div>
-      <div className="flex items-center gap-2 text-[9px] font-medium text-zinc-600 sm:text-[10px] lg:ml-auto"><span className="mobile-status-pulse h-1.5 w-1.5 rounded-full bg-emerald-400" /><span className="hidden min-[380px]:inline">All changes saved</span><span className="min-[380px]:hidden">Saved</span></div>
+      <div className="flex items-center gap-2 text-[9px] font-medium text-zinc-600 sm:text-[10px] lg:ml-auto"><span className="hidden font-mono tabular-nums text-zinc-500 sm:inline"><LiveShopTime /></span><span className="hidden h-3 w-px bg-white/[.08] sm:inline" /><span className="live-dot mobile-status-pulse h-1.5 w-1.5 rounded-full bg-emerald-400 text-emerald-400" /><span className="hidden min-[380px]:inline">All changes saved</span><span className="min-[380px]:hidden">Saved</span></div>
     </header>
   );
 }
@@ -2192,7 +2218,7 @@ function ShopPageHeader({ eyebrow, title, description, meta, actions, tone = "em
   return (
     <div className="flex flex-col gap-4 border-b border-white/[.055] pb-5 sm:flex-row sm:items-end sm:justify-between sm:pb-6">
       <div className="min-w-0">
-        <div className={`mb-2 flex items-center gap-2 text-[9px] font-semibold uppercase tracking-[.16em] ${colors.text}`}><span className={`h-1 w-1 rounded-full ${colors.dot}`} />{eyebrow}</div>
+        <div className={`mb-2 flex items-center gap-2 text-[9px] font-semibold uppercase tracking-[.16em] ${colors.text}`}><span className={`live-dot h-1.5 w-1.5 rounded-full ${colors.dot}`} />{eyebrow}</div>
         <h1 className="text-[24px] font-semibold tracking-[-.035em] text-white sm:text-[29px]">{title}</h1>
         <p className="mt-1.5 max-w-2xl text-xs leading-relaxed text-zinc-500 sm:text-[13px]">{description}</p>
         {meta}
@@ -2206,6 +2232,7 @@ function TireStat({ label, value, detail, featured = false, tone = "emerald" }: 
   const colors = shopToneStyles[tone];
   return (
     <div className={`mobile-surface relative min-w-0 overflow-hidden rounded-xl p-3.5 ring-1 ring-inset sm:p-4 ${featured ? `col-span-2 sm:col-span-1 ${colors.soft} ${colors.ring}` : "bg-[#111312] ring-white/[.055]"}`}>
+      <motion.span aria-hidden="true" className={`absolute inset-x-0 bottom-0 h-px origin-left ${featured ? colors.dot : "bg-white/[.08]"}`} initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: .55, ease: [0.2, 0.8, 0.2, 1] }} />
       <div className="truncate text-[9px] font-semibold uppercase tracking-wider text-zinc-500 sm:text-[10px]">{label}</div>
       <AnimatePresence mode="popLayout" initial={false}><motion.div key={String(value)} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: .18 }} className={`mt-1 truncate font-semibold tracking-[-.03em] sm:mt-1.5 sm:text-2xl ${featured ? `text-[28px] ${colors.text}` : "text-xl text-white"}`}>{value}</motion.div></AnimatePresence>
       <div className={`mt-1 text-[11px] text-zinc-500 ${featured ? "block" : "hidden sm:block"}`}>{detail}</div>
@@ -2682,7 +2709,7 @@ function Button({ children, variant = "primary", onClick, disabled, className = 
     danger: "bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20",
   };
   return (
-    <button disabled={disabled} onClick={onClick} className={`mobile-tap inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg px-3.5 py-2.5 text-xs font-semibold transition active:scale-[0.97] disabled:opacity-40 sm:rounded-xl ${styles[variant]} ${className}`}>
+    <button disabled={disabled} onClick={onClick} className={`mobile-tap ${variant === "primary" ? "alive-scan" : ""} inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg px-3.5 py-2.5 text-xs font-semibold transition active:scale-[0.97] disabled:opacity-40 sm:rounded-xl ${styles[variant]} ${className}`}>
       {children}
     </button>
   );
