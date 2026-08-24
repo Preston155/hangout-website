@@ -14,6 +14,7 @@ import {
   Command,
   Cpu,
   Database,
+  Download,
   Eye,
   FileText,
   Globe,
@@ -537,7 +538,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_RECEIPT_V13";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_RECEIPT_SAVE_V14";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -570,6 +571,7 @@ export function App() {
       .inflatable-guy__shine { fill:none; stroke:rgba(255,255,255,.26); stroke-width:4; stroke-linecap:round; }
       .inflatable-guy__crease { fill:none; stroke:rgba(0,0,0,.12); stroke-width:2; stroke-linecap:round; }
       .shop-shell { isolation:isolate; }
+      .shop-shell::after { content:""; position:fixed; inset:0 0 0 auto; z-index:-1; width:190px; opacity:.022; pointer-events:none; background:repeating-linear-gradient(135deg,transparent 0 18px,#fff 18px 24px,transparent 24px 42px); mask-image:linear-gradient(to left,#000,transparent); }
       .shop-ambient { position:fixed; inset:0; z-index:-1; overflow:hidden; pointer-events:none; }
       .shop-ambient::before, .shop-ambient::after { content:""; position:absolute; width:42vw; height:42vw; min-width:320px; min-height:320px; border-radius:999px; filter:blur(110px); opacity:.075; animation:ambient-drift 16s ease-in-out infinite alternate; }
       .shop-ambient::before { left:-15vw; top:4vh; background:#38bdf8; }
@@ -580,6 +582,12 @@ export function App() {
       .mobile-surface::before { content:""; position:absolute; inset:0; border-radius:inherit; background:linear-gradient(115deg,rgba(255,255,255,.022),transparent 38%); pointer-events:none; }
       .live-dot { position:relative; }
       .live-dot::after { content:""; position:absolute; inset:-4px; border:1px solid currentColor; border-radius:999px; opacity:0; animation:live-ring 2.4s ease-out infinite; }
+      .wheel-mark { color:#34d399; filter:drop-shadow(0 10px 18px rgba(0,0,0,.35)); }
+      .wheel-mark__spin { transform-origin:50% 50%; animation:wheel-spin 13s linear infinite; }
+      .wheel-mark__rim { transform-origin:50% 50%; animation:rim-breathe 3.2s ease-in-out infinite; }
+      .tread-band { position:relative; overflow:hidden; }
+      .tread-band::before { content:""; position:absolute; inset:0; opacity:.08; pointer-events:none; background:repeating-linear-gradient(120deg,transparent 0 17px,currentColor 17px 21px,transparent 21px 38px); animation:tread-slide 9s linear infinite; }
+      .shop-kicker { display:inline-flex; align-items:center; gap:8px; border:1px solid rgba(52,211,153,.2); background:rgba(52,211,153,.07); padding:6px 9px; border-radius:999px; color:#6ee7b7; }
       @keyframes guy-sway { 0%,100%{transform:rotate(-4deg) translateY(1px)} 50%{transform:rotate(5deg) translateY(-2px)} }
       @keyframes guy-body-bend { from{transform:rotate(-3deg) skewX(-3deg) scaleY(.985)} to{transform:rotate(3deg) skewX(4deg) scaleY(1.01)} }
       @keyframes guy-left-arm { from{transform:rotate(-22deg)} to{transform:rotate(24deg)} }
@@ -588,6 +596,9 @@ export function App() {
       @keyframes button-sheen { 0%,70%{left:-38%;opacity:0} 76%{opacity:1} 94%,100%{left:118%;opacity:0} }
       @keyframes live-ring { 0%{transform:scale(.65);opacity:.55} 75%,100%{transform:scale(1.9);opacity:0} }
       @keyframes shop-float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
+      @keyframes wheel-spin { to{transform:rotate(360deg)} }
+      @keyframes rim-breathe { 0%,100%{opacity:.74;transform:scale(.985)} 50%{opacity:1;transform:scale(1.02)} }
+      @keyframes tread-slide { to{background-position:180px 0} }
       @media (min-width: 768px) {
         .mobile-surface { transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease,background-color .22s ease; }
         .mobile-surface:hover { transform:translateY(-2px); box-shadow:0 18px 48px rgba(0,0,0,.22); }
@@ -634,7 +645,7 @@ export function App() {
         .mobile-status-pulse { animation: mobile-status-pulse 2.2s ease-in-out infinite; }
       }
       @media (prefers-reduced-motion: reduce) {
-        .mobile-page > *, .mobile-status-pulse, .inflatable-guy, .inflatable-guy__arm, .shop-ambient::before, .shop-ambient::after, .alive-scan::after, .live-dot::after { animation: none !important; }
+        .mobile-page > *, .mobile-status-pulse, .inflatable-guy, .inflatable-guy__arm, .shop-ambient::before, .shop-ambient::after, .alive-scan::after, .live-dot::after, .wheel-mark__spin, .wheel-mark__rim, .tread-band::before { animation: none !important; }
         .mobile-surface, .mobile-tap { transition: none !important; }
       }
     `;
@@ -836,6 +847,24 @@ function LoadingScreen() {
   );
 }
 
+function WheelMark({ className = "", accent = "#34d399" }: { className?: string; accent?: string }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 100 100" className={`wheel-mark ${className}`} style={{ color: accent }}>
+      <g className="wheel-mark__spin">
+        <circle cx="50" cy="50" r="43" fill="#070908" stroke="#303532" strokeWidth="8" />
+        {Array.from({ length: 12 }).map((_, index) => <rect key={index} x="47" y="1" width="6" height="14" rx="2" fill="#515753" transform={`rotate(${index * 30} 50 50)`} />)}
+        <circle cx="50" cy="50" r="33" fill="#111512" stroke="currentColor" strokeWidth="2" opacity=".9" />
+      </g>
+      <g className="wheel-mark__rim">
+        <circle cx="50" cy="50" r="25" fill="#242925" stroke="#626a65" strokeWidth="2" />
+        {Array.from({ length: 6 }).map((_, index) => <path key={index} d="M50 49 L47 25 L53 25 L50 49" fill="#aeb6b0" transform={`rotate(${index * 60} 50 50)`} />)}
+        <circle cx="50" cy="50" r="8" fill="currentColor" />
+        <circle cx="50" cy="50" r="3" fill="#07100b" />
+      </g>
+    </svg>
+  );
+}
+
 function InflatableGuy({ color, className = "", delay = 0 }: { color: string; className?: string; delay?: number }) {
   return (
     <div aria-hidden="true" className={`inflatable-guy ${className}`} style={{ "--guy": color, animationDelay: `${delay}s` } as React.CSSProperties}>
@@ -909,16 +938,20 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
   return (
     <div className="shop-shell relative grid min-h-screen place-items-center overflow-hidden bg-[#090b0a] p-4 text-zinc-100 sm:p-6">
       <div className="shop-ambient" aria-hidden="true" />
+      <WheelMark className="absolute -left-16 top-[12vh] h-52 w-52 opacity-[.08] sm:left-[5vw] sm:h-64 sm:w-64" />
+      <WheelMark accent="#fbbf24" className="absolute -right-20 bottom-[8vh] h-60 w-60 opacity-[.07] sm:right-[4vw] sm:h-72 sm:w-72" />
       <InflatableGuy color="#38bdf8" className="absolute bottom-5 left-[9vw] hidden opacity-70 sm:block" />
       <InflatableGuy color="#fbbf24" delay={-1.1} className="absolute bottom-5 right-[9vw] hidden opacity-70 sm:block" />
       <div className="w-full max-w-[420px]">
         <div className="mb-7 text-center">
+          <div className="mx-auto mb-4 w-16"><WheelMark className="h-16 w-16" /></div>
           <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-[10px] font-bold uppercase tracking-[.24em] text-emerald-400">Akron</motion.div>
-          <div className="mt-1 text-sm font-semibold tracking-[-.015em] text-zinc-300">Tire Shop</div>
-          <h1 className="mt-5 text-[26px] font-semibold tracking-[-.035em] text-white sm:text-[30px]">Welcome back</h1>
-          <p className="mx-auto mt-2 max-w-xs text-xs leading-relaxed text-zinc-500">Secure access to inventory, sales, services, and reports.</p>
+          <div className="mt-1 text-sm font-black uppercase tracking-[-.015em] text-zinc-200">Tire Shop</div>
+          <h1 className="mt-5 text-[28px] font-black uppercase tracking-[-.045em] text-white sm:text-[34px]">Shop Access</h1>
+          <p className="mx-auto mt-2 max-w-xs text-xs leading-relaxed text-zinc-500">Inventory, sales, service, and reports—locked down and ready.</p>
         </div>
-        <form onSubmit={login} className="rounded-2xl bg-[#111312] p-5 shadow-[0_24px_70px_rgba(0,0,0,.28)] ring-1 ring-inset ring-white/[.06] sm:p-6">
+        <form onSubmit={login} className="tread-band relative overflow-hidden rounded-2xl border border-emerald-500/15 bg-[#111312] p-5 text-emerald-400 shadow-[0_24px_70px_rgba(0,0,0,.32)] sm:p-6">
+          <div className="absolute inset-x-0 top-0 h-1 bg-emerald-400" />
           <div className="space-y-4">
             {passkeyAvailable && <><button type="button" disabled={busy} onClick={() => void loginWithPasskey()} className="mobile-tap flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-400 py-3 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-300 active:scale-[0.98] disabled:opacity-40"><KeyRound className="h-4 w-4" />{busy ? "Waiting for passkey..." : "Continue with a passkey"}</button><p className="-mt-1 text-center text-[10px] leading-relaxed text-zinc-600">Use Face ID, Windows Hello, or a saved passkey.</p><div className="flex items-center gap-3"><span className="h-px flex-1 bg-white/[.07]" /><span className="text-[9px] font-medium uppercase tracking-[.14em] text-zinc-600">or use passcode</span><span className="h-px flex-1 bg-white/[.07]" /></div></>}
             <div>
@@ -940,10 +973,9 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
 function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) {
   return (
     <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-white/[.055] bg-[#0b0d0c] px-4 py-6 lg:flex">
-      <div className="px-2">
-        <div className="text-[9px] font-bold uppercase tracking-[.22em] text-emerald-400">Akron</div>
-        <div className="mt-1 text-[17px] font-semibold tracking-[-.025em] text-white">Tire Shop</div>
-        <div className="mt-1 text-[10px] text-zinc-600">Inventory · Sales · Service</div>
+      <div className="flex items-center gap-3 px-2">
+        <WheelMark className="h-11 w-11 shrink-0" />
+        <div><div className="text-[9px] font-bold uppercase tracking-[.22em] text-emerald-400">Akron</div><div className="mt-0.5 text-[17px] font-black tracking-[-.035em] text-white">TIRE SHOP</div><div className="mt-0.5 text-[9px] uppercase tracking-[.1em] text-zinc-600">Shop command</div></div>
       </div>
       <div className="my-6 h-px bg-white/[.055]" />
       <nav className="space-y-1">
@@ -960,7 +992,7 @@ function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) 
           );
         })}
       </nav>
-      <div className="mt-auto flex h-20 items-end justify-center overflow-visible"><div className="origin-bottom scale-[.45]"><InflatableGuy color="#38bdf8" /></div></div>
+      <div className="tread-band mt-auto flex h-24 items-end justify-center overflow-hidden rounded-xl border border-white/[.055] bg-white/[.02] text-emerald-400"><div className="relative z-10 flex items-end gap-2"><div className="origin-bottom scale-[.38]"><InflatableGuy color="#38bdf8" /></div><WheelMark className="mb-2 h-12 w-12" /></div></div>
       <div className="border-t border-white/[.055] px-2 pt-4">
         <div className="flex items-center gap-2 text-[11px] font-medium text-zinc-300"><span className="h-2 w-2 rounded-full bg-emerald-400" /> Data saves automatically</div>
         <p className="mt-1.5 text-[10px] leading-relaxed text-zinc-600">Inventory and sales are stored securely.</p>
@@ -975,7 +1007,7 @@ function Topbar({ page }: { page: Page }) {
     <header className="sticky top-0 z-30 flex h-14 items-center border-b border-white/[.055] bg-[#080a09]/92 px-4 backdrop-blur-xl sm:h-16 sm:px-6 lg:px-9">
       <div className="lg:hidden"><div className="text-[9px] font-bold uppercase tracking-[.18em] text-emerald-400">Akron Tire Shop</div><div className="mt-0.5 text-sm font-semibold tracking-[-.015em] text-white">{currentNav?.label}</div></div>
       <div className="hidden lg:block"><div className="text-sm font-semibold tracking-[-.01em] text-zinc-200">{currentNav?.label}</div></div>
-      <div className="ml-auto h-11 w-8 overflow-visible lg:hidden"><div className="origin-top-left scale-[.26]"><InflatableGuy color="#fbbf24" delay={-.6} /></div></div>
+      <div className="ml-auto mr-2 lg:hidden"><WheelMark accent="#fbbf24" className="h-8 w-8" /></div>
       <div className="flex items-center gap-2 text-[9px] font-medium text-zinc-600 sm:text-[10px] lg:ml-auto"><span className="hidden font-mono tabular-nums text-zinc-500 sm:inline"><LiveShopTime /></span><span className="hidden h-3 w-px bg-white/[.08] sm:inline" /><span className="live-dot mobile-status-pulse h-1.5 w-1.5 rounded-full bg-emerald-400 text-emerald-400" /><span className="hidden min-[380px]:inline">All changes saved</span><span className="min-[380px]:hidden">Saved</span></div>
     </header>
   );
@@ -2190,6 +2222,126 @@ function printEscape(value: unknown) {
     .replaceAll("'", "&#039;");
 }
 
+function buildReceiptImage(sale: TireSale): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 1200;
+    canvas.height = 1600;
+    const context = canvas.getContext("2d");
+    if (!context) { reject(new Error("Receipt image could not be created.")); return; }
+    const isTire = (sale.serviceType || "tire") === "tire";
+    const receiptNumber = sale.id.replaceAll("-", "").slice(0, 10).toUpperCase();
+    const soldDate = new Date(sale.soldAt).toLocaleDateString("en-US", { timeZone: "America/New_York", month: "long", day: "numeric", year: "numeric" });
+    const soldTime = new Date(sale.soldAt).toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" });
+    const itemName = isTire ? sale.size : workTypeLabel(sale.serviceType);
+    const itemDetail = isTire ? tirePackageLabel(sale.packageType) : "Automotive service";
+    const label = (text: string, x: number, y: number) => { context.fillStyle = "#737373"; context.font = "700 22px Arial"; context.fillText(text.toUpperCase(), x, y); };
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = "#10b981";
+    context.fillRect(0, 0, canvas.width, 28);
+    context.fillStyle = "#111111";
+    context.fillRect(72, 84, 1056, 250);
+    context.fillStyle = "#6ee7b7";
+    context.font = "900 28px Arial";
+    context.fillText("AKRON", 120, 145);
+    context.fillStyle = "#ffffff";
+    context.font = "900 66px Arial";
+    context.fillText("TIRE SHOP", 116, 215);
+    context.fillStyle = "#a3a3a3";
+    context.font = "700 20px Arial";
+    context.fillText("TIRES  •  SALES  •  SERVICE", 120, 264);
+    context.textAlign = "right";
+    context.fillStyle = "#ffffff";
+    context.font = "300 34px Arial";
+    context.fillText("CUSTOMER RECEIPT", 1080, 150);
+    context.fillStyle = "#6ee7b7";
+    context.font = "700 23px monospace";
+    context.fillText(`#${receiptNumber}`, 1080, 196);
+    context.fillStyle = "#10b981";
+    context.fillRect(900, 230, 180, 48);
+    context.fillStyle = "#062e22";
+    context.font = "900 20px Arial";
+    context.fillText("PAID IN FULL", 1058, 262);
+    context.textAlign = "left";
+    context.fillStyle = "#f5f5f4";
+    context.fillRect(72, 374, 1056, 226);
+    label("Customer", 116, 425);
+    context.fillStyle = "#111111";
+    context.font = "800 34px Arial";
+    context.fillText(sale.customer || "Walk-in customer", 116, 470);
+    label("Date & time", 116, 535);
+    context.fillStyle = "#262626";
+    context.font = "700 24px Arial";
+    context.fillText(`${soldDate}  •  ${soldTime}`, 116, 570);
+    label("Payment", 780, 425);
+    context.fillStyle = "#111111";
+    context.font = "800 30px Arial";
+    context.fillText(sale.paymentMethod, 780, 470);
+    context.fillStyle = "#111111";
+    context.fillRect(72, 648, 1056, 70);
+    context.fillStyle = "#ffffff";
+    context.font = "800 20px Arial";
+    context.fillText("DESCRIPTION", 108, 692);
+    context.textAlign = "center";
+    context.fillText("QTY", 830, 692);
+    context.textAlign = "right";
+    context.fillText("AMOUNT", 1090, 692);
+    context.textAlign = "left";
+    context.strokeStyle = "#d4d4d4";
+    context.strokeRect(72, 718, 1056, 220);
+    context.fillStyle = "#111111";
+    context.font = `900 42px ${isTire ? "monospace" : "Arial"}`;
+    context.fillText(itemName, 108, 802);
+    context.fillStyle = "#737373";
+    context.font = "600 24px Arial";
+    context.fillText(itemDetail, 108, 846);
+    context.textAlign = "center";
+    context.fillStyle = "#111111";
+    context.font = "800 32px monospace";
+    context.fillText(String(sale.quantity), 830, 817);
+    context.textAlign = "right";
+    context.font = "900 36px monospace";
+    context.fillText(money(sale.total), 1090, 817);
+    context.textAlign = "left";
+    if (sale.notes) {
+      label("Work notes", 96, 1000);
+      context.fillStyle = "#262626";
+      context.font = "500 24px Arial";
+      const words = sale.notes.split(/\s+/);
+      let line = "";
+      let y = 1044;
+      for (const word of words) {
+        const candidate = `${line}${line ? " " : ""}${word}`;
+        if (context.measureText(candidate).width > 980 && line) { context.fillText(line, 96, y); line = word; y += 34; } else line = candidate;
+      }
+      if (line) context.fillText(line, 96, y);
+    }
+    context.fillStyle = "#111111";
+    context.fillRect(610, 1110, 518, 190);
+    context.fillStyle = "#a3a3a3";
+    context.font = "800 22px Arial";
+    context.fillText("TOTAL PAID", 655, 1170);
+    context.fillStyle = "#6ee7b7";
+    context.textAlign = "right";
+    context.font = "900 58px monospace";
+    context.fillText(money(sale.total), 1080, 1244);
+    context.textAlign = "left";
+    context.strokeStyle = "#d4d4d4";
+    context.beginPath(); context.moveTo(72, 1380); context.lineTo(1128, 1380); context.stroke();
+    context.fillStyle = "#111111";
+    context.font = "800 28px Arial";
+    context.fillText("Thank you for your business.", 72, 1435);
+    context.fillStyle = "#737373";
+    context.font = "500 20px Arial";
+    context.fillText("Akron Tire Shop", 72, 1475);
+    context.textAlign = "right";
+    context.font = "600 18px monospace";
+    context.fillText(receiptNumber, 1128, 1475);
+    canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("Receipt image could not be saved.")), "image/png", 1);
+  });
+}
+
 function printSaleReceipt(sale: TireSale, onBlocked: () => void) {
   const receiptWindow = window.open("about:blank", "akron-tire-receipt");
   if (!receiptWindow) {
@@ -2212,6 +2364,7 @@ function printSaleReceipt(sale: TireSale, onBlocked: () => void) {
 }
 
 function ReceiptModal({ sale, onClose }: { sale: TireSale; onClose: () => void }) {
+  const [saving, setSaving] = useState(false);
   const isTire = (sale.serviceType || "tire") === "tire";
   const receiptNumber = sale.id.replaceAll("-", "").slice(0, 10).toUpperCase();
   const soldDate = new Date(sale.soldAt).toLocaleDateString("en-US", { timeZone: "America/New_York", month: "long", day: "numeric", year: "numeric" });
@@ -2224,6 +2377,28 @@ function ReceiptModal({ sale, onClose }: { sale: TireSale; onClose: () => void }
     window.print();
     window.setTimeout(restoreTitle, 1500);
   };
+  const saveReceipt = async () => {
+    setSaving(true);
+    try {
+      const blob = await buildReceiptImage(sale);
+      const fileName = `Akron-Tire-Shop-Receipt-${receiptNumber}.png`;
+      const file = new File([blob], fileName, { type: "image/png" });
+      if (navigator.share && navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file], title: `Akron Tire Shop Receipt #${receiptNumber}` });
+      } else {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.setTimeout(() => URL.revokeObjectURL(url), 1500);
+      }
+    } catch (error) {
+      if (!(error instanceof DOMException && error.name === "AbortError")) window.alert(error instanceof Error ? error.message : "Receipt could not be saved.");
+    } finally { setSaving(false); }
+  };
   return createPortal(
     <div className="receipt-print-layer fixed inset-0 z-[100] overflow-y-auto bg-black/80 p-3 backdrop-blur-sm sm:p-6" role="dialog" aria-modal="true" aria-label="Receipt preview">
       <div className="mx-auto flex min-h-full w-full max-w-[420px] items-center justify-center py-4">
@@ -2231,7 +2406,7 @@ function ReceiptModal({ sale, onClose }: { sale: TireSale; onClose: () => void }
           <section className="receipt-print-root overflow-hidden bg-white text-[#111] shadow-2xl">
             <div className="h-2.5 bg-[#10b981]" />
             <div className="px-8 py-8 sm:px-11 sm:py-10">
-              <header className="flex items-start justify-between gap-6"><div><div className="text-[11px] font-black uppercase tracking-[.22em] text-[#10b981]">Akron</div><div className="mt-0.5 text-[30px] font-black leading-none tracking-[-.055em]">TIRE SHOP</div><div className="mt-2 text-[10px] font-semibold uppercase tracking-[.15em] text-neutral-500">Tires · Sales · Service</div></div><div className="text-right"><div className="text-[24px] font-light tracking-[-.035em] text-neutral-400">RECEIPT</div><div className="mt-1.5 font-mono text-[12px] font-bold">#{receiptNumber}</div><div className="mt-3 inline-flex rounded-full bg-[#d1fae5] px-3 py-1 text-[9px] font-black uppercase tracking-[.14em] text-[#047857]">Paid in full</div></div></header>
+              <header className="flex items-start justify-between gap-5 rounded-xl bg-[#111] p-5 text-white"><div className="flex items-center gap-3"><WheelMark className="h-14 w-14 shrink-0" /><div><div className="text-[10px] font-black uppercase tracking-[.22em] text-[#6ee7b7]">Akron</div><div className="mt-0.5 text-[26px] font-black leading-none tracking-[-.055em]">TIRE SHOP</div><div className="mt-2 text-[9px] font-semibold uppercase tracking-[.15em] text-neutral-500">Tires · Sales · Service</div></div></div><div className="text-right"><div className="text-[19px] font-light tracking-[-.035em] text-neutral-400">RECEIPT</div><div className="mt-1.5 font-mono text-[11px] font-bold">#{receiptNumber}</div><div className="mt-3 inline-flex rounded-full bg-[#064e3b] px-3 py-1 text-[8px] font-black uppercase tracking-[.14em] text-[#a7f3d0]">Paid in full</div></div></header>
               <div className="mt-8 grid grid-cols-2 gap-4 rounded-xl bg-[#f5f5f4] p-5"><div><div className="text-[9px] font-black uppercase tracking-[.14em] text-neutral-500">Customer</div><div className="mt-1.5 text-[15px] font-bold">{sale.customer || "Walk-in customer"}</div></div><div className="grid grid-cols-2 gap-4 text-right"><div><div className="text-[9px] font-black uppercase tracking-[.14em] text-neutral-500">Date</div><div className="mt-1.5 text-[11px] font-bold">{soldDate}</div><div className="mt-1 text-[10px] text-neutral-500">{soldTime}</div></div><div><div className="text-[9px] font-black uppercase tracking-[.14em] text-neutral-500">Payment</div><div className="mt-1.5 text-[11px] font-bold">{sale.paymentMethod}</div></div></div></div>
               <div className="mt-8 overflow-hidden rounded-xl border border-neutral-200"><table className="w-full border-collapse text-left"><thead className="bg-[#111] text-white"><tr className="text-[9px] uppercase tracking-[.14em]"><th className="px-5 py-3.5">Description</th><th className="px-4 py-3.5 text-center">Qty</th><th className="px-5 py-3.5 text-right">Amount</th></tr></thead><tbody><tr><td className="px-5 py-5"><strong className={`block text-[18px] ${isTire ? "font-mono" : "font-sans"}`}>{isTire ? sale.size : workTypeLabel(sale.serviceType)}</strong><span className="mt-1.5 block text-[11px] text-neutral-500">{isTire ? tirePackageLabel(sale.packageType) : "Automotive service"}</span></td><td className="px-4 py-5 text-center font-mono text-[14px] font-bold">{sale.quantity}</td><td className="px-5 py-5 text-right font-mono text-[15px] font-black">{money(sale.total)}</td></tr></tbody></table></div>
               {sale.notes && <div className="mt-5 rounded-xl border border-neutral-200 px-5 py-4"><div className="text-[9px] font-black uppercase tracking-[.14em] text-neutral-500">Work notes</div><div className="mt-2 text-[12px] leading-relaxed text-neutral-700">{sale.notes}</div></div>}
@@ -2239,7 +2414,7 @@ function ReceiptModal({ sale, onClose }: { sale: TireSale; onClose: () => void }
               <footer className="mt-10 flex items-end justify-between gap-5 border-t border-neutral-200 pt-5"><div><strong className="block text-[13px]">Thank you for your business.</strong><span className="mt-1 block text-[10px] text-neutral-500">We appreciate you choosing Akron Tire Shop.</span></div><div className="text-right font-mono text-[9px] text-neutral-400">{receiptNumber}</div></footer>
             </div>
           </section>
-          <div className="receipt-screen-actions grid grid-cols-2 gap-2 bg-[#171917] p-3"><button onClick={onClose} className="min-h-12 rounded-lg border border-white/15 text-xs font-semibold text-zinc-200">Close</button><button onClick={printReceipt} className="min-h-12 rounded-lg bg-white text-xs font-bold text-black"><Printer className="mr-1.5 inline h-4 w-4" />Print / Save PDF</button></div>
+          <div className="receipt-screen-actions grid grid-cols-3 gap-2 bg-[#171917] p-3"><button onClick={onClose} className="min-h-12 rounded-lg border border-white/15 text-xs font-semibold text-zinc-200">Close</button><button disabled={saving} onClick={() => void saveReceipt()} className="min-h-12 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2 text-xs font-bold text-emerald-300 disabled:opacity-50"><Download className="mr-1 inline h-4 w-4" />{saving ? "Saving..." : "Save to Phone"}</button><button onClick={printReceipt} className="min-h-12 rounded-lg bg-white px-2 text-xs font-bold text-black"><Printer className="mr-1 inline h-4 w-4" />Print</button></div>
         </div>
       </div>
     </div>,
@@ -2262,15 +2437,17 @@ function easternDateTimeToIso(date: string, time: string) {
 
 function ShopPageHeader({ eyebrow, title, description, meta, actions, tone = "emerald" }: { eyebrow: string; title: string; description: string; meta?: React.ReactNode; actions?: React.ReactNode; tone?: ShopTone }) {
   const colors = shopToneStyles[tone];
+  const wheelAccent = tone === "sky" ? "#38bdf8" : tone === "amber" ? "#fbbf24" : tone === "violet" ? "#a78bfa" : "#34d399";
   return (
-    <div className="flex flex-col gap-4 border-b border-white/[.055] pb-5 sm:flex-row sm:items-end sm:justify-between sm:pb-6">
-      <div className="min-w-0">
-        <div className={`mb-2 flex items-center gap-2 text-[9px] font-semibold uppercase tracking-[.16em] ${colors.text}`}><span className={`live-dot h-1.5 w-1.5 rounded-full ${colors.dot}`} />{eyebrow}</div>
-        <h1 className="text-[24px] font-semibold tracking-[-.035em] text-white sm:text-[29px]">{title}</h1>
-        <p className="mt-1.5 max-w-2xl text-xs leading-relaxed text-zinc-500 sm:text-[13px]">{description}</p>
+    <div className="tread-band relative flex flex-col gap-4 overflow-hidden rounded-2xl border border-white/[.065] bg-[#101311] p-5 text-emerald-400 shadow-[0_20px_60px_rgba(0,0,0,.18)] sm:flex-row sm:items-end sm:justify-between sm:p-6">
+      <WheelMark accent={wheelAccent} className="absolute -right-8 -top-10 h-36 w-36 opacity-[.13] sm:right-24 sm:h-44 sm:w-44" />
+      <div className="relative z-10 min-w-0">
+        <div className={`shop-kicker mb-3 text-[9px] font-bold uppercase tracking-[.16em] ${colors.text}`}><span className={`live-dot h-1.5 w-1.5 rounded-full ${colors.dot}`} />{eyebrow}</div>
+        <h1 className="text-[27px] font-black uppercase tracking-[-.045em] text-white sm:text-[34px]">{title}</h1>
+        <p className="mt-2 max-w-2xl text-xs leading-relaxed text-zinc-500 sm:text-[13px]">{description}</p>
         {meta}
       </div>
-      {actions && <div className="shrink-0">{actions}</div>}
+      {actions && <div className="relative z-10 shrink-0">{actions}</div>}
     </div>
   );
 }
@@ -2279,6 +2456,7 @@ function TireStat({ label, value, detail, featured = false, tone = "emerald" }: 
   const colors = shopToneStyles[tone];
   return (
     <div className={`mobile-surface relative min-w-0 overflow-hidden rounded-xl p-3.5 ring-1 ring-inset sm:p-4 ${featured ? `col-span-2 sm:col-span-1 ${colors.soft} ${colors.ring}` : "bg-[#111312] ring-white/[.055]"}`}>
+      {featured && <WheelMark className="absolute -bottom-8 -right-8 h-24 w-24 opacity-[.1]" />}
       <motion.span aria-hidden="true" className={`absolute inset-x-0 bottom-0 h-px origin-left ${featured ? colors.dot : "bg-white/[.08]"}`} initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: .55, ease: [0.2, 0.8, 0.2, 1] }} />
       <div className="truncate text-[9px] font-semibold uppercase tracking-wider text-zinc-500 sm:text-[10px]">{label}</div>
       <AnimatePresence mode="popLayout" initial={false}><motion.div key={String(value)} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: .18 }} className={`mt-1 truncate font-semibold tracking-[-.03em] sm:mt-1.5 sm:text-2xl ${featured ? `text-[28px] ${colors.text}` : "text-xl text-white"}`}>{value}</motion.div></AnimatePresence>
@@ -2401,8 +2579,8 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
         <TireStat label="Low stock" value={summary?.lowStock || 0} detail="Five or fewer remaining" />
         <TireStat label="Retail value" value={money(summary?.inventoryValue || 0)} detail="Current price × quantity" />
       </div>
-      <section className="mobile-surface grid gap-3 rounded-2xl border border-sky-400/10 bg-sky-400/[.035] p-4 sm:grid-cols-[1fr_auto_auto] sm:items-center sm:p-5">
-        <div><div className="text-[9px] font-semibold uppercase tracking-[.16em] text-sky-300">Today at the shop</div><div className="mt-1 text-xs text-zinc-500">A quick live snapshot from today’s saved work.</div></div>
+      <section className="tread-band mobile-surface grid gap-3 overflow-hidden rounded-2xl border border-sky-400/10 bg-sky-400/[.035] p-4 text-sky-300 sm:grid-cols-[1fr_auto_auto] sm:items-center sm:p-5">
+        <div className="relative z-10 flex items-center gap-3"><WheelMark accent="#38bdf8" className="h-11 w-11 shrink-0" /><div><div className="text-[9px] font-black uppercase tracking-[.16em] text-sky-300">Today at the shop</div><div className="mt-1 text-xs text-zinc-500">A quick live snapshot from today’s saved work.</div></div></div>
         <div className="rounded-xl bg-[#090b0a]/70 px-4 py-3 ring-1 ring-inset ring-white/[.055]"><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Revenue</div><div className="mt-1 text-xl font-semibold text-white">{money(summary?.todayRevenue || 0)}</div></div>
         <div className="rounded-xl bg-[#090b0a]/70 px-4 py-3 ring-1 ring-inset ring-white/[.055]"><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Jobs / items</div><div className="mt-1 text-xl font-semibold text-sky-300">{summary?.todayUnits || 0}</div></div>
       </section>
@@ -2737,7 +2915,7 @@ function Toast({ message }: { message: string }) {
 }
 
 function Card({ children }: { children: React.ReactNode }) {
-  return <div className="mobile-surface rounded-xl bg-[#111312] p-4 ring-1 ring-inset ring-white/[.055] sm:rounded-2xl sm:p-5">{children}</div>;
+  return <div className="mobile-surface rounded-xl border border-white/[.065] bg-[#101311] p-4 shadow-[0_18px_55px_rgba(0,0,0,.12)] sm:rounded-2xl sm:p-5">{children}</div>;
 }
 
 function CardHeader({ title, icon, action }: { title: string; icon: React.ReactNode; action?: React.ReactNode }) {
@@ -2760,7 +2938,7 @@ function Button({ children, variant = "primary", onClick, disabled, className = 
     danger: "bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20",
   };
   return (
-    <button disabled={disabled} onClick={onClick} className={`mobile-tap ${variant === "primary" ? "alive-scan" : ""} inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg px-3.5 py-2.5 text-xs font-semibold transition active:scale-[0.97] disabled:opacity-40 sm:rounded-xl ${styles[variant]} ${className}`}>
+    <button disabled={disabled} onClick={onClick} className={`mobile-tap ${variant === "primary" ? "alive-scan" : ""} inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg px-3.5 py-2.5 text-[11px] font-black uppercase tracking-[.045em] transition active:scale-[0.97] disabled:opacity-40 sm:rounded-xl ${styles[variant]} ${className}`}>
       {children}
     </button>
   );
