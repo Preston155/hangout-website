@@ -531,7 +531,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_TUBE_FIX_V6";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_FEATURES_V7";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -2072,6 +2072,20 @@ function money(value: number) {
   return value.toLocaleString("en-US", { style: "currency", currency: "USD" });
 }
 
+function tireRimSize(size: string) {
+  return size.toUpperCase().match(/(?:R|\/)(\d{2})\s*$/)?.[1] || "Other";
+}
+
+function downloadCsv(filename: string, rows: Array<Array<string | number>>) {
+  const csv = rows.map((row) => row.map((value) => `"${String(value ?? "").replaceAll('"', '""')}"`).join(",")).join("\r\n");
+  const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.click();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 function tirePackageLabel(value?: string, plural = false) {
   if (value === "set4") return plural ? "sets of 4" : "Set of 4";
   if (value === "pair") return plural ? "pairs" : "Pair (2)";
@@ -2205,6 +2219,8 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
   const [form, setForm] = useState(blank);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [stockFilter, setStockFilter] = useState<"all" | "available" | "low" | "out">("all");
+  const [rimFilter, setRimFilter] = useState("all");
   const [busy, setBusy] = useState(false);
   const [adjustingId, setAdjustingId] = useState<string | null>(null);
   const adjustmentLock = useRef(false);
@@ -2275,8 +2291,32 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
     } finally { setBusy(false); }
   };
 
-  const inventory = (data?.inventory || []).filter((item) => `${item.size} ${tirePackageLabel(item.packageType)}`.toLowerCase().includes(search.toLowerCase()));
+  const allInventory = data?.inventory || [];
+  const rimSizes = [...new Set(allInventory.map((item) => tireRimSize(item.size)))].sort((a, b) => (Number(a) || 999) - (Number(b) || 999));
+  const inventory = allInventory.filter((item) => {
+    const matchesSearch = `${item.size} ${tirePackageLabel(item.packageType)}`.toLowerCase().includes(search.toLowerCase());
+    const matchesRim = rimFilter === "all" || tireRimSize(item.size) === rimFilter;
+    const matchesStock = stockFilter === "all"
+      || (stockFilter === "available" && item.quantity > 0)
+      || (stockFilter === "low" && item.quantity > 0 && item.quantity <= 5)
+      || (stockFilter === "out" && item.quantity === 0);
+    return matchesSearch && matchesRim && matchesStock;
+  });
   const summary = data?.summary;
+
+  const exportInventory = () => {
+    downloadCsv(`akron-inventory-${easternDateKey(new Date())}.csv`, [
+      ["Tire Size", "Sold As", "Quantity", "Selling Price", "Stock Status"],
+      ...inventory.map((item) => [
+        item.size,
+        tirePackageLabel(item.packageType),
+        item.quantity,
+        item.price.toFixed(2),
+        item.quantity === 0 ? "Out of stock" : item.quantity <= 5 ? "Low stock" : "In stock",
+      ]),
+    ]);
+    showToast(`${inventory.length} inventory item${inventory.length === 1 ? "" : "s"} exported.`);
+  };
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -2287,6 +2327,11 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
         <TireStat label="Low stock" value={summary?.lowStock || 0} detail="Five or fewer remaining" />
         <TireStat label="Retail value" value={money(summary?.inventoryValue || 0)} detail="Current price × quantity" />
       </div>
+      <section className="mobile-surface grid gap-3 rounded-2xl border border-sky-400/10 bg-sky-400/[.035] p-4 sm:grid-cols-[1fr_auto_auto] sm:items-center sm:p-5">
+        <div><div className="text-[9px] font-semibold uppercase tracking-[.16em] text-sky-300">Today at the shop</div><div className="mt-1 text-xs text-zinc-500">A quick live snapshot from today’s saved work.</div></div>
+        <div className="rounded-xl bg-[#090b0a]/70 px-4 py-3 ring-1 ring-inset ring-white/[.055]"><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Revenue</div><div className="mt-1 text-xl font-semibold text-white">{money(summary?.todayRevenue || 0)}</div></div>
+        <div className="rounded-xl bg-[#090b0a]/70 px-4 py-3 ring-1 ring-inset ring-white/[.055]"><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Jobs / items</div><div className="mt-1 text-xl font-semibold text-sky-300">{summary?.todayUnits || 0}</div></div>
+      </section>
       <Card>
         <CardHeader title={editingId ? "Edit Inventory Item" : "Add Inventory Item"} icon={<Package className="h-4 w-4 text-sky-400" />} />
         <form onSubmit={saveItem} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -2302,7 +2347,16 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
       </Card>
       <Card>
         <CardHeader title="All Inventory" icon={<Package className="h-4 w-4 text-zinc-400" />} action={<input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search inventory..." className="w-full rounded-xl border border-white/[.08] bg-[#090b0a] px-3.5 py-2.5 text-xs text-zinc-200 outline-none transition focus:border-emerald-400/45 sm:w-64" />} />
-        {!data ? <EmptyState title="Loading inventory" text="Reading the tire shop database..." /> : inventory.length === 0 ? <EmptyState title="No tires found" text={search ? "Try another search." : "Use the form above to enter your first inventory item."} /> : (<>
+        <div className="mt-4 flex flex-col gap-3 border-b border-white/[.055] pb-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="grid grid-cols-4 gap-1 rounded-xl bg-[#090b0a] p-1 ring-1 ring-inset ring-white/[.055]">
+            {([['all', 'All'], ['available', 'Available'], ['low', 'Low'], ['out', 'Out']] as const).map(([value, label]) => <button key={value} type="button" onClick={() => setStockFilter(value)} className={`mobile-tap rounded-lg px-2.5 py-2 text-[10px] font-semibold transition sm:px-3 ${stockFilter === value ? "bg-sky-400/12 text-sky-200 ring-1 ring-inset ring-sky-400/20" : "text-zinc-500 hover:text-zinc-200"}`}>{label}</button>)}
+          </div>
+          <div className="grid grid-cols-2 gap-2 sm:flex">
+            <select value={rimFilter} onChange={(event) => setRimFilter(event.target.value)} className="min-h-10 rounded-xl border border-white/[.08] bg-[#090b0a] px-3 text-xs text-zinc-200 outline-none focus:border-sky-400/45"><option value="all">All rim sizes</option>{rimSizes.map((rim) => <option key={rim} value={rim}>{rim === "Other" ? rim : `${rim}\" rims`}</option>)}</select>
+            <Button variant="secondary" disabled={!data || inventory.length === 0} onClick={exportInventory}><FileText className="h-3.5 w-3.5" /> Export CSV</Button>
+          </div>
+        </div>
+        {!data ? <EmptyState title="Loading inventory" text="Reading the tire shop database..." /> : inventory.length === 0 ? <EmptyState title="No tires found" text={search || stockFilter !== "all" || rimFilter !== "all" ? "No inventory matches these filters." : "Use the form above to enter your first inventory item."} /> : (<>
           <div className="mt-4 space-y-3 sm:hidden">
             {inventory.map((item) => <article key={item.id} className="rounded-xl border border-white/[.065] bg-[#0b0d0c] p-4"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><div className="truncate font-mono text-lg font-semibold text-white">{item.size}</div><span className={`mt-2 inline-flex rounded-md border px-2 py-1 text-[10px] font-semibold ${tirePackageClass(item.packageType)}`}>{tirePackageLabel(item.packageType)}</span></div><div className="shrink-0 text-right"><div className={`text-2xl font-semibold ${item.quantity <= 5 ? "text-amber-300" : "text-emerald-300"}`}>{item.quantity}</div><div className="text-[9px] uppercase tracking-wider text-zinc-600">in stock</div></div></div><div className="mt-4 grid grid-cols-[1fr_48px_48px] items-end gap-2 border-t border-white/[.06] pt-3"><div><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Selling price</div><div className="mt-1 text-lg font-semibold text-zinc-100">{money(item.price)}</div></div><button disabled={adjustingId !== null || item.quantity === 0} onClick={() => void adjustItem(item, -1)} className="mobile-tap grid h-12 place-items-center rounded-xl border border-white/[.08] bg-white/[.035] text-sm font-semibold text-zinc-200 disabled:cursor-not-allowed disabled:opacity-35" aria-label={`Remove one ${item.size} tire`}>−1</button><button disabled={adjustingId !== null} onClick={() => void adjustItem(item, 1)} className="mobile-tap grid h-12 place-items-center rounded-xl border border-emerald-500/25 bg-emerald-500/10 text-sm font-semibold text-emerald-300 disabled:cursor-not-allowed disabled:opacity-35" aria-label={`Add one ${item.size} tire`}>+1</button></div><button disabled={busy} onClick={() => void removeItem(item)} className="mobile-tap mt-2.5 w-full rounded-xl border border-red-500/15 py-2.5 text-[10px] font-medium text-red-400/80">Remove from inventory</button></article>)}
           </div>
@@ -2532,9 +2586,30 @@ function TireSalesReportPage({ showToast, setPage }: { showToast: (m: string) =>
   }, {})).sort(([a], [b]) => b.localeCompare(a));
   const canGoForward = monthKey < currentMonthKey;
 
+  const exportMonth = () => {
+    downloadCsv(`akron-sales-${monthKey}.csv`, [
+      ["Date", "Time", "Work", "Tire Size", "Quantity", "Payment", "Customer", "Total", "Notes"],
+      ...sales.map((sale) => {
+        const isTire = (sale.serviceType || "tire") === "tire";
+        return [
+          easternDateKey(sale.soldAt),
+          new Date(sale.soldAt).toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" }),
+          isTire ? "Tire Sale" : workTypeLabel(sale.serviceType),
+          isTire ? sale.size : "",
+          sale.quantity,
+          sale.paymentMethod,
+          sale.customer || "Walk-in",
+          Number(sale.total || 0).toFixed(2),
+          sale.notes || "",
+        ];
+      }),
+    ]);
+    showToast(`${sales.length} ${monthKeyLabel(monthKey)} record${sales.length === 1 ? "" : "s"} exported.`);
+  };
+
   return (
     <div className="space-y-4 sm:space-y-6">
-      <ShopPageHeader tone="violet" eyebrow="Reporting" title="Sales Reports" description="Monthly tire sales, services, and payment totals." meta={lastUpdated && <p className="mt-1.5 text-[10px] text-zinc-600">Updated {lastUpdated.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}</p>} actions={<div className="grid grid-cols-2 gap-2 sm:flex"><Button className="justify-center" variant="ghost" disabled={refreshing} onClick={() => void load()}><RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} /> Refresh</Button><Button className="justify-center" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record Work</Button></div>} />
+      <ShopPageHeader tone="violet" eyebrow="Reporting" title="Sales Reports" description="Monthly tire sales, services, and payment totals." meta={lastUpdated && <p className="mt-1.5 text-[10px] text-zinc-600">Updated {lastUpdated.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}</p>} actions={<div className="grid grid-cols-3 gap-2 sm:flex"><Button className="justify-center" variant="ghost" disabled={refreshing} onClick={() => void load()}><RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} /> Refresh</Button><Button className="justify-center" variant="secondary" disabled={!sales.length} onClick={exportMonth}><FileText className="h-3.5 w-3.5" /> Export CSV</Button><Button className="justify-center" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record Work</Button></div>} />
 
       <section className="mobile-surface rounded-2xl border border-white/[.065] bg-[#111412] p-4 sm:p-5">
         <div className="flex items-center justify-between gap-3"><button aria-label="Previous month" onClick={() => setMonthKey((current) => shiftMonthKey(current, -1))} className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-zinc-800 bg-zinc-950 text-zinc-300 transition hover:border-zinc-600 hover:text-white"><ChevronRight className="h-5 w-5 rotate-180" /></button><div className="min-w-0 text-center"><div className="text-[10px] font-semibold uppercase tracking-wider text-emerald-400">Viewing month</div><h2 className="mt-1 truncate text-xl font-semibold text-white sm:text-2xl">{monthKeyLabel(monthKey)}</h2></div><button aria-label="Next month" disabled={!canGoForward} onClick={() => setMonthKey((current) => shiftMonthKey(current, 1))} className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-zinc-800 bg-zinc-950 text-zinc-300 transition hover:border-zinc-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"><ChevronRight className="h-5 w-5" /></button></div>
