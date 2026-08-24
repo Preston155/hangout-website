@@ -25,12 +25,10 @@ import {
   Megaphone,
   Menu,
   MessageSquare,
-  Minus,
   Package,
   PhoneCall,
   Play,
   Printer,
-  Plus,
   Radio,
   RefreshCw,
   Search,
@@ -45,7 +43,6 @@ import {
   Sparkles,
   Square,
   Terminal,
-  Trash2,
   UserCheck,
   Users,
   X,
@@ -539,7 +536,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_SLATE_V9";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_ALIVE_V8";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -789,7 +786,7 @@ export function App() {
 
   return (
     <DashboardClockProvider>
-    <div className="shop-shell relative min-h-screen bg-[#0f172a] font-sans text-slate-100 antialiased selection:bg-emerald-500/30 selection:text-white">
+    <div className="shop-shell relative min-h-screen bg-[#080a09] font-sans text-zinc-100 antialiased selection:bg-emerald-400/25 selection:text-white">
       <div className="shop-ambient" aria-hidden="true" />
       <div className="flex min-h-screen">
         <Sidebar page={page} setPage={setPage} />
@@ -931,28 +928,31 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
 
 function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) {
   return (
-    <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-slate-800 bg-slate-900/80 px-4 py-6 backdrop-blur-xl lg:flex">
-      <div className="flex items-center gap-3 px-2">
-        <div className="grid h-9 w-9 place-items-center rounded-lg border border-emerald-500/35 bg-emerald-500/10 text-sm font-black text-emerald-400">A</div>
-        <div><div className="text-sm font-bold tracking-[-.02em] text-slate-100">AKRON TIRE</div><div className="mt-0.5 font-mono text-[9px] tracking-[.13em] text-slate-500">SHOP MANAGER</div></div>
+    <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-white/[.055] bg-[#0b0d0c] px-4 py-6 lg:flex">
+      <div className="px-2">
+        <div className="text-[9px] font-bold uppercase tracking-[.22em] text-emerald-400">Akron</div>
+        <div className="mt-1 text-[17px] font-semibold tracking-[-.025em] text-white">Tire Shop</div>
+        <div className="mt-1 text-[10px] text-zinc-600">Inventory · Sales · Service</div>
       </div>
-      <div className="my-6 h-px bg-slate-800" />
+      <div className="my-6 h-px bg-white/[.055]" />
       <nav className="space-y-1">
         {navItems.map((item) => {
           const Icon = item.icon;
           const active = item.id === page;
+          const tone = shopToneStyles[item.tone];
           return (
-            <button key={item.id} onClick={() => setPage(item.id)} className={`group relative flex min-h-11 w-full items-center gap-3 rounded-lg border px-3 py-2.5 text-left text-xs font-medium transition ${active ? "border-emerald-500/25 bg-emerald-500/10 text-emerald-300 shadow-[0_10px_26px_rgba(16,185,129,.06)]" : "border-transparent text-slate-500 hover:bg-slate-800/60 hover:text-slate-200"}`}>
-              <Icon className={`h-4 w-4 ${active ? "text-emerald-400" : "text-slate-600 group-hover:text-slate-400"}`} />
+            <button key={item.id} onClick={() => setPage(item.id)} className={`group relative flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-xs font-medium transition ${active ? "bg-white/[.055] text-white" : "text-zinc-500 hover:bg-white/[.03] hover:text-zinc-200"}`}>
+              {active && <span className={`absolute inset-y-2 left-0 w-0.5 rounded-full ${tone.dot}`} />}
+              <Icon className={`h-4 w-4 ${active ? tone.text : "text-zinc-600 group-hover:text-zinc-400"}`} />
               <span>{item.label}</span>
             </button>
           );
         })}
       </nav>
       <div className="mt-auto flex h-20 items-end justify-center overflow-visible"><div className="origin-bottom scale-[.45]"><InflatableGuy color="#38bdf8" /></div></div>
-      <div className="rounded-lg border border-slate-800 bg-slate-950/60 px-3 py-3">
-        <div className="flex items-center justify-between text-[10px]"><span className="text-slate-500">Sync Status</span><span className="flex items-center gap-1.5 font-semibold text-emerald-400"><span className="live-dot h-1.5 w-1.5 rounded-full bg-emerald-400" /> Saved</span></div>
-        <p className="mt-2 text-[9px] leading-relaxed text-slate-600">Inventory and sales save automatically.</p>
+      <div className="border-t border-white/[.055] px-2 pt-4">
+        <div className="flex items-center gap-2 text-[11px] font-medium text-zinc-300"><span className="h-2 w-2 rounded-full bg-emerald-400" /> Data saves automatically</div>
+        <p className="mt-1.5 text-[10px] leading-relaxed text-zinc-600">Inventory and sales are stored securely.</p>
       </div>
     </aside>
   );
@@ -961,7 +961,7 @@ function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) 
 function Topbar({ page }: { page: Page }) {
   const currentNav = navItems.find((item) => item.id === page);
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center border-b border-slate-800 bg-slate-950/85 px-4 backdrop-blur-xl sm:h-16 sm:px-6 lg:px-9">
+    <header className="sticky top-0 z-30 flex h-14 items-center border-b border-white/[.055] bg-[#080a09]/92 px-4 backdrop-blur-xl sm:h-16 sm:px-6 lg:px-9">
       <div className="lg:hidden"><div className="text-[9px] font-bold uppercase tracking-[.18em] text-emerald-400">Akron Tire Shop</div><div className="mt-0.5 text-sm font-semibold tracking-[-.015em] text-white">{currentNav?.label}</div></div>
       <div className="hidden lg:block"><div className="text-sm font-semibold tracking-[-.01em] text-zinc-200">{currentNav?.label}</div></div>
       <div className="ml-auto h-11 w-8 overflow-visible lg:hidden"><div className="origin-top-left scale-[.26]"><InflatableGuy color="#fbbf24" delay={-.6} /></div></div>
@@ -972,9 +972,9 @@ function Topbar({ page }: { page: Page }) {
 
 function MobileShopNav({ page, setPage }: { page: Page; setPage: (p: Page) => void }) {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-800 bg-slate-900/95 px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-1.5 shadow-[0_-10px_30px_rgba(0,0,0,.28)] backdrop-blur-2xl lg:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-white/[.07] bg-[#0b0d0c]/95 px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-1.5 shadow-[0_-10px_30px_rgba(0,0,0,.28)] backdrop-blur-2xl lg:hidden">
       <div className="mx-auto grid max-w-lg grid-cols-5 gap-1">
-        {navItems.map((item) => { const Icon = item.icon; const active = item.id === page; return <motion.button whileTap={{ scale: 0.94 }} key={item.id} onClick={() => setPage(item.id)} className={`relative flex min-h-11 min-w-0 flex-col items-center justify-center gap-1 px-1 py-1.5 text-[9px] font-medium ${active ? "text-emerald-300" : "text-slate-500"}`}>{active && <motion.span layoutId="mobile-shop-active" className="absolute -top-1.5 h-0.5 w-7 rounded-full bg-emerald-400" transition={{ type: "spring", stiffness: 420, damping: 34 }} />}<motion.span animate={{ y: active ? -1 : 0 }} transition={{ type: "spring", stiffness: 420, damping: 28 }}><Icon className={`h-[19px] w-[19px] ${active ? "text-emerald-400" : "text-slate-500"}`} /></motion.span><span className="truncate">{item.shortLabel}</span></motion.button>; })}
+        {navItems.map((item) => { const Icon = item.icon; const active = item.id === page; const tone = shopToneStyles[item.tone]; return <motion.button whileTap={{ scale: 0.94 }} key={item.id} onClick={() => setPage(item.id)} className={`relative flex min-w-0 flex-col items-center gap-1 px-1 py-2 text-[9px] font-medium ${active ? "text-zinc-100" : "text-zinc-600"}`}>{active && <motion.span layoutId="mobile-shop-active" className={`absolute -top-1.5 h-0.5 w-7 rounded-full ${tone.dot}`} transition={{ type: "spring", stiffness: 420, damping: 34 }} />}<motion.span animate={{ y: active ? -1 : 0 }} transition={{ type: "spring", stiffness: 420, damping: 28 }}><Icon className={`h-[19px] w-[19px] ${active ? tone.text : "text-zinc-600"}`} /></motion.span><span className="truncate">{item.shortLabel}</span></motion.button>; })}
       </div>
     </nav>
   );
@@ -2092,7 +2092,7 @@ function SettingsPage({ showToast }: { showToast: (m: string) => void }) {
   );
 }
 
-const tireFieldClass = "w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-base text-slate-100 placeholder-slate-600 outline-none transition focus:border-emerald-500/55 focus:ring-2 focus:ring-emerald-500/10 md:text-sm";
+const tireFieldClass = "w-full rounded-xl border border-white/[.08] bg-[#0a0c0b] px-3.5 py-2.5 text-xs text-zinc-100 placeholder-zinc-700 outline-none transition focus:border-emerald-400/45 focus:ring-2 focus:ring-emerald-400/10";
 
 function money(value: number) {
   return value.toLocaleString("en-US", { style: "currency", currency: "USD" });
@@ -2383,13 +2383,13 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
             <Button variant="secondary" disabled={!data || inventory.length === 0} onClick={exportInventory}><FileText className="h-3.5 w-3.5" /> Export CSV</Button>
           </div>
         </div>
-        {!data ? <ShopSkeleton rows={4} /> : inventory.length === 0 ? <EmptyState title="No tires found" text={search || stockFilter !== "all" || rimFilter !== "all" ? "No inventory matches these filters." : "Use the form above to enter your first inventory item."} /> : (<>
+        {!data ? <EmptyState title="Loading inventory" text="Reading the tire shop database..." /> : inventory.length === 0 ? <EmptyState title="No tires found" text={search || stockFilter !== "all" || rimFilter !== "all" ? "No inventory matches these filters." : "Use the form above to enter your first inventory item."} /> : (<>
           <div className="mt-4 space-y-3 sm:hidden">
-            {inventory.map((item) => <article key={item.id} className="rounded-xl border border-slate-800 bg-slate-950/55 p-4"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><div className="text-[9px] font-mono text-slate-500">{tireRimSize(item.size)}&quot; RIM</div><div className="mt-0.5 truncate font-mono text-lg font-bold text-white">{item.size}</div><span className={`mt-2 inline-flex rounded-md border px-2 py-1 text-[10px] font-semibold ${tirePackageClass(item.packageType)}`}>{tirePackageLabel(item.packageType)}</span></div><div className="shrink-0 text-right"><div className={`font-mono text-2xl font-bold tabular-nums ${item.quantity === 0 ? "text-red-400" : item.quantity <= 5 ? "text-amber-300" : "text-emerald-300"}`}>{item.quantity}</div><div className="text-[9px] uppercase tracking-wider text-slate-600">in stock</div></div></div><div className="mt-4 grid grid-cols-[1fr_48px_48px] items-end gap-2 border-t border-slate-800 pt-3"><div><div className="text-[9px] font-semibold uppercase tracking-wider text-slate-600">Selling price</div><div className="mt-1 font-mono text-lg font-bold text-slate-100">{money(item.price)}</div></div><button disabled={adjustingId !== null || item.quantity === 0} onClick={() => void adjustItem(item, -1)} className="mobile-tap grid h-12 place-items-center rounded-xl border border-slate-700 bg-slate-800 text-slate-200 disabled:cursor-not-allowed disabled:opacity-35" aria-label={`Remove one ${item.size} tire`}><Minus className="h-4 w-4" /></button><button disabled={adjustingId !== null} onClick={() => void adjustItem(item, 1)} className="mobile-tap grid h-12 place-items-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 disabled:cursor-not-allowed disabled:opacity-35" aria-label={`Add one ${item.size} tire`}><Plus className="h-4 w-4" /></button></div><button disabled={busy} onClick={() => void removeItem(item)} className="mobile-tap mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-red-500/15 py-2.5 text-[10px] font-medium text-red-400/80"><Trash2 className="h-3.5 w-3.5" /> Remove from inventory</button></article>)}
+            {inventory.map((item) => <article key={item.id} className="rounded-xl border border-white/[.065] bg-[#0b0d0c] p-4"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><div className="truncate font-mono text-lg font-semibold text-white">{item.size}</div><span className={`mt-2 inline-flex rounded-md border px-2 py-1 text-[10px] font-semibold ${tirePackageClass(item.packageType)}`}>{tirePackageLabel(item.packageType)}</span></div><div className="shrink-0 text-right"><div className={`text-2xl font-semibold ${item.quantity <= 5 ? "text-amber-300" : "text-emerald-300"}`}>{item.quantity}</div><div className="text-[9px] uppercase tracking-wider text-zinc-600">in stock</div></div></div><div className="mt-4 grid grid-cols-[1fr_48px_48px] items-end gap-2 border-t border-white/[.06] pt-3"><div><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Selling price</div><div className="mt-1 text-lg font-semibold text-zinc-100">{money(item.price)}</div></div><button disabled={adjustingId !== null || item.quantity === 0} onClick={() => void adjustItem(item, -1)} className="mobile-tap grid h-12 place-items-center rounded-xl border border-white/[.08] bg-white/[.035] text-sm font-semibold text-zinc-200 disabled:cursor-not-allowed disabled:opacity-35" aria-label={`Remove one ${item.size} tire`}>−1</button><button disabled={adjustingId !== null} onClick={() => void adjustItem(item, 1)} className="mobile-tap grid h-12 place-items-center rounded-xl border border-emerald-500/25 bg-emerald-500/10 text-sm font-semibold text-emerald-300 disabled:cursor-not-allowed disabled:opacity-35" aria-label={`Add one ${item.size} tire`}>+1</button></div><button disabled={busy} onClick={() => void removeItem(item)} className="mobile-tap mt-2.5 w-full rounded-xl border border-red-500/15 py-2.5 text-[10px] font-medium text-red-400/80">Remove from inventory</button></article>)}
           </div>
           <div className="mt-4 hidden overflow-x-auto rounded-xl border border-zinc-800 sm:block">
             <table className="w-full min-w-[640px] text-left text-xs"><thead className="border-b border-zinc-800 bg-zinc-950/70 text-[10px] uppercase tracking-wider text-zinc-500"><tr><th className="px-4 py-3">Tire Size</th><th className="px-4 py-3">Sold As</th><th className="px-4 py-3">Stock</th><th className="px-4 py-3">Price</th><th className="px-4 py-3 text-right">Action</th></tr></thead>
-              <tbody className="divide-y divide-slate-800/70">{inventory.map((item) => <tr key={item.id} className="transition-colors hover:bg-slate-800/35"><td className="px-4 py-3"><div className="font-mono font-bold text-white">{item.size}</div><div className="mt-0.5 font-mono text-[9px] text-slate-600">{tireRimSize(item.size)}&quot; rim</div></td><td className="px-4 py-3"><span className={`rounded-md border px-2 py-1 text-[10px] font-semibold ${tirePackageClass(item.packageType)}`}>{tirePackageLabel(item.packageType)}</span></td><td className="px-4 py-3"><div className={`font-mono font-bold tabular-nums ${item.quantity === 0 ? "text-red-400" : item.quantity <= 5 ? "text-amber-300" : "text-emerald-300"}`}>{item.quantity} <span className="font-sans text-[10px] font-normal text-slate-500">{tirePackageLabel(item.packageType, true)}</span></div></td><td className="px-4 py-3 font-mono font-bold text-slate-200">{money(item.price)}</td><td className="px-4 py-3 text-right"><div className="flex justify-end gap-2"><button disabled={adjustingId !== null || item.quantity === 0} onClick={() => void adjustItem(item, -1)} className="grid h-8 w-8 place-items-center rounded-md border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-35" aria-label={`Remove one ${item.size} tire`}><Minus className="h-3.5 w-3.5" /></button><button disabled={adjustingId !== null} onClick={() => void adjustItem(item, 1)} className="grid h-8 w-8 place-items-center rounded-md border border-emerald-500/25 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/15 disabled:cursor-not-allowed disabled:opacity-35" aria-label={`Add one ${item.size} tire`}><Plus className="h-3.5 w-3.5" /></button><button disabled={busy} onClick={() => void removeItem(item)} className="grid h-8 w-8 place-items-center rounded-md text-slate-600 hover:bg-red-500/10 hover:text-red-400" aria-label={`Remove ${item.size} from inventory`}><Trash2 className="h-4 w-4" /></button></div></td></tr>)}</tbody>
+              <tbody className="divide-y divide-zinc-800/70">{inventory.map((item) => <tr key={item.id} className="hover:bg-zinc-900/60"><td className="px-4 py-3 font-mono font-semibold text-white">{item.size}</td><td className="px-4 py-3"><span className={`rounded-md border px-2 py-1 text-[10px] font-semibold ${tirePackageClass(item.packageType)}`}>{tirePackageLabel(item.packageType)}</span></td><td className="px-4 py-3"><div className={`font-semibold ${item.quantity <= 5 ? "text-amber-300" : "text-emerald-300"}`}>{item.quantity} <span className="text-[10px] font-normal text-zinc-500">{tirePackageLabel(item.packageType, true)}</span></div></td><td className="px-4 py-3 font-semibold text-zinc-200">{money(item.price)}</td><td className="px-4 py-3 text-right"><div className="flex justify-end gap-2"><button disabled={adjustingId !== null || item.quantity === 0} onClick={() => void adjustItem(item, -1)} className="rounded-md border border-zinc-700 px-3 py-1.5 text-[11px] font-semibold text-zinc-300 hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-35" aria-label={`Remove one ${item.size} tire`}>−1</button><button disabled={adjustingId !== null} onClick={() => void adjustItem(item, 1)} className="rounded-md border border-emerald-500/25 bg-emerald-500/10 px-3 py-1.5 text-[11px] font-semibold text-emerald-300 hover:bg-emerald-500/15 disabled:cursor-not-allowed disabled:opacity-35" aria-label={`Add one ${item.size} tire`}>+1</button><button disabled={busy} onClick={() => void removeItem(item)} className="rounded-md border border-red-500/20 px-3 py-1.5 text-[11px] font-medium text-red-400 hover:bg-red-500/10">Remove</button></div></td></tr>)}</tbody>
             </table>
           </div>
         </>)}
@@ -2418,7 +2418,7 @@ function TireInventoryViewPage({ showToast }: { showToast: (m: string) => void }
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 [&>*:last-child]:col-span-2 sm:[&>*:last-child]:col-span-1"><TireStat label="Inventory types" value={summary?.skus || 0} detail="Sizes and package types" /><TireStat label="Available quantity" value={summary?.units || 0} detail="Sets, pairs, and individuals" /><TireStat label="Low stock" value={summary?.lowStock || 0} detail="Five or fewer remaining" /></div>
       <Card>
         <CardHeader title="Available Inventory" icon={<Package className="h-4 w-4 text-zinc-400" />} action={<input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search tire size..." className="w-full rounded-xl border border-white/[.08] bg-[#090b0a] px-3.5 py-2.5 text-xs text-zinc-200 outline-none transition focus:border-emerald-400/45 sm:w-64" />} />
-        {!data ? <ShopSkeleton rows={3} /> : inventory.length === 0 ? <EmptyState title="No tires found" text={search ? "Try another tire size." : "There is no inventory to display yet."} /> : <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{inventory.map((item) => <article key={item.id} className="rounded-xl border border-slate-800 bg-slate-950/50 p-4"><div className="flex items-start justify-between gap-3"><div><div className="font-mono text-lg font-bold text-white">{item.size}</div><span className={`mt-2 inline-flex rounded-md border px-2 py-1 text-[10px] font-semibold ${tirePackageClass(item.packageType)}`}>{tirePackageLabel(item.packageType)}</span></div><div className="text-right"><div className={`font-mono text-2xl font-bold ${item.quantity === 0 ? "text-red-400" : item.quantity <= 5 ? "text-amber-300" : "text-emerald-300"}`}>{item.quantity}</div><div className="text-[10px] text-slate-500">available</div></div></div><div className="mt-4 flex items-end justify-between border-t border-slate-800 pt-3"><div><div className="text-[9px] font-semibold uppercase tracking-wider text-slate-600">Selling price</div><div className="mt-1 font-mono text-lg font-bold text-slate-100">{money(item.price)}</div></div><div className={`rounded-md px-2 py-1 text-[9px] font-semibold uppercase tracking-wider ${item.quantity === 0 ? "bg-red-500/10 text-red-400" : item.quantity <= 5 ? "bg-amber-500/10 text-amber-300" : "bg-emerald-500/10 text-emerald-300"}`}>{item.quantity === 0 ? "Out of stock" : item.quantity <= 5 ? "Low stock" : "In stock"}</div></div></article>)}</div>}
+        {!data ? <EmptyState title="Loading inventory" text="Reading current stock..." /> : inventory.length === 0 ? <EmptyState title="No tires found" text={search ? "Try another tire size." : "There is no inventory to display yet."} /> : <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{inventory.map((item) => <article key={item.id} className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-4"><div className="flex items-start justify-between gap-3"><div><div className="font-mono text-lg font-semibold text-white">{item.size}</div><span className={`mt-2 inline-flex rounded-md border px-2 py-1 text-[10px] font-semibold ${tirePackageClass(item.packageType)}`}>{tirePackageLabel(item.packageType)}</span></div><div className="text-right"><div className={`text-2xl font-semibold ${item.quantity === 0 ? "text-red-400" : item.quantity <= 5 ? "text-amber-300" : "text-emerald-300"}`}>{item.quantity}</div><div className="text-[10px] text-zinc-500">available</div></div></div><div className="mt-4 flex items-end justify-between border-t border-zinc-800 pt-3"><div><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Selling price</div><div className="mt-1 text-lg font-semibold text-zinc-100">{money(item.price)}</div></div><div className={`rounded-md px-2 py-1 text-[9px] font-semibold uppercase tracking-wider ${item.quantity === 0 ? "bg-red-500/10 text-red-400" : item.quantity <= 5 ? "bg-amber-500/10 text-amber-300" : "bg-emerald-500/10 text-emerald-300"}`}>{item.quantity === 0 ? "Out of stock" : item.quantity <= 5 ? "Low stock" : "In stock"}</div></div></article>)}</div>}
       </Card>
     </div>
   );
@@ -2552,14 +2552,14 @@ function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void;
       <Card>
         <CardHeader title={editingSaleId ? "Edit Work Entry" : "Record Work"} icon={<ShoppingCart className="h-4 w-4 text-amber-400" />} action={<div className="text-right"><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Total</div><div className="text-sm font-semibold text-amber-300">{money(currentSaleTotal)}</div></div>} />
         <form onSubmit={recordSale} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <fieldset className="sm:col-span-2 lg:col-span-4"><legend className="text-[11px] font-medium text-slate-400">Sale category</legend><div className="mt-2 grid grid-cols-2 rounded-xl border border-slate-800 bg-slate-950 p-1"><button type="button" onClick={() => chooseWorkType("tire")} className={`mobile-tap min-h-11 rounded-lg text-xs font-semibold transition ${isTireSale ? "bg-slate-800 text-emerald-400 shadow-sm" : "text-slate-500 hover:text-slate-200"}`}>Tire Sale</button><button type="button" onClick={() => chooseWorkType(isTireSale ? "mount" : form.serviceType)} className={`mobile-tap min-h-11 rounded-lg text-xs font-semibold transition ${!isTireSale ? "bg-slate-800 text-emerald-400 shadow-sm" : "text-slate-500 hover:text-slate-200"}`}>Automotive Service</button></div>{!isTireSale && <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">{workTypeOptions.filter((option) => option.value !== "tire").map((option) => { const Icon = option.icon; const selected = form.serviceType === option.value; return <button type="button" key={option.value} onClick={() => chooseWorkType(option.value)} className={`mobile-tap flex min-h-14 items-center gap-2 rounded-xl border px-3 py-2.5 text-left text-[11px] font-semibold transition sm:flex-col sm:justify-center sm:text-center ${selected ? "border-emerald-500/35 bg-emerald-500/10 text-emerald-300" : "border-slate-800 bg-slate-950 text-slate-500 hover:border-slate-700 hover:text-slate-300"}`}><Icon className={`h-4 w-4 shrink-0 ${selected ? "text-emerald-400" : "text-slate-600"}`} /><span>{option.label}</span></button>; })}</motion.div>}</fieldset>
+          <fieldset className="sm:col-span-2 lg:col-span-4"><legend className="text-[11px] font-medium text-zinc-400">What did you do?</legend><div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-5">{workTypeOptions.map((option) => { const Icon = option.icon; const selected = form.serviceType === option.value; return <button type="button" key={option.value} onClick={() => chooseWorkType(option.value)} className={`mobile-tap flex min-h-14 items-center gap-2 rounded-xl px-3 py-2.5 text-left text-[11px] font-semibold ring-1 ring-inset transition sm:flex-col sm:justify-center sm:text-center ${selected ? "bg-amber-400/10 text-amber-200 ring-amber-400/25" : "bg-[#0a0c0b] text-zinc-500 ring-white/[.06] hover:bg-white/[.035] hover:text-zinc-300"}`}><Icon className={`h-4 w-4 shrink-0 ${selected ? "text-amber-400" : "text-zinc-600"}`} /><span>{option.label}</span></button>; })}</div></fieldset>
           {isTireSale && <label className="relative text-[11px] font-medium text-zinc-400 sm:col-span-2">Tire size<input required autoComplete="off" value={inventorySearch} onFocus={() => setInventoryPickerOpen(true)} onBlur={() => window.setTimeout(() => setInventoryPickerOpen(false), 180)} onChange={(event) => { setInventorySearch(event.target.value); setInventoryPickerOpen(true); setForm((current) => ({ ...current, inventoryId: "", unitPrice: "" })); }} placeholder="Type a size, like 185/65/14" className={`mt-1.5 ${tireFieldClass}`} /><span className="mt-1 block text-[10px] font-normal text-zinc-600">{isCurrentTireSale ? "Today's sales must match an in-stock tire below." : "For an old sale, type any tire size—even if it is not in inventory."}</span>{inventoryPickerOpen && <div className="absolute left-0 right-0 top-full z-40 mt-1 max-h-72 overflow-y-auto rounded-xl border border-zinc-700 bg-zinc-900 p-1.5 shadow-2xl">{inventoryMatches.length ? inventoryMatches.map((item) => <button type="button" key={item.id} onPointerDown={(event) => event.preventDefault()} onClick={() => selectInventory(item.id)} className="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-3 text-left hover:bg-zinc-800"><span><span className="block font-mono text-xs font-semibold text-white">{item.size}</span><span className={`mt-1 inline-flex rounded border px-1.5 py-0.5 text-[9px] font-semibold ${tirePackageClass(item.packageType)}`}>{tirePackageLabel(item.packageType)}</span></span><span className="shrink-0 text-right"><span className={`block text-xs font-semibold ${item.quantity <= 5 ? "text-amber-300" : "text-emerald-300"}`}>{item.quantity} available</span><span className="mt-0.5 block text-[10px] text-zinc-500">{money(item.price)}</span></span></button>) : <div className="px-3 py-5 text-center text-xs text-zinc-500">{isCurrentTireSale ? "No matching in-stock tire found." : "No inventory match. Your typed size will still be saved with this old sale."}</div>}</div>}</label>}
           <label className="text-[11px] font-medium text-zinc-400">Quantity<input required min="1" step="1" type="number" value={form.quantity} onChange={(event) => setForm((current) => ({ ...current, quantity: event.target.value }))} className={`mt-1.5 ${tireFieldClass}`} /></label>
           <label className="text-[11px] font-medium text-zinc-400">Total charged<input required min="0" step="0.01" type="number" value={form.unitPrice} onChange={(event) => setForm((current) => ({ ...current, unitPrice: event.target.value }))} placeholder="Full amount charged" className={`mt-1.5 ${tireFieldClass}`} /></label>
           <label className="text-[11px] font-medium text-zinc-400">Date<input required type="date" max={easternDateKey(new Date())} value={form.soldDate} onChange={(event) => setForm((current) => ({ ...current, soldDate: event.target.value, adjustInventory: current.serviceType === "tire" && event.target.value === easternDateKey(new Date()) }))} className={`mt-1.5 ${tireFieldClass}`} /><span className="mt-1 block text-[10px] font-normal text-zinc-600">Past dates are allowed.</span></label>
           <label className="text-[11px] font-medium text-zinc-400">Sale time<input required type="time" value={form.soldTime} onChange={(event) => setForm((current) => ({ ...current, soldTime: event.target.value }))} className={`mt-1.5 ${tireFieldClass}`} /><span className="mt-1 block text-[10px] font-normal text-zinc-600">New sales use the actual current time.</span></label>
           <label className="text-[11px] font-medium text-zinc-400">Customer / invoice<input value={form.customer} onChange={(event) => setForm((current) => ({ ...current, customer: event.target.value }))} placeholder="Optional" className={`mt-1.5 ${tireFieldClass}`} /></label>
-          <fieldset className="sm:col-span-2"><legend className="text-[11px] font-medium text-slate-400">Payment method</legend><div className="mt-2 grid grid-cols-3 gap-2">{["Cash", "Cashapp", "Chime"].map((method) => <button type="button" key={method} onClick={() => setForm((current) => ({ ...current, paymentMethod: method }))} className={`mobile-tap min-h-11 rounded-xl border px-2 text-[11px] font-semibold transition ${form.paymentMethod === method ? "border-emerald-500/45 bg-emerald-500/10 text-emerald-300" : "border-slate-800 bg-slate-950 text-slate-500 hover:text-slate-300"}`}>{method === "Cashapp" ? "Cash App" : method}</button>)}</div></fieldset>
+          <fieldset className="sm:col-span-2"><legend className="text-[11px] font-medium text-zinc-400">Payment method</legend><div className="mt-2 grid grid-cols-3 gap-2">{["Cash", "Cashapp", "Chime"].map((method) => <button type="button" key={method} onClick={() => setForm((current) => ({ ...current, paymentMethod: method }))} className={`mobile-tap min-h-11 rounded-xl px-2 text-[11px] font-semibold ring-1 ring-inset transition ${form.paymentMethod === method ? "bg-amber-400/10 text-amber-200 ring-amber-400/25" : "bg-[#0a0c0b] text-zinc-500 ring-white/[.06]"}`}>{method}</button>)}</div></fieldset>
           <label className="text-[11px] font-medium text-zinc-400">Notes<input value={form.notes} onChange={(event) => setForm((current) => ({ ...current, notes: event.target.value }))} placeholder="Optional" className={`mt-1.5 ${tireFieldClass}`} /></label>
           <div className={`rounded-lg border p-3 sm:col-span-2 lg:col-span-4 ${isTireSale && form.soldDate === easternDateKey(new Date()) ? "border-emerald-500/20 bg-emerald-500/10" : "border-blue-500/20 bg-blue-500/10"}`}><div className={`text-xs font-medium ${isTireSale && form.soldDate === easternDateKey(new Date()) ? "text-emerald-300" : "text-blue-300"}`}>{!isTireSale ? `${workTypeLabel(form.serviceType)} service — tire inventory will not change` : form.soldDate === easternDateKey(new Date()) ? "Today's tire sale — inventory will be reduced automatically" : "Past tire sale — current inventory will not be changed"}</div><div className="mt-1 text-[10px] leading-relaxed text-zinc-500">{!isTireSale ? "This job is saved in daily and monthly revenue totals without removing tires." : form.soldDate === easternDateKey(new Date()) ? "The quantity sold will be removed from this tire size." : "Your inventory is already current, so older sales are saved only in history."}</div></div>
           <div className="flex flex-col gap-2 sm:col-span-2 sm:flex-row lg:col-span-4"><button disabled={busy || tireSelectionMissing || !form.unitPrice} className="w-full rounded-lg bg-emerald-400 px-4 py-3 sm:w-auto sm:py-2.5 text-xs font-semibold text-zinc-950 transition hover:bg-emerald-300 disabled:opacity-40">{busy ? "Saving..." : editingSaleId ? "Save Changes" : `Record ${workTypeLabel(form.serviceType)} — ${money(currentSaleTotal)}`}</button>{editingSaleId && <button type="button" onClick={() => { setEditingSaleId(null); setInventorySearch(""); setForm((current) => ({ ...current, inventoryId: "", quantity: "1", unitPrice: "", soldTime: easternTimeValue(), customer: "", notes: "" })); }} className="rounded-lg px-4 py-2.5 text-xs font-medium text-zinc-400 hover:bg-zinc-800 hover:text-white">Cancel</button>}</div>
@@ -2686,7 +2686,7 @@ function Toast({ message }: { message: string }) {
 }
 
 function Card({ children }: { children: React.ReactNode }) {
-  return <div className="mobile-surface rounded-xl border border-slate-800 bg-slate-900/55 p-4 sm:rounded-2xl sm:p-5">{children}</div>;
+  return <div className="mobile-surface rounded-xl bg-[#111312] p-4 ring-1 ring-inset ring-white/[.055] sm:rounded-2xl sm:p-5">{children}</div>;
 }
 
 function CardHeader({ title, icon, action }: { title: string; icon: React.ReactNode; action?: React.ReactNode }) {
@@ -2765,17 +2765,9 @@ function EmptyState({ title, text }: { title: string; text: string }) {
   );
 }
 
-function ShopSkeleton({ rows = 3 }: { rows?: number }) {
-  return (
-    <div className="mt-4 space-y-3" aria-label="Loading shop data">
-      {Array.from({ length: rows }).map((_, index) => <div key={index} className="animate-pulse rounded-xl border border-slate-800 bg-slate-950/45 p-4"><div className="flex items-center justify-between gap-5"><div className="flex-1"><div className="h-3 w-28 rounded bg-slate-800" /><div className="mt-2 h-2.5 w-44 max-w-full rounded bg-slate-800/60" /></div><div className="h-8 w-14 rounded-lg bg-slate-800" /></div></div>)}
-    </div>
-  );
-}
-
 function Footer() {
   return (
-    <footer className="mt-auto hidden border-t border-slate-800 bg-slate-950/80 py-5 text-center text-[10px] text-slate-600 lg:block">
+    <footer className="mt-auto hidden border-t border-white/[.06] bg-[#0a0c0b] py-5 text-center text-[10px] text-zinc-700 lg:block">
       <div className="mx-auto flex max-w-[1240px] flex-col items-center justify-between gap-2 px-4 sm:flex-row sm:px-6 lg:px-8">
         <div>Akron Tire Shop &copy; 2026</div>
         <div className="flex gap-4">
