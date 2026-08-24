@@ -515,12 +515,21 @@ const permissions: Record<string, Permission[]> = {
 };
 
 const navItems = [
-  { id: "tire-inventory" as Page, label: "Manage Inventory", shortLabel: "Manage", icon: Package },
-  { id: "inventory-view" as Page, label: "Inventory", shortLabel: "Inventory", icon: Eye },
-  { id: "tire-sales" as Page, label: "Sales & Services", shortLabel: "Sales", icon: ShoppingCart },
-  { id: "tire-sales-report" as Page, label: "Sales Reports", shortLabel: "Reports", icon: ClipboardList },
-  { id: "settings" as Page, label: "Account", shortLabel: "Account", icon: Settings },
+  { id: "tire-inventory" as Page, label: "Manage Inventory", shortLabel: "Manage", icon: Package, tone: "emerald" as const },
+  { id: "inventory-view" as Page, label: "Inventory", shortLabel: "Inventory", icon: Eye, tone: "sky" as const },
+  { id: "tire-sales" as Page, label: "Sales & Services", shortLabel: "Sales", icon: ShoppingCart, tone: "amber" as const },
+  { id: "tire-sales-report" as Page, label: "Sales Reports", shortLabel: "Reports", icon: ClipboardList, tone: "violet" as const },
+  { id: "settings" as Page, label: "Account", shortLabel: "Account", icon: Settings, tone: "zinc" as const },
 ];
+
+type ShopTone = "emerald" | "sky" | "amber" | "violet" | "zinc";
+const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string; ring: string }> = {
+  emerald: { text: "text-emerald-400", dot: "bg-emerald-400", soft: "bg-emerald-400/10", ring: "ring-emerald-400/15" },
+  sky: { text: "text-sky-400", dot: "bg-sky-400", soft: "bg-sky-400/10", ring: "ring-sky-400/15" },
+  amber: { text: "text-amber-400", dot: "bg-amber-400", soft: "bg-amber-400/10", ring: "ring-amber-400/15" },
+  violet: { text: "text-violet-400", dot: "bg-violet-400", soft: "bg-violet-400/10", ring: "ring-violet-400/15" },
+  zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
+};
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -846,10 +855,11 @@ function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) 
         {navItems.map((item) => {
           const Icon = item.icon;
           const active = item.id === page;
+          const tone = shopToneStyles[item.tone];
           return (
             <button key={item.id} onClick={() => setPage(item.id)} className={`group relative flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-xs font-medium transition ${active ? "bg-white/[.055] text-white" : "text-zinc-500 hover:bg-white/[.03] hover:text-zinc-200"}`}>
-              {active && <span className="absolute inset-y-2 left-0 w-0.5 rounded-full bg-emerald-400" />}
-              <Icon className={`h-4 w-4 ${active ? "text-emerald-400" : "text-zinc-600 group-hover:text-zinc-400"}`} />
+              {active && <span className={`absolute inset-y-2 left-0 w-0.5 rounded-full ${tone.dot}`} />}
+              <Icon className={`h-4 w-4 ${active ? tone.text : "text-zinc-600 group-hover:text-zinc-400"}`} />
               <span>{item.label}</span>
             </button>
           );
@@ -878,7 +888,7 @@ function MobileShopNav({ page, setPage }: { page: Page; setPage: (p: Page) => vo
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-white/[.07] bg-[#0b0d0c]/95 px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-1.5 shadow-[0_-10px_30px_rgba(0,0,0,.28)] backdrop-blur-2xl lg:hidden">
       <div className="mx-auto grid max-w-lg grid-cols-5 gap-1">
-        {navItems.map((item) => { const Icon = item.icon; const active = item.id === page; return <motion.button whileTap={{ scale: 0.94 }} key={item.id} onClick={() => setPage(item.id)} className={`relative flex min-w-0 flex-col items-center gap-1 px-1 py-2 text-[9px] font-medium ${active ? "text-zinc-100" : "text-zinc-600"}`}>{active && <motion.span layoutId="mobile-shop-active" className="absolute -top-1.5 h-0.5 w-7 rounded-full bg-emerald-400" transition={{ type: "spring", stiffness: 420, damping: 34 }} />}<motion.span animate={{ y: active ? -1 : 0 }} transition={{ type: "spring", stiffness: 420, damping: 28 }}><Icon className={`h-[19px] w-[19px] ${active ? "text-emerald-400" : "text-zinc-600"}`} /></motion.span><span className="truncate">{item.shortLabel}</span></motion.button>; })}
+        {navItems.map((item) => { const Icon = item.icon; const active = item.id === page; const tone = shopToneStyles[item.tone]; return <motion.button whileTap={{ scale: 0.94 }} key={item.id} onClick={() => setPage(item.id)} className={`relative flex min-w-0 flex-col items-center gap-1 px-1 py-2 text-[9px] font-medium ${active ? "text-zinc-100" : "text-zinc-600"}`}>{active && <motion.span layoutId="mobile-shop-active" className={`absolute -top-1.5 h-0.5 w-7 rounded-full ${tone.dot}`} transition={{ type: "spring", stiffness: 420, damping: 34 }} />}<motion.span animate={{ y: active ? -1 : 0 }} transition={{ type: "spring", stiffness: 420, damping: 28 }}><Icon className={`h-[19px] w-[19px] ${active ? tone.text : "text-zinc-600"}`} /></motion.span><span className="truncate">{item.shortLabel}</span></motion.button>; })}
       </div>
     </nav>
   );
@@ -1981,7 +1991,7 @@ function SettingsPage({ showToast }: { showToast: (m: string) => void }) {
 
   return (
     <div className="space-y-6">
-      <ShopPageHeader eyebrow="Security" title="Account" description="Manage secure access to Akron Tire Shop." />
+      <ShopPageHeader tone="zinc" eyebrow="Security" title="Account" description="Manage secure access to Akron Tire Shop." />
       <section className="mobile-surface overflow-hidden rounded-2xl border border-white/[.065] bg-[#111412]">
         <div className="border-b border-white/[.07] px-5 py-4"><div className="text-sm font-semibold text-white">Sign-in security</div><div className="mt-1 text-[11px] text-zinc-500">Use Face ID or your passcode to access shop records.</div></div>
         <div className="p-5">
@@ -2095,11 +2105,12 @@ function easternDateTimeToIso(date: string, time: string) {
   return new Date(`${date}T${time || "12:00"}:00${offset}`).toISOString();
 }
 
-function ShopPageHeader({ eyebrow, title, description, meta, actions }: { eyebrow: string; title: string; description: string; meta?: React.ReactNode; actions?: React.ReactNode }) {
+function ShopPageHeader({ eyebrow, title, description, meta, actions, tone = "emerald" }: { eyebrow: string; title: string; description: string; meta?: React.ReactNode; actions?: React.ReactNode; tone?: ShopTone }) {
+  const colors = shopToneStyles[tone];
   return (
     <div className="flex flex-col gap-4 border-b border-white/[.055] pb-5 sm:flex-row sm:items-end sm:justify-between sm:pb-6">
       <div className="min-w-0">
-        <div className="mb-2 flex items-center gap-2 text-[9px] font-semibold uppercase tracking-[.16em] text-zinc-600"><span className="h-1 w-1 rounded-full bg-emerald-400" />{eyebrow}</div>
+        <div className={`mb-2 flex items-center gap-2 text-[9px] font-semibold uppercase tracking-[.16em] ${colors.text}`}><span className={`h-1 w-1 rounded-full ${colors.dot}`} />{eyebrow}</div>
         <h1 className="text-[24px] font-semibold tracking-[-.035em] text-white sm:text-[29px]">{title}</h1>
         <p className="mt-1.5 max-w-2xl text-xs leading-relaxed text-zinc-500 sm:text-[13px]">{description}</p>
         {meta}
@@ -2109,11 +2120,12 @@ function ShopPageHeader({ eyebrow, title, description, meta, actions }: { eyebro
   );
 }
 
-function TireStat({ label, value, detail, featured = false }: { label: string; value: string | number; detail: string; featured?: boolean }) {
+function TireStat({ label, value, detail, featured = false, tone = "emerald" }: { label: string; value: string | number; detail: string; featured?: boolean; tone?: ShopTone }) {
+  const colors = shopToneStyles[tone];
   return (
-    <div className={`mobile-surface relative min-w-0 overflow-hidden rounded-xl bg-[#111312] p-3.5 ring-1 ring-inset ring-white/[.055] sm:p-4 ${featured ? "col-span-2 sm:col-span-1" : ""}`}>
+    <div className={`mobile-surface relative min-w-0 overflow-hidden rounded-xl p-3.5 ring-1 ring-inset sm:p-4 ${featured ? `col-span-2 sm:col-span-1 ${colors.soft} ${colors.ring}` : "bg-[#111312] ring-white/[.055]"}`}>
       <div className="truncate text-[9px] font-semibold uppercase tracking-wider text-zinc-500 sm:text-[10px]">{label}</div>
-      <AnimatePresence mode="popLayout" initial={false}><motion.div key={String(value)} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: .18 }} className={`mt-1 truncate font-semibold tracking-[-.03em] text-white sm:mt-1.5 sm:text-2xl ${featured ? "text-[28px]" : "text-xl"}`}>{value}</motion.div></AnimatePresence>
+      <AnimatePresence mode="popLayout" initial={false}><motion.div key={String(value)} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: .18 }} className={`mt-1 truncate font-semibold tracking-[-.03em] sm:mt-1.5 sm:text-2xl ${featured ? `text-[28px] ${colors.text}` : "text-xl text-white"}`}>{value}</motion.div></AnimatePresence>
       <div className={`mt-1 text-[11px] text-zinc-500 ${featured ? "block" : "hidden sm:block"}`}>{detail}</div>
     </div>
   );
@@ -2253,7 +2265,7 @@ function TireInventoryViewPage({ showToast }: { showToast: (m: string) => void }
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <ShopPageHeader eyebrow="Read-only inventory" title="Inventory View" description="Available tires, quantities, and current selling prices." actions={<Button className="w-full sm:w-auto" variant="secondary" onClick={() => void load()}><RefreshCw className="h-3.5 w-3.5" /> Refresh Stock</Button>} />
+      <ShopPageHeader tone="sky" eyebrow="Read-only inventory" title="Inventory View" description="Available tires, quantities, and current selling prices." actions={<Button className="w-full sm:w-auto" variant="secondary" onClick={() => void load()}><RefreshCw className="h-3.5 w-3.5" /> Refresh Stock</Button>} />
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 [&>*:last-child]:col-span-2 sm:[&>*:last-child]:col-span-1"><TireStat label="Inventory types" value={summary?.skus || 0} detail="Sizes and package types" /><TireStat label="Available quantity" value={summary?.units || 0} detail="Sets, pairs, and individuals" /><TireStat label="Low stock" value={summary?.lowStock || 0} detail="Five or fewer remaining" /></div>
       <Card>
         <CardHeader title="Available Inventory" icon={<Package className="h-4 w-4 text-zinc-400" />} action={<input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search tire size..." className="w-full rounded-xl border border-white/[.08] bg-[#090b0a] px-3.5 py-2.5 text-xs text-zinc-200 outline-none transition focus:border-emerald-400/45 sm:w-64" />} />
@@ -2374,8 +2386,8 @@ function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void;
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <ShopPageHeader eyebrow="Sales desk" title="Sales & Services" description="Record tire sales, mount and balance work, plugs, rotations, and brakes." actions={<Button className="w-full justify-center sm:w-auto" variant="secondary" onClick={() => setPage("tire-inventory")}><Package className="h-3.5 w-3.5" /> Open Inventory</Button>} />
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-5 [&>*:last-child]:col-span-2 xl:[&>*:last-child]:col-span-1"><TireStat featured label="Today's revenue" value={money(summary?.todayRevenue || 0)} detail="Calculated automatically" /><TireStat label="Tires sold today" value={todayTiresSold} detail="Physical tires" /><TireStat label="Jobs / items" value={summary?.todayUnits || 0} detail="Today's quantity" /><TireStat label="Transactions" value={todaySales.length} detail="Work recorded today" /><TireStat label="Average sale" value={money(averageSale)} detail="Revenue per transaction" /></div>
+      <ShopPageHeader tone="amber" eyebrow="Sales desk" title="Sales & Services" description="Record tire sales, mount and balance work, plugs, rotations, and brakes." actions={<Button className="w-full justify-center sm:w-auto" variant="secondary" onClick={() => setPage("tire-inventory")}><Package className="h-3.5 w-3.5" /> Open Inventory</Button>} />
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-5 [&>*:last-child]:col-span-2 xl:[&>*:last-child]:col-span-1"><TireStat featured tone="amber" label="Today's revenue" value={money(summary?.todayRevenue || 0)} detail="Calculated automatically" /><TireStat label="Tires sold today" value={todayTiresSold} detail="Physical tires" /><TireStat label="Jobs / items" value={summary?.todayUnits || 0} detail="Today's quantity" /><TireStat label="Transactions" value={todaySales.length} detail="Work recorded today" /><TireStat label="Average sale" value={money(averageSale)} detail="Revenue per transaction" /></div>
       <section className="rounded-xl border border-emerald-500/15 bg-emerald-500/[.04] p-4 sm:p-5"><div className="mb-4 flex items-end justify-between gap-3"><div><div className="text-[10px] font-semibold uppercase tracking-wider text-emerald-400">This Month</div><h2 className="mt-1 text-lg font-semibold text-white">{currentMonthLabel}</h2></div><div className="text-right"><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-500">Monthly revenue</div><div className="mt-1 text-2xl font-semibold tracking-tight text-emerald-300">{money(monthRevenue)}</div></div></div><div className="grid grid-cols-2 gap-3 border-t border-emerald-500/10 pt-4 sm:grid-cols-4"><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Tires sold</div><div className="mt-1 text-base font-semibold text-emerald-300">{monthTiresSold}</div></div><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Jobs / items</div><div className="mt-1 text-base font-semibold text-zinc-200">{monthItems}</div></div><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Transactions</div><div className="mt-1 text-base font-semibold text-zinc-200">{monthSales.length}</div></div><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Average sale</div><div className="mt-1 text-base font-semibold text-zinc-200">{money(monthAverage)}</div></div></div></section>
       <section className="mobile-surface rounded-2xl border border-white/[.065] bg-[#111412] p-4 sm:p-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><div className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">Payment totals</div><div className="mt-1 text-sm font-semibold text-white">{paymentPeriod === "today" ? "Today" : currentMonthLabel}</div></div><div className="grid grid-cols-2 rounded-lg border border-zinc-800 bg-zinc-950 p-1"><button onClick={() => setPaymentPeriod("today")} className={`rounded-md px-3 py-2 text-xs font-semibold transition ${paymentPeriod === "today" ? "bg-zinc-800 text-white" : "text-zinc-500"}`}>Today</button><button onClick={() => setPaymentPeriod("month")} className={`rounded-md px-3 py-2 text-xs font-semibold transition ${paymentPeriod === "month" ? "bg-zinc-800 text-white" : "text-zinc-500"}`}>This Month</button></div></div>
@@ -2448,13 +2460,13 @@ function TireSalesReportPage({ showToast, setPage }: { showToast: (m: string) =>
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <ShopPageHeader eyebrow="Reporting" title="Sales Reports" description="Monthly tire sales, services, and payment totals." meta={lastUpdated && <p className="mt-1.5 text-[10px] text-zinc-600">Updated {lastUpdated.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}</p>} actions={<div className="grid grid-cols-2 gap-2 sm:flex"><Button className="justify-center" variant="ghost" disabled={refreshing} onClick={() => void load()}><RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} /> Refresh</Button><Button className="justify-center" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record Work</Button></div>} />
+      <ShopPageHeader tone="violet" eyebrow="Reporting" title="Sales Reports" description="Monthly tire sales, services, and payment totals." meta={lastUpdated && <p className="mt-1.5 text-[10px] text-zinc-600">Updated {lastUpdated.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}</p>} actions={<div className="grid grid-cols-2 gap-2 sm:flex"><Button className="justify-center" variant="ghost" disabled={refreshing} onClick={() => void load()}><RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} /> Refresh</Button><Button className="justify-center" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record Work</Button></div>} />
 
       <section className="mobile-surface rounded-2xl border border-white/[.065] bg-[#111412] p-4 sm:p-5">
         <div className="flex items-center justify-between gap-3"><button aria-label="Previous month" onClick={() => setMonthKey((current) => shiftMonthKey(current, -1))} className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-zinc-800 bg-zinc-950 text-zinc-300 transition hover:border-zinc-600 hover:text-white"><ChevronRight className="h-5 w-5 rotate-180" /></button><div className="min-w-0 text-center"><div className="text-[10px] font-semibold uppercase tracking-wider text-emerald-400">Viewing month</div><h2 className="mt-1 truncate text-xl font-semibold text-white sm:text-2xl">{monthKeyLabel(monthKey)}</h2></div><button aria-label="Next month" disabled={!canGoForward} onClick={() => setMonthKey((current) => shiftMonthKey(current, 1))} className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-zinc-800 bg-zinc-950 text-zinc-300 transition hover:border-zinc-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"><ChevronRight className="h-5 w-5" /></button></div>
       </section>
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4"><TireStat featured label="Total revenue" value={money(revenue)} detail="Sales and services" /><TireStat label="Tires sold" value={quantity} detail="Physical tire count" /><TireStat label="Transactions" value={sales.length} detail="All recorded work" /><TireStat label="Average transaction" value={money(average)} detail="Per entry" /></div>
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4"><TireStat featured tone="violet" label="Total revenue" value={money(revenue)} detail="Sales and services" /><TireStat label="Tires sold" value={quantity} detail="Physical tire count" /><TireStat label="Transactions" value={sales.length} detail="All recorded work" /><TireStat label="Average transaction" value={money(average)} detail="Per entry" /></div>
 
       <section className="mobile-surface rounded-2xl border border-white/[.065] bg-[#111412] p-4 sm:p-5"><div className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">Payment breakdown</div><div className="mt-3 grid grid-cols-3 gap-2">{(["Cash", "Cashapp", "Chime"] as const).map((method) => <div key={method} className="min-w-0 rounded-xl border border-white/[.06] bg-[#090b0a]/70 p-2.5 sm:p-3"><div className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">{method}</div><div className="mt-1 truncate text-base font-semibold text-white sm:text-xl">{money(paymentMethodTotal(sales, method))}</div></div>)}</div></section>
 
