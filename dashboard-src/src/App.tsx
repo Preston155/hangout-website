@@ -544,7 +544,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_CLEAN_MOBILE_V22";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_MOBILE_RESTRUCTURE_V23";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -643,7 +643,9 @@ export function App() {
           box-shadow: 0 12px 34px rgba(0,0,0,.16);
           transition: border-color .2s ease, background-color .2s ease, transform .16s ease;
         }
-        .shop-hero { min-height:0; border-radius:16px; box-shadow:0 14px 36px rgba(0,0,0,.18); }
+        .shop-hero { min-height:0; padding:17px !important; gap:13px !important; border-radius:16px; box-shadow:0 14px 36px rgba(0,0,0,.18); }
+        .shop-hero .shop-wordmark { font-size:28px !important; line-height:.98 !important; }
+        .mobile-form-trigger { background:linear-gradient(110deg,#121614,#0e1110); box-shadow:0 12px 30px rgba(0,0,0,.16); }
         .mobile-stat-grid { gap:1px !important; padding:1px; overflow:hidden; border-radius:16px; background:rgba(255,255,255,.065); }
         .mobile-stat-grid .mobile-stat-card { border-radius:0 !important; box-shadow:none !important; background:#111412 !important; }
         .mobile-stat-grid .mobile-stat-card::before { display:none; }
@@ -2401,6 +2403,7 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
   const [rimFilter, setRimFilter] = useState("all");
   const [busy, setBusy] = useState(false);
   const [adjustingId, setAdjustingId] = useState<string | null>(null);
+  const [mobileFormOpen, setMobileFormOpen] = useState(false);
   const adjustmentLock = useRef(false);
 
   const load = useCallback(async () => {
@@ -2427,6 +2430,7 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
       setData(next);
       setForm(blank);
       setEditingId(null);
+      setMobileFormOpen(false);
       showToast(editingId ? "Inventory item updated." : "Tire added to inventory.");
     } catch (error) {
       showToast(error instanceof Error ? error.message : "Inventory item could not be saved.");
@@ -2498,7 +2502,7 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <ShopPageHeader tone="sky" eyebrow="Inventory" title="Manage Inventory" description="Add tires, update stock, and keep pricing organized." actions={<Button className="w-full justify-center sm:w-auto" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record a Sale</Button>} />
+      <ShopPageHeader tone="sky" eyebrow="Inventory" title="Manage Inventory" description="Add tires, update stock, and keep pricing organized." actions={<Button className="w-auto justify-center px-5 sm:w-auto" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record a Sale</Button>} />
       <div className="mobile-stat-grid grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <TireStat label="Tire types" value={summary?.skus || 0} detail="Active inventory lines" />
         <TireStat label="Inventory quantity" value={summary?.units || 0} detail="Sets, pairs, and individual tires" />
@@ -2510,6 +2514,13 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
         <div className="rounded-xl bg-[#090b0a]/70 px-4 py-3 ring-1 ring-inset ring-white/[.055]"><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Revenue</div><div className="mt-1 text-xl font-semibold text-white">{money(summary?.todayRevenue || 0)}</div></div>
         <div className="rounded-xl bg-[#090b0a]/70 px-4 py-3 ring-1 ring-inset ring-white/[.055]"><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Jobs / items</div><div className="mt-1 text-xl font-semibold text-sky-300">{summary?.todayUnits || 0}</div></div>
       </section>
+      <div>
+        <button type="button" onClick={() => setMobileFormOpen((open) => !open)} className="mobile-form-trigger mobile-tap flex w-full items-center gap-3 rounded-2xl border border-white/[.07] px-4 py-4 text-left md:hidden">
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-sky-400/10 text-sky-300"><Package className="h-5 w-5" /></span>
+          <span className="min-w-0 flex-1"><span className="block text-sm font-semibold text-white">Add a tire</span><span className="mt-0.5 block text-[11px] text-zinc-500">Enter a new size, quantity, and price</span></span>
+          <ChevronRight className={`h-5 w-5 text-zinc-500 transition ${mobileFormOpen ? "rotate-90" : ""}`} />
+        </button>
+        <div className={`${mobileFormOpen ? "mt-2 block" : "hidden"} md:block`}>
       <Card>
         <CardHeader title={editingId ? "Edit Inventory Item" : "Add Inventory Item"} icon={<Package className="h-4 w-4 text-sky-400" />} />
         <form onSubmit={saveItem} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -2523,6 +2534,8 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
           </div>
         </form>
       </Card>
+        </div>
+      </div>
       <Card>
         <CardHeader title="All Inventory" icon={<Package className="h-4 w-4 text-zinc-400" />} action={<input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search inventory..." className="w-full rounded-xl border border-white/[.08] bg-[#090b0a] px-3.5 py-2.5 text-xs text-zinc-200 outline-none transition focus:border-emerald-400/45 sm:w-64" />} />
         <div className="mt-4 flex flex-col gap-3 border-b border-white/[.055] pb-4 sm:flex-row sm:items-center sm:justify-between">
