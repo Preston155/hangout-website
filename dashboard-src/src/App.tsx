@@ -49,6 +49,7 @@ import {
   Zap,
 } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { browserSupportsWebAuthn, startAuthentication, startRegistration } from "@simplewebauthn/browser";
 
 type Page = "overview" | "bot" | "operations" | "connect" | "players" | "cad" | "commands" | "logs" | "staff" | "tire-inventory" | "inventory-view" | "tire-sales" | "tire-sales-report" | "settings";
@@ -536,7 +537,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_PRINT_FIX_V10";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_PRINT_FIX_V11";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -593,9 +594,11 @@ export function App() {
       }
       @media print {
         @page { size:auto; margin:10mm; }
-        body * { visibility:hidden !important; }
-        .receipt-print-root, .receipt-print-root * { visibility:visible !important; }
-        .receipt-print-root { position:absolute !important; inset:0 auto auto 0 !important; width:100% !important; min-height:0 !important; box-shadow:none !important; }
+        html, body { min-height:0 !important; height:auto !important; background:#fff !important; }
+        body > *:not(.receipt-print-layer) { display:none !important; }
+        .receipt-print-layer { display:block !important; position:static !important; inset:auto !important; min-height:0 !important; padding:0 !important; overflow:visible !important; background:#fff !important; }
+        .receipt-print-layer > div { display:block !important; min-height:0 !important; width:100% !important; max-width:none !important; padding:0 !important; }
+        .receipt-print-root { position:static !important; width:100% !important; min-height:0 !important; box-shadow:none !important; }
         .receipt-screen-actions { display:none !important; }
       }
       @media (max-width: 767px) {
@@ -2212,8 +2215,8 @@ function ReceiptModal({ sale, onClose }: { sale: TireSale; onClose: () => void }
   const receiptNumber = sale.id.replaceAll("-", "").slice(0, 10).toUpperCase();
   const soldDate = new Date(sale.soldAt).toLocaleDateString("en-US", { timeZone: "America/New_York", month: "long", day: "numeric", year: "numeric" });
   const soldTime = new Date(sale.soldAt).toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" });
-  return (
-    <div className="fixed inset-0 z-[100] overflow-y-auto bg-black/80 p-3 backdrop-blur-sm sm:p-6" role="dialog" aria-modal="true" aria-label="Receipt preview">
+  return createPortal(
+    <div className="receipt-print-layer fixed inset-0 z-[100] overflow-y-auto bg-black/80 p-3 backdrop-blur-sm sm:p-6" role="dialog" aria-modal="true" aria-label="Receipt preview">
       <div className="mx-auto flex min-h-full w-full max-w-[420px] items-center justify-center py-4">
         <div className="w-full">
           <section className="receipt-print-root bg-white px-7 py-8 text-[#111] shadow-2xl sm:px-9">
@@ -2230,7 +2233,8 @@ function ReceiptModal({ sale, onClose }: { sale: TireSale; onClose: () => void }
           <div className="receipt-screen-actions grid grid-cols-2 gap-2 bg-[#171917] p-3"><button onClick={onClose} className="min-h-12 rounded-lg border border-white/15 text-xs font-semibold text-zinc-200">Close</button><button onClick={() => window.print()} className="min-h-12 rounded-lg bg-white text-xs font-bold text-black"><Printer className="mr-1.5 inline h-4 w-4" />Print / Save PDF</button></div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
