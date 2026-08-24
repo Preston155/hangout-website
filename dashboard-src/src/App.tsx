@@ -544,7 +544,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_POSITION_FIX_V21";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_CLEAN_MOBILE_V22";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -643,6 +643,14 @@ export function App() {
           box-shadow: 0 12px 34px rgba(0,0,0,.16);
           transition: border-color .2s ease, background-color .2s ease, transform .16s ease;
         }
+        .shop-hero { min-height:0; border-radius:16px; box-shadow:0 14px 36px rgba(0,0,0,.18); }
+        .mobile-stat-grid { gap:1px !important; padding:1px; overflow:hidden; border-radius:16px; background:rgba(255,255,255,.065); }
+        .mobile-stat-grid .mobile-stat-card { border-radius:0 !important; box-shadow:none !important; background:#111412 !important; }
+        .mobile-stat-grid .mobile-stat-card::before { display:none; }
+        .mobile-today-grid { grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important; gap:1px !important; padding:1px !important; overflow:hidden; background:rgba(56,189,248,.13) !important; }
+        .mobile-today-grid > :first-child { grid-column:1 / -1; padding:14px 15px; background:#0e1515; }
+        .mobile-today-grid > :not(:first-child) { min-width:0; border-radius:0 !important; padding:13px 14px !important; background:#090c0b !important; box-shadow:none !important; }
+        .mobile-today-grid > :not(:first-child) > :last-child { font-size:20px !important; }
         button, a { -webkit-tap-highlight-color: transparent; }
         .mobile-tap { transition: transform .14s ease, background-color .18s ease, border-color .18s ease; }
         .mobile-tap:active { transform: scale(.97); }
@@ -2374,7 +2382,7 @@ function ShopPageHeader({ eyebrow, title, description, meta, actions, tone = "em
 function TireStat({ label, value, detail, featured = false, tone = "emerald" }: { label: string; value: string | number; detail: string; featured?: boolean; tone?: ShopTone }) {
   const colors = shopToneStyles[tone];
   return (
-    <div className={`mobile-surface relative min-w-0 overflow-hidden rounded-xl p-3.5 ring-1 ring-inset sm:p-4 ${featured ? `col-span-2 sm:col-span-1 ${colors.soft} ${colors.ring}` : "bg-[#111312] ring-white/[.055]"}`}>
+    <div className={`mobile-stat-card mobile-surface relative min-w-0 overflow-hidden rounded-xl p-3.5 ring-1 ring-inset sm:p-4 ${featured ? `col-span-2 sm:col-span-1 ${colors.soft} ${colors.ring}` : "bg-[#111312] ring-white/[.055]"}`}>
       <motion.span aria-hidden="true" className={`absolute inset-x-0 bottom-0 h-px origin-left ${featured ? colors.dot : "bg-white/[.08]"}`} initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: .55, ease: [0.2, 0.8, 0.2, 1] }} />
       <div className="truncate text-[9px] font-semibold uppercase tracking-wider text-zinc-500 sm:text-[10px]">{label}</div>
       <AnimatePresence mode="popLayout" initial={false}><motion.div key={String(value)} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: .18 }} className={`mt-1 truncate font-semibold tracking-[-.03em] sm:mt-1.5 sm:text-2xl ${featured ? `text-[28px] ${colors.text}` : "text-xl text-white"}`}>{value}</motion.div></AnimatePresence>
@@ -2491,13 +2499,13 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
   return (
     <div className="space-y-4 sm:space-y-6">
       <ShopPageHeader tone="sky" eyebrow="Inventory" title="Manage Inventory" description="Add tires, update stock, and keep pricing organized." actions={<Button className="w-full justify-center sm:w-auto" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record a Sale</Button>} />
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+      <div className="mobile-stat-grid grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <TireStat label="Tire types" value={summary?.skus || 0} detail="Active inventory lines" />
         <TireStat label="Inventory quantity" value={summary?.units || 0} detail="Sets, pairs, and individual tires" />
         <TireStat label="Low stock" value={summary?.lowStock || 0} detail="Five or fewer remaining" />
         <TireStat label="Retail value" value={money(summary?.inventoryValue || 0)} detail="Current price × quantity" />
       </div>
-      <section className="mobile-surface grid gap-3 rounded-2xl border border-sky-400/10 bg-sky-400/[.035] p-4 sm:grid-cols-[1fr_auto_auto] sm:items-center sm:p-5">
+      <section className="mobile-today-grid mobile-surface grid gap-3 rounded-2xl border border-sky-400/10 bg-sky-400/[.035] p-4 sm:grid-cols-[1fr_auto_auto] sm:items-center sm:p-5">
         <div><div className="text-[9px] font-semibold uppercase tracking-[.16em] text-sky-300">Today at the shop</div><div className="mt-1 text-xs text-zinc-500">A quick live snapshot from today’s saved work.</div></div>
         <div className="rounded-xl bg-[#090b0a]/70 px-4 py-3 ring-1 ring-inset ring-white/[.055]"><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Revenue</div><div className="mt-1 text-xl font-semibold text-white">{money(summary?.todayRevenue || 0)}</div></div>
         <div className="rounded-xl bg-[#090b0a]/70 px-4 py-3 ring-1 ring-inset ring-white/[.055]"><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Jobs / items</div><div className="mt-1 text-xl font-semibold text-sky-300">{summary?.todayUnits || 0}</div></div>
