@@ -531,7 +531,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_TUBE_GUYS_V4";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_REAL_TUBE_GUYS_V5";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -555,19 +555,18 @@ export function App() {
     const style = document.createElement("style");
     style.id = styleId;
     style.textContent = `
-      .inflatable-guy { --guy:#34d399; position:relative; width:42px; height:112px; transform-origin:50% 100%; animation:guy-sway 2.4s ease-in-out infinite; filter:drop-shadow(0 10px 12px rgba(0,0,0,.32)); }
-      .inflatable-guy__body { position:absolute; inset:19px 9px 0; border-radius:13px 13px 7px 7px; background:var(--guy); box-shadow:inset -5px 0 rgba(0,0,0,.08); }
-      .inflatable-guy__head { position:absolute; left:7px; top:0; width:28px; height:30px; border-radius:45% 45% 42% 42%; background:var(--guy); }
-      .inflatable-guy__eye { position:absolute; top:9px; width:3px; height:4px; border-radius:50%; background:#07100b; }
-      .inflatable-guy__eye--left { left:8px; } .inflatable-guy__eye--right { right:8px; }
-      .inflatable-guy__smile { position:absolute; left:9px; top:17px; width:10px; height:5px; border-bottom:2px solid #07100b; border-radius:0 0 10px 10px; }
-      .inflatable-guy__arm { position:absolute; top:30px; width:45px; height:9px; border-radius:8px; background:var(--guy); transform-origin:5px 50%; }
-      .inflatable-guy__arm--left { right:28px; animation:guy-left-arm 1.15s ease-in-out infinite alternate; }
-      .inflatable-guy__arm--right { left:28px; animation:guy-right-arm 1.05s ease-in-out infinite alternate; }
-      .inflatable-guy__base { position:absolute; bottom:-4px; left:5px; width:32px; height:7px; border-radius:50%; background:#272a28; }
-      @keyframes guy-sway { 0%,100%{transform:rotate(-7deg) skewX(-2deg)} 50%{transform:rotate(8deg) skewX(3deg)} }
-      @keyframes guy-left-arm { from{transform:rotate(15deg)} to{transform:rotate(62deg)} }
-      @keyframes guy-right-arm { from{transform:rotate(165deg)} to{transform:rotate(112deg)} }
+      .inflatable-guy { --guy:#34d399; position:relative; width:72px; height:176px; transform-origin:50% 100%; animation:guy-sway 2.7s cubic-bezier(.45,.05,.55,.95) infinite; filter:drop-shadow(0 13px 13px rgba(0,0,0,.34)); }
+      .inflatable-guy svg { width:100%; height:100%; overflow:visible; }
+      .inflatable-guy__body-group { transform-origin:60px 224px; animation:guy-body-bend 1.7s ease-in-out infinite alternate; }
+      .inflatable-guy__arm { fill:none; stroke:var(--guy); stroke-width:15; stroke-linecap:round; stroke-linejoin:round; }
+      .inflatable-guy__arm--left { transform-origin:44px 91px; animation:guy-left-arm 1.05s ease-in-out infinite alternate; }
+      .inflatable-guy__arm--right { transform-origin:76px 91px; animation:guy-right-arm .92s ease-in-out infinite alternate; }
+      .inflatable-guy__shine { fill:none; stroke:rgba(255,255,255,.26); stroke-width:4; stroke-linecap:round; }
+      .inflatable-guy__crease { fill:none; stroke:rgba(0,0,0,.12); stroke-width:2; stroke-linecap:round; }
+      @keyframes guy-sway { 0%,100%{transform:rotate(-4deg) translateY(1px)} 50%{transform:rotate(5deg) translateY(-2px)} }
+      @keyframes guy-body-bend { from{transform:skewX(-4deg) scaleY(.99)} to{transform:skewX(5deg) scaleY(1.015)} }
+      @keyframes guy-left-arm { from{transform:rotate(-16deg)} to{transform:rotate(20deg)} }
+      @keyframes guy-right-arm { from{transform:rotate(14deg)} to{transform:rotate(-22deg)} }
       @media (max-width: 767px) {
         input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
         select,
@@ -804,11 +803,25 @@ function LoadingScreen() {
 function InflatableGuy({ color, className = "", delay = 0 }: { color: string; className?: string; delay?: number }) {
   return (
     <div aria-hidden="true" className={`inflatable-guy ${className}`} style={{ "--guy": color, animationDelay: `${delay}s` } as React.CSSProperties}>
-      <span className="inflatable-guy__base" />
-      <span className="inflatable-guy__body" />
-      <span className="inflatable-guy__head"><span className="inflatable-guy__eye inflatable-guy__eye--left" /><span className="inflatable-guy__eye inflatable-guy__eye--right" /><span className="inflatable-guy__smile" /></span>
-      <span className="inflatable-guy__arm inflatable-guy__arm--left" />
-      <span className="inflatable-guy__arm inflatable-guy__arm--right" />
+      <svg viewBox="-12 0 144 240" role="presentation">
+        <ellipse cx="60" cy="231" rx="27" ry="7" fill="rgba(0,0,0,.28)" />
+        <path d="M40 218h40l7 15H33z" fill="#282b29" />
+        <rect x="43" y="214" width="34" height="12" rx="4" fill="#414542" />
+        <g className="inflatable-guy__body-group">
+          <path className="inflatable-guy__arm inflatable-guy__arm--left" d="M46 92 C25 84 17 56 2 38 C-2 33 -5 28 -7 23" />
+          <path className="inflatable-guy__arm inflatable-guy__arm--right" d="M74 92 C95 83 103 55 118 37 C122 32 125 27 127 21" />
+          <path d="M41 218 C40 188 45 160 41 132 C37 105 38 78 43 57 C47 40 52 32 60 32 C69 32 75 41 79 58 C83 80 84 106 79 133 C75 161 81 189 79 218 Z" fill="var(--guy)" />
+          <ellipse cx="60" cy="39" rx="25" ry="27" fill="var(--guy)" />
+          <path className="inflatable-guy__shine" d="M48 69 C44 102 49 137 46 174" />
+          <path className="inflatable-guy__crease" d="M45 126 Q60 120 79 127 M44 169 Q61 163 79 170" />
+          <ellipse cx="51" cy="34" rx="3.5" ry="5" fill="#111512" />
+          <ellipse cx="69" cy="34" rx="3.5" ry="5" fill="#111512" />
+          <circle cx="50" cy="32.5" r="1" fill="white" opacity=".8" />
+          <circle cx="68" cy="32.5" r="1" fill="white" opacity=".8" />
+          <ellipse cx="60" cy="49" rx="9" ry="7" fill="#151816" />
+          <path d="M54 50 Q60 55 66 50" fill="none" stroke="#ef8b82" strokeWidth="2" strokeLinecap="round" />
+        </g>
+      </svg>
     </div>
   );
 }
@@ -911,7 +924,7 @@ function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) 
           );
         })}
       </nav>
-      <div className="mt-auto flex h-20 items-end justify-center overflow-visible"><div className="origin-bottom scale-[.58]"><InflatableGuy color="#38bdf8" /></div></div>
+      <div className="mt-auto flex h-20 items-end justify-center overflow-visible"><div className="origin-bottom scale-[.45]"><InflatableGuy color="#38bdf8" /></div></div>
       <div className="border-t border-white/[.055] px-2 pt-4">
         <div className="flex items-center gap-2 text-[11px] font-medium text-zinc-300"><span className="h-2 w-2 rounded-full bg-emerald-400" /> Data saves automatically</div>
         <p className="mt-1.5 text-[10px] leading-relaxed text-zinc-600">Inventory and sales are stored securely.</p>
@@ -926,7 +939,7 @@ function Topbar({ page }: { page: Page }) {
     <header className="sticky top-0 z-30 flex h-14 items-center border-b border-white/[.055] bg-[#080a09]/92 px-4 backdrop-blur-xl sm:h-16 sm:px-6 lg:px-9">
       <div className="lg:hidden"><div className="text-[9px] font-bold uppercase tracking-[.18em] text-emerald-400">Akron Tire Shop</div><div className="mt-0.5 text-sm font-semibold tracking-[-.015em] text-white">{currentNav?.label}</div></div>
       <div className="hidden lg:block"><div className="text-sm font-semibold tracking-[-.01em] text-zinc-200">{currentNav?.label}</div></div>
-      <div className="ml-auto h-10 w-6 overflow-visible lg:hidden"><div className="origin-top-left scale-[.34]"><InflatableGuy color="#fbbf24" delay={-.6} /></div></div>
+      <div className="ml-auto h-10 w-6 overflow-visible lg:hidden"><div className="origin-top-left scale-[.23]"><InflatableGuy color="#fbbf24" delay={-.6} /></div></div>
       <div className="flex items-center gap-2 text-[9px] font-medium text-zinc-600 sm:text-[10px] lg:ml-auto"><span className="mobile-status-pulse h-1.5 w-1.5 rounded-full bg-emerald-400" /><span className="hidden min-[380px]:inline">All changes saved</span><span className="min-[380px]:hidden">Saved</span></div>
     </header>
   );
