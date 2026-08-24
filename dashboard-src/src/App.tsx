@@ -544,7 +544,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_REAL_TIRE_V17";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_TIRE_SMOKE_V18";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -570,9 +570,12 @@ export function App() {
     style.id = styleId;
     style.textContent = `
       .shop-shell { isolation:isolate; }
-      .shop-wheel { position:relative; display:grid; place-items:center; aspect-ratio:1; filter:drop-shadow(0 18px 22px rgba(0,0,0,.48)); animation:wheel-product-float 5s ease-in-out infinite; }
-      .shop-wheel img { display:block; width:100%; height:100%; object-fit:contain; user-select:none; -webkit-user-drag:none; }
+      .shop-wheel { position:relative; display:grid; place-items:center; aspect-ratio:1; filter:drop-shadow(0 18px 22px rgba(0,0,0,.48)); }
+      .shop-wheel img { position:relative; z-index:2; display:block; width:100%; height:100%; object-fit:contain; user-select:none; -webkit-user-drag:none; animation:wheel-real-spin 5.5s linear infinite; will-change:transform; }
       .shop-wheel::after { content:""; position:absolute; left:15%; right:15%; bottom:-5%; height:9%; border-radius:50%; background:rgba(0,0,0,.55); filter:blur(6px); z-index:-1; }
+      .tire-smoke { position:absolute; z-index:1; left:-4%; bottom:3%; width:25%; aspect-ratio:1; border-radius:50%; background:radial-gradient(circle,rgba(226,232,240,.42) 0%,rgba(148,163,184,.18) 43%,transparent 72%); filter:blur(5px); opacity:0; animation:tire-smoke-rise 2.8s ease-out infinite; pointer-events:none; }
+      .tire-smoke--two { left:5%; bottom:10%; width:19%; animation-delay:.8s; animation-duration:3.2s; }
+      .tire-smoke--three { left:-8%; bottom:16%; width:16%; animation-delay:1.65s; animation-duration:3.6s; }
       .shop-wordmark { font-family:Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif; letter-spacing:-.035em; text-transform:uppercase; }
       .shop-hero { position:relative; overflow:hidden; isolation:isolate; background:linear-gradient(112deg,#121513 0%,#0d100f 62%,#0a0d0c 100%); border:1px solid rgba(255,255,255,.075); border-radius:18px; box-shadow:0 22px 60px rgba(0,0,0,.22); }
       .shop-hero::before { content:""; position:absolute; inset:0; z-index:-2; background:repeating-linear-gradient(118deg,transparent 0 34px,rgba(190,242,100,.04) 34px 37px,transparent 37px 72px); animation:tread-drive 16s linear infinite; }
@@ -588,7 +591,8 @@ export function App() {
       .mobile-surface::before { content:""; position:absolute; inset:0; border-radius:inherit; background:linear-gradient(115deg,rgba(255,255,255,.022),transparent 38%); pointer-events:none; }
       .live-dot { position:relative; }
       .live-dot::after { content:""; position:absolute; inset:-4px; border:1px solid currentColor; border-radius:999px; opacity:0; animation:live-ring 2.4s ease-out infinite; }
-      @keyframes wheel-product-float { 0%,100%{transform:translateY(0) rotate(-1deg)} 50%{transform:translateY(-5px) rotate(1deg)} }
+      @keyframes wheel-real-spin { to{transform:rotate(360deg)} }
+      @keyframes tire-smoke-rise { 0%{opacity:0;transform:translate3d(8px,8px,0) scale(.35)} 18%{opacity:.48} 62%{opacity:.22} 100%{opacity:0;transform:translate3d(-34px,-48px,0) scale(1.8)} }
       @keyframes tread-drive { to{background-position:144px 0} }
       @keyframes ambient-drift { from{transform:translate3d(-2%, -2%, 0) scale(.96)} to{transform:translate3d(9%, 7%, 0) scale(1.08)} }
       @keyframes button-sheen { 0%,70%{left:-38%;opacity:0} 76%{opacity:1} 94%,100%{left:118%;opacity:0} }
@@ -640,7 +644,7 @@ export function App() {
         .mobile-status-pulse { animation: mobile-status-pulse 2.2s ease-in-out infinite; }
       }
       @media (prefers-reduced-motion: reduce) {
-        .mobile-page > *, .mobile-status-pulse, .shop-wheel, .shop-hero::before, .shop-ambient::before, .shop-ambient::after, .alive-scan::after, .live-dot::after { animation: none !important; }
+        .mobile-page > *, .mobile-status-pulse, .shop-wheel img, .tire-smoke, .shop-hero::before, .shop-ambient::before, .shop-ambient::after, .alive-scan::after, .live-dot::after { animation: none !important; }
         .mobile-surface, .mobile-tap { transition: none !important; }
       }
     `;
@@ -857,9 +861,10 @@ function LoadingScreen() {
   );
 }
 
-function ShopWheel({ className = "", accent = "#bef264" }: { className?: string; accent?: string }) {
+function ShopWheel({ className = "", accent = "#bef264", smoke = false }: { className?: string; accent?: string; smoke?: boolean }) {
   return (
     <div aria-hidden="true" className={`shop-wheel ${className}`}>
+      {smoke && <><span className="tire-smoke" /><span className="tire-smoke tire-smoke--two" /><span className="tire-smoke tire-smoke--three" /></>}
       <img src="/assets/akron-real-tire-v1.png" alt="" decoding="async" draggable={false} style={{ filter: `drop-shadow(0 0 18px ${accent}18)` }} />
     </div>
   );
@@ -2337,17 +2342,15 @@ function easternDateTimeToIso(date: string, time: string) {
 function ShopPageHeader({ eyebrow, title, description, meta, actions, tone = "emerald" }: { eyebrow: string; title: string; description: string; meta?: React.ReactNode; actions?: React.ReactNode; tone?: ShopTone }) {
   const colors = shopToneStyles[tone];
   return (
-    <div className="shop-hero flex min-h-[150px] items-center gap-4 px-5 py-5 sm:min-h-[172px] sm:px-7 sm:py-6">
-      <div className="min-w-0 flex-1">
+    <div className="shop-hero flex min-h-[150px] flex-col items-stretch gap-4 px-5 py-5 sm:min-h-[172px] sm:px-7 sm:py-6">
+      <ShopWheel smoke className="absolute right-3 top-3 hidden w-24 opacity-90 min-[460px]:grid sm:right-6 sm:top-5 sm:w-28" accent={tone === "sky" ? "#38bdf8" : tone === "amber" ? "#fbbf24" : tone === "violet" ? "#a78bfa" : "#bef264"} />
+      <div className="relative z-10 min-w-0 flex-1 min-[460px]:pr-28 sm:pr-32">
         <div className={`mb-2.5 flex items-center gap-2 text-[9px] font-bold uppercase tracking-[.19em] ${colors.text}`}><span className={`live-dot h-1.5 w-1.5 rounded-full ${colors.dot}`} />{eyebrow}</div>
         <h1 className="shop-wordmark text-[31px] leading-[.95] text-white sm:text-[42px]">{title}</h1>
         <p className="mt-2.5 max-w-2xl text-xs leading-relaxed text-zinc-400 sm:text-[13px]">{description}</p>
         {meta}
       </div>
-      <div className="flex shrink-0 flex-col items-end gap-3">
-        <ShopWheel className="hidden w-24 opacity-80 min-[460px]:grid sm:w-28" accent={tone === "sky" ? "#38bdf8" : tone === "amber" ? "#fbbf24" : tone === "violet" ? "#a78bfa" : "#bef264"} />
-        {actions && <div>{actions}</div>}
-      </div>
+      {actions && <div className="relative z-10 w-full">{actions}</div>}
     </div>
   );
 }
