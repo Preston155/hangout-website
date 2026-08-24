@@ -544,7 +544,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_SHOP_VFX_V20";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_POSITION_FIX_V21";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -571,6 +571,7 @@ export function App() {
     style.textContent = `
       .shop-shell { isolation:isolate; }
       .shop-wheel { position:relative; display:grid; place-items:center; aspect-ratio:1; filter:drop-shadow(0 18px 22px rgba(0,0,0,.48)); }
+      .shop-wheel--positioned { position:absolute; }
       .shop-wheel img { position:relative; z-index:2; display:block; width:100%; height:100%; object-fit:contain; user-select:none; -webkit-user-drag:none; }
       .shop-wheel--animated img { animation:wheel-real-spin 8s linear infinite; will-change:transform; }
       .shop-wheel::after { content:""; position:absolute; left:15%; right:15%; bottom:-5%; height:9%; border-radius:50%; background:rgba(0,0,0,.55); filter:blur(6px); z-index:-1; }
@@ -930,8 +931,8 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
   return (
     <div className="shop-shell relative grid min-h-screen place-items-center overflow-hidden bg-[#090b0a] p-4 text-zinc-100 sm:p-6">
       <div className="shop-ambient" aria-hidden="true" />
-      <ShopWheel className="absolute -left-16 bottom-8 hidden w-56 -rotate-12 opacity-30 blur-[.2px] sm:grid" />
-      <ShopWheel className="absolute -right-20 top-10 hidden w-72 rotate-12 opacity-20 sm:grid" accent="#22d3ee" />
+      <ShopWheel className="shop-wheel--positioned -left-16 bottom-8 hidden w-56 -rotate-12 opacity-30 blur-[.2px] sm:grid" />
+      <ShopWheel className="shop-wheel--positioned -right-20 top-10 hidden w-72 rotate-12 opacity-20 sm:grid" accent="#22d3ee" />
       <div className="w-full max-w-[420px]">
         <div className="mb-7 text-center">
           <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-[10px] font-bold uppercase tracking-[.24em] text-lime-300">Akron, Ohio</motion.div>
@@ -2358,7 +2359,7 @@ function ShopPageHeader({ eyebrow, title, description, meta, actions, tone = "em
       <span aria-hidden="true" className="shop-hero__beam" />
       <span aria-hidden="true" className="shop-hero__speed" />
       <span aria-hidden="true" className="shop-hero__speed shop-hero__speed--two" />
-      <ShopWheel smoke animated className="absolute right-3 top-3 hidden w-24 opacity-90 min-[460px]:grid sm:right-6 sm:top-5 sm:w-28" accent={tone === "sky" ? "#38bdf8" : tone === "amber" ? "#fbbf24" : tone === "violet" ? "#a78bfa" : "#bef264"} />
+      <ShopWheel smoke animated className="shop-wheel--positioned right-3 top-3 hidden w-24 opacity-90 min-[460px]:grid sm:right-6 sm:top-5 sm:w-28" accent={tone === "sky" ? "#38bdf8" : tone === "amber" ? "#fbbf24" : tone === "violet" ? "#a78bfa" : "#bef264"} />
       <div className="relative z-10 min-w-0 flex-1 min-[460px]:pr-28 sm:pr-32">
         <div className={`mb-2.5 flex items-center gap-2 text-[9px] font-bold uppercase tracking-[.19em] ${colors.text}`}><span className={`live-dot h-1.5 w-1.5 rounded-full ${colors.dot}`} />{eyebrow}</div>
         <h1 className="shop-wordmark text-[31px] leading-[.95] text-white sm:text-[42px]">{title}</h1>
