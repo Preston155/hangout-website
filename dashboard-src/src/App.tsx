@@ -14,6 +14,7 @@ import {
   Command,
   Cpu,
   Database,
+  Download,
   Eye,
   FileText,
   Globe,
@@ -537,7 +538,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_RECEIPT_V13";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_CLEAN_SAVE_V14";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -2190,6 +2191,57 @@ function printEscape(value: unknown) {
     .replaceAll("'", "&#039;");
 }
 
+function buildReceiptImage(sale: TireSale): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 1080;
+    canvas.height = 1440;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) { reject(new Error("Receipt image could not be created.")); return; }
+    const isTire = (sale.serviceType || "tire") === "tire";
+    const number = sale.id.replaceAll("-", "").slice(0, 10).toUpperCase();
+    const date = new Date(sale.soldAt).toLocaleDateString("en-US", { timeZone: "America/New_York", month: "long", day: "numeric", year: "numeric" });
+    const time = new Date(sale.soldAt).toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" });
+    const write = (text: string, x: number, y: number, font: string, color = "#111111", align: CanvasTextAlign = "left") => { ctx.font = font; ctx.fillStyle = color; ctx.textAlign = align; ctx.fillText(text, x, y); };
+    ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, 1080, 1440);
+    ctx.fillStyle = "#10b981"; ctx.fillRect(0, 0, 1080, 20);
+    ctx.fillStyle = "#111111"; ctx.fillRect(60, 70, 960, 220);
+    write("AKRON", 104, 125, "900 24px Arial", "#6ee7b7");
+    write("TIRE SHOP", 100, 190, "900 60px Arial", "#ffffff");
+    write("TIRES  •  SALES  •  SERVICE", 104, 235, "700 17px Arial", "#a3a3a3");
+    write("CUSTOMER RECEIPT", 972, 130, "300 28px Arial", "#d4d4d4", "right");
+    write(`#${number}`, 972, 175, "700 20px monospace", "#ffffff", "right");
+    ctx.fillStyle = "#10b981"; ctx.fillRect(810, 210, 162, 42);
+    write("PAID IN FULL", 948, 238, "900 16px Arial", "#052e22", "right");
+    ctx.fillStyle = "#f5f5f4"; ctx.fillRect(60, 330, 960, 190);
+    write("CUSTOMER", 100, 382, "800 17px Arial", "#737373");
+    write(sale.customer || "Walk-in customer", 100, 425, "800 30px Arial");
+    write("DATE / TIME", 650, 382, "800 17px Arial", "#737373");
+    write(date, 650, 420, "700 20px Arial");
+    write(time, 650, 452, "500 18px Arial", "#737373");
+    write("PAYMENT", 100, 482, "800 17px Arial", "#737373");
+    write(sale.paymentMethod, 220, 482, "800 19px Arial");
+    ctx.fillStyle = "#111111"; ctx.fillRect(60, 570, 960, 62);
+    write("DESCRIPTION", 100, 610, "800 16px Arial", "#ffffff");
+    write("QTY", 780, 610, "800 16px Arial", "#ffffff", "center");
+    write("AMOUNT", 980, 610, "800 16px Arial", "#ffffff", "right");
+    ctx.strokeStyle = "#d4d4d4"; ctx.strokeRect(60, 632, 960, 190);
+    write(isTire ? sale.size : workTypeLabel(sale.serviceType), 100, 715, `900 36px ${isTire ? "monospace" : "Arial"}`);
+    write(isTire ? tirePackageLabel(sale.packageType) : "Automotive service", 100, 756, "600 19px Arial", "#737373");
+    write(String(sale.quantity), 780, 725, "800 27px monospace", "#111111", "center");
+    write(money(sale.total), 980, 725, "900 30px monospace", "#111111", "right");
+    if (sale.notes) { write("WORK NOTES", 80, 885, "800 17px Arial", "#737373"); write(sale.notes.slice(0, 90), 80, 925, "500 20px Arial"); }
+    ctx.fillStyle = "#111111"; ctx.fillRect(560, 1010, 460, 170);
+    write("TOTAL PAID", 602, 1070, "800 18px Arial", "#a3a3a3");
+    write(money(sale.total), 978, 1135, "900 48px monospace", "#6ee7b7", "right");
+    ctx.strokeStyle = "#d4d4d4"; ctx.beginPath(); ctx.moveTo(60, 1280); ctx.lineTo(1020, 1280); ctx.stroke();
+    write("Thank you for your business.", 60, 1335, "800 24px Arial");
+    write("Akron Tire Shop", 60, 1375, "500 17px Arial", "#737373");
+    write(number, 1020, 1375, "600 16px monospace", "#a3a3a3", "right");
+    canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("Receipt image could not be saved.")), "image/png", 1);
+  });
+}
+
 function printSaleReceipt(sale: TireSale, onBlocked: () => void) {
   const receiptWindow = window.open("about:blank", "akron-tire-receipt");
   if (!receiptWindow) {
@@ -2212,6 +2264,7 @@ function printSaleReceipt(sale: TireSale, onBlocked: () => void) {
 }
 
 function ReceiptModal({ sale, onClose }: { sale: TireSale; onClose: () => void }) {
+  const [saving, setSaving] = useState(false);
   const isTire = (sale.serviceType || "tire") === "tire";
   const receiptNumber = sale.id.replaceAll("-", "").slice(0, 10).toUpperCase();
   const soldDate = new Date(sale.soldAt).toLocaleDateString("en-US", { timeZone: "America/New_York", month: "long", day: "numeric", year: "numeric" });
@@ -2223,6 +2276,24 @@ function ReceiptModal({ sale, onClose }: { sale: TireSale; onClose: () => void }
     window.addEventListener("afterprint", restoreTitle, { once: true });
     window.print();
     window.setTimeout(restoreTitle, 1500);
+  };
+  const saveReceipt = async () => {
+    setSaving(true);
+    try {
+      const blob = await buildReceiptImage(sale);
+      const fileName = `Akron-Tire-Shop-Receipt-${receiptNumber}.png`;
+      const file = new File([blob], fileName, { type: "image/png" });
+      if (navigator.share && navigator.canShare?.({ files: [file] })) await navigator.share({ files: [file], title: `Akron Tire Shop Receipt #${receiptNumber}` });
+      else {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url; link.download = fileName;
+        document.body.appendChild(link); link.click(); link.remove();
+        window.setTimeout(() => URL.revokeObjectURL(url), 1500);
+      }
+    } catch (error) {
+      if (!(error instanceof DOMException && error.name === "AbortError")) window.alert(error instanceof Error ? error.message : "Receipt could not be saved.");
+    } finally { setSaving(false); }
   };
   return createPortal(
     <div className="receipt-print-layer fixed inset-0 z-[100] overflow-y-auto bg-black/80 p-3 backdrop-blur-sm sm:p-6" role="dialog" aria-modal="true" aria-label="Receipt preview">
@@ -2239,7 +2310,7 @@ function ReceiptModal({ sale, onClose }: { sale: TireSale; onClose: () => void }
               <footer className="mt-10 flex items-end justify-between gap-5 border-t border-neutral-200 pt-5"><div><strong className="block text-[13px]">Thank you for your business.</strong><span className="mt-1 block text-[10px] text-neutral-500">We appreciate you choosing Akron Tire Shop.</span></div><div className="text-right font-mono text-[9px] text-neutral-400">{receiptNumber}</div></footer>
             </div>
           </section>
-          <div className="receipt-screen-actions grid grid-cols-2 gap-2 bg-[#171917] p-3"><button onClick={onClose} className="min-h-12 rounded-lg border border-white/15 text-xs font-semibold text-zinc-200">Close</button><button onClick={printReceipt} className="min-h-12 rounded-lg bg-white text-xs font-bold text-black"><Printer className="mr-1.5 inline h-4 w-4" />Print / Save PDF</button></div>
+          <div className="receipt-screen-actions grid grid-cols-3 gap-2 bg-[#171917] p-3"><button onClick={onClose} className="min-h-12 rounded-lg border border-white/15 text-xs font-semibold text-zinc-200">Close</button><button disabled={saving} onClick={() => void saveReceipt()} className="min-h-12 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2 text-xs font-bold text-emerald-300 disabled:opacity-50"><Download className="mr-1 inline h-4 w-4" />{saving ? "Saving..." : "Save"}</button><button onClick={printReceipt} className="min-h-12 rounded-lg bg-white px-2 text-xs font-bold text-black"><Printer className="mr-1 inline h-4 w-4" />Print</button></div>
         </div>
       </div>
     </div>,
