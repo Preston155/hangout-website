@@ -403,16 +403,27 @@ async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = localStorage.getItem("prestonhq_token") || sessionStorage.getItem("prestonhq_token");
   const method = String(options.method || "GET").toUpperCase();
   const hasBody = options.body !== undefined && options.body !== null;
-  const response = await fetch(API_BASE + path, {
-    ...options,
-    cache: options.cache || (method === "GET" ? "no-store" : undefined),
-    credentials: "include",
-    headers: {
-      ...(hasBody ? { "Content-Type": "application/json" } : {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(options.headers || {}),
-    },
-  });
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), 3500);
+  let response: Response;
+  try {
+    response = await fetch(API_BASE + path, {
+      ...options,
+      signal: options.signal || controller.signal,
+      cache: options.cache || (method === "GET" ? "no-store" : undefined),
+      credentials: "include",
+      headers: {
+        ...(hasBody ? { "Content-Type": "application/json" } : {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(options.headers || {}),
+      },
+    });
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") throw new Error("The shop server is taking too long to respond. Try again in a moment.");
+    throw error;
+  } finally {
+    window.clearTimeout(timeout);
+  }
   const payload = await response.json().catch(() => null);
   if (response.status === 401 && token) {
     localStorage.removeItem("prestonhq_token");
@@ -544,7 +555,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_MOBILE_RESTRUCTURE_V23";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_FAST_LOAD_V24";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -888,7 +899,7 @@ function ShopWheel({ className = "", accent = "#bef264", smoke = false, animated
   return (
     <div aria-hidden="true" className={`shop-wheel ${animated ? "shop-wheel--animated" : ""} ${className}`}>
       {smoke && <><span className="tire-smoke" /><span className="tire-smoke tire-smoke--two" /><span className="tire-smoke tire-smoke--three" /><span className="tire-spark" /><span className="tire-spark tire-spark--two" /><span className="tire-spark tire-spark--three" /></>}
-      <img src="/assets/akron-real-tire-v1.png" alt="" decoding="async" draggable={false} style={{ filter: `drop-shadow(0 0 18px ${accent}18)` }} />
+      <img src="/assets/akron-real-tire-mobile-v2.png" alt="" decoding="async" draggable={false} style={{ filter: `drop-shadow(0 0 18px ${accent}18)` }} />
     </div>
   );
 }
