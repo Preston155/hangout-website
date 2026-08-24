@@ -537,7 +537,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_PRINT_FIX_V11";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_RECEIPT_V12";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -593,7 +593,7 @@ export function App() {
         .mobile-surface:hover { transform:translateY(-2px); box-shadow:0 18px 48px rgba(0,0,0,.22); }
       }
       @media print {
-        @page { size:auto; margin:10mm; }
+        @page { size:auto; margin:0; }
         html, body { min-height:0 !important; height:auto !important; background:#fff !important; }
         body > *:not(.receipt-print-layer) { display:none !important; }
         .receipt-print-layer { display:block !important; position:static !important; inset:auto !important; min-height:0 !important; padding:0 !important; overflow:visible !important; background:#fff !important; }
@@ -2215,22 +2215,28 @@ function ReceiptModal({ sale, onClose }: { sale: TireSale; onClose: () => void }
   const receiptNumber = sale.id.replaceAll("-", "").slice(0, 10).toUpperCase();
   const soldDate = new Date(sale.soldAt).toLocaleDateString("en-US", { timeZone: "America/New_York", month: "long", day: "numeric", year: "numeric" });
   const soldTime = new Date(sale.soldAt).toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" });
+  const printReceipt = () => {
+    const previousTitle = document.title;
+    const restoreTitle = () => { document.title = previousTitle; };
+    document.title = `Akron Tire Shop Receipt ${receiptNumber}`;
+    window.addEventListener("afterprint", restoreTitle, { once: true });
+    window.print();
+    window.setTimeout(restoreTitle, 1500);
+  };
   return createPortal(
     <div className="receipt-print-layer fixed inset-0 z-[100] overflow-y-auto bg-black/80 p-3 backdrop-blur-sm sm:p-6" role="dialog" aria-modal="true" aria-label="Receipt preview">
       <div className="mx-auto flex min-h-full w-full max-w-[420px] items-center justify-center py-4">
         <div className="w-full">
-          <section className="receipt-print-root bg-white px-7 py-8 text-[#111] shadow-2xl sm:px-9">
-            <header className="text-center"><div className="text-[24px] font-black tracking-[-.045em]">Akron Tire Shop</div><div className="mt-1 text-[9px] font-bold uppercase tracking-[.17em] text-neutral-500">Tires · Sales · Service</div></header>
-            <div className="my-5 h-px bg-black" />
-            <div className="text-center font-mono text-[10px] font-bold tracking-[.18em]">CUSTOMER RECEIPT</div>
-            <dl className="mt-5 space-y-2 font-mono text-[10px]">{[["Receipt", `#${receiptNumber}`], ["Date", soldDate], ["Time", soldTime], ["Payment", sale.paymentMethod]].map(([label, value]) => <div key={label} className="flex justify-between gap-4"><dt className="text-neutral-500">{label}</dt><dd className="text-right font-bold">{value}</dd></div>)}</dl>
-            <div className="mt-5 bg-neutral-100 px-3 py-3"><div className="text-[8px] font-bold uppercase tracking-[.14em] text-neutral-500">Customer</div><div className="mt-1 text-xs font-bold">{sale.customer || "Walk-in customer"}</div></div>
-            <table className="mt-6 w-full border-collapse text-left"><thead><tr className="border-b border-black text-[8px] uppercase tracking-[.1em]"><th className="pb-2">Item / Service</th><th className="pb-2 text-center">Qty</th><th className="pb-2 text-right">Total</th></tr></thead><tbody><tr className="border-b border-dashed border-neutral-400 font-mono text-[10px]"><td className="py-4"><strong className="block font-sans text-sm">{isTire ? sale.size : workTypeLabel(sale.serviceType)}</strong><span className="mt-1 block font-sans text-[9px] text-neutral-500">{isTire ? tirePackageLabel(sale.packageType) : "Automotive service"}</span></td><td className="py-4 text-center">{sale.quantity}</td><td className="py-4 text-right text-xs font-bold">{money(sale.total)}</td></tr></tbody></table>
-            {sale.notes && <div className="mt-4 flex justify-between gap-4 font-mono text-[9px]"><span className="text-neutral-500">Notes</span><strong className="max-w-[70%] text-right">{sale.notes}</strong></div>}
-            <div className="mt-5 flex items-center justify-between bg-black px-4 py-4 text-white"><span className="text-[9px] font-bold uppercase tracking-[.13em]">Amount Paid</span><strong className="font-mono text-2xl tracking-[-.04em]">{money(sale.total)}</strong></div>
-            <div className="mt-6 text-center"><strong className="block text-xs">Thank you for your business.</strong><span className="mt-1 block text-[9px] text-neutral-500">Akron Tire Shop</span><span className="mt-5 block font-mono text-[8px] tracking-[.16em]">{receiptNumber}</span></div>
+          <section className="receipt-print-root bg-white px-7 py-8 text-[#151515] shadow-2xl sm:px-9 sm:py-10">
+            <header className="flex items-start justify-between gap-5 border-b-2 border-black pb-5"><div><div className="text-[23px] font-black tracking-[-.045em]">AKRON TIRE SHOP</div><div className="mt-1.5 text-[8px] font-bold uppercase tracking-[.19em] text-neutral-500">Tires · Sales · Service</div></div><div className="rounded border-2 border-black px-2.5 py-1 text-[10px] font-black tracking-[.15em]">PAID</div></header>
+            <div className="mt-5 flex items-end justify-between gap-4"><div><div className="text-[8px] font-bold uppercase tracking-[.14em] text-neutral-500">Receipt for</div><div className="mt-1 text-sm font-bold">{sale.customer || "Walk-in customer"}</div></div><div className="text-right"><div className="text-[8px] font-bold uppercase tracking-[.14em] text-neutral-500">Receipt number</div><div className="mt-1 font-mono text-[11px] font-bold">#{receiptNumber}</div></div></div>
+            <dl className="mt-5 grid grid-cols-3 gap-2 border-y border-neutral-300 py-3 text-[9px]">{[["Date", soldDate], ["Time", soldTime], ["Payment", sale.paymentMethod]].map(([label, value]) => <div key={label}><dt className="font-bold uppercase tracking-[.1em] text-neutral-500">{label}</dt><dd className="mt-1 font-mono font-bold">{value}</dd></div>)}</dl>
+            <table className="mt-6 w-full border-collapse text-left"><thead><tr className="border-b border-black text-[8px] uppercase tracking-[.12em] text-neutral-500"><th className="pb-2.5">Description</th><th className="pb-2.5 text-center">Qty</th><th className="pb-2.5 text-right">Amount</th></tr></thead><tbody><tr className="border-b border-neutral-300"><td className="py-4"><strong className={`block text-[15px] ${isTire ? "font-mono" : "font-sans"}`}>{isTire ? sale.size : workTypeLabel(sale.serviceType)}</strong><span className="mt-1 block text-[9px] text-neutral-500">{isTire ? tirePackageLabel(sale.packageType) : "Automotive service"}</span></td><td className="py-4 text-center font-mono text-[11px]">{sale.quantity}</td><td className="py-4 text-right font-mono text-[12px] font-bold">{money(sale.total)}</td></tr></tbody></table>
+            {sale.notes && <div className="mt-4 rounded bg-neutral-100 px-3 py-3"><div className="text-[8px] font-bold uppercase tracking-[.12em] text-neutral-500">Work notes</div><div className="mt-1.5 text-[10px] leading-relaxed">{sale.notes}</div></div>}
+            <div className="mt-5 ml-auto w-full max-w-[230px] space-y-2 font-mono text-[10px]"><div className="flex justify-between gap-4 text-neutral-500"><span>Subtotal</span><span>{money(sale.total)}</span></div><div className="flex justify-between gap-4 text-neutral-500"><span>Tax</span><span>$0.00</span></div><div className="flex items-center justify-between gap-4 border-t-2 border-black pt-3 font-sans"><span className="text-[10px] font-black uppercase tracking-[.12em]">Total Paid</span><strong className="font-mono text-[22px] tracking-[-.04em]">{money(sale.total)}</strong></div></div>
+            <footer className="mt-8 border-t border-neutral-300 pt-5 text-center"><strong className="block text-[11px]">Thank you for choosing Akron Tire Shop.</strong><span className="mt-1.5 block text-[8px] uppercase tracking-[.13em] text-neutral-500">Keep this receipt for your records</span></footer>
           </section>
-          <div className="receipt-screen-actions grid grid-cols-2 gap-2 bg-[#171917] p-3"><button onClick={onClose} className="min-h-12 rounded-lg border border-white/15 text-xs font-semibold text-zinc-200">Close</button><button onClick={() => window.print()} className="min-h-12 rounded-lg bg-white text-xs font-bold text-black"><Printer className="mr-1.5 inline h-4 w-4" />Print / Save PDF</button></div>
+          <div className="receipt-screen-actions grid grid-cols-2 gap-2 bg-[#171917] p-3"><button onClick={onClose} className="min-h-12 rounded-lg border border-white/15 text-xs font-semibold text-zinc-200">Close</button><button onClick={printReceipt} className="min-h-12 rounded-lg bg-white text-xs font-bold text-black"><Printer className="mr-1.5 inline h-4 w-4" />Print / Save PDF</button></div>
         </div>
       </div>
     </div>,
