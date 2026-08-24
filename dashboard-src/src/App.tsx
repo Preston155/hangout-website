@@ -544,7 +544,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_WHEELHOUSE_V16";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_REAL_TIRE_V17";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -570,10 +570,8 @@ export function App() {
     style.id = styleId;
     style.textContent = `
       .shop-shell { isolation:isolate; }
-      .shop-wheel { position:relative; display:grid; place-items:center; aspect-ratio:1; filter:drop-shadow(0 18px 22px rgba(0,0,0,.45)); }
-      .shop-wheel svg { width:100%; height:100%; overflow:visible; }
-      .shop-wheel__rim { transform-box:fill-box; transform-origin:center; animation:wheel-spin 10s linear infinite; }
-      .shop-wheel__shine { animation:wheel-glint 3.8s ease-in-out infinite; }
+      .shop-wheel { position:relative; display:grid; place-items:center; aspect-ratio:1; filter:drop-shadow(0 18px 22px rgba(0,0,0,.48)); animation:wheel-product-float 5s ease-in-out infinite; }
+      .shop-wheel img { display:block; width:100%; height:100%; object-fit:contain; user-select:none; -webkit-user-drag:none; }
       .shop-wheel::after { content:""; position:absolute; left:15%; right:15%; bottom:-5%; height:9%; border-radius:50%; background:rgba(0,0,0,.55); filter:blur(6px); z-index:-1; }
       .shop-wordmark { font-family:Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif; letter-spacing:-.035em; text-transform:uppercase; }
       .shop-hero { position:relative; overflow:hidden; isolation:isolate; background:linear-gradient(112deg,#121513 0%,#0d100f 62%,#0a0d0c 100%); border:1px solid rgba(255,255,255,.075); border-radius:18px; box-shadow:0 22px 60px rgba(0,0,0,.22); }
@@ -590,8 +588,7 @@ export function App() {
       .mobile-surface::before { content:""; position:absolute; inset:0; border-radius:inherit; background:linear-gradient(115deg,rgba(255,255,255,.022),transparent 38%); pointer-events:none; }
       .live-dot { position:relative; }
       .live-dot::after { content:""; position:absolute; inset:-4px; border:1px solid currentColor; border-radius:999px; opacity:0; animation:live-ring 2.4s ease-out infinite; }
-      @keyframes wheel-spin { to{transform:rotate(360deg)} }
-      @keyframes wheel-glint { 0%,72%,100%{opacity:.12} 82%{opacity:.8} }
+      @keyframes wheel-product-float { 0%,100%{transform:translateY(0) rotate(-1deg)} 50%{transform:translateY(-5px) rotate(1deg)} }
       @keyframes tread-drive { to{background-position:144px 0} }
       @keyframes ambient-drift { from{transform:translate3d(-2%, -2%, 0) scale(.96)} to{transform:translate3d(9%, 7%, 0) scale(1.08)} }
       @keyframes button-sheen { 0%,70%{left:-38%;opacity:0} 76%{opacity:1} 94%,100%{left:118%;opacity:0} }
@@ -643,7 +640,7 @@ export function App() {
         .mobile-status-pulse { animation: mobile-status-pulse 2.2s ease-in-out infinite; }
       }
       @media (prefers-reduced-motion: reduce) {
-        .mobile-page > *, .mobile-status-pulse, .shop-wheel__rim, .shop-wheel__shine, .shop-hero::before, .shop-ambient::before, .shop-ambient::after, .alive-scan::after, .live-dot::after { animation: none !important; }
+        .mobile-page > *, .mobile-status-pulse, .shop-wheel, .shop-hero::before, .shop-ambient::before, .shop-ambient::after, .alive-scan::after, .live-dot::after { animation: none !important; }
         .mobile-surface, .mobile-tap { transition: none !important; }
       }
     `;
@@ -863,35 +860,7 @@ function LoadingScreen() {
 function ShopWheel({ className = "", accent = "#bef264" }: { className?: string; accent?: string }) {
   return (
     <div aria-hidden="true" className={`shop-wheel ${className}`}>
-      <svg viewBox="0 0 160 160" role="presentation">
-        <defs>
-          <radialGradient id="tireRubber" cx="38%" cy="30%">
-            <stop offset="0" stopColor="#343936" />
-            <stop offset=".48" stopColor="#171a18" />
-            <stop offset="1" stopColor="#050706" />
-          </radialGradient>
-          <radialGradient id="rimMetal" cx="35%" cy="28%">
-            <stop offset="0" stopColor="#f4f4f5" />
-            <stop offset=".34" stopColor="#a1a1aa" />
-            <stop offset=".72" stopColor="#3f3f46" />
-            <stop offset="1" stopColor="#18181b" />
-          </radialGradient>
-        </defs>
-        <circle cx="80" cy="80" r="74" fill="url(#tireRubber)" stroke="#3f4541" strokeWidth="2" />
-        <g opacity=".34" stroke="#737a75" strokeWidth="2.5">
-          {Array.from({ length: 20 }, (_, index) => <path key={index} d="M80 8v13" transform={`rotate(${index * 18} 80 80)`} />)}
-        </g>
-        <circle cx="80" cy="80" r="54" fill="#090b0a" stroke="#2c312e" strokeWidth="2" />
-        <g className="shop-wheel__rim">
-          <circle cx="80" cy="80" r="46" fill="url(#rimMetal)" stroke={accent} strokeOpacity=".7" strokeWidth="1.4" />
-          <circle cx="80" cy="80" r="38" fill="#111412" stroke="#d4d4d8" strokeOpacity=".45" />
-          {Array.from({ length: 8 }, (_, index) => <path key={index} d="M75 75 L62 39 Q80 32 98 39 L85 75 Z" transform={`rotate(${index * 45} 80 80)`} fill="#a1a1aa" stroke="#27272a" strokeWidth="1.5" />)}
-          <circle cx="80" cy="80" r="16" fill="#272b28" stroke={accent} strokeWidth="2" />
-          <circle cx="80" cy="80" r="6" fill={accent} />
-          {Array.from({ length: 5 }, (_, index) => <circle key={index} cx="80" cy="68" r="2.3" transform={`rotate(${index * 72} 80 80)`} fill="#090b0a" />)}
-        </g>
-        <path className="shop-wheel__shine" d="M31 58 A55 55 0 0 1 61 30" fill="none" stroke="white" strokeWidth="5" strokeLinecap="round" opacity=".3" />
-      </svg>
+      <img src="/assets/akron-real-tire-v1.png" alt="" decoding="async" draggable={false} style={{ filter: `drop-shadow(0 0 18px ${accent}18)` }} />
     </div>
   );
 }
