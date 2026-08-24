@@ -544,7 +544,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_STABLE_TIRE_V19";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_SHOP_VFX_V20";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -574,13 +574,20 @@ export function App() {
       .shop-wheel img { position:relative; z-index:2; display:block; width:100%; height:100%; object-fit:contain; user-select:none; -webkit-user-drag:none; }
       .shop-wheel--animated img { animation:wheel-real-spin 8s linear infinite; will-change:transform; }
       .shop-wheel::after { content:""; position:absolute; left:15%; right:15%; bottom:-5%; height:9%; border-radius:50%; background:rgba(0,0,0,.55); filter:blur(6px); z-index:-1; }
+      .shop-wheel--animated::before { content:""; position:absolute; z-index:3; inset:8%; border-radius:50%; background:linear-gradient(112deg,transparent 31%,rgba(255,255,255,.32) 46%,transparent 58%); mix-blend-mode:screen; opacity:0; animation:rim-light-sweep 4.8s ease-in-out infinite; pointer-events:none; }
       .tire-smoke { position:absolute; z-index:1; left:2%; bottom:5%; width:23%; aspect-ratio:1; border-radius:50%; background:radial-gradient(circle,rgba(226,232,240,.34) 0%,rgba(148,163,184,.14) 44%,transparent 72%); filter:blur(5px); opacity:0; animation:tire-smoke-rise 3.1s ease-out infinite; pointer-events:none; }
       .tire-smoke--two { left:9%; bottom:9%; width:18%; animation-delay:1s; animation-duration:3.5s; }
       .tire-smoke--three { left:-3%; bottom:13%; width:15%; animation-delay:2s; animation-duration:3.9s; }
+      .tire-spark { position:absolute; z-index:4; left:9%; bottom:9%; width:3px; height:3px; border-radius:50%; background:#bef264; box-shadow:0 0 8px #bef264,0 0 15px rgba(190,242,100,.55); opacity:0; animation:tire-spark-fly 2.5s ease-out infinite; pointer-events:none; }
+      .tire-spark--two { animation-delay:.7s; transform:scale(.7); }
+      .tire-spark--three { animation-delay:1.45s; transform:scale(.5); }
       .shop-wordmark { font-family:Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif; letter-spacing:-.035em; text-transform:uppercase; }
       .shop-hero { position:relative; overflow:hidden; isolation:isolate; background:linear-gradient(112deg,#121513 0%,#0d100f 62%,#0a0d0c 100%); border:1px solid rgba(255,255,255,.075); border-radius:18px; box-shadow:0 22px 60px rgba(0,0,0,.22); }
       .shop-hero::before { content:""; position:absolute; inset:0; z-index:-2; background:repeating-linear-gradient(118deg,transparent 0 34px,rgba(190,242,100,.04) 34px 37px,transparent 37px 72px); animation:tread-drive 16s linear infinite; }
       .shop-hero::after { content:""; position:absolute; width:340px; height:340px; right:-125px; top:-155px; z-index:-1; border-radius:50%; background:rgba(190,242,100,.11); filter:blur(70px); }
+      .shop-hero__beam { position:absolute; z-index:0; inset:-45% auto -45% -30%; width:18%; transform:rotate(14deg); background:linear-gradient(90deg,transparent,rgba(255,255,255,.075),transparent); filter:blur(2px); animation:shop-light-pass 7s ease-in-out infinite; pointer-events:none; }
+      .shop-hero__speed { position:absolute; z-index:0; right:9%; bottom:18%; width:24%; height:1px; background:linear-gradient(90deg,transparent,rgba(56,189,248,.36),transparent); opacity:.5; animation:speed-line 2.8s ease-in-out infinite; pointer-events:none; }
+      .shop-hero__speed--two { right:17%; bottom:28%; width:15%; animation-delay:.65s; }
       .shop-panel { border-color:rgba(255,255,255,.075) !important; background-color:#111412 !important; box-shadow:0 18px 48px rgba(0,0,0,.16); }
       .shop-ambient { position:fixed; inset:0; z-index:-1; overflow:hidden; pointer-events:none; }
       .shop-ambient::before, .shop-ambient::after { content:""; position:absolute; width:42vw; height:42vw; min-width:320px; min-height:320px; border-radius:999px; filter:blur(110px); opacity:.075; animation:ambient-drift 16s ease-in-out infinite alternate; }
@@ -594,6 +601,10 @@ export function App() {
       .live-dot::after { content:""; position:absolute; inset:-4px; border:1px solid currentColor; border-radius:999px; opacity:0; animation:live-ring 2.4s ease-out infinite; }
       @keyframes wheel-real-spin { to{transform:rotate(360deg)} }
       @keyframes tire-smoke-rise { 0%{opacity:0;transform:translate3d(8px,8px,0) scale(.35)} 18%{opacity:.48} 62%{opacity:.22} 100%{opacity:0;transform:translate3d(-34px,-48px,0) scale(1.8)} }
+      @keyframes rim-light-sweep { 0%,62%{opacity:0;transform:rotate(-24deg) scale(.85)} 72%{opacity:.65} 88%,100%{opacity:0;transform:rotate(32deg) scale(1.08)} }
+      @keyframes tire-spark-fly { 0%,72%{opacity:0;transform:translate3d(0,0,0) scale(.4)} 76%{opacity:1} 100%{opacity:0;transform:translate3d(-28px,-22px,0) scale(1.15)} }
+      @keyframes shop-light-pass { 0%,68%{left:-30%;opacity:0} 74%{opacity:.8} 92%,100%{left:122%;opacity:0} }
+      @keyframes speed-line { 0%,100%{opacity:.08;transform:translateX(12px) scaleX(.45)} 48%{opacity:.65;transform:translateX(-8px) scaleX(1)} }
       @keyframes tread-drive { to{background-position:144px 0} }
       @keyframes ambient-drift { from{transform:translate3d(-2%, -2%, 0) scale(.96)} to{transform:translate3d(9%, 7%, 0) scale(1.08)} }
       @keyframes button-sheen { 0%,70%{left:-38%;opacity:0} 76%{opacity:1} 94%,100%{left:118%;opacity:0} }
@@ -645,7 +656,7 @@ export function App() {
         .mobile-status-pulse { animation: mobile-status-pulse 2.2s ease-in-out infinite; }
       }
       @media (prefers-reduced-motion: reduce) {
-        .mobile-page > *, .mobile-status-pulse, .shop-wheel img, .tire-smoke, .shop-hero::before, .shop-ambient::before, .shop-ambient::after, .alive-scan::after, .live-dot::after { animation: none !important; }
+        .mobile-page > *, .mobile-status-pulse, .shop-wheel img, .shop-wheel--animated::before, .tire-smoke, .tire-spark, .shop-hero::before, .shop-hero__beam, .shop-hero__speed, .shop-ambient::before, .shop-ambient::after, .alive-scan::after, .live-dot::after { animation: none !important; }
         .mobile-surface, .mobile-tap { transition: none !important; }
       }
     `;
@@ -865,7 +876,7 @@ function LoadingScreen() {
 function ShopWheel({ className = "", accent = "#bef264", smoke = false, animated = false }: { className?: string; accent?: string; smoke?: boolean; animated?: boolean }) {
   return (
     <div aria-hidden="true" className={`shop-wheel ${animated ? "shop-wheel--animated" : ""} ${className}`}>
-      {smoke && <><span className="tire-smoke" /><span className="tire-smoke tire-smoke--two" /><span className="tire-smoke tire-smoke--three" /></>}
+      {smoke && <><span className="tire-smoke" /><span className="tire-smoke tire-smoke--two" /><span className="tire-smoke tire-smoke--three" /><span className="tire-spark" /><span className="tire-spark tire-spark--two" /><span className="tire-spark tire-spark--three" /></>}
       <img src="/assets/akron-real-tire-v1.png" alt="" decoding="async" draggable={false} style={{ filter: `drop-shadow(0 0 18px ${accent}18)` }} />
     </div>
   );
@@ -2344,6 +2355,9 @@ function ShopPageHeader({ eyebrow, title, description, meta, actions, tone = "em
   const colors = shopToneStyles[tone];
   return (
     <div className="shop-hero flex min-h-[150px] flex-col items-stretch gap-4 px-5 py-5 sm:min-h-[172px] sm:px-7 sm:py-6">
+      <span aria-hidden="true" className="shop-hero__beam" />
+      <span aria-hidden="true" className="shop-hero__speed" />
+      <span aria-hidden="true" className="shop-hero__speed shop-hero__speed--two" />
       <ShopWheel smoke animated className="absolute right-3 top-3 hidden w-24 opacity-90 min-[460px]:grid sm:right-6 sm:top-5 sm:w-28" accent={tone === "sky" ? "#38bdf8" : tone === "amber" ? "#fbbf24" : tone === "violet" ? "#a78bfa" : "#bef264"} />
       <div className="relative z-10 min-w-0 flex-1 min-[460px]:pr-28 sm:pr-32">
         <div className={`mb-2.5 flex items-center gap-2 text-[9px] font-bold uppercase tracking-[.19em] ${colors.text}`}><span className={`live-dot h-1.5 w-1.5 rounded-full ${colors.dot}`} />{eyebrow}</div>
