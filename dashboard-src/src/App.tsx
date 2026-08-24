@@ -515,8 +515,8 @@ const permissions: Record<string, Permission[]> = {
 };
 
 const navItems = [
-  { id: "tire-inventory" as Page, label: "Manage Inventory", shortLabel: "Manage", icon: Package, tone: "emerald" as const },
-  { id: "inventory-view" as Page, label: "Inventory", shortLabel: "Inventory", icon: Eye, tone: "sky" as const },
+  { id: "tire-inventory" as Page, label: "Manage Inventory", shortLabel: "Manage", icon: Package, tone: "sky" as const },
+  { id: "inventory-view" as Page, label: "Inventory", shortLabel: "Inventory", icon: Eye, tone: "emerald" as const },
   { id: "tire-sales" as Page, label: "Sales & Services", shortLabel: "Sales", icon: ShoppingCart, tone: "amber" as const },
   { id: "tire-sales-report" as Page, label: "Sales Reports", shortLabel: "Reports", icon: ClipboardList, tone: "violet" as const },
   { id: "settings" as Page, label: "Account", shortLabel: "Account", icon: Settings, tone: "zinc" as const },
@@ -530,6 +530,8 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   violet: { text: "text-violet-400", dot: "bg-violet-400", soft: "bg-violet-400/10", ring: "ring-violet-400/15" },
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
+
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_COLOR_V2";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -591,6 +593,23 @@ export function App() {
     `;
     document.head.appendChild(style);
     return () => style.remove();
+  }, []);
+
+  useEffect(() => {
+    const checkForUiUpdate = async () => {
+      try {
+        const response = await fetch(`/?app-update=${Date.now()}`, { cache: "no-store", headers: { "Cache-Control": "no-cache" } });
+        const latestHtml = await response.text();
+        if (!latestHtml.includes(SHOP_BUILD_MARKER)) window.location.reload();
+      } catch { /* Stay usable offline and try again later. */ }
+    };
+    const refreshWhenVisible = () => { if (document.visibilityState === "visible") void checkForUiUpdate(); };
+    const timer = window.setInterval(() => void checkForUiUpdate(), 60000);
+    document.addEventListener("visibilitychange", refreshWhenVisible);
+    return () => {
+      window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
+    };
   }, []);
 
   const showToast = (message: string) => {
@@ -2212,7 +2231,7 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <ShopPageHeader eyebrow="Inventory" title="Manage Inventory" description="Add tires, update stock, and keep pricing organized." actions={<Button className="w-full justify-center sm:w-auto" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record a Sale</Button>} />
+      <ShopPageHeader tone="sky" eyebrow="Inventory" title="Manage Inventory" description="Add tires, update stock, and keep pricing organized." actions={<Button className="w-full justify-center sm:w-auto" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record a Sale</Button>} />
       <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <TireStat label="Tire types" value={summary?.skus || 0} detail="Active inventory lines" />
         <TireStat label="Inventory quantity" value={summary?.units || 0} detail="Sets, pairs, and individual tires" />
@@ -2220,7 +2239,7 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
         <TireStat label="Retail value" value={money(summary?.inventoryValue || 0)} detail="Current price × quantity" />
       </div>
       <Card>
-        <CardHeader title={editingId ? "Edit Inventory Item" : "Add Inventory Item"} icon={<Package className="h-4 w-4 text-emerald-400" />} />
+        <CardHeader title={editingId ? "Edit Inventory Item" : "Add Inventory Item"} icon={<Package className="h-4 w-4 text-sky-400" />} />
         <form onSubmit={saveItem} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <label className="text-[11px] font-medium text-zinc-400">Size<input required name="size" value={form.size} onChange={updateField} placeholder="275/60R20" className={`mt-1.5 ${tireFieldClass}`} /></label>
           <label className="text-[11px] font-medium text-zinc-400">Sold as<select name="packageType" value={form.packageType} onChange={(event) => setForm((current) => ({ ...current, packageType: event.target.value }))} className={`mt-1.5 ${tireFieldClass}`}><option value="set4">Set of 4</option><option value="pair">Pair (2)</option><option value="single">Individual</option></select></label>
