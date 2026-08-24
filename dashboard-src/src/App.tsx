@@ -515,9 +515,9 @@ const permissions: Record<string, Permission[]> = {
 };
 
 const navItems = [
-  { id: "tire-inventory" as Page, label: "Manage Inventory", shortLabel: "Manage", icon: Package, tone: "sky" as const },
-  { id: "inventory-view" as Page, label: "Inventory", shortLabel: "Inventory", icon: Eye, tone: "emerald" as const },
-  { id: "tire-sales" as Page, label: "Sales & Services", shortLabel: "Sales", icon: ShoppingCart, tone: "amber" as const },
+  { id: "tire-inventory" as Page, label: "Stock Management", shortLabel: "Stock", icon: Package, tone: "sky" as const },
+  { id: "inventory-view" as Page, label: "View Inventory", shortLabel: "View", icon: Eye, tone: "emerald" as const },
+  { id: "tire-sales" as Page, label: "New Sale or Service", shortLabel: "New Sale", icon: ShoppingCart, tone: "amber" as const },
   { id: "tire-sales-report" as Page, label: "Sales Reports", shortLabel: "Reports", icon: ClipboardList, tone: "violet" as const },
   { id: "settings" as Page, label: "Account", shortLabel: "Account", icon: Settings, tone: "zinc" as const },
 ];
@@ -531,7 +531,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_COLOR_V2";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_EASY_SELECT_V3";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -2051,6 +2051,14 @@ function workTypeLabel(value?: string) {
   return "Tire Sale";
 }
 
+const workTypeOptions = [
+  { value: "tire", label: "Tire Sale", icon: Package },
+  { value: "mount", label: "Mount & Balance", icon: Settings },
+  { value: "plug", label: "Plug", icon: Zap },
+  { value: "rotation", label: "Rotation", icon: RefreshCw },
+  { value: "brakes", label: "Brakes", icon: ShieldAlert },
+];
+
 function easternDateKey(value: string | number | Date) {
   const parts = new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date(value));
   const get = (type: string) => parts.find((part) => part.type === type)?.value || "";
@@ -2403,6 +2411,12 @@ function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void;
     return !query || `${item.size} ${tirePackageLabel(item.packageType)}`.toLowerCase().includes(query);
   }).slice(0, 12);
 
+  const chooseWorkType = (serviceType: string) => {
+    setInventorySearch("");
+    setInventoryPickerOpen(false);
+    setForm((current) => ({ ...current, serviceType, inventoryId: "", unitPrice: "", adjustInventory: serviceType === "tire" && current.soldDate === easternDateKey(new Date()) }));
+  };
+
   return (
     <div className="space-y-4 sm:space-y-6">
       <ShopPageHeader tone="amber" eyebrow="Sales desk" title="Sales & Services" description="Record tire sales, mount and balance work, plugs, rotations, and brakes." actions={<Button className="w-full justify-center sm:w-auto" variant="secondary" onClick={() => setPage("tire-inventory")}><Package className="h-3.5 w-3.5" /> Open Inventory</Button>} />
@@ -2414,16 +2428,16 @@ function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void;
         <div className="mt-3 flex items-center justify-between rounded-lg bg-zinc-950/60 px-3 py-2.5 text-xs"><span className="text-zinc-500">Selected: {selectedPayment}</span><span className="font-semibold text-emerald-300">{money(selectedPaymentTotal)}</span></div>
       </section>
       <Card>
-        <CardHeader title={editingSaleId ? "Edit Work Entry" : "Record Work"} icon={<ShoppingCart className="h-4 w-4 text-emerald-400" />} action={<div className="text-right"><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Total</div><div className="text-sm font-semibold text-emerald-300">{money(currentSaleTotal)}</div></div>} />
+        <CardHeader title={editingSaleId ? "Edit Work Entry" : "Record Work"} icon={<ShoppingCart className="h-4 w-4 text-amber-400" />} action={<div className="text-right"><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Total</div><div className="text-sm font-semibold text-amber-300">{money(currentSaleTotal)}</div></div>} />
         <form onSubmit={recordSale} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <label className="text-[11px] font-medium text-zinc-400 sm:col-span-2">Work performed<select value={form.serviceType} onChange={(event) => { const serviceType = event.target.value; setInventorySearch(""); setInventoryPickerOpen(false); setForm((current) => ({ ...current, serviceType, inventoryId: "", unitPrice: "", adjustInventory: serviceType === "tire" && current.soldDate === easternDateKey(new Date()) })); }} className={`mt-1.5 ${tireFieldClass}`}><option value="tire">Tire Sale</option><option value="mount">Mount &amp; Balance</option><option value="plug">Plug</option><option value="rotation">Rotation</option><option value="brakes">Brakes</option></select></label>
+          <fieldset className="sm:col-span-2 lg:col-span-4"><legend className="text-[11px] font-medium text-zinc-400">What did you do?</legend><div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-5">{workTypeOptions.map((option) => { const Icon = option.icon; const selected = form.serviceType === option.value; return <button type="button" key={option.value} onClick={() => chooseWorkType(option.value)} className={`mobile-tap flex min-h-14 items-center gap-2 rounded-xl px-3 py-2.5 text-left text-[11px] font-semibold ring-1 ring-inset transition sm:flex-col sm:justify-center sm:text-center ${selected ? "bg-amber-400/10 text-amber-200 ring-amber-400/25" : "bg-[#0a0c0b] text-zinc-500 ring-white/[.06] hover:bg-white/[.035] hover:text-zinc-300"}`}><Icon className={`h-4 w-4 shrink-0 ${selected ? "text-amber-400" : "text-zinc-600"}`} /><span>{option.label}</span></button>; })}</div></fieldset>
           {isTireSale && <label className="relative text-[11px] font-medium text-zinc-400 sm:col-span-2">Tire size<input required autoComplete="off" value={inventorySearch} onFocus={() => setInventoryPickerOpen(true)} onBlur={() => window.setTimeout(() => setInventoryPickerOpen(false), 180)} onChange={(event) => { setInventorySearch(event.target.value); setInventoryPickerOpen(true); setForm((current) => ({ ...current, inventoryId: "", unitPrice: "" })); }} placeholder="Type a size, like 185/65/14" className={`mt-1.5 ${tireFieldClass}`} /><span className="mt-1 block text-[10px] font-normal text-zinc-600">{isCurrentTireSale ? "Today's sales must match an in-stock tire below." : "For an old sale, type any tire size—even if it is not in inventory."}</span>{inventoryPickerOpen && <div className="absolute left-0 right-0 top-full z-40 mt-1 max-h-72 overflow-y-auto rounded-xl border border-zinc-700 bg-zinc-900 p-1.5 shadow-2xl">{inventoryMatches.length ? inventoryMatches.map((item) => <button type="button" key={item.id} onPointerDown={(event) => event.preventDefault()} onClick={() => selectInventory(item.id)} className="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-3 text-left hover:bg-zinc-800"><span><span className="block font-mono text-xs font-semibold text-white">{item.size}</span><span className={`mt-1 inline-flex rounded border px-1.5 py-0.5 text-[9px] font-semibold ${tirePackageClass(item.packageType)}`}>{tirePackageLabel(item.packageType)}</span></span><span className="shrink-0 text-right"><span className={`block text-xs font-semibold ${item.quantity <= 5 ? "text-amber-300" : "text-emerald-300"}`}>{item.quantity} available</span><span className="mt-0.5 block text-[10px] text-zinc-500">{money(item.price)}</span></span></button>) : <div className="px-3 py-5 text-center text-xs text-zinc-500">{isCurrentTireSale ? "No matching in-stock tire found." : "No inventory match. Your typed size will still be saved with this old sale."}</div>}</div>}</label>}
           <label className="text-[11px] font-medium text-zinc-400">Quantity<input required min="1" step="1" type="number" value={form.quantity} onChange={(event) => setForm((current) => ({ ...current, quantity: event.target.value }))} className={`mt-1.5 ${tireFieldClass}`} /></label>
           <label className="text-[11px] font-medium text-zinc-400">Total charged<input required min="0" step="0.01" type="number" value={form.unitPrice} onChange={(event) => setForm((current) => ({ ...current, unitPrice: event.target.value }))} placeholder="Full amount charged" className={`mt-1.5 ${tireFieldClass}`} /></label>
           <label className="text-[11px] font-medium text-zinc-400">Date<input required type="date" max={easternDateKey(new Date())} value={form.soldDate} onChange={(event) => setForm((current) => ({ ...current, soldDate: event.target.value, adjustInventory: current.serviceType === "tire" && event.target.value === easternDateKey(new Date()) }))} className={`mt-1.5 ${tireFieldClass}`} /><span className="mt-1 block text-[10px] font-normal text-zinc-600">Past dates are allowed.</span></label>
           <label className="text-[11px] font-medium text-zinc-400">Sale time<input required type="time" value={form.soldTime} onChange={(event) => setForm((current) => ({ ...current, soldTime: event.target.value }))} className={`mt-1.5 ${tireFieldClass}`} /><span className="mt-1 block text-[10px] font-normal text-zinc-600">New sales use the actual current time.</span></label>
           <label className="text-[11px] font-medium text-zinc-400">Customer / invoice<input value={form.customer} onChange={(event) => setForm((current) => ({ ...current, customer: event.target.value }))} placeholder="Optional" className={`mt-1.5 ${tireFieldClass}`} /></label>
-          <label className="text-[11px] font-medium text-zinc-400">Payment<select value={form.paymentMethod} onChange={(event) => setForm((current) => ({ ...current, paymentMethod: event.target.value }))} className={`mt-1.5 ${tireFieldClass}`}><option>Cash</option><option>Cashapp</option><option>Chime</option></select></label>
+          <fieldset className="sm:col-span-2"><legend className="text-[11px] font-medium text-zinc-400">Payment method</legend><div className="mt-2 grid grid-cols-3 gap-2">{["Cash", "Cashapp", "Chime"].map((method) => <button type="button" key={method} onClick={() => setForm((current) => ({ ...current, paymentMethod: method }))} className={`mobile-tap min-h-11 rounded-xl px-2 text-[11px] font-semibold ring-1 ring-inset transition ${form.paymentMethod === method ? "bg-amber-400/10 text-amber-200 ring-amber-400/25" : "bg-[#0a0c0b] text-zinc-500 ring-white/[.06]"}`}>{method}</button>)}</div></fieldset>
           <label className="text-[11px] font-medium text-zinc-400">Notes<input value={form.notes} onChange={(event) => setForm((current) => ({ ...current, notes: event.target.value }))} placeholder="Optional" className={`mt-1.5 ${tireFieldClass}`} /></label>
           <div className={`rounded-lg border p-3 sm:col-span-2 lg:col-span-4 ${isTireSale && form.soldDate === easternDateKey(new Date()) ? "border-emerald-500/20 bg-emerald-500/10" : "border-blue-500/20 bg-blue-500/10"}`}><div className={`text-xs font-medium ${isTireSale && form.soldDate === easternDateKey(new Date()) ? "text-emerald-300" : "text-blue-300"}`}>{!isTireSale ? `${workTypeLabel(form.serviceType)} service — tire inventory will not change` : form.soldDate === easternDateKey(new Date()) ? "Today's tire sale — inventory will be reduced automatically" : "Past tire sale — current inventory will not be changed"}</div><div className="mt-1 text-[10px] leading-relaxed text-zinc-500">{!isTireSale ? "This job is saved in daily and monthly revenue totals without removing tires." : form.soldDate === easternDateKey(new Date()) ? "The quantity sold will be removed from this tire size." : "Your inventory is already current, so older sales are saved only in history."}</div></div>
           <div className="flex flex-col gap-2 sm:col-span-2 sm:flex-row lg:col-span-4"><button disabled={busy || tireSelectionMissing || !form.unitPrice} className="w-full rounded-lg bg-emerald-400 px-4 py-3 sm:w-auto sm:py-2.5 text-xs font-semibold text-zinc-950 transition hover:bg-emerald-300 disabled:opacity-40">{busy ? "Saving..." : editingSaleId ? "Save Changes" : `Record ${workTypeLabel(form.serviceType)} — ${money(currentSaleTotal)}`}</button>{editingSaleId && <button type="button" onClick={() => { setEditingSaleId(null); setInventorySearch(""); setForm((current) => ({ ...current, inventoryId: "", quantity: "1", unitPrice: "", soldTime: easternTimeValue(), customer: "", notes: "" })); }} className="rounded-lg px-4 py-2.5 text-xs font-medium text-zinc-400 hover:bg-zinc-800 hover:text-white">Cancel</button>}</div>
