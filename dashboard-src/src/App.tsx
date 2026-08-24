@@ -538,7 +538,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_CLEAN_SAVE_V14";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_STUDIO_V15";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -570,15 +570,20 @@ export function App() {
       .inflatable-guy__arm--right { transform-box:fill-box; transform-origin:left center; animation:guy-right-arm .92s ease-in-out infinite alternate; }
       .inflatable-guy__shine { fill:none; stroke:rgba(255,255,255,.26); stroke-width:4; stroke-linecap:round; }
       .inflatable-guy__crease { fill:none; stroke:rgba(0,0,0,.12); stroke-width:2; stroke-linecap:round; }
-      .shop-shell { isolation:isolate; }
+      .shop-shell { isolation:isolate; background:radial-gradient(circle at 75% -10%,rgba(52,211,153,.055),transparent 32%),#080a09; }
+      .shop-shell::after { content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.16; background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px); background-size:48px 48px; mask-image:linear-gradient(to bottom,#000,transparent 72%); }
       .shop-ambient { position:fixed; inset:0; z-index:-1; overflow:hidden; pointer-events:none; }
-      .shop-ambient::before, .shop-ambient::after { content:""; position:absolute; width:42vw; height:42vw; min-width:320px; min-height:320px; border-radius:999px; filter:blur(110px); opacity:.075; animation:ambient-drift 16s ease-in-out infinite alternate; }
-      .shop-ambient::before { left:-15vw; top:4vh; background:#38bdf8; }
-      .shop-ambient::after { right:-17vw; bottom:-5vh; background:#34d399; animation-delay:-8s; animation-direction:alternate-reverse; }
+      .shop-ambient::before, .shop-ambient::after { content:""; position:absolute; width:42vw; height:42vw; min-width:320px; min-height:320px; border-radius:999px; filter:blur(120px); opacity:.05; animation:ambient-drift 18s ease-in-out infinite alternate; }
+      .shop-ambient::before { left:-15vw; top:4vh; background:#34d399; }
+      .shop-ambient::after { right:-17vw; bottom:-5vh; background:#f59e0b; animation-delay:-9s; animation-direction:alternate-reverse; }
       .alive-scan { position:relative; overflow:hidden; }
       .alive-scan::after { content:""; position:absolute; inset:-2px auto -2px -38%; width:24%; transform:skewX(-18deg); background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent); animation:button-sheen 5.5s ease-in-out infinite; pointer-events:none; }
       .mobile-surface { position:relative; }
-      .mobile-surface::before { content:""; position:absolute; inset:0; border-radius:inherit; background:linear-gradient(115deg,rgba(255,255,255,.022),transparent 38%); pointer-events:none; }
+      .mobile-surface::before { content:""; position:absolute; inset:0; border-radius:inherit; background:linear-gradient(125deg,rgba(255,255,255,.032),transparent 34%); pointer-events:none; }
+      .shop-mark { position:relative; display:grid; place-items:center; overflow:hidden; border:1px solid rgba(52,211,153,.3); background:#111713; box-shadow:inset 0 0 0 1px rgba(255,255,255,.025),0 12px 30px rgba(0,0,0,.3); }
+      .shop-mark::after { content:""; position:absolute; inset:auto -8px -15px auto; width:30px; height:30px; border:7px solid rgba(52,211,153,.12); border-radius:999px; }
+      .section-rule { height:1px; background:linear-gradient(90deg,currentColor,rgba(255,255,255,.04) 38%,transparent); opacity:.5; }
+      .metric-noise { background-image:radial-gradient(circle at 82% 15%,rgba(255,255,255,.045),transparent 26%); }
       .live-dot { position:relative; }
       .live-dot::after { content:""; position:absolute; inset:-4px; border:1px solid currentColor; border-radius:999px; opacity:0; animation:live-ring 2.4s ease-out infinite; }
       @keyframes guy-sway { 0%,100%{transform:rotate(-4deg) translateY(1px)} 50%{transform:rotate(5deg) translateY(-2px)} }
@@ -590,8 +595,8 @@ export function App() {
       @keyframes live-ring { 0%{transform:scale(.65);opacity:.55} 75%,100%{transform:scale(1.9);opacity:0} }
       @keyframes shop-float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
       @media (min-width: 768px) {
-        .mobile-surface { transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease,background-color .22s ease; }
-        .mobile-surface:hover { transform:translateY(-2px); box-shadow:0 18px 48px rgba(0,0,0,.22); }
+        .mobile-surface { transition:transform .24s ease,border-color .24s ease,box-shadow .24s ease,background-color .24s ease; }
+        .mobile-surface:hover { transform:translateY(-2px); border-color:rgba(255,255,255,.1); box-shadow:0 20px 52px rgba(0,0,0,.24); }
       }
       @media print {
         @page { size:auto; margin:0; }
@@ -618,9 +623,10 @@ export function App() {
         .mobile-page > *:nth-child(4) { animation-delay: 115ms; }
         .mobile-page > *:nth-child(n+5) { animation-delay: 140ms; }
         .mobile-surface {
-          box-shadow: 0 12px 34px rgba(0,0,0,.16);
+          box-shadow: 0 10px 30px rgba(0,0,0,.15);
           transition: border-color .2s ease, background-color .2s ease, transform .16s ease;
         }
+        .shop-shell::after { background-size:32px 32px; opacity:.1; }
         button, a { -webkit-tap-highlight-color: transparent; }
         .mobile-tap { transition: transform .14s ease, background-color .18s ease, border-color .18s ease; }
         .mobile-tap:active { transform: scale(.97); }
@@ -802,9 +808,9 @@ export function App() {
       <div className="shop-ambient" aria-hidden="true" />
       <div className="flex min-h-screen">
         <Sidebar page={page} setPage={setPage} />
-        <main className="flex min-w-0 flex-1 flex-col lg:pl-60">
+        <main className="flex min-w-0 flex-1 flex-col lg:pl-64">
           <Topbar page={page} />
-          <div className="mx-auto w-full max-w-[1260px] flex-1 px-4 pb-28 pt-5 sm:px-6 sm:pb-28 sm:pt-7 lg:px-9 lg:pb-12 lg:pt-9">
+          <div className="mx-auto w-full max-w-[1320px] flex-1 px-4 pb-28 pt-5 sm:px-6 sm:pb-28 sm:pt-7 lg:px-8 lg:pb-12 lg:pt-8 xl:px-10">
             <AnimatePresence mode="wait">
               <motion.div className="mobile-page" key={page} initial={{ opacity: 0, y: reduceMotion ? 0 : 10, scale: reduceMotion ? 1 : 0.995 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: reduceMotion ? 0 : -6 }} transition={{ duration: reduceMotion ? 0 : 0.22, ease: [0.2, 0.8, 0.2, 1] }}>
                 {page === "tire-inventory" && <TireInventoryPage showToast={showToast} setPage={setPage} />}
@@ -862,6 +868,10 @@ function InflatableGuy({ color, className = "", delay = 0 }: { color: string; cl
   );
 }
 
+function ShopMark({ className = "" }: { className?: string }) {
+  return <div aria-hidden="true" className={`shop-mark rounded-xl ${className}`}><span className="relative z-10 text-[10px] font-black tracking-[-.06em] text-emerald-300">ATS</span></div>;
+}
+
 function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -914,12 +924,13 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
       <InflatableGuy color="#fbbf24" delay={-1.1} className="absolute bottom-5 right-[9vw] hidden opacity-70 sm:block" />
       <div className="w-full max-w-[420px]">
         <div className="mb-7 text-center">
+          <ShopMark className="mx-auto mb-4 h-14 w-14" />
           <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-[10px] font-bold uppercase tracking-[.24em] text-emerald-400">Akron</motion.div>
-          <div className="mt-1 text-sm font-semibold tracking-[-.015em] text-zinc-300">Tire Shop</div>
-          <h1 className="mt-5 text-[26px] font-semibold tracking-[-.035em] text-white sm:text-[30px]">Welcome back</h1>
+          <div className="mt-1 text-sm font-black tracking-[-.025em] text-zinc-200">TIRE SHOP</div>
+          <h1 className="mt-5 text-[28px] font-black tracking-[-.045em] text-white sm:text-[32px]">Welcome back</h1>
           <p className="mx-auto mt-2 max-w-xs text-xs leading-relaxed text-zinc-500">Secure access to inventory, sales, services, and reports.</p>
         </div>
-        <form onSubmit={login} className="rounded-2xl bg-[#111312] p-5 shadow-[0_24px_70px_rgba(0,0,0,.28)] ring-1 ring-inset ring-white/[.06] sm:p-6">
+        <form onSubmit={login} className="relative overflow-hidden rounded-2xl border border-white/[.07] bg-[#111512] p-5 shadow-[0_28px_80px_rgba(0,0,0,.32)] sm:p-6"><div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-400 via-emerald-300 to-sky-400" />
           <div className="space-y-4">
             {passkeyAvailable && <><button type="button" disabled={busy} onClick={() => void loginWithPasskey()} className="mobile-tap flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-400 py-3 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-300 active:scale-[0.98] disabled:opacity-40"><KeyRound className="h-4 w-4" />{busy ? "Waiting for passkey..." : "Continue with a passkey"}</button><p className="-mt-1 text-center text-[10px] leading-relaxed text-zinc-600">Use Face ID, Windows Hello, or a saved passkey.</p><div className="flex items-center gap-3"><span className="h-px flex-1 bg-white/[.07]" /><span className="text-[9px] font-medium uppercase tracking-[.14em] text-zinc-600">or use passcode</span><span className="h-px flex-1 bg-white/[.07]" /></div></>}
             <div>
@@ -940,31 +951,29 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
 
 function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) {
   return (
-    <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-white/[.055] bg-[#0b0d0c] px-4 py-6 lg:flex">
-      <div className="px-2">
-        <div className="text-[9px] font-bold uppercase tracking-[.22em] text-emerald-400">Akron</div>
-        <div className="mt-1 text-[17px] font-semibold tracking-[-.025em] text-white">Tire Shop</div>
-        <div className="mt-1 text-[10px] text-zinc-600">Inventory · Sales · Service</div>
+    <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-white/[.06] bg-[#0b0e0c]/95 px-4 py-5 shadow-[24px_0_70px_rgba(0,0,0,.12)] backdrop-blur-xl lg:flex">
+      <div className="flex items-center gap-3 px-2 py-1">
+        <ShopMark className="h-11 w-11 shrink-0" />
+        <div><div className="text-[9px] font-black uppercase tracking-[.22em] text-emerald-400">Akron</div><div className="mt-0.5 text-[18px] font-black tracking-[-.04em] text-white">Tire Shop</div><div className="mt-0.5 text-[9px] uppercase tracking-[.11em] text-zinc-600">Operations suite</div></div>
       </div>
-      <div className="my-6 h-px bg-white/[.055]" />
+      <div className="my-6 h-px bg-white/[.06]" />
+      <div className="mb-2 px-3 text-[8px] font-bold uppercase tracking-[.16em] text-zinc-700">Workspace</div>
       <nav className="space-y-1">
         {navItems.map((item) => {
           const Icon = item.icon;
           const active = item.id === page;
           const tone = shopToneStyles[item.tone];
           return (
-            <button key={item.id} onClick={() => setPage(item.id)} className={`group relative flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-xs font-medium transition ${active ? "bg-white/[.055] text-white" : "text-zinc-500 hover:bg-white/[.03] hover:text-zinc-200"}`}>
-              {active && <span className={`absolute inset-y-2 left-0 w-0.5 rounded-full ${tone.dot}`} />}
-              <Icon className={`h-4 w-4 ${active ? tone.text : "text-zinc-600 group-hover:text-zinc-400"}`} />
-              <span>{item.label}</span>
+            <button key={item.id} onClick={() => setPage(item.id)} className={`group relative flex min-h-11 w-full items-center gap-3 rounded-xl border px-3 text-left text-[11px] font-semibold transition ${active ? "border-white/[.07] bg-white/[.06] text-white shadow-[0_12px_25px_rgba(0,0,0,.12)]" : "border-transparent text-zinc-500 hover:bg-white/[.035] hover:text-zinc-200"}`}>
+              {active && <span className={`absolute inset-y-2.5 left-0 w-[3px] rounded-r-full ${tone.dot}`} />}
+              <span className={`grid h-7 w-7 place-items-center rounded-lg ${active ? tone.soft : "bg-white/[.025]"}`}><Icon className={`h-3.5 w-3.5 ${active ? tone.text : "text-zinc-600 group-hover:text-zinc-400"}`} /></span>
+              <span>{item.label}</span><ChevronRight className={`ml-auto h-3 w-3 transition ${active ? "text-zinc-500" : "-translate-x-1 opacity-0 group-hover:translate-x-0 group-hover:opacity-100"}`} />
             </button>
           );
         })}
       </nav>
-      <div className="mt-auto flex h-20 items-end justify-center overflow-visible"><div className="origin-bottom scale-[.45]"><InflatableGuy color="#38bdf8" /></div></div>
-      <div className="border-t border-white/[.055] px-2 pt-4">
-        <div className="flex items-center gap-2 text-[11px] font-medium text-zinc-300"><span className="h-2 w-2 rounded-full bg-emerald-400" /> Data saves automatically</div>
-        <p className="mt-1.5 text-[10px] leading-relaxed text-zinc-600">Inventory and sales are stored securely.</p>
+      <div className="mt-auto overflow-hidden rounded-2xl border border-white/[.06] bg-[#111512] p-3.5">
+        <div className="flex items-center gap-3"><div className="flex h-12 w-9 items-end justify-center overflow-visible"><div className="origin-bottom scale-[.25]"><InflatableGuy color="#38bdf8" /></div></div><div><div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.1em] text-zinc-300"><span className="live-dot h-1.5 w-1.5 rounded-full bg-emerald-400 text-emerald-400" /> Shop system online</div><p className="mt-1 text-[9px] leading-relaxed text-zinc-600">Inventory and sales save automatically.</p></div></div>
       </div>
     </aside>
   );
@@ -973,20 +982,19 @@ function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) 
 function Topbar({ page }: { page: Page }) {
   const currentNav = navItems.find((item) => item.id === page);
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center border-b border-white/[.055] bg-[#080a09]/92 px-4 backdrop-blur-xl sm:h-16 sm:px-6 lg:px-9">
-      <div className="lg:hidden"><div className="text-[9px] font-bold uppercase tracking-[.18em] text-emerald-400">Akron Tire Shop</div><div className="mt-0.5 text-sm font-semibold tracking-[-.015em] text-white">{currentNav?.label}</div></div>
-      <div className="hidden lg:block"><div className="text-sm font-semibold tracking-[-.01em] text-zinc-200">{currentNav?.label}</div></div>
-      <div className="ml-auto h-11 w-8 overflow-visible lg:hidden"><div className="origin-top-left scale-[.26]"><InflatableGuy color="#fbbf24" delay={-.6} /></div></div>
-      <div className="flex items-center gap-2 text-[9px] font-medium text-zinc-600 sm:text-[10px] lg:ml-auto"><span className="hidden font-mono tabular-nums text-zinc-500 sm:inline"><LiveShopTime /></span><span className="hidden h-3 w-px bg-white/[.08] sm:inline" /><span className="live-dot mobile-status-pulse h-1.5 w-1.5 rounded-full bg-emerald-400 text-emerald-400" /><span className="hidden min-[380px]:inline">All changes saved</span><span className="min-[380px]:hidden">Saved</span></div>
+    <header className="sticky top-0 z-30 flex h-16 items-center border-b border-white/[.055] bg-[#080a09]/88 px-4 backdrop-blur-2xl sm:px-6 lg:px-8 xl:px-10">
+      <div className="flex min-w-0 items-center gap-3 lg:hidden"><ShopMark className="h-9 w-9 shrink-0" /><div className="min-w-0"><div className="text-[8px] font-black uppercase tracking-[.18em] text-emerald-400">Akron Tire Shop</div><div className="mt-0.5 truncate text-[13px] font-bold tracking-[-.015em] text-white">{currentNav?.label}</div></div></div>
+      <div className="hidden lg:block"><div className="text-[9px] font-bold uppercase tracking-[.15em] text-zinc-600">Shop workspace</div><div className="mt-0.5 text-sm font-bold tracking-[-.02em] text-zinc-200">{currentNav?.label}</div></div>
+      <div className="ml-auto flex items-center gap-2"><div className="hidden rounded-lg border border-white/[.055] bg-white/[.025] px-3 py-2 font-mono text-[9px] tabular-nums text-zinc-500 sm:block"><LiveShopTime /></div><div className="flex items-center gap-2 rounded-lg border border-emerald-500/10 bg-emerald-500/[.035] px-2.5 py-2 text-[9px] font-semibold text-zinc-500 sm:px-3"><span className="live-dot mobile-status-pulse h-1.5 w-1.5 rounded-full bg-emerald-400 text-emerald-400" /><span className="hidden min-[380px]:inline">Changes saved</span><span className="min-[380px]:hidden">Saved</span></div></div>
     </header>
   );
 }
 
 function MobileShopNav({ page, setPage }: { page: Page; setPage: (p: Page) => void }) {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-white/[.07] bg-[#0b0d0c]/95 px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-1.5 shadow-[0_-10px_30px_rgba(0,0,0,.28)] backdrop-blur-2xl lg:hidden">
+    <nav className="fixed inset-x-3 bottom-[max(10px,env(safe-area-inset-bottom))] z-40 rounded-2xl border border-white/[.08] bg-[#111512]/94 p-1.5 shadow-[0_18px_55px_rgba(0,0,0,.55)] backdrop-blur-2xl lg:hidden">
       <div className="mx-auto grid max-w-lg grid-cols-5 gap-1">
-        {navItems.map((item) => { const Icon = item.icon; const active = item.id === page; const tone = shopToneStyles[item.tone]; return <motion.button whileTap={{ scale: 0.94 }} key={item.id} onClick={() => setPage(item.id)} className={`relative flex min-w-0 flex-col items-center gap-1 px-1 py-2 text-[9px] font-medium ${active ? "text-zinc-100" : "text-zinc-600"}`}>{active && <motion.span layoutId="mobile-shop-active" className={`absolute -top-1.5 h-0.5 w-7 rounded-full ${tone.dot}`} transition={{ type: "spring", stiffness: 420, damping: 34 }} />}<motion.span animate={{ y: active ? -1 : 0 }} transition={{ type: "spring", stiffness: 420, damping: 28 }}><Icon className={`h-[19px] w-[19px] ${active ? tone.text : "text-zinc-600"}`} /></motion.span><span className="truncate">{item.shortLabel}</span></motion.button>; })}
+        {navItems.map((item) => { const Icon = item.icon; const active = item.id === page; const tone = shopToneStyles[item.tone]; return <motion.button whileTap={{ scale: 0.94 }} key={item.id} onClick={() => setPage(item.id)} className={`relative flex min-h-[54px] min-w-0 flex-col items-center justify-center gap-1 rounded-xl px-1 text-[9px] font-semibold transition ${active ? `${tone.soft} text-zinc-100` : "text-zinc-600"}`}>{active && <motion.span layoutId="mobile-shop-active" className={`absolute inset-x-3 top-0 h-0.5 rounded-full ${tone.dot}`} transition={{ type: "spring", stiffness: 420, damping: 34 }} />}<motion.span animate={{ y: active ? -1 : 0, scale: active ? 1.04 : 1 }} transition={{ type: "spring", stiffness: 420, damping: 28 }}><Icon className={`h-[18px] w-[18px] ${active ? tone.text : "text-zinc-600"}`} /></motion.span><span className="truncate">{item.shortLabel}</span></motion.button>; })}
       </div>
     </nav>
   );
@@ -2334,26 +2342,30 @@ function easternDateTimeToIso(date: string, time: string) {
 function ShopPageHeader({ eyebrow, title, description, meta, actions, tone = "emerald" }: { eyebrow: string; title: string; description: string; meta?: React.ReactNode; actions?: React.ReactNode; tone?: ShopTone }) {
   const colors = shopToneStyles[tone];
   return (
-    <div className="flex flex-col gap-4 border-b border-white/[.055] pb-5 sm:flex-row sm:items-end sm:justify-between sm:pb-6">
+    <section className="mobile-surface metric-noise relative overflow-hidden rounded-2xl border border-white/[.07] bg-[#111512] p-5 sm:p-6 lg:p-7">
+      <div className={`absolute inset-y-0 left-0 w-1 ${colors.dot}`} />
+      <div className={`absolute -right-16 -top-24 h-52 w-52 rounded-full ${colors.soft} blur-3xl`} />
+      <div className="relative flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
       <div className="min-w-0">
-        <div className={`mb-2 flex items-center gap-2 text-[9px] font-semibold uppercase tracking-[.16em] ${colors.text}`}><span className={`live-dot h-1.5 w-1.5 rounded-full ${colors.dot}`} />{eyebrow}</div>
-        <h1 className="text-[24px] font-semibold tracking-[-.035em] text-white sm:text-[29px]">{title}</h1>
-        <p className="mt-1.5 max-w-2xl text-xs leading-relaxed text-zinc-500 sm:text-[13px]">{description}</p>
+        <div className={`mb-3 inline-flex items-center gap-2 rounded-full border border-white/[.06] bg-black/20 px-2.5 py-1.5 text-[8px] font-black uppercase tracking-[.16em] ${colors.text}`}><span className={`live-dot h-1.5 w-1.5 rounded-full ${colors.dot}`} />{eyebrow}</div>
+        <h1 className="text-[27px] font-black tracking-[-.045em] text-white sm:text-[34px]">{title}</h1>
+        <p className="mt-2 max-w-2xl text-xs leading-relaxed text-zinc-500 sm:text-[13px]">{description}</p>
         {meta}
       </div>
       {actions && <div className="shrink-0">{actions}</div>}
-    </div>
+      </div>
+    </section>
   );
 }
 
 function TireStat({ label, value, detail, featured = false, tone = "emerald" }: { label: string; value: string | number; detail: string; featured?: boolean; tone?: ShopTone }) {
   const colors = shopToneStyles[tone];
   return (
-    <div className={`mobile-surface relative min-w-0 overflow-hidden rounded-xl p-3.5 ring-1 ring-inset sm:p-4 ${featured ? `col-span-2 sm:col-span-1 ${colors.soft} ${colors.ring}` : "bg-[#111312] ring-white/[.055]"}`}>
-      <motion.span aria-hidden="true" className={`absolute inset-x-0 bottom-0 h-px origin-left ${featured ? colors.dot : "bg-white/[.08]"}`} initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: .55, ease: [0.2, 0.8, 0.2, 1] }} />
-      <div className="truncate text-[9px] font-semibold uppercase tracking-wider text-zinc-500 sm:text-[10px]">{label}</div>
-      <AnimatePresence mode="popLayout" initial={false}><motion.div key={String(value)} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: .18 }} className={`mt-1 truncate font-semibold tracking-[-.03em] sm:mt-1.5 sm:text-2xl ${featured ? `text-[28px] ${colors.text}` : "text-xl text-white"}`}>{value}</motion.div></AnimatePresence>
-      <div className={`mt-1 text-[11px] text-zinc-500 ${featured ? "block" : "hidden sm:block"}`}>{detail}</div>
+    <div className={`mobile-surface metric-noise relative min-w-0 overflow-hidden rounded-2xl border p-4 sm:p-5 ${featured ? `col-span-2 sm:col-span-1 border-white/[.08] ${colors.soft}` : "border-white/[.06] bg-[#111512]"}`}>
+      <div className="flex items-center justify-between gap-3"><div className="truncate text-[8px] font-black uppercase tracking-[.13em] text-zinc-600 sm:text-[9px]">{label}</div><span className={`h-1.5 w-5 rounded-full ${featured ? colors.dot : "bg-white/[.09]"}`} /></div>
+      <AnimatePresence mode="popLayout" initial={false}><motion.div key={String(value)} initial={{ opacity: 0, y: 5, scale: .98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: .2 }} className={`mt-3 truncate font-black tracking-[-.045em] ${featured ? `text-[30px] sm:text-[32px] ${colors.text}` : "text-[24px] text-white sm:text-[27px]"}`}>{value}</motion.div></AnimatePresence>
+      <div className={`mt-1.5 truncate text-[10px] text-zinc-600 ${featured ? "block" : "hidden sm:block"}`}>{detail}</div>
+      <motion.span aria-hidden="true" className={`absolute inset-x-0 bottom-0 h-0.5 origin-left ${featured ? colors.dot : "bg-white/[.06]"}`} initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: .65, ease: [0.2, 0.8, 0.2, 1] }} />
     </div>
   );
 }
@@ -2472,10 +2484,10 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
         <TireStat label="Low stock" value={summary?.lowStock || 0} detail="Five or fewer remaining" />
         <TireStat label="Retail value" value={money(summary?.inventoryValue || 0)} detail="Current price × quantity" />
       </div>
-      <section className="mobile-surface grid gap-3 rounded-2xl border border-sky-400/10 bg-sky-400/[.035] p-4 sm:grid-cols-[1fr_auto_auto] sm:items-center sm:p-5">
-        <div><div className="text-[9px] font-semibold uppercase tracking-[.16em] text-sky-300">Today at the shop</div><div className="mt-1 text-xs text-zinc-500">A quick live snapshot from today’s saved work.</div></div>
-        <div className="rounded-xl bg-[#090b0a]/70 px-4 py-3 ring-1 ring-inset ring-white/[.055]"><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Revenue</div><div className="mt-1 text-xl font-semibold text-white">{money(summary?.todayRevenue || 0)}</div></div>
-        <div className="rounded-xl bg-[#090b0a]/70 px-4 py-3 ring-1 ring-inset ring-white/[.055]"><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Jobs / items</div><div className="mt-1 text-xl font-semibold text-sky-300">{summary?.todayUnits || 0}</div></div>
+      <section className="mobile-surface metric-noise relative grid gap-4 overflow-hidden rounded-2xl border border-sky-400/15 bg-[#0c1517] p-4 sm:grid-cols-[1fr_auto_auto] sm:items-center sm:p-5">
+        <div className="absolute inset-y-0 left-0 w-1 bg-sky-400" /><div className="flex items-center gap-3 pl-1"><span className="grid h-10 w-10 place-items-center rounded-xl border border-sky-400/15 bg-sky-400/10"><Activity className="h-4 w-4 text-sky-300" /></span><div><div className="text-[9px] font-black uppercase tracking-[.16em] text-sky-300">Today at the shop</div><div className="mt-1 text-xs text-zinc-500">Live snapshot from saved work.</div></div></div>
+        <div className="rounded-xl border border-white/[.055] bg-black/25 px-4 py-3"><div className="text-[8px] font-black uppercase tracking-wider text-zinc-600">Revenue</div><div className="mt-1 text-xl font-black tracking-[-.035em] text-white">{money(summary?.todayRevenue || 0)}</div></div>
+        <div className="rounded-xl border border-white/[.055] bg-black/25 px-4 py-3"><div className="text-[8px] font-black uppercase tracking-wider text-zinc-600">Jobs / items</div><div className="mt-1 text-xl font-black tracking-[-.035em] text-sky-300">{summary?.todayUnits || 0}</div></div>
       </section>
       <Card>
         <CardHeader title={editingId ? "Edit Inventory Item" : "Add Inventory Item"} icon={<Package className="h-4 w-4 text-sky-400" />} />
@@ -2808,15 +2820,15 @@ function Toast({ message }: { message: string }) {
 }
 
 function Card({ children }: { children: React.ReactNode }) {
-  return <div className="mobile-surface rounded-xl bg-[#111312] p-4 ring-1 ring-inset ring-white/[.055] sm:rounded-2xl sm:p-5">{children}</div>;
+  return <div className="mobile-surface rounded-2xl border border-white/[.065] bg-[#111512] p-4 shadow-[0_18px_50px_rgba(0,0,0,.12)] sm:p-5 lg:p-6">{children}</div>;
 }
 
 function CardHeader({ title, icon, action }: { title: string; icon: React.ReactNode; action?: React.ReactNode }) {
   return (
     <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex items-center gap-2">
-        {icon}
-        <h2 className="text-sm font-semibold tracking-[-.01em] text-zinc-100">{title}</h2>
+      <div className="flex items-center gap-3">
+        <span className="grid h-8 w-8 place-items-center rounded-lg border border-white/[.06] bg-white/[.035]">{icon}</span>
+        <div><h2 className="text-sm font-bold tracking-[-.02em] text-zinc-100">{title}</h2><div className="mt-1 h-px w-8 bg-emerald-400/45" /></div>
       </div>
       {action}
     </div>
@@ -2831,7 +2843,7 @@ function Button({ children, variant = "primary", onClick, disabled, className = 
     danger: "bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20",
   };
   return (
-    <button disabled={disabled} onClick={onClick} className={`mobile-tap ${variant === "primary" ? "alive-scan" : ""} inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg px-3.5 py-2.5 text-xs font-semibold transition active:scale-[0.97] disabled:opacity-40 sm:rounded-xl ${styles[variant]} ${className}`}>
+    <button disabled={disabled} onClick={onClick} className={`mobile-tap ${variant === "primary" ? "alive-scan shadow-[0_10px_28px_rgba(52,211,153,.12)]" : ""} inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-[11px] font-bold transition active:scale-[0.97] disabled:opacity-40 ${styles[variant]} ${className}`}>
       {children}
     </button>
   );
