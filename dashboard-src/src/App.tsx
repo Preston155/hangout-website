@@ -544,7 +544,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_TIRE_SMOKE_V18";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_STABLE_TIRE_V19";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -571,11 +571,12 @@ export function App() {
     style.textContent = `
       .shop-shell { isolation:isolate; }
       .shop-wheel { position:relative; display:grid; place-items:center; aspect-ratio:1; filter:drop-shadow(0 18px 22px rgba(0,0,0,.48)); }
-      .shop-wheel img { position:relative; z-index:2; display:block; width:100%; height:100%; object-fit:contain; user-select:none; -webkit-user-drag:none; animation:wheel-real-spin 5.5s linear infinite; will-change:transform; }
+      .shop-wheel img { position:relative; z-index:2; display:block; width:100%; height:100%; object-fit:contain; user-select:none; -webkit-user-drag:none; }
+      .shop-wheel--animated img { animation:wheel-real-spin 8s linear infinite; will-change:transform; }
       .shop-wheel::after { content:""; position:absolute; left:15%; right:15%; bottom:-5%; height:9%; border-radius:50%; background:rgba(0,0,0,.55); filter:blur(6px); z-index:-1; }
-      .tire-smoke { position:absolute; z-index:1; left:-4%; bottom:3%; width:25%; aspect-ratio:1; border-radius:50%; background:radial-gradient(circle,rgba(226,232,240,.42) 0%,rgba(148,163,184,.18) 43%,transparent 72%); filter:blur(5px); opacity:0; animation:tire-smoke-rise 2.8s ease-out infinite; pointer-events:none; }
-      .tire-smoke--two { left:5%; bottom:10%; width:19%; animation-delay:.8s; animation-duration:3.2s; }
-      .tire-smoke--three { left:-8%; bottom:16%; width:16%; animation-delay:1.65s; animation-duration:3.6s; }
+      .tire-smoke { position:absolute; z-index:1; left:2%; bottom:5%; width:23%; aspect-ratio:1; border-radius:50%; background:radial-gradient(circle,rgba(226,232,240,.34) 0%,rgba(148,163,184,.14) 44%,transparent 72%); filter:blur(5px); opacity:0; animation:tire-smoke-rise 3.1s ease-out infinite; pointer-events:none; }
+      .tire-smoke--two { left:9%; bottom:9%; width:18%; animation-delay:1s; animation-duration:3.5s; }
+      .tire-smoke--three { left:-3%; bottom:13%; width:15%; animation-delay:2s; animation-duration:3.9s; }
       .shop-wordmark { font-family:Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif; letter-spacing:-.035em; text-transform:uppercase; }
       .shop-hero { position:relative; overflow:hidden; isolation:isolate; background:linear-gradient(112deg,#121513 0%,#0d100f 62%,#0a0d0c 100%); border:1px solid rgba(255,255,255,.075); border-radius:18px; box-shadow:0 22px 60px rgba(0,0,0,.22); }
       .shop-hero::before { content:""; position:absolute; inset:0; z-index:-2; background:repeating-linear-gradient(118deg,transparent 0 34px,rgba(190,242,100,.04) 34px 37px,transparent 37px 72px); animation:tread-drive 16s linear infinite; }
@@ -861,9 +862,9 @@ function LoadingScreen() {
   );
 }
 
-function ShopWheel({ className = "", accent = "#bef264", smoke = false }: { className?: string; accent?: string; smoke?: boolean }) {
+function ShopWheel({ className = "", accent = "#bef264", smoke = false, animated = false }: { className?: string; accent?: string; smoke?: boolean; animated?: boolean }) {
   return (
-    <div aria-hidden="true" className={`shop-wheel ${className}`}>
+    <div aria-hidden="true" className={`shop-wheel ${animated ? "shop-wheel--animated" : ""} ${className}`}>
       {smoke && <><span className="tire-smoke" /><span className="tire-smoke tire-smoke--two" /><span className="tire-smoke tire-smoke--three" /></>}
       <img src="/assets/akron-real-tire-v1.png" alt="" decoding="async" draggable={false} style={{ filter: `drop-shadow(0 0 18px ${accent}18)` }} />
     </div>
@@ -2343,7 +2344,7 @@ function ShopPageHeader({ eyebrow, title, description, meta, actions, tone = "em
   const colors = shopToneStyles[tone];
   return (
     <div className="shop-hero flex min-h-[150px] flex-col items-stretch gap-4 px-5 py-5 sm:min-h-[172px] sm:px-7 sm:py-6">
-      <ShopWheel smoke className="absolute right-3 top-3 hidden w-24 opacity-90 min-[460px]:grid sm:right-6 sm:top-5 sm:w-28" accent={tone === "sky" ? "#38bdf8" : tone === "amber" ? "#fbbf24" : tone === "violet" ? "#a78bfa" : "#bef264"} />
+      <ShopWheel smoke animated className="absolute right-3 top-3 hidden w-24 opacity-90 min-[460px]:grid sm:right-6 sm:top-5 sm:w-28" accent={tone === "sky" ? "#38bdf8" : tone === "amber" ? "#fbbf24" : tone === "violet" ? "#a78bfa" : "#bef264"} />
       <div className="relative z-10 min-w-0 flex-1 min-[460px]:pr-28 sm:pr-32">
         <div className={`mb-2.5 flex items-center gap-2 text-[9px] font-bold uppercase tracking-[.19em] ${colors.text}`}><span className={`live-dot h-1.5 w-1.5 rounded-full ${colors.dot}`} />{eyebrow}</div>
         <h1 className="shop-wordmark text-[31px] leading-[.95] text-white sm:text-[42px]">{title}</h1>
@@ -2766,7 +2767,7 @@ function TireSalesReportPage({ showToast, setPage }: { showToast: (m: string) =>
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <ShopPageHeader tone="violet" eyebrow="Reporting" title="Sales Reports" description="Monthly tire sales, services, and payment totals." meta={lastUpdated && <p className="mt-1.5 text-[10px] text-zinc-600">Updated {lastUpdated.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}</p>} actions={<div className="grid grid-cols-3 gap-2 sm:flex"><Button className="justify-center" variant="ghost" disabled={refreshing} onClick={() => void load()}><RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} /> Refresh</Button><Button className="justify-center" variant="secondary" disabled={!sales.length} onClick={exportMonth}><FileText className="h-3.5 w-3.5" /> Export CSV</Button><Button className="justify-center" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record Work</Button></div>} />
+      <ShopPageHeader tone="violet" eyebrow="Reporting" title="Sales Reports" description="Monthly tire sales, services, and payment totals." meta={lastUpdated && <p className="mt-1.5 text-[10px] text-zinc-600">Updated {lastUpdated.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}</p>} actions={<div className="grid grid-cols-2 gap-2 min-[520px]:grid-cols-3 sm:flex"><Button className="justify-center" variant="ghost" disabled={refreshing} onClick={() => void load()}><RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} /> Refresh</Button><Button className="justify-center" variant="secondary" disabled={!sales.length} onClick={exportMonth}><FileText className="h-3.5 w-3.5" /> Export CSV</Button><Button className="col-span-2 justify-center min-[520px]:col-span-1" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record Work</Button></div>} />
 
       <section className="mobile-surface rounded-2xl border border-white/[.065] bg-[#111412] p-4 sm:p-5">
         <div className="flex items-center justify-between gap-3"><button aria-label="Previous month" onClick={() => setMonthKey((current) => shiftMonthKey(current, -1))} className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-zinc-800 bg-zinc-950 text-zinc-300 transition hover:border-zinc-600 hover:text-white"><ChevronRight className="h-5 w-5 rotate-180" /></button><div className="min-w-0 text-center"><div className="text-[10px] font-semibold uppercase tracking-wider text-emerald-400">Viewing month</div><h2 className="mt-1 truncate text-xl font-semibold text-white sm:text-2xl">{monthKeyLabel(monthKey)}</h2></div><button aria-label="Next month" disabled={!canGoForward} onClick={() => setMonthKey((current) => shiftMonthKey(current, 1))} className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-zinc-800 bg-zinc-950 text-zinc-300 transition hover:border-zinc-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"><ChevronRight className="h-5 w-5" /></button></div>
