@@ -722,12 +722,12 @@ export function App() {
 
   return (
     <DashboardClockProvider>
-    <div className="min-h-screen bg-[#090b0a] font-sans text-zinc-100 antialiased selection:bg-emerald-500/25 selection:text-white">
+    <div className="min-h-screen bg-[#080a09] font-sans text-zinc-100 antialiased selection:bg-emerald-400/25 selection:text-white">
       <div className="flex min-h-screen">
         <Sidebar page={page} setPage={setPage} />
-        <main className="flex min-w-0 flex-1 flex-col lg:pl-64">
+        <main className="flex min-w-0 flex-1 flex-col lg:pl-60">
           <Topbar page={page} />
-          <div className="mx-auto w-full max-w-[1280px] flex-1 px-4 pb-28 pt-5 sm:px-6 sm:pb-28 sm:pt-7 lg:px-8 lg:pb-10 lg:pt-8">
+          <div className="mx-auto w-full max-w-[1260px] flex-1 px-4 pb-28 pt-5 sm:px-6 sm:pb-28 sm:pt-7 lg:px-9 lg:pb-12 lg:pt-9">
             <AnimatePresence mode="wait">
               <motion.div className="mobile-page" key={page} initial={{ opacity: 0, y: reduceMotion ? 0 : 10, scale: reduceMotion ? 1 : 0.995 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: reduceMotion ? 0 : -6 }} transition={{ duration: reduceMotion ? 0 : 0.22, ease: [0.2, 0.8, 0.2, 1] }}>
                 {page === "tire-inventory" && <TireInventoryPage showToast={showToast} setPage={setPage} />}
@@ -809,12 +809,12 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
     <div className="grid min-h-screen place-items-center bg-[#090b0a] p-4 text-zinc-100 sm:p-6">
       <div className="w-full max-w-[420px]">
         <div className="mb-7 text-center">
-          <div className="mx-auto mb-4 grid h-11 w-11 place-items-center rounded-xl border border-emerald-400/20 bg-emerald-400/[.07] text-xs font-bold text-emerald-300">AT</div>
-          <div className="text-[10px] font-bold uppercase tracking-[.2em] text-emerald-400">Akron Tire Shop</div>
-          <h1 className="mt-2 text-2xl font-semibold tracking-[-.025em] text-white sm:text-[28px]">Shop Management</h1>
+          <div className="text-[10px] font-bold uppercase tracking-[.24em] text-emerald-400">Akron</div>
+          <div className="mt-1 text-sm font-semibold tracking-[-.015em] text-zinc-300">Tire Shop</div>
+          <h1 className="mt-5 text-[26px] font-semibold tracking-[-.035em] text-white sm:text-[30px]">Welcome back</h1>
           <p className="mx-auto mt-2 max-w-xs text-xs leading-relaxed text-zinc-500">Secure access to inventory, sales, services, and reports.</p>
         </div>
-        <form onSubmit={login} className="rounded-2xl border border-white/[.08] bg-[#111412] p-5 shadow-[0_24px_70px_rgba(0,0,0,.34)] sm:p-6">
+        <form onSubmit={login} className="rounded-2xl bg-[#111312] p-5 shadow-[0_24px_70px_rgba(0,0,0,.28)] ring-1 ring-inset ring-white/[.06] sm:p-6">
           <div className="space-y-4">
             {passkeyAvailable && <><button type="button" disabled={busy} onClick={() => void loginWithPasskey()} className="mobile-tap flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-400 py-3 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-300 active:scale-[0.98] disabled:opacity-40"><KeyRound className="h-4 w-4" />{busy ? "Waiting for passkey..." : "Continue with a passkey"}</button><p className="-mt-1 text-center text-[10px] leading-relaxed text-zinc-600">Use Face ID, Windows Hello, or a saved passkey.</p><div className="flex items-center gap-3"><span className="h-px flex-1 bg-white/[.07]" /><span className="text-[9px] font-medium uppercase tracking-[.14em] text-zinc-600">or use passcode</span><span className="h-px flex-1 bg-white/[.07]" /></div></>}
             <div>
@@ -822,7 +822,7 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
               <input autoFocus={!passkeyAvailable} type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••••••" className="w-full rounded-xl border border-white/[.09] bg-[#090b0a] px-3.5 py-3 text-xs text-zinc-200 placeholder-zinc-700 outline-none transition focus:border-emerald-400/45 focus:ring-2 focus:ring-emerald-400/10" />
             </div>
             {error && <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-2.5 text-xs text-red-400">{error}</div>}
-            <button disabled={busy || !password} className="mobile-tap w-full rounded-xl border border-white/[.08] bg-white/[.07] py-3 text-xs font-semibold text-zinc-100 transition hover:bg-white/[.1] active:scale-[0.98] disabled:opacity-40">
+            <button disabled={busy || !password} className="mobile-tap w-full rounded-xl bg-white/[.07] py-3 text-xs font-semibold text-zinc-100 ring-1 ring-inset ring-white/[.07] transition hover:bg-white/[.1] active:scale-[0.98] disabled:opacity-40">
               {busy ? "Signing in..." : "Enter Shop"}
             </button>
           </div>
@@ -835,18 +835,19 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
 
 function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) {
   return (
-    <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-white/[.06] bg-[#0d100e] px-4 py-5 lg:flex">
-      <div className="flex items-center gap-3 px-2">
-        <div className="grid h-10 w-10 place-items-center rounded-xl border border-emerald-400/15 bg-emerald-400/[.06] text-[11px] font-bold text-emerald-300">AT</div>
-        <div><div className="text-sm font-semibold tracking-tight text-white">Akron Tire Shop</div><div className="mt-0.5 text-[10px] text-zinc-600">Inventory & sales</div></div>
+    <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-white/[.055] bg-[#0b0d0c] px-4 py-6 lg:flex">
+      <div className="px-2">
+        <div className="text-[9px] font-bold uppercase tracking-[.22em] text-emerald-400">Akron</div>
+        <div className="mt-1 text-[17px] font-semibold tracking-[-.025em] text-white">Tire Shop</div>
+        <div className="mt-1 text-[10px] text-zinc-600">Inventory · Sales · Service</div>
       </div>
-      <div className="my-5 h-px bg-white/[.07]" />
+      <div className="my-6 h-px bg-white/[.055]" />
       <nav className="space-y-1">
         {navItems.map((item) => {
           const Icon = item.icon;
           const active = item.id === page;
           return (
-            <button key={item.id} onClick={() => setPage(item.id)} className={`group relative flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-xs font-medium transition ${active ? "bg-white/[.065] text-white" : "text-zinc-500 hover:bg-white/[.035] hover:text-zinc-200"}`}>
+            <button key={item.id} onClick={() => setPage(item.id)} className={`group relative flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-xs font-medium transition ${active ? "bg-white/[.055] text-white" : "text-zinc-500 hover:bg-white/[.03] hover:text-zinc-200"}`}>
               {active && <span className="absolute inset-y-2 left-0 w-0.5 rounded-full bg-emerald-400" />}
               <Icon className={`h-4 w-4 ${active ? "text-emerald-400" : "text-zinc-600 group-hover:text-zinc-400"}`} />
               <span>{item.label}</span>
@@ -854,9 +855,9 @@ function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) 
           );
         })}
       </nav>
-      <div className="mt-auto rounded-xl border border-white/[.06] bg-white/[.02] p-3.5">
+      <div className="mt-auto border-t border-white/[.055] px-2 pt-4">
         <div className="flex items-center gap-2 text-[11px] font-medium text-zinc-300"><span className="h-2 w-2 rounded-full bg-emerald-400" /> Data saves automatically</div>
-        <p className="mt-1.5 text-[10px] leading-relaxed text-zinc-600">Inventory, sales, and service history are stored securely.</p>
+        <p className="mt-1.5 text-[10px] leading-relaxed text-zinc-600">Inventory and sales are stored securely.</p>
       </div>
     </aside>
   );
@@ -865,19 +866,19 @@ function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) 
 function Topbar({ page }: { page: Page }) {
   const currentNav = navItems.find((item) => item.id === page);
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center border-b border-white/[.07] bg-[#0a0c0b]/90 px-4 shadow-[0_8px_28px_rgba(0,0,0,.12)] backdrop-blur-xl sm:px-6 lg:shadow-none lg:px-8">
-      <div className="flex items-center gap-2.5 lg:hidden"><div className="grid h-8 w-8 place-items-center rounded-lg border border-emerald-400/15 bg-emerald-400/[.07] text-[10px] font-bold text-emerald-300">AT</div><div><div className="text-[9px] font-bold uppercase tracking-[.18em] text-emerald-400">Akron Tire Shop</div><div className="mt-0.5 text-sm font-semibold text-white">{currentNav?.label}</div></div></div>
-      <div className="hidden lg:block"><div className="text-sm font-semibold text-white">{currentNav?.label}</div><div className="mt-0.5 text-[10px] text-zinc-600">Akron Tire Shop</div></div>
-      <div className="ml-auto flex items-center gap-2 rounded-full border border-white/[.06] bg-white/[.025] px-2.5 py-1.5 text-[9px] font-medium text-zinc-500 sm:text-[10px]"><span className="mobile-status-pulse h-1.5 w-1.5 rounded-full bg-emerald-400" /><span className="hidden min-[390px]:inline">Saved automatically</span><span className="min-[390px]:hidden">Saved</span></div>
+    <header className="sticky top-0 z-30 flex h-14 items-center border-b border-white/[.055] bg-[#080a09]/92 px-4 backdrop-blur-xl sm:h-16 sm:px-6 lg:px-9">
+      <div className="lg:hidden"><div className="text-[9px] font-bold uppercase tracking-[.18em] text-emerald-400">Akron Tire Shop</div><div className="mt-0.5 text-sm font-semibold tracking-[-.015em] text-white">{currentNav?.label}</div></div>
+      <div className="hidden lg:block"><div className="text-sm font-semibold tracking-[-.01em] text-zinc-200">{currentNav?.label}</div></div>
+      <div className="ml-auto flex items-center gap-2 text-[9px] font-medium text-zinc-600 sm:text-[10px]"><span className="mobile-status-pulse h-1.5 w-1.5 rounded-full bg-emerald-400" /><span className="hidden min-[380px]:inline">All changes saved</span><span className="min-[380px]:hidden">Saved</span></div>
     </header>
   );
 }
 
 function MobileShopNav({ page, setPage }: { page: Page; setPage: (p: Page) => void }) {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-white/[.08] bg-[#0d100e]/90 px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-2 shadow-[0_-14px_36px_rgba(0,0,0,.3)] backdrop-blur-2xl lg:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-white/[.07] bg-[#0b0d0c]/95 px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-1.5 shadow-[0_-10px_30px_rgba(0,0,0,.28)] backdrop-blur-2xl lg:hidden">
       <div className="mx-auto grid max-w-lg grid-cols-5 gap-1">
-        {navItems.map((item) => { const Icon = item.icon; const active = item.id === page; return <motion.button whileTap={{ scale: 0.92 }} key={item.id} onClick={() => setPage(item.id)} className={`relative flex min-w-0 flex-col items-center gap-1 overflow-hidden rounded-xl px-1 py-2 text-[9px] font-medium ${active ? "text-emerald-300" : "text-zinc-600"}`}>{active && <motion.span layoutId="mobile-shop-active" className="absolute inset-0 rounded-xl border border-emerald-400/10 bg-emerald-500/10" transition={{ type: "spring", stiffness: 420, damping: 34 }} />}<motion.span className="relative" animate={{ y: active ? -1 : 0, scale: active ? 1.08 : 1 }} transition={{ type: "spring", stiffness: 420, damping: 28 }}><Icon className={`h-[18px] w-[18px] ${active ? "text-emerald-400" : "text-zinc-600"}`} /></motion.span><span className="relative truncate">{item.shortLabel}</span>{active && <motion.span layoutId="mobile-shop-dot" className="absolute bottom-0.5 h-0.5 w-4 rounded-full bg-emerald-400" />}</motion.button>; })}
+        {navItems.map((item) => { const Icon = item.icon; const active = item.id === page; return <motion.button whileTap={{ scale: 0.94 }} key={item.id} onClick={() => setPage(item.id)} className={`relative flex min-w-0 flex-col items-center gap-1 px-1 py-2 text-[9px] font-medium ${active ? "text-zinc-100" : "text-zinc-600"}`}>{active && <motion.span layoutId="mobile-shop-active" className="absolute -top-1.5 h-0.5 w-7 rounded-full bg-emerald-400" transition={{ type: "spring", stiffness: 420, damping: 34 }} />}<motion.span animate={{ y: active ? -1 : 0 }} transition={{ type: "spring", stiffness: 420, damping: 28 }}><Icon className={`h-[19px] w-[19px] ${active ? "text-emerald-400" : "text-zinc-600"}`} /></motion.span><span className="truncate">{item.shortLabel}</span></motion.button>; })}
       </div>
     </nav>
   );
@@ -2096,11 +2097,11 @@ function easternDateTimeToIso(date: string, time: string) {
 
 function ShopPageHeader({ eyebrow, title, description, meta, actions }: { eyebrow: string; title: string; description: string; meta?: React.ReactNode; actions?: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-4 border-b border-white/[.06] pb-5 sm:flex-row sm:items-end sm:justify-between sm:pb-6">
+    <div className="flex flex-col gap-4 border-b border-white/[.055] pb-5 sm:flex-row sm:items-end sm:justify-between sm:pb-6">
       <div className="min-w-0">
-        <div className="mb-1.5 text-[9px] font-semibold uppercase tracking-[.18em] text-emerald-400/80">{eyebrow}</div>
-        <h1 className="text-[22px] font-semibold tracking-[-.025em] text-white sm:text-[26px]">{title}</h1>
-        <p className="mt-1.5 max-w-2xl text-xs leading-relaxed text-zinc-500">{description}</p>
+        <div className="mb-2 flex items-center gap-2 text-[9px] font-semibold uppercase tracking-[.16em] text-zinc-600"><span className="h-1 w-1 rounded-full bg-emerald-400" />{eyebrow}</div>
+        <h1 className="text-[24px] font-semibold tracking-[-.035em] text-white sm:text-[29px]">{title}</h1>
+        <p className="mt-1.5 max-w-2xl text-xs leading-relaxed text-zinc-500 sm:text-[13px]">{description}</p>
         {meta}
       </div>
       {actions && <div className="shrink-0">{actions}</div>}
@@ -2108,12 +2109,12 @@ function ShopPageHeader({ eyebrow, title, description, meta, actions }: { eyebro
   );
 }
 
-function TireStat({ label, value, detail }: { label: string; value: string | number; detail: string }) {
+function TireStat({ label, value, detail, featured = false }: { label: string; value: string | number; detail: string; featured?: boolean }) {
   return (
-    <div className="mobile-surface min-w-0 rounded-xl border border-white/[.065] bg-[#111412] p-3.5 shadow-sm sm:p-4">
+    <div className={`mobile-surface relative min-w-0 overflow-hidden rounded-xl bg-[#111312] p-3.5 ring-1 ring-inset ring-white/[.055] sm:p-4 ${featured ? "col-span-2 sm:col-span-1" : ""}`}>
       <div className="truncate text-[9px] font-semibold uppercase tracking-wider text-zinc-500 sm:text-[10px]">{label}</div>
-      <AnimatePresence mode="popLayout" initial={false}><motion.div key={String(value)} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: .18 }} className="mt-1 truncate text-xl font-semibold tracking-tight text-white sm:mt-1.5 sm:text-2xl">{value}</motion.div></AnimatePresence>
-      <div className="mt-1 hidden text-[11px] text-zinc-500 sm:block">{detail}</div>
+      <AnimatePresence mode="popLayout" initial={false}><motion.div key={String(value)} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: .18 }} className={`mt-1 truncate font-semibold tracking-[-.03em] text-white sm:mt-1.5 sm:text-2xl ${featured ? "text-[28px]" : "text-xl"}`}>{value}</motion.div></AnimatePresence>
+      <div className={`mt-1 text-[11px] text-zinc-500 ${featured ? "block" : "hidden sm:block"}`}>{detail}</div>
     </div>
   );
 }
@@ -2199,7 +2200,7 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <ShopPageHeader eyebrow="Inventory" title="Manage Inventory" description="Add tires, update stock, and keep pricing organized." actions={<Button className="w-full justify-center sm:w-auto" variant="secondary" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Open Tire Sales</Button>} />
+      <ShopPageHeader eyebrow="Inventory" title="Manage Inventory" description="Add tires, update stock, and keep pricing organized." actions={<Button className="w-full justify-center sm:w-auto" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record a Sale</Button>} />
       <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <TireStat label="Tire types" value={summary?.skus || 0} detail="Active inventory lines" />
         <TireStat label="Inventory quantity" value={summary?.units || 0} detail="Sets, pairs, and individual tires" />
@@ -2252,7 +2253,7 @@ function TireInventoryViewPage({ showToast }: { showToast: (m: string) => void }
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <ShopPageHeader eyebrow="Read-only inventory" title="Inventory View" description="Available tires, quantities, and current selling prices." actions={<button onClick={() => void load()} className="mobile-tap inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/[.08] bg-white/[.035] px-3 py-2.5 text-xs font-medium text-zinc-300 transition hover:bg-white/[.06] sm:w-auto"><RefreshCw className="h-3.5 w-3.5" /> Refresh Stock</button>} />
+      <ShopPageHeader eyebrow="Read-only inventory" title="Inventory View" description="Available tires, quantities, and current selling prices." actions={<Button className="w-full sm:w-auto" variant="secondary" onClick={() => void load()}><RefreshCw className="h-3.5 w-3.5" /> Refresh Stock</Button>} />
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 [&>*:last-child]:col-span-2 sm:[&>*:last-child]:col-span-1"><TireStat label="Inventory types" value={summary?.skus || 0} detail="Sizes and package types" /><TireStat label="Available quantity" value={summary?.units || 0} detail="Sets, pairs, and individuals" /><TireStat label="Low stock" value={summary?.lowStock || 0} detail="Five or fewer remaining" /></div>
       <Card>
         <CardHeader title="Available Inventory" icon={<Package className="h-4 w-4 text-zinc-400" />} action={<input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search tire size..." className="w-full rounded-xl border border-white/[.08] bg-[#090b0a] px-3.5 py-2.5 text-xs text-zinc-200 outline-none transition focus:border-emerald-400/45 sm:w-64" />} />
@@ -2374,7 +2375,7 @@ function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void;
   return (
     <div className="space-y-4 sm:space-y-6">
       <ShopPageHeader eyebrow="Sales desk" title="Sales & Services" description="Record tire sales, mount and balance work, plugs, rotations, and brakes." actions={<Button className="w-full justify-center sm:w-auto" variant="secondary" onClick={() => setPage("tire-inventory")}><Package className="h-3.5 w-3.5" /> Open Inventory</Button>} />
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-5 [&>*:last-child]:col-span-2 xl:[&>*:last-child]:col-span-1"><TireStat label="Today's revenue" value={money(summary?.todayRevenue || 0)} detail="Calculated automatically" /><TireStat label="Tires sold today" value={todayTiresSold} detail="Physical tires" /><TireStat label="Jobs / items" value={summary?.todayUnits || 0} detail="Today's quantity" /><TireStat label="Transactions" value={todaySales.length} detail="Work recorded today" /><TireStat label="Average sale" value={money(averageSale)} detail="Revenue per transaction" /></div>
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-5 [&>*:last-child]:col-span-2 xl:[&>*:last-child]:col-span-1"><TireStat featured label="Today's revenue" value={money(summary?.todayRevenue || 0)} detail="Calculated automatically" /><TireStat label="Tires sold today" value={todayTiresSold} detail="Physical tires" /><TireStat label="Jobs / items" value={summary?.todayUnits || 0} detail="Today's quantity" /><TireStat label="Transactions" value={todaySales.length} detail="Work recorded today" /><TireStat label="Average sale" value={money(averageSale)} detail="Revenue per transaction" /></div>
       <section className="rounded-xl border border-emerald-500/15 bg-emerald-500/[.04] p-4 sm:p-5"><div className="mb-4 flex items-end justify-between gap-3"><div><div className="text-[10px] font-semibold uppercase tracking-wider text-emerald-400">This Month</div><h2 className="mt-1 text-lg font-semibold text-white">{currentMonthLabel}</h2></div><div className="text-right"><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-500">Monthly revenue</div><div className="mt-1 text-2xl font-semibold tracking-tight text-emerald-300">{money(monthRevenue)}</div></div></div><div className="grid grid-cols-2 gap-3 border-t border-emerald-500/10 pt-4 sm:grid-cols-4"><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Tires sold</div><div className="mt-1 text-base font-semibold text-emerald-300">{monthTiresSold}</div></div><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Jobs / items</div><div className="mt-1 text-base font-semibold text-zinc-200">{monthItems}</div></div><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Transactions</div><div className="mt-1 text-base font-semibold text-zinc-200">{monthSales.length}</div></div><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Average sale</div><div className="mt-1 text-base font-semibold text-zinc-200">{money(monthAverage)}</div></div></div></section>
       <section className="mobile-surface rounded-2xl border border-white/[.065] bg-[#111412] p-4 sm:p-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><div className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">Payment totals</div><div className="mt-1 text-sm font-semibold text-white">{paymentPeriod === "today" ? "Today" : currentMonthLabel}</div></div><div className="grid grid-cols-2 rounded-lg border border-zinc-800 bg-zinc-950 p-1"><button onClick={() => setPaymentPeriod("today")} className={`rounded-md px-3 py-2 text-xs font-semibold transition ${paymentPeriod === "today" ? "bg-zinc-800 text-white" : "text-zinc-500"}`}>Today</button><button onClick={() => setPaymentPeriod("month")} className={`rounded-md px-3 py-2 text-xs font-semibold transition ${paymentPeriod === "month" ? "bg-zinc-800 text-white" : "text-zinc-500"}`}>This Month</button></div></div>
@@ -2447,13 +2448,13 @@ function TireSalesReportPage({ showToast, setPage }: { showToast: (m: string) =>
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <ShopPageHeader eyebrow="Reporting" title="Sales Reports" description="Monthly tire sales, services, and payment totals." meta={lastUpdated && <p className="mt-1.5 text-[10px] text-zinc-600">Updated {lastUpdated.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}</p>} actions={<div className="grid grid-cols-2 gap-2 sm:flex"><Button className="justify-center" variant="ghost" disabled={refreshing} onClick={() => void load()}><RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} /> Refresh</Button><Button className="justify-center" variant="secondary" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record Work</Button></div>} />
+      <ShopPageHeader eyebrow="Reporting" title="Sales Reports" description="Monthly tire sales, services, and payment totals." meta={lastUpdated && <p className="mt-1.5 text-[10px] text-zinc-600">Updated {lastUpdated.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}</p>} actions={<div className="grid grid-cols-2 gap-2 sm:flex"><Button className="justify-center" variant="ghost" disabled={refreshing} onClick={() => void load()}><RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} /> Refresh</Button><Button className="justify-center" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record Work</Button></div>} />
 
       <section className="mobile-surface rounded-2xl border border-white/[.065] bg-[#111412] p-4 sm:p-5">
         <div className="flex items-center justify-between gap-3"><button aria-label="Previous month" onClick={() => setMonthKey((current) => shiftMonthKey(current, -1))} className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-zinc-800 bg-zinc-950 text-zinc-300 transition hover:border-zinc-600 hover:text-white"><ChevronRight className="h-5 w-5 rotate-180" /></button><div className="min-w-0 text-center"><div className="text-[10px] font-semibold uppercase tracking-wider text-emerald-400">Viewing month</div><h2 className="mt-1 truncate text-xl font-semibold text-white sm:text-2xl">{monthKeyLabel(monthKey)}</h2></div><button aria-label="Next month" disabled={!canGoForward} onClick={() => setMonthKey((current) => shiftMonthKey(current, 1))} className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-zinc-800 bg-zinc-950 text-zinc-300 transition hover:border-zinc-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"><ChevronRight className="h-5 w-5" /></button></div>
       </section>
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4"><TireStat label="Total revenue" value={money(revenue)} detail="Sales and services" /><TireStat label="Tires sold" value={quantity} detail="Physical tire count" /><TireStat label="Transactions" value={sales.length} detail="All recorded work" /><TireStat label="Average transaction" value={money(average)} detail="Per entry" /></div>
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4"><TireStat featured label="Total revenue" value={money(revenue)} detail="Sales and services" /><TireStat label="Tires sold" value={quantity} detail="Physical tire count" /><TireStat label="Transactions" value={sales.length} detail="All recorded work" /><TireStat label="Average transaction" value={money(average)} detail="Per entry" /></div>
 
       <section className="mobile-surface rounded-2xl border border-white/[.065] bg-[#111412] p-4 sm:p-5"><div className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">Payment breakdown</div><div className="mt-3 grid grid-cols-3 gap-2">{(["Cash", "Cashapp", "Chime"] as const).map((method) => <div key={method} className="min-w-0 rounded-xl border border-white/[.06] bg-[#090b0a]/70 p-2.5 sm:p-3"><div className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">{method}</div><div className="mt-1 truncate text-base font-semibold text-white sm:text-xl">{money(paymentMethodTotal(sales, method))}</div></div>)}</div></section>
 
@@ -2497,7 +2498,7 @@ function Toast({ message }: { message: string }) {
 }
 
 function Card({ children }: { children: React.ReactNode }) {
-  return <div className="mobile-surface rounded-2xl border border-white/[.065] bg-[#111412] p-4 shadow-[0_12px_34px_rgba(0,0,0,.1)] sm:p-5">{children}</div>;
+  return <div className="mobile-surface rounded-xl bg-[#111312] p-4 ring-1 ring-inset ring-white/[.055] sm:rounded-2xl sm:p-5">{children}</div>;
 }
 
 function CardHeader({ title, icon, action }: { title: string; icon: React.ReactNode; action?: React.ReactNode }) {
@@ -2514,13 +2515,13 @@ function CardHeader({ title, icon, action }: { title: string; icon: React.ReactN
 
 function Button({ children, variant = "primary", onClick, disabled, className = "" }: { children: React.ReactNode; variant?: "primary" | "secondary" | "ghost" | "danger"; onClick?: () => void; disabled?: boolean; className?: string }) {
   const styles = {
-    primary: "bg-emerald-400 text-zinc-950 hover:bg-emerald-300",
-    secondary: "border border-white/[.08] bg-white/[.035] text-zinc-200 hover:bg-white/[.07]",
+    primary: "bg-emerald-400 text-[#07100b] hover:bg-emerald-300",
+    secondary: "ring-1 ring-inset ring-white/[.08] bg-white/[.03] text-zinc-200 hover:bg-white/[.06]",
     ghost: "text-zinc-400 hover:text-white hover:bg-white/[.05]",
     danger: "bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20",
   };
   return (
-    <button disabled={disabled} onClick={onClick} className={`mobile-tap inline-flex items-center justify-center gap-1.5 rounded-xl px-3.5 py-2.5 text-xs font-medium transition active:scale-[0.97] disabled:opacity-40 ${styles[variant]} ${className}`}>
+    <button disabled={disabled} onClick={onClick} className={`mobile-tap inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg px-3.5 py-2.5 text-xs font-semibold transition active:scale-[0.97] disabled:opacity-40 sm:rounded-xl ${styles[variant]} ${className}`}>
       {children}
     </button>
   );
