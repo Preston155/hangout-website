@@ -402,17 +402,23 @@ const mockRecords: CADRecord[] = [
 async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = localStorage.getItem("prestonhq_token") || sessionStorage.getItem("prestonhq_token");
   const method = String(options.method || "GET").toUpperCase();
+  const hasBody = options.body !== undefined && options.body !== null;
   const response = await fetch(API_BASE + path, {
     ...options,
     cache: options.cache || (method === "GET" ? "no-store" : undefined),
     credentials: "include",
     headers: {
-      "Content-Type": "application/json",
+      ...(hasBody ? { "Content-Type": "application/json" } : {}),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(options.headers || {}),
     },
   });
   const payload = await response.json().catch(() => null);
+  if (response.status === 401 && token) {
+    localStorage.removeItem("prestonhq_token");
+    sessionStorage.removeItem("prestonhq_token");
+    window.dispatchEvent(new CustomEvent("akron-shop-auth-expired"));
+  }
   if (!response.ok || !payload?.ok)
     throw new Error(payload?.error || `Request failed (${response.status})`);
   return payload.data as T;
@@ -538,7 +544,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_CLEAN_SAVE_V14";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_WHEELHOUSE_V16";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -553,38 +559,40 @@ export function App() {
   const [busy, setBusy] = useState(false);
   const [syncError, setSyncError] = useState("");
   const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
+  const toastTimer = useRef<number | null>(null);
 
   useEffect(() => {
     const existingToken = sessionStorage.getItem("prestonhq_token");
     if (existingToken && !localStorage.getItem("prestonhq_token")) localStorage.setItem("prestonhq_token", existingToken);
-    const styleId = "prestonhq-mobile-form-no-zoom";
+    const styleId = "akron-shop-interface";
     if (document.getElementById(styleId)) return;
     const style = document.createElement("style");
     style.id = styleId;
     style.textContent = `
-      .inflatable-guy { --guy:#34d399; position:relative; width:72px; height:176px; transform-origin:50% 100%; animation:guy-sway 2.7s cubic-bezier(.45,.05,.55,.95) infinite; filter:drop-shadow(0 13px 13px rgba(0,0,0,.34)); }
-      .inflatable-guy svg { width:100%; height:100%; overflow:visible; }
-      .inflatable-guy__body-group { transform-box:fill-box; transform-origin:center bottom; animation:guy-body-bend 1.7s ease-in-out infinite alternate; }
-      .inflatable-guy__arm { fill:none; stroke:var(--guy); stroke-width:15; stroke-linecap:round; stroke-linejoin:round; }
-      .inflatable-guy__arm--left { transform-box:fill-box; transform-origin:right center; animation:guy-left-arm 1.05s ease-in-out infinite alternate; }
-      .inflatable-guy__arm--right { transform-box:fill-box; transform-origin:left center; animation:guy-right-arm .92s ease-in-out infinite alternate; }
-      .inflatable-guy__shine { fill:none; stroke:rgba(255,255,255,.26); stroke-width:4; stroke-linecap:round; }
-      .inflatable-guy__crease { fill:none; stroke:rgba(0,0,0,.12); stroke-width:2; stroke-linecap:round; }
       .shop-shell { isolation:isolate; }
+      .shop-wheel { position:relative; display:grid; place-items:center; aspect-ratio:1; filter:drop-shadow(0 18px 22px rgba(0,0,0,.45)); }
+      .shop-wheel svg { width:100%; height:100%; overflow:visible; }
+      .shop-wheel__rim { transform-box:fill-box; transform-origin:center; animation:wheel-spin 10s linear infinite; }
+      .shop-wheel__shine { animation:wheel-glint 3.8s ease-in-out infinite; }
+      .shop-wheel::after { content:""; position:absolute; left:15%; right:15%; bottom:-5%; height:9%; border-radius:50%; background:rgba(0,0,0,.55); filter:blur(6px); z-index:-1; }
+      .shop-wordmark { font-family:Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif; letter-spacing:-.035em; text-transform:uppercase; }
+      .shop-hero { position:relative; overflow:hidden; isolation:isolate; background:linear-gradient(112deg,#121513 0%,#0d100f 62%,#0a0d0c 100%); border:1px solid rgba(255,255,255,.075); border-radius:18px; box-shadow:0 22px 60px rgba(0,0,0,.22); }
+      .shop-hero::before { content:""; position:absolute; inset:0; z-index:-2; background:repeating-linear-gradient(118deg,transparent 0 34px,rgba(190,242,100,.04) 34px 37px,transparent 37px 72px); animation:tread-drive 16s linear infinite; }
+      .shop-hero::after { content:""; position:absolute; width:340px; height:340px; right:-125px; top:-155px; z-index:-1; border-radius:50%; background:rgba(190,242,100,.11); filter:blur(70px); }
+      .shop-panel { border-color:rgba(255,255,255,.075) !important; background-color:#111412 !important; box-shadow:0 18px 48px rgba(0,0,0,.16); }
       .shop-ambient { position:fixed; inset:0; z-index:-1; overflow:hidden; pointer-events:none; }
       .shop-ambient::before, .shop-ambient::after { content:""; position:absolute; width:42vw; height:42vw; min-width:320px; min-height:320px; border-radius:999px; filter:blur(110px); opacity:.075; animation:ambient-drift 16s ease-in-out infinite alternate; }
-      .shop-ambient::before { left:-15vw; top:4vh; background:#38bdf8; }
-      .shop-ambient::after { right:-17vw; bottom:-5vh; background:#34d399; animation-delay:-8s; animation-direction:alternate-reverse; }
+      .shop-ambient::before { left:-15vw; top:4vh; background:#84cc16; }
+      .shop-ambient::after { right:-17vw; bottom:-5vh; background:#0891b2; animation-delay:-8s; animation-direction:alternate-reverse; }
       .alive-scan { position:relative; overflow:hidden; }
       .alive-scan::after { content:""; position:absolute; inset:-2px auto -2px -38%; width:24%; transform:skewX(-18deg); background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent); animation:button-sheen 5.5s ease-in-out infinite; pointer-events:none; }
       .mobile-surface { position:relative; }
       .mobile-surface::before { content:""; position:absolute; inset:0; border-radius:inherit; background:linear-gradient(115deg,rgba(255,255,255,.022),transparent 38%); pointer-events:none; }
       .live-dot { position:relative; }
       .live-dot::after { content:""; position:absolute; inset:-4px; border:1px solid currentColor; border-radius:999px; opacity:0; animation:live-ring 2.4s ease-out infinite; }
-      @keyframes guy-sway { 0%,100%{transform:rotate(-4deg) translateY(1px)} 50%{transform:rotate(5deg) translateY(-2px)} }
-      @keyframes guy-body-bend { from{transform:rotate(-3deg) skewX(-3deg) scaleY(.985)} to{transform:rotate(3deg) skewX(4deg) scaleY(1.01)} }
-      @keyframes guy-left-arm { from{transform:rotate(-22deg)} to{transform:rotate(24deg)} }
-      @keyframes guy-right-arm { from{transform:rotate(20deg)} to{transform:rotate(-26deg)} }
+      @keyframes wheel-spin { to{transform:rotate(360deg)} }
+      @keyframes wheel-glint { 0%,72%,100%{opacity:.12} 82%{opacity:.8} }
+      @keyframes tread-drive { to{background-position:144px 0} }
       @keyframes ambient-drift { from{transform:translate3d(-2%, -2%, 0) scale(.96)} to{transform:translate3d(9%, 7%, 0) scale(1.08)} }
       @keyframes button-sheen { 0%,70%{left:-38%;opacity:0} 76%{opacity:1} 94%,100%{left:118%;opacity:0} }
       @keyframes live-ring { 0%{transform:scale(.65);opacity:.55} 75%,100%{transform:scale(1.9);opacity:0} }
@@ -635,7 +643,7 @@ export function App() {
         .mobile-status-pulse { animation: mobile-status-pulse 2.2s ease-in-out infinite; }
       }
       @media (prefers-reduced-motion: reduce) {
-        .mobile-page > *, .mobile-status-pulse, .inflatable-guy, .inflatable-guy__arm, .shop-ambient::before, .shop-ambient::after, .alive-scan::after, .live-dot::after { animation: none !important; }
+        .mobile-page > *, .mobile-status-pulse, .shop-wheel__rim, .shop-wheel__shine, .shop-hero::before, .shop-ambient::before, .shop-ambient::after, .alive-scan::after, .live-dot::after { animation: none !important; }
         .mobile-surface, .mobile-tap { transition: none !important; }
       }
     `;
@@ -660,10 +668,23 @@ export function App() {
     };
   }, []);
 
-  const showToast = (message: string) => {
+  const showToast = useCallback((message: string) => {
     setToast(message);
-    window.setTimeout(() => setToast(""), 3000);
-  };
+    if (toastTimer.current !== null) window.clearTimeout(toastTimer.current);
+    toastTimer.current = window.setTimeout(() => setToast(""), 3000);
+  }, []);
+
+  useEffect(() => {
+    const handleExpiredSession = () => {
+      setAuth("guest");
+      showToast("Your session expired. Sign in again.");
+    };
+    window.addEventListener("akron-shop-auth-expired", handleExpiredSession);
+    return () => {
+      window.removeEventListener("akron-shop-auth-expired", handleExpiredSession);
+      if (toastTimer.current !== null) window.clearTimeout(toastTimer.current);
+    };
+  }, [showToast]);
 
   const loadLiveData = useCallback(async () => {
     try {
@@ -753,13 +774,15 @@ export function App() {
   useEffect(() => {
     api<any>("/api/auth/me")
       .then((data) => {
-        if (!data.authenticated && !(localStorage.getItem("prestonhq_token") || sessionStorage.getItem("prestonhq_token"))) {
+        if (!data.authenticated) {
+          localStorage.removeItem("prestonhq_token");
+          sessionStorage.removeItem("prestonhq_token");
           setAuth("guest");
           return;
         }
         setAuth("ready");
       })
-      .catch(() => setAuth(localStorage.getItem("prestonhq_token") || sessionStorage.getItem("prestonhq_token") ? "ready" : "guest"));
+      .catch(() => setAuth("guest"));
   }, [loadLiveData]);
 
   const executeAction = async (reason: string) => {
@@ -798,7 +821,7 @@ export function App() {
 
   return (
     <DashboardClockProvider>
-    <div className="shop-shell relative min-h-screen bg-[#080a09] font-sans text-zinc-100 antialiased selection:bg-emerald-400/25 selection:text-white">
+    <div className="shop-shell relative min-h-screen bg-[#080a09] font-sans text-zinc-100 antialiased selection:bg-lime-300/30 selection:text-white">
       <div className="shop-ambient" aria-hidden="true" />
       <div className="flex min-h-screen">
         <Sidebar page={page} setPage={setPage} />
@@ -837,26 +860,37 @@ function LoadingScreen() {
   );
 }
 
-function InflatableGuy({ color, className = "", delay = 0 }: { color: string; className?: string; delay?: number }) {
+function ShopWheel({ className = "", accent = "#bef264" }: { className?: string; accent?: string }) {
   return (
-    <div aria-hidden="true" className={`inflatable-guy ${className}`} style={{ "--guy": color, animationDelay: `${delay}s` } as React.CSSProperties}>
-      <svg viewBox="-12 0 144 240" role="presentation">
-        <ellipse cx="60" cy="231" rx="27" ry="7" fill="rgba(0,0,0,.28)" />
-        <path d="M40 218h40l7 15H33z" fill="#282b29" />
-        <rect x="43" y="214" width="34" height="12" rx="4" fill="#414542" />
-        <g className="inflatable-guy__body-group">
-          <path className="inflatable-guy__arm inflatable-guy__arm--left" d="M43 70 C24 63 15 45 1 32 C-3 28 -6 23 -8 17" />
-          <path className="inflatable-guy__arm inflatable-guy__arm--right" d="M77 70 C96 62 105 44 119 31 C123 27 126 22 128 16" />
-          <path d="M41 218 C40 188 45 160 41 132 C37 105 40 79 38 55 C35 29 41 8 60 8 C79 8 85 29 82 55 C80 79 83 106 79 133 C75 161 81 189 79 218 Z" fill="var(--guy)" />
-          <path className="inflatable-guy__shine" d="M47 29 C42 62 48 101 45 145 C44 161 46 176 46 188" />
-          <path className="inflatable-guy__crease" d="M40 82 Q60 76 81 83 M42 128 Q60 122 79 129 M43 170 Q61 164 79 171" />
-          <ellipse cx="51" cy="35" rx="3.8" ry="5.4" fill="#111512" />
-          <ellipse cx="69" cy="35" rx="3.8" ry="5.4" fill="#111512" />
-          <circle cx="50" cy="33.3" r="1.1" fill="white" opacity=".85" />
-          <circle cx="68" cy="33.3" r="1.1" fill="white" opacity=".85" />
-          <ellipse cx="60" cy="51" rx="8.5" ry="7.5" fill="#151816" />
-          <ellipse cx="60" cy="54" rx="4.5" ry="2" fill="#e8877d" opacity=".9" />
+    <div aria-hidden="true" className={`shop-wheel ${className}`}>
+      <svg viewBox="0 0 160 160" role="presentation">
+        <defs>
+          <radialGradient id="tireRubber" cx="38%" cy="30%">
+            <stop offset="0" stopColor="#343936" />
+            <stop offset=".48" stopColor="#171a18" />
+            <stop offset="1" stopColor="#050706" />
+          </radialGradient>
+          <radialGradient id="rimMetal" cx="35%" cy="28%">
+            <stop offset="0" stopColor="#f4f4f5" />
+            <stop offset=".34" stopColor="#a1a1aa" />
+            <stop offset=".72" stopColor="#3f3f46" />
+            <stop offset="1" stopColor="#18181b" />
+          </radialGradient>
+        </defs>
+        <circle cx="80" cy="80" r="74" fill="url(#tireRubber)" stroke="#3f4541" strokeWidth="2" />
+        <g opacity=".34" stroke="#737a75" strokeWidth="2.5">
+          {Array.from({ length: 20 }, (_, index) => <path key={index} d="M80 8v13" transform={`rotate(${index * 18} 80 80)`} />)}
         </g>
+        <circle cx="80" cy="80" r="54" fill="#090b0a" stroke="#2c312e" strokeWidth="2" />
+        <g className="shop-wheel__rim">
+          <circle cx="80" cy="80" r="46" fill="url(#rimMetal)" stroke={accent} strokeOpacity=".7" strokeWidth="1.4" />
+          <circle cx="80" cy="80" r="38" fill="#111412" stroke="#d4d4d8" strokeOpacity=".45" />
+          {Array.from({ length: 8 }, (_, index) => <path key={index} d="M75 75 L62 39 Q80 32 98 39 L85 75 Z" transform={`rotate(${index * 45} 80 80)`} fill="#a1a1aa" stroke="#27272a" strokeWidth="1.5" />)}
+          <circle cx="80" cy="80" r="16" fill="#272b28" stroke={accent} strokeWidth="2" />
+          <circle cx="80" cy="80" r="6" fill={accent} />
+          {Array.from({ length: 5 }, (_, index) => <circle key={index} cx="80" cy="68" r="2.3" transform={`rotate(${index * 72} 80 80)`} fill="#090b0a" />)}
+        </g>
+        <path className="shop-wheel__shine" d="M31 58 A55 55 0 0 1 61 30" fill="none" stroke="white" strokeWidth="5" strokeLinecap="round" opacity=".3" />
       </svg>
     </div>
   );
@@ -910,12 +944,12 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
   return (
     <div className="shop-shell relative grid min-h-screen place-items-center overflow-hidden bg-[#090b0a] p-4 text-zinc-100 sm:p-6">
       <div className="shop-ambient" aria-hidden="true" />
-      <InflatableGuy color="#38bdf8" className="absolute bottom-5 left-[9vw] hidden opacity-70 sm:block" />
-      <InflatableGuy color="#fbbf24" delay={-1.1} className="absolute bottom-5 right-[9vw] hidden opacity-70 sm:block" />
+      <ShopWheel className="absolute -left-16 bottom-8 hidden w-56 -rotate-12 opacity-30 blur-[.2px] sm:grid" />
+      <ShopWheel className="absolute -right-20 top-10 hidden w-72 rotate-12 opacity-20 sm:grid" accent="#22d3ee" />
       <div className="w-full max-w-[420px]">
         <div className="mb-7 text-center">
-          <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-[10px] font-bold uppercase tracking-[.24em] text-emerald-400">Akron</motion.div>
-          <div className="mt-1 text-sm font-semibold tracking-[-.015em] text-zinc-300">Tire Shop</div>
+          <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-[10px] font-bold uppercase tracking-[.24em] text-lime-300">Akron, Ohio</motion.div>
+          <div className="shop-wordmark mt-1 text-[28px] text-white">Akron Tire Shop</div>
           <h1 className="mt-5 text-[26px] font-semibold tracking-[-.035em] text-white sm:text-[30px]">Welcome back</h1>
           <p className="mx-auto mt-2 max-w-xs text-xs leading-relaxed text-zinc-500">Secure access to inventory, sales, services, and reports.</p>
         </div>
@@ -961,7 +995,7 @@ function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) 
           );
         })}
       </nav>
-      <div className="mt-auto flex h-20 items-end justify-center overflow-visible"><div className="origin-bottom scale-[.45]"><InflatableGuy color="#38bdf8" /></div></div>
+      <div className="mt-auto flex h-28 items-center justify-center overflow-hidden"><ShopWheel className="w-24 opacity-55" /></div>
       <div className="border-t border-white/[.055] px-2 pt-4">
         <div className="flex items-center gap-2 text-[11px] font-medium text-zinc-300"><span className="h-2 w-2 rounded-full bg-emerald-400" /> Data saves automatically</div>
         <p className="mt-1.5 text-[10px] leading-relaxed text-zinc-600">Inventory and sales are stored securely.</p>
@@ -976,7 +1010,7 @@ function Topbar({ page }: { page: Page }) {
     <header className="sticky top-0 z-30 flex h-14 items-center border-b border-white/[.055] bg-[#080a09]/92 px-4 backdrop-blur-xl sm:h-16 sm:px-6 lg:px-9">
       <div className="lg:hidden"><div className="text-[9px] font-bold uppercase tracking-[.18em] text-emerald-400">Akron Tire Shop</div><div className="mt-0.5 text-sm font-semibold tracking-[-.015em] text-white">{currentNav?.label}</div></div>
       <div className="hidden lg:block"><div className="text-sm font-semibold tracking-[-.01em] text-zinc-200">{currentNav?.label}</div></div>
-      <div className="ml-auto h-11 w-8 overflow-visible lg:hidden"><div className="origin-top-left scale-[.26]"><InflatableGuy color="#fbbf24" delay={-.6} /></div></div>
+      <ShopWheel className="ml-auto mr-3 w-9 lg:hidden" />
       <div className="flex items-center gap-2 text-[9px] font-medium text-zinc-600 sm:text-[10px] lg:ml-auto"><span className="hidden font-mono tabular-nums text-zinc-500 sm:inline"><LiveShopTime /></span><span className="hidden h-3 w-px bg-white/[.08] sm:inline" /><span className="live-dot mobile-status-pulse h-1.5 w-1.5 rounded-full bg-emerald-400 text-emerald-400" /><span className="hidden min-[380px]:inline">All changes saved</span><span className="min-[380px]:hidden">Saved</span></div>
     </header>
   );
@@ -2334,14 +2368,17 @@ function easternDateTimeToIso(date: string, time: string) {
 function ShopPageHeader({ eyebrow, title, description, meta, actions, tone = "emerald" }: { eyebrow: string; title: string; description: string; meta?: React.ReactNode; actions?: React.ReactNode; tone?: ShopTone }) {
   const colors = shopToneStyles[tone];
   return (
-    <div className="flex flex-col gap-4 border-b border-white/[.055] pb-5 sm:flex-row sm:items-end sm:justify-between sm:pb-6">
-      <div className="min-w-0">
-        <div className={`mb-2 flex items-center gap-2 text-[9px] font-semibold uppercase tracking-[.16em] ${colors.text}`}><span className={`live-dot h-1.5 w-1.5 rounded-full ${colors.dot}`} />{eyebrow}</div>
-        <h1 className="text-[24px] font-semibold tracking-[-.035em] text-white sm:text-[29px]">{title}</h1>
-        <p className="mt-1.5 max-w-2xl text-xs leading-relaxed text-zinc-500 sm:text-[13px]">{description}</p>
+    <div className="shop-hero flex min-h-[150px] items-center gap-4 px-5 py-5 sm:min-h-[172px] sm:px-7 sm:py-6">
+      <div className="min-w-0 flex-1">
+        <div className={`mb-2.5 flex items-center gap-2 text-[9px] font-bold uppercase tracking-[.19em] ${colors.text}`}><span className={`live-dot h-1.5 w-1.5 rounded-full ${colors.dot}`} />{eyebrow}</div>
+        <h1 className="shop-wordmark text-[31px] leading-[.95] text-white sm:text-[42px]">{title}</h1>
+        <p className="mt-2.5 max-w-2xl text-xs leading-relaxed text-zinc-400 sm:text-[13px]">{description}</p>
         {meta}
       </div>
-      {actions && <div className="shrink-0">{actions}</div>}
+      <div className="flex shrink-0 flex-col items-end gap-3">
+        <ShopWheel className="hidden w-24 opacity-80 min-[460px]:grid sm:w-28" accent={tone === "sky" ? "#38bdf8" : tone === "amber" ? "#fbbf24" : tone === "violet" ? "#a78bfa" : "#bef264"} />
+        {actions && <div>{actions}</div>}
+      </div>
     </div>
   );
 }
