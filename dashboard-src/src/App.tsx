@@ -555,7 +555,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_FAST_LOAD_V24";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260824_GARAGE_BG_V25";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -580,7 +580,39 @@ export function App() {
     const style = document.createElement("style");
     style.id = styleId;
     style.textContent = `
-      .shop-shell { isolation:isolate; }
+      .shop-shell {
+        isolation:isolate;
+        position:relative;
+        background:
+          radial-gradient(ellipse 78% 34% at 51% -8%, rgba(236,253,245,.055), transparent 72%),
+          radial-gradient(circle at 15% 26%, rgba(132,204,22,.062), transparent 31rem),
+          radial-gradient(circle at 91% 72%, rgba(6,182,212,.045), transparent 34rem),
+          linear-gradient(135deg,#090c0a 0%,#070a09 46%,#07100e 100%);
+      }
+      .shop-shell::before {
+        content:"";
+        position:fixed;
+        inset:0;
+        z-index:-3;
+        pointer-events:none;
+        background:
+          repeating-linear-gradient(118deg,transparent 0 92px,rgba(190,242,100,.018) 92px 94px,transparent 94px 188px),
+          linear-gradient(90deg,rgba(255,255,255,.016) 1px,transparent 1px);
+        background-size:auto,176px 100%;
+        -webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,.78),rgba(0,0,0,.3) 68%,transparent);
+        mask-image:linear-gradient(to bottom,rgba(0,0,0,.78),rgba(0,0,0,.3) 68%,transparent);
+      }
+      .shop-shell::after {
+        content:"";
+        position:fixed;
+        inset:0;
+        z-index:-2;
+        pointer-events:none;
+        background:
+          radial-gradient(ellipse 54% 20% at 52% 6%,rgba(255,255,255,.027),transparent 72%),
+          radial-gradient(ellipse 84% 60% at 50% 108%,rgba(0,0,0,.44),transparent 70%),
+          linear-gradient(90deg,rgba(0,0,0,.28),transparent 20%,transparent 80%,rgba(0,0,0,.28));
+      }
       .shop-wheel { position:relative; display:grid; place-items:center; aspect-ratio:1; filter:drop-shadow(0 18px 22px rgba(0,0,0,.48)); }
       .shop-wheel--positioned { position:absolute; }
       .shop-wheel img { position:relative; z-index:2; display:block; width:100%; height:100%; object-fit:contain; user-select:none; -webkit-user-drag:none; }
@@ -602,9 +634,9 @@ export function App() {
       .shop-hero__speed--two { right:17%; bottom:28%; width:15%; animation-delay:.65s; }
       .shop-panel { border-color:rgba(255,255,255,.075) !important; background-color:#111412 !important; box-shadow:0 18px 48px rgba(0,0,0,.16); }
       .shop-ambient { position:fixed; inset:0; z-index:-1; overflow:hidden; pointer-events:none; }
-      .shop-ambient::before, .shop-ambient::after { content:""; position:absolute; width:42vw; height:42vw; min-width:320px; min-height:320px; border-radius:999px; filter:blur(110px); opacity:.075; animation:ambient-drift 16s ease-in-out infinite alternate; }
-      .shop-ambient::before { left:-15vw; top:4vh; background:#84cc16; }
-      .shop-ambient::after { right:-17vw; bottom:-5vh; background:#0891b2; animation-delay:-8s; animation-direction:alternate-reverse; }
+      .shop-ambient::before, .shop-ambient::after { content:""; position:absolute; width:48vw; height:18rem; min-width:340px; border-radius:50%; filter:blur(96px); opacity:.095; animation:ambient-drift 18s ease-in-out infinite alternate; }
+      .shop-ambient::before { left:-12vw; top:15vh; background:linear-gradient(90deg,#84cc16,transparent 82%); transform:rotate(-12deg); }
+      .shop-ambient::after { right:-13vw; bottom:4vh; background:linear-gradient(90deg,transparent 8%,#0891b2); transform:rotate(10deg); animation-delay:-9s; animation-direction:alternate-reverse; }
       .alive-scan { position:relative; overflow:hidden; }
       .alive-scan::after { content:""; position:absolute; inset:-2px auto -2px -38%; width:24%; transform:skewX(-18deg); background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent); animation:button-sheen 5.5s ease-in-out infinite; pointer-events:none; }
       .mobile-surface { position:relative; }
@@ -637,6 +669,16 @@ export function App() {
         .receipt-screen-actions { display:none !important; }
       }
       @media (max-width: 767px) {
+        .shop-shell {
+          background:
+            radial-gradient(ellipse 95% 28% at 50% -5%,rgba(236,253,245,.05),transparent 74%),
+            radial-gradient(circle at 4% 28%,rgba(132,204,22,.052),transparent 19rem),
+            radial-gradient(circle at 100% 74%,rgba(6,182,212,.038),transparent 22rem),
+            linear-gradient(150deg,#090c0a 0%,#070a09 55%,#07100e 100%);
+        }
+        .shop-shell::before { background-size:auto,112px 100%; opacity:.72; }
+        .shop-shell::after { background:linear-gradient(90deg,rgba(0,0,0,.2),transparent 22%,transparent 78%,rgba(0,0,0,.2)); }
+        .shop-ambient::before, .shop-ambient::after { height:13rem; opacity:.07; filter:blur(74px); }
         input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
         select,
         textarea {
