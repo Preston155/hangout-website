@@ -2659,15 +2659,28 @@ function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void;
   useEffect(() => { void load(); }, [load]);
   useEffect(() => {
     let currentDay = easternDateKey(new Date());
-    const timer = window.setInterval(() => {
-      const nextDay = easternDateKey(new Date());
-      if (nextDay !== currentDay) {
-        setForm((current) => current.soldDate === currentDay ? { ...current, soldDate: nextDay, soldTime: easternTimeValue(), adjustInventory: current.serviceType === "tire" } : current);
-        currentDay = nextDay;
-      }
-    }, 60000);
+    const syncCurrentSaleTime = () => {
+      const now = new Date();
+      const nextDay = easternDateKey(now);
+      const nextTime = easternTimeValue(now);
+
+      setForm((current) => {
+        if (editingSaleId || current.soldDate !== currentDay) return current;
+        if (current.soldDate === nextDay && current.soldTime === nextTime) return current;
+        return {
+          ...current,
+          soldDate: nextDay,
+          soldTime: nextTime,
+          adjustInventory: current.serviceType === "tire",
+        };
+      });
+      currentDay = nextDay;
+    };
+
+    syncCurrentSaleTime();
+    const timer = window.setInterval(syncCurrentSaleTime, 1000);
     return () => window.clearInterval(timer);
-  }, []);
+  }, [editingSaleId]);
 
   const selectInventory = (id: string) => {
     const item = data?.inventory.find((entry) => entry.id === id);
@@ -2744,6 +2757,7 @@ function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void;
   const currentSaleTotal = Math.max(0, Number(form.unitPrice) || 0);
   const isTireSale = form.serviceType === "tire";
   const isCurrentTireSale = isTireSale && form.soldDate === todayKey;
+  const isLiveNewSale = !editingSaleId && form.soldDate === todayKey;
   const tireSelectionMissing = isTireSale && (isCurrentTireSale ? !form.inventoryId : !inventorySearch.trim());
   const inventoryMatches = (data?.inventory || []).filter((item) => {
     if (form.adjustInventory && item.quantity <= 0 && item.id !== form.inventoryId) return false;
@@ -2775,7 +2789,7 @@ function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void;
           <label className="text-[11px] font-medium text-zinc-400">Quantity<input required min="1" step="1" type="number" value={form.quantity} onChange={(event) => setForm((current) => ({ ...current, quantity: event.target.value }))} className={`mt-1.5 ${tireFieldClass}`} /></label>
           <label className="text-[11px] font-medium text-zinc-400">Total charged<input required min="0" step="0.01" type="number" value={form.unitPrice} onChange={(event) => setForm((current) => ({ ...current, unitPrice: event.target.value }))} placeholder="Full amount charged" className={`mt-1.5 ${tireFieldClass}`} /></label>
           <label className="text-[11px] font-medium text-zinc-400">Date<input required type="date" max={easternDateKey(new Date())} value={form.soldDate} onChange={(event) => setForm((current) => ({ ...current, soldDate: event.target.value, adjustInventory: current.serviceType === "tire" && event.target.value === easternDateKey(new Date()) }))} className={`mt-1.5 ${tireFieldClass}`} /><span className="mt-1 block text-[10px] font-normal text-zinc-600">Past dates are allowed.</span></label>
-          <label className="text-[11px] font-medium text-zinc-400">Sale time<input required type="time" value={form.soldTime} onChange={(event) => setForm((current) => ({ ...current, soldTime: event.target.value }))} className={`mt-1.5 ${tireFieldClass}`} /><span className="mt-1 block text-[10px] font-normal text-zinc-600">New sales use the actual current time.</span></label>
+          <label className="text-[11px] font-medium text-zinc-400">Sale time<input required readOnly={isLiveNewSale} type="time" value={form.soldTime} onChange={(event) => setForm((current) => ({ ...current, soldTime: event.target.value }))} className={`mt-1.5 ${tireFieldClass} ${isLiveNewSale ? "cursor-default" : ""}`} /><span className="mt-1 block text-[10px] font-normal text-zinc-600">{isLiveNewSale ? "Live Akron time — updates automatically." : "Saved and historical times can be edited."}</span></label>
           <label className="text-[11px] font-medium text-zinc-400">Customer / invoice<input value={form.customer} onChange={(event) => setForm((current) => ({ ...current, customer: event.target.value }))} placeholder="Optional" className={`mt-1.5 ${tireFieldClass}`} /></label>
           <fieldset className="sm:col-span-2"><legend className="text-[11px] font-medium text-zinc-400">Payment method</legend><div className="mt-2 grid grid-cols-3 gap-2">{["Cash", "Cashapp", "Chime"].map((method) => <button type="button" key={method} onClick={() => setForm((current) => ({ ...current, paymentMethod: method }))} className={`mobile-tap min-h-11 rounded-xl px-2 text-[11px] font-semibold ring-1 ring-inset transition ${form.paymentMethod === method ? "bg-amber-400/10 text-amber-200 ring-amber-400/25" : "bg-[#0a0c0b] text-zinc-500 ring-white/[.06]"}`}>{method}</button>)}</div></fieldset>
           <label className="text-[11px] font-medium text-zinc-400">Notes<input value={form.notes} onChange={(event) => setForm((current) => ({ ...current, notes: event.target.value }))} placeholder="Optional" className={`mt-1.5 ${tireFieldClass}`} /></label>
