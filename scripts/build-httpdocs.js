@@ -11,6 +11,7 @@ Options -Indexes
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
+  RewriteRule ^t/([A-Za-z0-9_-]{8})/?$ https://api.prestonhq.com/t/$1 [R=302,L,NE]
   RewriteRule ^u/([A-Za-z0-9_.-]+)/?$ /index.html#/u/$1 [NE,L]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
