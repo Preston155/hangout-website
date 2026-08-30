@@ -1,9 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { ArrowLeft, Mail, ShieldCheck } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowLeft, ArrowUpRight } from "lucide-react";
 
 export type LegalSection = {
   id: string;
@@ -12,111 +9,103 @@ export type LegalSection = {
   bullets?: string[];
 };
 
-export function LegalPage({
-  title,
-  description,
-  lastUpdated,
-  sections,
-}: {
+type LegalPageProps = {
   title: string;
   description: string;
   lastUpdated: string;
   sections: LegalSection[];
-}) {
+};
+
+export function LegalPage({ title, description, lastUpdated, sections }: LegalPageProps) {
+  const isPrivacy = title.toLowerCase().includes("privacy");
+
   return (
-    <main className="min-h-screen bg-[#07090f] text-white selection:bg-sky-300 selection:text-black">
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_16%_10%,rgba(56,189,248,.20),transparent_32%),radial-gradient(circle_at_82%_0%,rgba(99,102,241,.20),transparent_30%),radial-gradient(circle_at_68%_88%,rgba(16,185,129,.10),transparent_38%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.035)_1px,transparent_1px)] bg-[size:70px_70px] opacity-20" />
-      </div>
+    <main className="min-h-screen bg-[#0b0b0c] text-[#f4f4f2] selection:bg-[#f4f4f2] selection:text-[#0b0b0c]">
+      <header className="border-b border-white/[0.11]">
+        <div className="mx-auto flex h-16 max-w-[1180px] items-center justify-between px-5 sm:px-8">
+          <a href="/" className="flex items-center gap-3 text-sm font-semibold tracking-[-0.01em] text-white">
+            <span className="grid h-8 w-8 place-items-center rounded-md border border-white/15 bg-white text-xs font-black text-black">P</span>
+            PrestonHQ
+          </a>
 
-      <nav className="sticky top-0 z-30 border-b border-white/10 bg-[#07090f]/76 backdrop-blur-2xl">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-          <Button href="/" variant="ghost">
-            <ArrowLeft size={16} />
-            Back to dashboard
-          </Button>
-          <div className="hidden items-center gap-2 text-sm font-black text-white/70 sm:flex">
-            <ShieldCheck size={17} className="text-sky-200" />
-            PrestonHQ Legal
-          </div>
+          <nav aria-label="Legal navigation" className="flex items-center gap-1 text-sm text-white/55">
+            <a href="/terms" aria-current={!isPrivacy ? "page" : undefined} className={`px-3 py-2 transition hover:text-white ${!isPrivacy ? "text-white" : ""}`}>
+              Terms
+            </a>
+            <a href="/privacy" aria-current={isPrivacy ? "page" : undefined} className={`px-3 py-2 transition hover:text-white ${isPrivacy ? "text-white" : ""}`}>
+              Privacy
+            </a>
+          </nav>
         </div>
-      </nav>
+      </header>
 
-      <div className="relative mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:py-14">
-        <motion.header initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.22 }}>
-          <div className="inline-flex items-center gap-2 rounded-full border border-sky-300/20 bg-sky-300/10 px-3 py-1 text-xs font-black uppercase tracking-[.22em] text-sky-100">
-            PrestonHQ · City of Angels RP
-          </div>
-          <h1 className="mt-5 max-w-4xl text-5xl font-black leading-[.92] tracking-[-.075em] md:text-7xl">{title}</h1>
-          <p className="mt-5 max-w-3xl text-base leading-7 text-white/60">{description}</p>
-          <p className="mt-4 text-sm font-bold text-white/42">Last Updated: {lastUpdated}</p>
-        </motion.header>
+      <div className="mx-auto max-w-[1180px] px-5 pb-16 pt-10 sm:px-8 sm:pt-16">
+        <a href="/" className="inline-flex items-center gap-2 text-sm text-white/50 transition hover:text-white">
+          <ArrowLeft size={15} aria-hidden="true" />
+          Back to dashboard
+        </a>
 
-        <div className="mt-8 grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
-          <motion.aside initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.22, delay: 0.05 }} className="lg:sticky lg:top-24 lg:self-start">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Table of contents</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {sections.map((section) => (
-                  <a key={section.id} href={`#${section.id}`} className="block rounded-2xl border border-white/8 bg-black/20 px-3 py-2 font-bold text-white/58 transition hover:border-sky-300/25 hover:bg-sky-300/10 hover:text-white">
-                    {section.title}
+        <div className="mt-12 max-w-3xl sm:mt-16">
+          <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-white/40">Legal / PrestonHQ</p>
+          <h1 className="mt-4 text-4xl font-semibold tracking-[-0.045em] sm:text-6xl">{title}</h1>
+          <p className="mt-6 max-w-2xl text-base leading-7 text-white/58 sm:text-lg sm:leading-8">{description}</p>
+          <p className="mt-7 font-mono text-xs text-white/35">Last updated {lastUpdated}</p>
+        </div>
+
+        <div className="mt-14 grid gap-12 border-t border-white/[0.11] pt-10 lg:grid-cols-[220px_minmax(0,720px)] lg:gap-20">
+          <aside className="lg:sticky lg:top-8 lg:self-start">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.12em] text-white/35">On this page</p>
+            <ol className="space-y-1 border-l border-white/[0.12]">
+              {sections.map((section, index) => (
+                <li key={section.id}>
+                  <a href={`#${section.id}`} className="group flex gap-3 border-l border-transparent py-1.5 pl-4 text-sm leading-5 text-white/45 transition hover:border-white/70 hover:text-white">
+                    <span className="font-mono text-[10px] text-white/25 group-hover:text-white/50">{String(index + 1).padStart(2, "0")}</span>
+                    <span>{section.title}</span>
                   </a>
-                ))}
-              </CardContent>
-            </Card>
-          </motion.aside>
+                </li>
+              ))}
+            </ol>
+          </aside>
 
-          <div className="space-y-5">
+          <article>
             {sections.map((section, index) => (
-              <motion.div key={section.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.22, delay: 0.08 + index * 0.025 }}>
-                <Card id={section.id} className="scroll-mt-24">
-                  <CardHeader>
-                    <CardTitle>{section.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {section.body.map((paragraph) => (
-                      <p key={paragraph}>{paragraph}</p>
-                    ))}
-                    {section.bullets && (
-                      <ul className="mt-3 grid gap-2">
-                        {section.bullets.map((bullet) => (
-                          <li key={bullet} className="rounded-2xl border border-white/10 bg-white/[.035] px-4 py-3 text-white/70">
-                            {bullet}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </CardContent>
-                </Card>
-              </motion.div>
+              <section key={section.id} id={section.id} className="scroll-mt-8 border-b border-white/[0.1] py-10 first:pt-0 last:border-0">
+                <div className="flex items-baseline gap-4">
+                  <span className="font-mono text-[11px] text-white/25">{String(index + 1).padStart(2, "0")}</span>
+                  <h2 className="text-xl font-semibold tracking-[-0.025em] sm:text-2xl">{section.title}</h2>
+                </div>
+
+                <div className="mt-5 space-y-4 text-[15px] leading-7 text-white/58 sm:text-base sm:leading-8">
+                  {section.body.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+                  {section.bullets && (
+                    <ul className="mt-5 space-y-3 border-l border-white/[0.14] pl-5">
+                      {section.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}
+                    </ul>
+                  )}
+                </div>
+              </section>
             ))}
 
-            <Card>
-              <CardContent className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="font-black text-white">Questions?</p>
-                  <p>Contact PrestonHQ support for legal, privacy, or access requests.</p>
-                </div>
-                <a className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[.055] px-4 py-3 text-sm font-black text-white/80 transition hover:border-sky-300/25 hover:bg-sky-300/10" href="mailto:support@prestonhq.com">
-                  <Mail size={16} />
-                  support@prestonhq.com
-                </a>
-              </CardContent>
-            </Card>
-          </div>
+            <div className="mt-12 flex flex-col justify-between gap-5 border-t border-white/[0.11] pt-8 sm:flex-row sm:items-center">
+              <div>
+                <p className="text-sm font-semibold">Questions about this policy?</p>
+                <p className="mt-1 text-sm text-white/40">We’ll help with legal, privacy, or account requests.</p>
+              </div>
+              <a href="mailto:support@prestonhq.com" className="inline-flex items-center gap-2 self-start border-b border-white/35 pb-1 text-sm font-medium text-white transition hover:border-white/80">
+                support@prestonhq.com
+                <ArrowUpRight size={14} aria-hidden="true" />
+              </a>
+            </div>
+          </article>
         </div>
-
-        <footer className="mt-10 flex flex-col gap-3 border-t border-white/10 pt-6 text-sm text-white/45 sm:flex-row sm:items-center sm:justify-between">
-          <p>© PrestonHQ. All rights reserved.</p>
-          <div className="flex gap-4">
-            <a href="/privacy" className="hover:text-white">Privacy Policy</a>
-            <a href="/terms" className="hover:text-white">Terms of Service</a>
-          </div>
-        </footer>
       </div>
+
+      <footer className="border-t border-white/[0.11]">
+        <div className="mx-auto flex max-w-[1180px] flex-col gap-3 px-5 py-7 text-xs text-white/32 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+          <p>© {new Date().getFullYear()} PrestonHQ</p>
+          <p>Built for authorized staff operations.</p>
+        </div>
+      </footer>
     </main>
   );
 }
