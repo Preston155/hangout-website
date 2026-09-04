@@ -556,7 +556,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260904_GEMINI_REWORK_V32";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260904_EXECUTIVE_REWORK_V33";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -586,7 +586,7 @@ export function App() {
         position:relative;
         min-width:320px;
         color:#f9fafb;
-        background:#030712;
+        background:#020617;
         font-family:"Plus Jakarta Sans",Inter,ui-sans-serif,system-ui,sans-serif;
       }
       .shop-shell::before {
@@ -596,8 +596,9 @@ export function App() {
         z-index:-3;
         pointer-events:none;
         background:
-          radial-gradient(circle at 15% 15%,rgba(16,185,129,.06),transparent 40%),
-          radial-gradient(circle at 85% 85%,rgba(59,130,246,.05),transparent 40%);
+          radial-gradient(circle at 10% 10%,rgba(16,185,129,.12),transparent 40%),
+          radial-gradient(circle at 90% 20%,rgba(59,130,246,.08),transparent 45%),
+          radial-gradient(circle at 50% 80%,rgba(139,92,246,.06),transparent 50%);
       }
       .shop-shell::after {
         content:"";
@@ -617,17 +618,19 @@ export function App() {
       .shop-hero { position:relative; }
       .shop-hero::before, .shop-hero::after { display:none; }
       .shop-hero__beam, .shop-hero__speed { display:none; }
-      .shop-panel { border-color:rgba(255,255,255,.08) !important; background-color:rgba(17,24,39,.65) !important; backdrop-filter:blur(12px); }
+      .shop-panel { border-color:rgba(255,255,255,.08) !important; background-color:rgba(15,23,42,.55) !important; backdrop-filter:blur(16px); }
       .shop-ambient { display:none; }
       .alive-scan { position:relative; overflow:hidden; }
       .mobile-surface { position:relative; }
       .mobile-surface::before { display:none; }
       .shop-stat-grid { gap:16px !important; overflow:visible; border:0; border-radius:0; background:transparent; box-shadow:none; }
-      .shop-stat-grid .mobile-stat-card { border:1px solid rgba(255,255,255,.08) !important; border-radius:18px !important; background:rgba(17,24,39,.65); backdrop-filter:blur(12px); box-shadow:0 10px 30px rgba(0,0,0,.12); }
+      .shop-stat-grid .mobile-stat-card { border:1px solid rgba(255,255,255,.08) !important; border-radius:20px !important; background:rgba(15,23,42,.55); backdrop-filter:blur(16px); box-shadow:0 12px 32px rgba(0,0,0,.16); transition:border-color .2s ease,transform .2s ease; }
+      .shop-stat-grid .mobile-stat-card:hover { border-color:rgba(255,255,255,.15) !important; transform:translateY(-2px); }
       .shop-shell input, .shop-shell select, .shop-shell textarea { color-scheme:dark; }
       .shop-shell table tbody tr { transition:background-color .15s ease; }
       .shop-shell table tbody tr:hover { background:rgba(255,255,255,.025); }
-      .shop-card { background:rgba(17,24,39,.65) !important; border-color:rgba(255,255,255,.08) !important; box-shadow:0 14px 38px rgba(0,0,0,.16); backdrop-filter:blur(12px); }
+      .shop-card { background:rgba(15,23,42,.55) !important; border-color:rgba(255,255,255,.08) !important; box-shadow:0 16px 44px rgba(0,0,0,.18); backdrop-filter:blur(16px); }
+      .shop-money { font-family:"JetBrains Mono",ui-monospace,monospace; }
       .shop-card-title-icon { box-shadow:inset 0 0 0 1px rgba(255,255,255,.055); }
       .live-dot { position:relative; }
       .live-dot::after { content:""; position:absolute; inset:-4px; border:1px solid currentColor; border-radius:999px; opacity:0; animation:live-ring 2.4s ease-out infinite; }
@@ -646,7 +649,7 @@ export function App() {
         .receipt-screen-actions { display:none !important; }
       }
       @media (max-width: 767px) {
-        .shop-shell { background:#030712; }
+        .shop-shell { background:#020617; }
         input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
         select,
         textarea {
@@ -859,9 +862,9 @@ export function App() {
       <div className="shop-ambient" aria-hidden="true" />
       <div className="flex min-h-screen">
         <Sidebar page={page} setPage={setPage} />
-        <main className="flex min-w-0 flex-1 flex-col lg:pl-[260px]">
+        <main className="flex min-w-0 flex-1 flex-col lg:pl-[270px]">
           <Topbar page={page} />
-          <div className="mx-auto w-full max-w-[1400px] flex-1 px-4 pb-28 pt-5 sm:px-6 sm:pb-28 sm:pt-7 lg:px-12 lg:pb-12 lg:pt-10">
+          <div className="mx-auto w-full max-w-[1440px] flex-1 px-4 pb-28 pt-5 sm:px-6 sm:pb-28 sm:pt-7 lg:px-14 lg:pb-14 lg:pt-12">
             <AnimatePresence mode="wait">
               <motion.div className="mobile-page" key={page} initial={{ opacity: 0, y: reduceMotion ? 0 : 10, scale: reduceMotion ? 1 : 0.995 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: reduceMotion ? 0 : -6 }} transition={{ duration: reduceMotion ? 0 : 0.22, ease: [0.2, 0.8, 0.2, 1] }}>
                 {page === "tire-inventory" && <TireInventoryPage showToast={showToast} setPage={setPage} />}
@@ -976,7 +979,7 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
 
 function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) {
   return (
-    <aside className="fixed inset-y-0 left-0 z-40 hidden w-[260px] flex-col border-r border-white/[.08] bg-[#090d16] px-4 py-6 lg:flex">
+    <aside className="fixed inset-y-0 left-0 z-40 hidden w-[270px] flex-col border-r border-white/[.08] bg-[rgba(7,10,23,.78)] px-[18px] py-7 backdrop-blur-2xl lg:flex">
       <div className="flex items-center gap-3 px-2 py-1.5">
         <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-[0_0_20px_rgba(16,185,129,.25)]"><ShopWheel className="w-9" /></div>
         <div className="min-w-0">
@@ -1010,7 +1013,7 @@ function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) 
 function Topbar({ page }: { page: Page }) {
   const currentNav = navItems.find((item) => item.id === page);
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center border-b border-white/[.08] bg-[#030712]/95 px-4 backdrop-blur-xl sm:px-6 lg:hidden">
+    <header className="sticky top-0 z-30 flex h-16 items-center border-b border-white/[.08] bg-[#020617]/90 px-4 backdrop-blur-2xl sm:px-6 lg:hidden">
       <div className="flex items-center gap-2.5 lg:hidden"><ShopWheel className="w-8 shrink-0" /><div><div className="text-[9px] font-bold uppercase tracking-[.16em] text-emerald-400">Akron Tire Shop</div><div className="mt-0.5 text-sm font-semibold tracking-[-.015em] text-white">{currentNav?.label}</div></div></div>
       <div className="ml-auto flex items-center gap-2 text-[9px] font-medium text-zinc-600 sm:text-[10px]"><span className="hidden font-mono tabular-nums text-zinc-500 sm:inline"><LiveShopTime /></span><span className="hidden h-3 w-px bg-white/[.08] sm:inline" /><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /><span className="hidden min-[380px]:inline">All changes saved</span><span className="min-[380px]:hidden">Saved</span></div>
     </header>
@@ -1019,7 +1022,7 @@ function Topbar({ page }: { page: Page }) {
 
 function MobileShopNav({ page, setPage }: { page: Page; setPage: (p: Page) => void }) {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-white/[.08] bg-[#090d16]/[.98] px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-1.5 backdrop-blur-2xl lg:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-white/[.08] bg-[rgba(7,10,23,.94)] px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-1.5 backdrop-blur-2xl lg:hidden">
       <div className="mx-auto grid max-w-lg grid-cols-5 gap-1">
         {navItems.map((item) => { const Icon = item.icon; const active = item.id === page; return <button key={item.id} onClick={() => setPage(item.id)} className={`relative flex min-w-0 flex-col items-center gap-1 px-1 py-2 text-[9px] font-medium transition ${active ? "text-emerald-300" : "text-zinc-600"}`}><span className={`grid h-7 w-9 place-items-center rounded-lg ${active ? "bg-emerald-400/10" : ""}`}><Icon className="h-[18px] w-[18px]" /></span><span className="truncate">{item.shortLabel}</span></button>; })}
       </div>
@@ -2396,10 +2399,10 @@ function ShopPageHeader({ eyebrow, title, description, meta, actions, tone = "em
   return (
     <div className="shop-hero flex flex-col items-stretch gap-5 border-b border-white/[.08] pb-6 sm:flex-row sm:items-center sm:justify-between sm:pb-7">
       <div className="flex min-w-0 items-start gap-3.5 sm:gap-4">
-        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-[14px] border border-white/[.08] bg-[#0f172a] text-emerald-400 sm:h-12 sm:w-12"><HeaderIcon className="h-5 w-5" /></div>
+        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-white/[.08] bg-[#0f172a] text-emerald-400 shadow-[inset_0_1px_0_rgba(255,255,255,.04)] sm:h-12 sm:w-12"><HeaderIcon className="h-5 w-5" /></div>
         <div className="min-w-0 flex-1">
           <div className={`mb-1.5 text-[9px] font-semibold uppercase tracking-[.16em] ${colors.text}`}>{eyebrow}</div>
-          <h1 className="text-[27px] font-extrabold leading-tight tracking-[-.025em] text-white sm:text-[34px]">{title}</h1>
+          <h1 className="text-[28px] font-extrabold leading-tight tracking-[-.035em] text-white sm:text-[36px]">{title}</h1>
           <p className="mt-1.5 max-w-2xl text-xs leading-relaxed text-zinc-400 sm:text-[13px]">{description}</p>
           {meta}
         </div>
@@ -2412,9 +2415,9 @@ function ShopPageHeader({ eyebrow, title, description, meta, actions, tone = "em
 function TireStat({ label, value, detail, featured = false, tone = "emerald" }: { label: string; value: string | number; detail: string; featured?: boolean; tone?: ShopTone }) {
   const colors = shopToneStyles[tone];
   return (
-    <div className={`mobile-stat-card mobile-surface relative min-w-0 overflow-hidden p-4 sm:p-5 ${featured ? "col-span-2 sm:col-span-1" : ""}`}>
+    <div className={`mobile-stat-card mobile-surface relative min-w-0 overflow-hidden p-5 ${featured ? "col-span-2 sm:col-span-1" : ""}`}>
       <div className={`truncate text-[9px] font-semibold uppercase tracking-[.12em] ${featured ? colors.text : "text-zinc-500"}`}>{label}</div>
-      <AnimatePresence mode="popLayout" initial={false}><motion.div key={String(value)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: .12 }} className="mt-2 truncate text-2xl font-extrabold tracking-[-.035em] text-white sm:text-[28px]">{value}</motion.div></AnimatePresence>
+      <AnimatePresence mode="popLayout" initial={false}><motion.div key={String(value)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: .12 }} className="shop-money mt-2.5 truncate text-2xl font-bold tracking-[-.045em] text-white sm:text-[30px]">{value}</motion.div></AnimatePresence>
       <div className="mt-1.5 text-[10px] leading-snug text-zinc-600">{detail}</div>
     </div>
   );
@@ -2911,7 +2914,7 @@ function Toast({ message }: { message: string }) {
 }
 
 function Card({ children }: { children: React.ReactNode }) {
-  return <div className="shop-card mobile-surface rounded-[18px] border p-4 sm:p-5 lg:p-6">{children}</div>;
+  return <div className="shop-card mobile-surface rounded-[20px] border p-4 sm:p-5 lg:p-6">{children}</div>;
 }
 
 function CardHeader({ title, icon, action }: { title: string; icon: React.ReactNode; action?: React.ReactNode }) {
@@ -2934,7 +2937,7 @@ function Button({ children, variant = "primary", onClick, disabled, className = 
     danger: "bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20",
   };
   return (
-    <button disabled={disabled} onClick={onClick} className={`mobile-tap inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-40 ${styles[variant]} ${className}`}>
+    <button disabled={disabled} onClick={onClick} className={`mobile-tap inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-[18px] py-2.5 text-[13px] font-bold transition disabled:cursor-not-allowed disabled:opacity-40 ${styles[variant]} ${className}`}>
       {children}
     </button>
   );
