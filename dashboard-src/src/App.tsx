@@ -555,7 +555,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260904_MOBILE_ICON_V28";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260904_REDESIGN_V29";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -584,7 +584,7 @@ export function App() {
         isolation:isolate;
         position:relative;
         min-width:320px;
-        background:#090b0a;
+        background:#090c0a;
       }
       .shop-shell::before {
         content:"";
@@ -609,15 +609,16 @@ export function App() {
       .shop-wheel::after { content:""; position:absolute; left:15%; right:15%; bottom:-5%; height:9%; border-radius:50%; background:rgba(0,0,0,.55); filter:blur(6px); z-index:-1; }
       .shop-wheel--animated::before, .tire-smoke, .tire-spark { display:none; }
       .shop-wordmark { font-family:Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif; letter-spacing:-.035em; text-transform:uppercase; }
-      .shop-hero { position:relative; overflow:hidden; isolation:isolate; background:#111412; border:1px solid rgba(255,255,255,.075); border-radius:14px; }
-      .shop-hero::before { content:""; position:absolute; inset:0 auto 0 0; width:3px; z-index:0; background:#34d399; }
-      .shop-hero::after { content:""; position:absolute; width:220px; height:220px; right:-100px; top:-130px; z-index:-1; border-radius:50%; background:rgba(52,211,153,.055); filter:blur(48px); }
+      .shop-hero { position:relative; }
+      .shop-hero::before, .shop-hero::after { display:none; }
       .shop-hero__beam, .shop-hero__speed { display:none; }
       .shop-panel { border-color:rgba(255,255,255,.075) !important; background-color:#111412 !important; }
       .shop-ambient { display:none; }
       .alive-scan { position:relative; overflow:hidden; }
       .mobile-surface { position:relative; }
       .mobile-surface::before { display:none; }
+      .shop-stat-grid { gap:1px !important; overflow:hidden; border:1px solid rgba(255,255,255,.07); border-radius:12px; background:rgba(255,255,255,.07); }
+      .shop-stat-grid .mobile-stat-card { border:0 !important; border-radius:0 !important; background:#111512; }
       .live-dot { position:relative; }
       .live-dot::after { content:""; position:absolute; inset:-4px; border:1px solid currentColor; border-radius:999px; opacity:0; animation:live-ring 2.4s ease-out infinite; }
       @keyframes live-ring { 0%{transform:scale(.65);opacity:.55} 75%,100%{transform:scale(1.9);opacity:0} }
@@ -645,10 +646,9 @@ export function App() {
         .mobile-surface {
           transition: border-color .18s ease, background-color .18s ease;
         }
-        .shop-hero { min-height:0; padding:16px !important; gap:12px !important; border-radius:13px; }
-        .shop-hero .shop-wordmark { font-size:26px !important; line-height:1 !important; }
+        .shop-hero { min-height:0; }
         .mobile-form-trigger { background:#111412; }
-        .mobile-stat-grid { gap:8px !important; }
+        .shop-stat-grid { gap:1px !important; }
         .mobile-today-grid { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
         .mobile-today-grid > :first-child { grid-column:1 / -1; }
         .mobile-today-grid > :not(:first-child) { min-width:0; }
@@ -851,7 +851,7 @@ export function App() {
         <Sidebar page={page} setPage={setPage} />
         <main className="flex min-w-0 flex-1 flex-col lg:pl-60">
           <Topbar page={page} />
-          <div className="mx-auto w-full max-w-[1220px] flex-1 px-4 pb-28 pt-4 sm:px-6 sm:pb-28 sm:pt-6 lg:px-8 lg:pb-10 lg:pt-7">
+          <div className="mx-auto w-full max-w-[1500px] flex-1 px-4 pb-28 pt-5 sm:px-6 sm:pb-28 sm:pt-7 lg:px-8 lg:pb-10 lg:pt-8 xl:px-10">
             <AnimatePresence mode="wait">
               <motion.div className="mobile-page" key={page} initial={{ opacity: 0, y: reduceMotion ? 0 : 10, scale: reduceMotion ? 1 : 0.995 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: reduceMotion ? 0 : -6 }} transition={{ duration: reduceMotion ? 0 : 0.22, ease: [0.2, 0.8, 0.2, 1] }}>
                 {page === "tire-inventory" && <TireInventoryPage showToast={showToast} setPage={setPage} />}
@@ -971,13 +971,15 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
 
 function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) {
   return (
-    <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-white/[.07] bg-[#0d0f0e] px-4 py-6 lg:flex">
-      <div className="px-2">
-        <div className="text-[9px] font-bold uppercase tracking-[.22em] text-emerald-400">Akron</div>
-        <div className="mt-1 text-[17px] font-semibold tracking-[-.025em] text-white">Tire Shop</div>
-        <div className="mt-1 text-[10px] text-zinc-600">Inventory · Sales · Service</div>
+    <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-white/[.07] bg-[#0d100e] px-4 py-5 lg:flex">
+      <div className="flex items-center gap-3 px-2 py-1">
+        <ShopWheel className="w-10 shrink-0" />
+        <div className="min-w-0">
+          <div className="text-[15px] font-semibold tracking-[-.025em] text-white">Akron Tire Shop</div>
+          <div className="mt-0.5 text-[9px] font-medium uppercase tracking-[.13em] text-emerald-400">Shop management</div>
+        </div>
       </div>
-      <div className="my-5 h-px bg-white/[.06]" />
+      <div className="my-5 h-px bg-white/[.07]" />
       <nav className="space-y-1">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -992,9 +994,9 @@ function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) 
           );
         })}
       </nav>
-      <div className="mt-auto border-t border-white/[.06] px-2 pt-4">
-        <div className="flex items-center gap-2 text-[11px] font-medium text-zinc-300"><span className="h-2 w-2 rounded-full bg-emerald-400" /> Data saves automatically</div>
-        <p className="mt-1.5 text-[10px] leading-relaxed text-zinc-600">Inventory and sales are stored securely.</p>
+      <div className="mt-auto rounded-xl border border-white/[.06] bg-white/[.025] px-3 py-3">
+        <div className="flex items-center gap-2 text-[10px] font-medium text-zinc-300"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Everything is saved</div>
+        <p className="mt-1 text-[9px] leading-relaxed text-zinc-600">Inventory and sales update automatically.</p>
       </div>
     </aside>
   );
@@ -1003,9 +1005,9 @@ function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) 
 function Topbar({ page }: { page: Page }) {
   const currentNav = navItems.find((item) => item.id === page);
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center border-b border-white/[.07] bg-[#090b0a]/95 px-4 backdrop-blur-xl sm:h-16 sm:px-6 lg:px-8">
-      <div className="lg:hidden"><div className="text-[9px] font-bold uppercase tracking-[.18em] text-emerald-400">Akron Tire Shop</div><div className="mt-0.5 text-sm font-semibold tracking-[-.015em] text-white">{currentNav?.label}</div></div>
-      <div className="hidden lg:block"><div className="text-sm font-semibold tracking-[-.01em] text-zinc-200">{currentNav?.label}</div></div>
+    <header className="sticky top-0 z-30 flex h-14 items-center border-b border-white/[.07] bg-[#090c0a]/95 px-4 backdrop-blur-xl sm:h-16 sm:px-6 lg:px-8 xl:px-10">
+      <div className="flex items-center gap-2.5 lg:hidden"><ShopWheel className="w-8 shrink-0" /><div><div className="text-[9px] font-bold uppercase tracking-[.16em] text-emerald-400">Akron Tire Shop</div><div className="mt-0.5 text-sm font-semibold tracking-[-.015em] text-white">{currentNav?.label}</div></div></div>
+      <div className="hidden lg:block"><div className="text-[10px] font-semibold uppercase tracking-[.14em] text-zinc-500">Akron Tire Shop</div><div className="mt-0.5 text-sm font-semibold tracking-[-.01em] text-zinc-200">{currentNav?.label}</div></div>
       <div className="ml-auto flex items-center gap-2 text-[9px] font-medium text-zinc-600 sm:text-[10px]"><span className="hidden font-mono tabular-nums text-zinc-500 sm:inline"><LiveShopTime /></span><span className="hidden h-3 w-px bg-white/[.08] sm:inline" /><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /><span className="hidden min-[380px]:inline">All changes saved</span><span className="min-[380px]:hidden">Saved</span></div>
     </header>
   );
@@ -2383,14 +2385,14 @@ function easternDateTimeToIso(date: string, time: string) {
 function ShopPageHeader({ eyebrow, title, description, meta, actions, tone = "emerald" }: { eyebrow: string; title: string; description: string; meta?: React.ReactNode; actions?: React.ReactNode; tone?: ShopTone }) {
   const colors = shopToneStyles[tone];
   return (
-    <div className="shop-hero flex flex-col items-stretch gap-4 px-5 py-5 sm:flex-row sm:items-end sm:justify-between sm:px-6 sm:py-5">
-      <div className="relative z-10 min-w-0 flex-1">
+    <div className="shop-hero flex flex-col items-stretch gap-4 border-b border-white/[.07] pb-5 sm:flex-row sm:items-end sm:justify-between sm:pb-6">
+      <div className="min-w-0 flex-1">
         <div className={`mb-2 flex items-center gap-2 text-[9px] font-bold uppercase tracking-[.16em] ${colors.text}`}><span className={`h-1.5 w-1.5 rounded-full ${colors.dot}`} />{eyebrow}</div>
-        <h1 className="text-[26px] font-semibold leading-tight tracking-[-.035em] text-white sm:text-[31px]">{title}</h1>
-        <p className="mt-1.5 max-w-2xl text-xs leading-relaxed text-zinc-400">{description}</p>
+        <h1 className="text-[28px] font-semibold leading-tight tracking-[-.04em] text-white sm:text-[36px]">{title}</h1>
+        <p className="mt-2 max-w-2xl text-xs leading-relaxed text-zinc-500 sm:text-[13px]">{description}</p>
         {meta}
       </div>
-      {actions && <div className="relative z-10 w-full shrink-0 sm:w-auto">{actions}</div>}
+      {actions && <div className="w-full shrink-0 sm:w-auto">{actions}</div>}
     </div>
   );
 }
@@ -2398,10 +2400,10 @@ function ShopPageHeader({ eyebrow, title, description, meta, actions, tone = "em
 function TireStat({ label, value, detail, featured = false, tone = "emerald" }: { label: string; value: string | number; detail: string; featured?: boolean; tone?: ShopTone }) {
   const colors = shopToneStyles[tone];
   return (
-    <div className={`mobile-stat-card mobile-surface relative min-w-0 overflow-hidden rounded-xl border bg-[#111312] p-3.5 sm:p-4 ${featured ? `col-span-2 border-white/[.09] sm:col-span-1` : "border-white/[.065]"}`}>
+    <div className={`mobile-stat-card mobile-surface relative min-w-0 overflow-hidden bg-[#111512] p-4 sm:p-5 ${featured ? "col-span-2 sm:col-span-1" : ""}`}>
       <div className={`truncate text-[9px] font-semibold uppercase tracking-[.12em] ${featured ? colors.text : "text-zinc-500"}`}>{label}</div>
       <AnimatePresence mode="popLayout" initial={false}><motion.div key={String(value)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: .12 }} className="mt-1.5 truncate text-xl font-semibold tracking-[-.035em] text-white sm:text-2xl">{value}</motion.div></AnimatePresence>
-      <div className="mt-1 text-[10px] text-zinc-600">{detail}</div>
+      <div className="mt-1.5 text-[10px] leading-snug text-zinc-600">{detail}</div>
     </div>
   );
 }
@@ -2516,7 +2518,7 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
   return (
     <div className="space-y-4 sm:space-y-6">
       <ShopPageHeader tone="sky" eyebrow="Inventory" title="Manage Inventory" description="Add tires, update stock, and keep pricing organized." actions={<Button className="w-full justify-center px-5 sm:w-auto" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record a Sale</Button>} />
-      <div className="mobile-stat-grid grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+      <div className="shop-stat-grid mobile-stat-grid grid grid-cols-2 lg:grid-cols-4">
         <TireStat label="Tire types" value={summary?.skus || 0} detail="Active inventory lines" />
         <TireStat label="Inventory quantity" value={summary?.units || 0} detail="Sets, pairs, and individual tires" />
         <TireStat label="Low stock" value={summary?.lowStock || 0} detail="Five or fewer remaining" />
@@ -2592,7 +2594,7 @@ function TireInventoryViewPage({ showToast }: { showToast: (m: string) => void }
   return (
     <div className="space-y-4 sm:space-y-6">
       <ShopPageHeader tone="sky" eyebrow="Read-only inventory" title="Inventory View" description="Available tires, quantities, and current selling prices." actions={<Button className="w-full sm:w-auto" variant="secondary" onClick={() => void load()}><RefreshCw className="h-3.5 w-3.5" /> Refresh Stock</Button>} />
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 [&>*:last-child]:col-span-2 sm:[&>*:last-child]:col-span-1"><TireStat label="Inventory types" value={summary?.skus || 0} detail="Sizes and package types" /><TireStat label="Available quantity" value={summary?.units || 0} detail="Sets, pairs, and individuals" /><TireStat label="Low stock" value={summary?.lowStock || 0} detail="Five or fewer remaining" /></div>
+      <div className="shop-stat-grid grid grid-cols-2 sm:grid-cols-3 [&>*:last-child]:col-span-2 sm:[&>*:last-child]:col-span-1"><TireStat label="Inventory types" value={summary?.skus || 0} detail="Sizes and package types" /><TireStat label="Available quantity" value={summary?.units || 0} detail="Sets, pairs, and individuals" /><TireStat label="Low stock" value={summary?.lowStock || 0} detail="Five or fewer remaining" /></div>
       <Card>
         <CardHeader title="Available Inventory" icon={<Package className="h-4 w-4 text-zinc-400" />} action={<input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search tire size..." className="w-full rounded-xl border border-white/[.08] bg-[#090b0a] px-3.5 py-2.5 text-xs text-zinc-200 outline-none transition focus:border-emerald-400/45 sm:w-64" />} />
         {!data ? <EmptyState title="Loading inventory" text="Reading current stock..." /> : inventory.length === 0 ? <EmptyState title="No tires found" text={search ? "Try another tire size." : "There is no inventory to display yet."} /> : <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{inventory.map((item) => <article key={item.id} className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-4"><div className="flex items-start justify-between gap-3"><div><div className="font-mono text-lg font-semibold text-white">{item.size}</div><span className={`mt-2 inline-flex rounded-md border px-2 py-1 text-[10px] font-semibold ${tirePackageClass(item.packageType)}`}>{tirePackageLabel(item.packageType)}</span></div><div className="text-right"><div className={`text-2xl font-semibold ${item.quantity === 0 ? "text-red-400" : item.quantity <= 5 ? "text-amber-300" : "text-emerald-300"}`}>{item.quantity}</div><div className="text-[10px] text-zinc-500">available</div></div></div><div className="mt-4 flex items-end justify-between border-t border-zinc-800 pt-3"><div><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Selling price</div><div className="mt-1 text-lg font-semibold text-zinc-100">{money(item.price)}</div></div><div className={`rounded-md px-2 py-1 text-[9px] font-semibold uppercase tracking-wider ${item.quantity === 0 ? "bg-red-500/10 text-red-400" : item.quantity <= 5 ? "bg-amber-500/10 text-amber-300" : "bg-emerald-500/10 text-emerald-300"}`}>{item.quantity === 0 ? "Out of stock" : item.quantity <= 5 ? "Low stock" : "In stock"}</div></div></article>)}</div>}
@@ -2738,7 +2740,7 @@ function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void;
   return (
     <div className="space-y-4 sm:space-y-6">
       <ShopPageHeader tone="amber" eyebrow="Sales desk" title="Sales & Services" description="Record tire sales, mount and balance work, plugs, rotations, and brakes." actions={<Button className="w-full justify-center sm:w-auto" variant="secondary" onClick={() => setPage("tire-inventory")}><Package className="h-3.5 w-3.5" /> Open Inventory</Button>} />
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-5 [&>*:last-child]:col-span-2 xl:[&>*:last-child]:col-span-1"><TireStat featured tone="amber" label="Today's revenue" value={money(summary?.todayRevenue || 0)} detail="Calculated automatically" /><TireStat label="Tires sold today" value={todayTiresSold} detail="Physical tires" /><TireStat label="Jobs / items" value={summary?.todayUnits || 0} detail="Today's quantity" /><TireStat label="Transactions" value={todaySales.length} detail="Work recorded today" /><TireStat label="Average sale" value={money(averageSale)} detail="Revenue per transaction" /></div>
+      <div className="shop-stat-grid grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 [&>*:last-child]:col-span-2 xl:[&>*:last-child]:col-span-1"><TireStat featured tone="amber" label="Today's revenue" value={money(summary?.todayRevenue || 0)} detail="Calculated automatically" /><TireStat label="Tires sold today" value={todayTiresSold} detail="Physical tires" /><TireStat label="Jobs / items" value={summary?.todayUnits || 0} detail="Today's quantity" /><TireStat label="Transactions" value={todaySales.length} detail="Work recorded today" /><TireStat label="Average sale" value={money(averageSale)} detail="Revenue per transaction" /></div>
       <section className="rounded-xl border border-white/[.065] bg-[#111312] p-4 sm:p-5"><div className="mb-4 flex items-end justify-between gap-3"><div><div className="text-[9px] font-semibold uppercase tracking-[.14em] text-zinc-500">Month to date</div><h2 className="mt-1 text-base font-semibold text-white">{currentMonthLabel}</h2></div><div className="text-right"><div className="text-[9px] font-semibold uppercase tracking-[.14em] text-zinc-500">Revenue</div><div className="mt-1 text-2xl font-semibold tracking-[-.04em] text-white">{money(monthRevenue)}</div></div></div><div className="grid grid-cols-2 gap-x-5 gap-y-3 border-t border-white/[.06] pt-4 sm:grid-cols-4"><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Tires sold</div><div className="mt-1 text-base font-semibold text-zinc-200">{monthTiresSold}</div></div><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Jobs / items</div><div className="mt-1 text-base font-semibold text-zinc-200">{monthItems}</div></div><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Transactions</div><div className="mt-1 text-base font-semibold text-zinc-200">{monthSales.length}</div></div><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Average</div><div className="mt-1 text-base font-semibold text-zinc-200">{money(monthAverage)}</div></div></div></section>
       <section className="mobile-surface rounded-xl border border-white/[.065] bg-[#111312] p-4 sm:p-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><div className="text-[9px] font-semibold uppercase tracking-[.14em] text-zinc-500">Payment totals</div><div className="mt-1 text-sm font-semibold text-white">{paymentPeriodLabel}</div></div><div className="grid grid-cols-2 rounded-lg bg-[#090b0a] p-1 ring-1 ring-inset ring-white/[.07]"><button onClick={() => setPaymentPeriod("day")} className={`rounded-md px-3 py-2 text-xs font-semibold transition ${paymentPeriod === "day" ? "bg-white/[.08] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Day</button><button onClick={() => setPaymentPeriod("month")} className={`rounded-md px-3 py-2 text-xs font-semibold transition ${paymentPeriod === "month" ? "bg-white/[.08] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Month</button></div></div>
@@ -2850,7 +2852,7 @@ function TireSalesReportPage({ showToast, setPage }: { showToast: (m: string) =>
         {reportPeriod === "day" ? <div className="grid grid-cols-[42px_minmax(0,1fr)_42px] items-center gap-2"><button aria-label="Previous day" onClick={() => setDayKey((current) => shiftDateKey(current, -1))} className="grid h-10 place-items-center rounded-lg border border-white/[.07] bg-[#090b0a] text-zinc-400 transition hover:text-white"><ChevronRight className="h-4 w-4 rotate-180" /></button><div className="min-w-0 text-center"><input aria-label="Report date" type="date" max={currentDateKey} value={dayKey} onChange={(event) => event.target.value && setDayKey(event.target.value)} className="w-full min-w-0 rounded-lg border border-transparent bg-transparent px-2 py-1 text-center text-base font-semibold text-white outline-none focus:border-white/[.08]" /><div className="truncate text-[10px] text-zinc-500">{dateKeyLabel(dayKey, currentDateKey)}</div></div><button aria-label="Next day" disabled={!canGoForward} onClick={() => setDayKey((current) => shiftDateKey(current, 1))} className="grid h-10 place-items-center rounded-lg border border-white/[.07] bg-[#090b0a] text-zinc-400 transition hover:text-white disabled:cursor-not-allowed disabled:opacity-30"><ChevronRight className="h-4 w-4" /></button></div> : <div className="flex items-center justify-between gap-3"><button aria-label="Previous month" onClick={() => setMonthKey((current) => shiftMonthKey(current, -1))} className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-white/[.07] bg-[#090b0a] text-zinc-400 transition hover:text-white"><ChevronRight className="h-4 w-4 rotate-180" /></button><h2 className="min-w-0 truncate text-center text-lg font-semibold text-white">{monthKeyLabel(monthKey)}</h2><button aria-label="Next month" disabled={!canGoForward} onClick={() => setMonthKey((current) => shiftMonthKey(current, 1))} className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-white/[.07] bg-[#090b0a] text-zinc-400 transition hover:text-white disabled:cursor-not-allowed disabled:opacity-30"><ChevronRight className="h-4 w-4" /></button></div>}
       </section>
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 [&>*:last-child]:col-span-2 lg:[&>*:last-child]:col-span-1"><TireStat featured tone="violet" label="Total revenue" value={money(revenue)} detail="Sales and services" /><TireStat label="Tires sold" value={quantity} detail="Physical tire count" /><TireStat label="Transactions" value={sales.length} detail="All recorded work" /><TireStat label="Average transaction" value={money(average)} detail="Per entry" /></div>
+      <div className="shop-stat-grid grid grid-cols-2 lg:grid-cols-4 [&>*:last-child]:col-span-2 lg:[&>*:last-child]:col-span-1"><TireStat featured tone="violet" label="Total revenue" value={money(revenue)} detail="Sales and services" /><TireStat label="Tires sold" value={quantity} detail="Physical tire count" /><TireStat label="Transactions" value={sales.length} detail="All recorded work" /><TireStat label="Average transaction" value={money(average)} detail="Per entry" /></div>
 
       <section className="mobile-surface rounded-xl border border-white/[.065] bg-[#111312] p-4 sm:p-5"><div className="text-[9px] font-semibold uppercase tracking-[.14em] text-zinc-500">Payment breakdown</div><div className="payment-summary-grid mt-3 grid grid-cols-3 divide-x divide-white/[.06] overflow-hidden rounded-lg border border-white/[.06] bg-[#0c0e0d]">{(["Cash", "Cashapp", "Chime"] as const).map((method) => <div key={method} className="min-w-0 p-2.5 sm:p-3"><div className="text-[9px] font-semibold uppercase tracking-[.12em] text-zinc-500">{method}</div><div className="mt-1 truncate text-base font-semibold text-white sm:text-lg">{money(paymentMethodTotal(sales, method))}</div></div>)}</div></section>
 
