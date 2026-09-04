@@ -12,6 +12,7 @@ import {
   ClipboardList,
   Clock3,
   Command,
+  CreditCard,
   Cpu,
   Database,
   Download,
@@ -555,7 +556,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260904_FULL_REWORK_V30";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260904_CARD_TOTAL_V31";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -2226,6 +2227,10 @@ function paymentMethodTotal(sales: TireSale[], method: string) {
     .reduce((sum, sale) => sum + Number(sale.total || 0), 0);
 }
 
+function cardPaymentTotal(sales: TireSale[]) {
+  return paymentMethodTotal(sales, "Cashapp") + paymentMethodTotal(sales, "Chime");
+}
+
 function physicalTireCount(sales: TireSale[]) {
   return sales.reduce((sum, sale) => {
     if ((sale.serviceType || "tire") !== "tire") return sum;
@@ -2723,6 +2728,7 @@ function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void;
     ? (data?.sales || []).filter((sale) => easternDateKey(sale.soldAt) === paymentDate)
     : monthSales;
   const selectedPaymentTotal = paymentMethodTotal(paymentSales, selectedPayment);
+  const selectedCardTotal = cardPaymentTotal(paymentSales);
   const paymentPeriodLabel = paymentPeriod === "day" ? dateKeyLabel(paymentDate, todayKey) : currentMonthLabel;
   const currentSaleTotal = Math.max(0, Number(form.unitPrice) || 0);
   const isTireSale = form.serviceType === "tire";
@@ -2750,7 +2756,8 @@ function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void;
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><div className="text-[9px] font-semibold uppercase tracking-[.14em] text-zinc-500">Payment totals</div><div className="mt-1 text-sm font-semibold text-white">{paymentPeriodLabel}</div></div><div className="grid grid-cols-2 rounded-lg bg-[#090b0a] p-1 ring-1 ring-inset ring-white/[.07]"><button onClick={() => setPaymentPeriod("day")} className={`rounded-md px-3 py-2 text-xs font-semibold transition ${paymentPeriod === "day" ? "bg-white/[.08] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Day</button><button onClick={() => setPaymentPeriod("month")} className={`rounded-md px-3 py-2 text-xs font-semibold transition ${paymentPeriod === "month" ? "bg-white/[.08] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Month</button></div></div>
         {paymentPeriod === "day" && <div className="mt-4 grid grid-cols-[42px_minmax(0,1fr)_42px] gap-2"><button aria-label="Previous day" onClick={() => setPaymentDate((current) => shiftDateKey(current, -1))} className="grid h-10 place-items-center rounded-lg border border-white/[.07] bg-[#090b0a] text-zinc-400 hover:text-white"><ChevronRight className="h-4 w-4 rotate-180" /></button><input aria-label="Payment totals date" type="date" max={todayKey} value={paymentDate} onChange={(event) => event.target.value && setPaymentDate(event.target.value)} className="min-w-0 rounded-lg border border-white/[.07] bg-[#090b0a] px-3 text-center text-xs font-semibold text-white outline-none focus:border-emerald-500/40" /><button aria-label="Next day" disabled={paymentDate >= todayKey} onClick={() => setPaymentDate((current) => shiftDateKey(current, 1))} className="grid h-10 place-items-center rounded-lg border border-white/[.07] bg-[#090b0a] text-zinc-400 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"><ChevronRight className="h-4 w-4" /></button></div>}
         <div className="payment-summary-grid mt-4 grid grid-cols-3 divide-x divide-white/[.06] overflow-hidden rounded-lg border border-white/[.065] bg-[#0c0e0d]">{(["Cash", "Cashapp", "Chime"] as const).map((method) => <button key={method} onClick={() => setSelectedPayment(method)} className={`min-w-0 px-2.5 py-3 text-left transition first:rounded-l-lg last:rounded-r-lg sm:px-3 ${selectedPayment === method ? "bg-white/[.04]" : "hover:bg-white/[.02]"}`}><div className={`text-[9px] font-semibold uppercase tracking-[.12em] ${selectedPayment === method ? "text-emerald-400" : "text-zinc-500"}`}>{method}</div><div className="mt-1 truncate text-base font-semibold text-white sm:text-lg">{money(paymentMethodTotal(paymentSales, method))}</div></button>)}</div>
-        <div className="mt-3 flex items-center justify-between text-xs"><span className="text-zinc-600">{selectedPayment} total</span><span className="font-semibold text-zinc-200">{money(selectedPaymentTotal)}</span></div>
+        <div className="mt-3 grid overflow-hidden rounded-xl border border-[#29332c] bg-[#0f1511] sm:grid-cols-2 sm:divide-x sm:divide-[#29332c]"><div className="flex items-center justify-between gap-3 px-3.5 py-3 text-xs"><span className="text-zinc-600">{selectedPayment} total</span><span className="font-semibold text-zinc-200">{money(selectedPaymentTotal)}</span></div><div className="flex items-center justify-between gap-3 border-t border-[#29332c] px-3.5 py-3 sm:border-t-0"><span className="flex items-center gap-2 text-xs font-medium text-emerald-300"><CreditCard className="h-3.5 w-3.5" /> Card total</span><span className="text-base font-semibold text-white">{money(selectedCardTotal)}</span></div></div>
+        <p className="mt-2 text-[10px] text-zinc-600">Card total combines Cashapp and Chime. Cash is not included.</p>
       </section>
       <Card>
         <CardHeader title={editingSaleId ? "Edit Work Entry" : "Record Work"} icon={<ShoppingCart className="h-4 w-4 text-amber-400" />} action={<div className="text-right"><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Total</div><div className="text-sm font-semibold text-amber-300">{money(currentSaleTotal)}</div></div>} />
@@ -2858,7 +2865,7 @@ function TireSalesReportPage({ showToast, setPage }: { showToast: (m: string) =>
 
       <div className="shop-stat-grid grid grid-cols-2 lg:grid-cols-4 [&>*:last-child]:col-span-2 lg:[&>*:last-child]:col-span-1"><TireStat featured tone="violet" label="Total revenue" value={money(revenue)} detail="Sales and services" /><TireStat label="Tires sold" value={quantity} detail="Physical tire count" /><TireStat label="Transactions" value={sales.length} detail="All recorded work" /><TireStat label="Average transaction" value={money(average)} detail="Per entry" /></div>
 
-      <section className="shop-card mobile-surface rounded-2xl border border-[#252b27] bg-[#121613] p-4 sm:p-5"><div className="text-[9px] font-semibold uppercase tracking-[.14em] text-zinc-500">Payment breakdown</div><div className="payment-summary-grid mt-3 grid grid-cols-3 divide-x divide-white/[.06] overflow-hidden rounded-xl border border-[#252b27] bg-[#0d110e]">{(["Cash", "Cashapp", "Chime"] as const).map((method) => <div key={method} className="min-w-0 p-3 sm:p-4"><div className="text-[9px] font-semibold uppercase tracking-[.12em] text-zinc-500">{method}</div><div className="mt-1 truncate text-base font-semibold text-white sm:text-lg">{money(paymentMethodTotal(sales, method))}</div></div>)}</div></section>
+      <section className="shop-card mobile-surface rounded-2xl border border-[#252b27] bg-[#121613] p-4 sm:p-5"><div className="flex items-center justify-between gap-3"><div className="text-[9px] font-semibold uppercase tracking-[.14em] text-zinc-500">Payment breakdown</div><div className="flex items-center gap-1.5 text-[9px] text-zinc-600"><CreditCard className="h-3 w-3" /> Card excludes cash</div></div><div className="mt-3 grid grid-cols-2 overflow-hidden rounded-xl border border-[#252b27] bg-[#0d110e] sm:grid-cols-4">{(["Cash", "Cashapp", "Chime"] as const).map((method) => <div key={method} className="min-w-0 border-b border-r border-white/[.06] p-3 sm:border-b-0 sm:p-4"><div className="text-[9px] font-semibold uppercase tracking-[.12em] text-zinc-500">{method}</div><div className="mt-1 truncate text-base font-semibold text-white sm:text-lg">{money(paymentMethodTotal(sales, method))}</div></div>)}<div className="min-w-0 border-b border-white/[.06] bg-emerald-400/[.055] p-3 sm:border-b-0 sm:p-4"><div className="flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-[.12em] text-emerald-400"><CreditCard className="h-3 w-3" /> Card total</div><div className="mt-1 truncate text-base font-semibold text-white sm:text-lg">{money(cardPaymentTotal(sales))}</div></div></div></section>
 
       <Card>
         <CardHeader title={`${periodLabel} Sales & Services`} icon={<ClipboardList className="h-4 w-4 text-zinc-400" />} />
