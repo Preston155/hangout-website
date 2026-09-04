@@ -556,7 +556,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260904_OPERATIONS_OS_V37";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260904_GITHUB_DARK_V38";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -585,8 +585,8 @@ export function App() {
         isolation:isolate;
         position:relative;
         min-width:320px;
-        color:#f9fafb;
-        background:#0b0e14;
+        color:#f0f6fc;
+        background:#090c10;
         font-family:Inter,ui-sans-serif,system-ui,sans-serif;
       }
       .shop-shell::before {
@@ -595,7 +595,7 @@ export function App() {
         inset:0;
         z-index:-3;
         pointer-events:none;
-        background:#0b0e14;
+        background:#090c10;
       }
       .shop-shell::after {
         content:"";
@@ -615,26 +615,26 @@ export function App() {
       .shop-hero { position:relative; }
       .shop-hero::before, .shop-hero::after { display:none; }
       .shop-hero__beam, .shop-hero__speed { display:none; }
-      .shop-panel { border-color:#21293a !important; background-color:#141923 !important; }
+      .shop-panel { border-color:#30363d !important; background-color:#161b22 !important; }
       .shop-ambient { display:none; }
       .alive-scan { position:relative; overflow:hidden; }
       .mobile-surface { position:relative; }
       .mobile-surface::before { display:none; }
       .shop-stat-grid { gap:16px !important; overflow:visible; border:0; border-radius:0; background:transparent; box-shadow:none; }
-      .shop-stat-grid .mobile-stat-card { border:1px solid #21293a !important; border-radius:10px !important; background:#141923; box-shadow:none; transition:border-color .15s ease,background-color .15s ease; }
-      .shop-stat-grid .mobile-stat-card:hover { border-color:#34405a !important; background:#171d29; }
+      .shop-stat-grid .mobile-stat-card { border:1px solid #30363d !important; border-radius:12px !important; background:#161b22; box-shadow:none; transition:border-color .15s ease,background-color .15s ease; }
+      .shop-stat-grid .mobile-stat-card:hover { border-color:#484f58 !important; background:#1a2028; }
       .shop-shell input, .shop-shell select, .shop-shell textarea {
         color-scheme:dark;
-        border-color:#21293a !important;
-        background-color:#0b0e14 !important;
+        border-color:#30363d !important;
+        background-color:#090c10 !important;
       }
       .shop-shell input:focus, .shop-shell select:focus, .shop-shell textarea:focus { border-color:#10b981 !important; }
-      .shop-shell thead { background:#19202e; }
-      .shop-shell th { color:#525d73; font-size:10px; font-weight:800; letter-spacing:.08em; }
-      .shop-shell td { border-color:#21293a !important; }
+      .shop-shell thead { background:#21262d; }
+      .shop-shell th { color:#6e7681; font-size:10px; font-weight:800; letter-spacing:.08em; }
+      .shop-shell td { border-color:#30363d !important; }
       .shop-shell table tbody tr { transition:background-color .15s ease; }
-      .shop-shell table tbody tr:hover { background:#171d29; }
-      .shop-card { background:#141923 !important; border-color:#21293a !important; border-radius:14px !important; box-shadow:none; }
+      .shop-shell table tbody tr:hover { background:#1b2028; }
+      .shop-card { background:#161b22 !important; border-color:#30363d !important; border-radius:12px !important; box-shadow:none; }
       .shop-money { font-family:"JetBrains Mono",ui-monospace,monospace; }
       .shop-card-title-icon { box-shadow:inset 0 0 0 1px rgba(255,255,255,.055); }
       .live-dot { position:relative; }
@@ -654,7 +654,7 @@ export function App() {
         .receipt-screen-actions { display:none !important; }
       }
       @media (max-width: 767px) {
-        .shop-shell { background:#0b0e14; }
+        .shop-shell { background:#090c10; }
         input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
         select,
         textarea {
@@ -665,7 +665,7 @@ export function App() {
           transition: border-color .18s ease, background-color .18s ease;
         }
         .shop-hero { min-height:0; }
-        .mobile-form-trigger { background:#141923; }
+        .mobile-form-trigger { background:#161b22; }
         .shop-stat-grid { gap:10px !important; }
         .mobile-today-grid { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
         .mobile-today-grid > :first-child { grid-column:1 / -1; }
@@ -867,7 +867,7 @@ export function App() {
       <div className="shop-ambient" aria-hidden="true" />
       <div className="flex min-h-screen">
         <Sidebar page={page} setPage={setPage} />
-        <main className="flex min-w-0 flex-1 flex-col lg:pl-[240px]">
+        <main className="flex min-w-0 flex-1 flex-col lg:pl-[250px]">
           <Topbar page={page} />
           <div className="mx-auto w-full max-w-[1400px] flex-1 px-4 pb-28 pt-5 sm:px-6 sm:pb-28 sm:pt-7 lg:px-10 lg:pb-14 lg:pt-9">
             <AnimatePresence mode="wait">
@@ -893,7 +893,7 @@ export function App() {
 
 function LoadingScreen() {
   return (
-    <div className="grid min-h-screen place-items-center bg-[#0b0e14] text-zinc-400">
+    <div className="grid min-h-screen place-items-center bg-[#090c10] text-zinc-400">
       <div className="flex flex-col items-center gap-3">
         <div className="h-6 w-6 animate-spin rounded-full border-2 border-zinc-800 border-t-emerald-400" />
         <span className="text-xs font-medium tracking-wide">Opening Akron Tire Shop...</span>
@@ -959,12 +959,12 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
   return (
     <div className="shop-shell min-h-screen text-zinc-100">
       <div className="grid min-h-screen lg:grid-cols-[minmax(0,1.1fr)_minmax(480px,.9fr)]">
-        <section className="relative hidden overflow-hidden border-r border-[#21293a] bg-[#10141d] p-12 lg:flex lg:flex-col xl:p-16">
+        <section className="relative hidden overflow-hidden border-r border-[#30363d] bg-[#0d1117] p-12 lg:flex lg:flex-col xl:p-16">
           <div className="flex items-center gap-3"><div className="grid h-12 w-12 place-items-center rounded-xl border border-white/[.07] bg-white/[.035]"><ShopWheel className="w-10" /></div><div><div className="text-base font-semibold text-white">Akron Tire Shop</div><div className="mt-0.5 text-[9px] font-semibold uppercase tracking-[.16em] text-emerald-400">Shop operations</div></div></div>
           <div className="my-auto max-w-xl"><div className="text-[10px] font-semibold uppercase tracking-[.18em] text-emerald-400">Inventory · Sales · Service</div><h1 className="mt-4 text-5xl font-semibold leading-[1.04] tracking-[-.055em] text-[#f4f4ef] xl:text-6xl">Everything your shop needs, in one place.</h1><p className="mt-5 max-w-lg text-sm leading-7 text-zinc-500">Keep stock accurate, record every job, and review daily revenue without juggling separate tools.</p></div>
           <div className="grid grid-cols-3 gap-px overflow-hidden rounded-xl border border-[#232938] bg-[#232938]"><div className="bg-[#1a1e2b] p-4"><Package className="h-4 w-4 text-emerald-400" /><div className="mt-3 text-xs font-medium text-zinc-300">Inventory</div></div><div className="bg-[#1a1e2b] p-4"><ShoppingCart className="h-4 w-4 text-emerald-400" /><div className="mt-3 text-xs font-medium text-zinc-300">Sales</div></div><div className="bg-[#1a1e2b] p-4"><ClipboardList className="h-4 w-4 text-emerald-400" /><div className="mt-3 text-xs font-medium text-zinc-300">Reports</div></div></div>
         </section>
-        <section className="flex min-h-screen items-center justify-center px-5 py-10 sm:px-10 lg:bg-[#0b0e14]">
+        <section className="flex min-h-screen items-center justify-center px-5 py-10 sm:px-10 lg:bg-[#090c10]">
           <div className="w-full max-w-[420px]">
             <div className="mb-8 lg:hidden"><div className="flex items-center gap-3"><div className="grid h-11 w-11 place-items-center rounded-xl border border-white/[.07] bg-[#151a16]"><ShopWheel className="w-9" /></div><div><div className="text-base font-semibold text-white">Akron Tire Shop</div><div className="mt-0.5 text-[9px] font-semibold uppercase tracking-[.15em] text-emerald-400">Shop operations</div></div></div></div>
             <div><div className="text-[10px] font-semibold uppercase tracking-[.16em] text-zinc-600">Private access</div><h2 className="mt-2 text-[32px] font-semibold tracking-[-.045em] text-white">Sign in to the shop</h2><p className="mt-2 text-sm leading-relaxed text-zinc-500">Use your passkey or shop passcode to continue.</p></div>
@@ -984,31 +984,31 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
 
 function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) {
   return (
-    <aside className="fixed inset-y-0 left-0 z-40 hidden w-[240px] flex-col border-r border-[#21293a] bg-[#10141d] lg:flex">
-      <div className="flex items-center gap-3 px-5 py-5">
-        <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-emerald-400/30 bg-emerald-400/[.12]"><ShopWheel className="w-7" /></div>
+    <aside className="fixed inset-y-0 left-0 z-40 hidden w-[250px] flex-col border-r border-[#30363d] bg-[#0d1117] lg:flex">
+      <div className="flex items-center gap-3 border-b border-[#30363d] px-5 py-6">
+        <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-emerald-400/30 bg-emerald-400/[.1]"><ShopWheel className="w-7" /></div>
         <div className="min-w-0">
           <div className="text-[15px] font-bold tracking-[-.015em] text-white">Akron Tire Shop</div>
           <div className="mt-0.5 text-[10px] font-semibold uppercase tracking-[.08em] text-emerald-400">Operations OS</div>
         </div>
       </div>
-      <div className="px-5 pb-2 pt-4 text-[10px] font-extrabold uppercase tracking-[.08em] text-[#525d73]">Workspace</div>
+      <div className="px-5 pb-2 pt-4 text-[10px] font-extrabold uppercase tracking-[.08em] text-[#6e7681]">Workspace</div>
       <nav className="flex-1 space-y-0.5">
         {navItems.map((item) => {
           const Icon = item.icon;
           const active = item.id === page;
           const tone = shopToneStyles[item.tone];
           return (
-            <button key={item.id} onClick={() => setPage(item.id)} className={`group flex min-h-11 w-full items-center gap-3 border-0 border-r-2 px-5 text-left text-[13px] font-semibold transition ${active ? "border-r-emerald-500 bg-[#141923] text-emerald-400" : "border-r-transparent text-[#8c96a8] hover:bg-white/[.02] hover:text-white"}`}>
+            <button key={item.id} onClick={() => setPage(item.id)} className={`group flex min-h-11 w-full items-center gap-3 border-0 border-r-[3px] px-5 text-left text-[13px] font-semibold transition ${active ? "border-r-emerald-500 bg-emerald-400/[.08] text-emerald-400" : "border-r-transparent text-[#8b949e] hover:bg-white/[.03] hover:text-white"}`}>
               <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-lg ${active ? "bg-emerald-400/10" : "bg-transparent"}`}><Icon className={`h-4 w-4 ${active ? tone.text : "text-zinc-600 group-hover:text-zinc-400"}`} /></span>
               <span>{item.label}</span>
             </button>
           );
         })}
       </nav>
-      <div className="border-t border-[#21293a] px-5 py-5">
-        <div className="flex items-center justify-between text-[11px] font-semibold text-[#8c96a8]"><span>Shop database</span><span className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Live</span></div>
-        <p className="mt-1 text-[9px] leading-relaxed text-[#525d73]">Changes save automatically across every device.</p>
+      <div className="border-t border-[#30363d] px-5 py-5">
+        <div className="flex items-center justify-between text-[11px] font-semibold text-[#8b949e]"><span>Shop database</span><span className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" /> Live</span></div>
+        <p className="mt-1 text-[9px] leading-relaxed text-[#6e7681]">Changes save automatically across every device.</p>
       </div>
     </aside>
   );
@@ -1017,7 +1017,7 @@ function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) 
 function Topbar({ page }: { page: Page }) {
   const currentNav = navItems.find((item) => item.id === page);
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center border-b border-[#21293a] bg-[#10141d] px-4 sm:px-6 lg:hidden">
+    <header className="sticky top-0 z-30 flex h-16 items-center border-b border-[#30363d] bg-[#0d1117] px-4 sm:px-6 lg:hidden">
       <div className="flex items-center gap-2.5 lg:hidden"><ShopWheel className="w-8 shrink-0" /><div><div className="text-[9px] font-bold uppercase tracking-[.16em] text-emerald-400">Akron Tire Shop</div><div className="mt-0.5 text-sm font-semibold tracking-[-.015em] text-white">{currentNav?.label}</div></div></div>
       <div className="ml-auto flex items-center gap-2 text-[9px] font-medium text-zinc-600 sm:text-[10px]"><span className="hidden font-mono tabular-nums text-zinc-500 sm:inline"><LiveShopTime /></span><span className="hidden h-3 w-px bg-white/[.08] sm:inline" /><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /><span className="hidden min-[380px]:inline">All changes saved</span><span className="min-[380px]:hidden">Saved</span></div>
     </header>
@@ -1026,7 +1026,7 @@ function Topbar({ page }: { page: Page }) {
 
 function MobileShopNav({ page, setPage }: { page: Page; setPage: (p: Page) => void }) {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[#21293a] bg-[#10141d]/[.98] px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-1.5 backdrop-blur-xl lg:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[#30363d] bg-[#0d1117]/[.98] px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-1.5 backdrop-blur-xl lg:hidden">
       <div className="mx-auto grid max-w-lg grid-cols-5 gap-1">
         {navItems.map((item) => { const Icon = item.icon; const active = item.id === page; return <button key={item.id} onClick={() => setPage(item.id)} className={`relative flex min-w-0 flex-col items-center gap-1 px-1 py-2 text-[9px] font-medium transition ${active ? "text-emerald-300" : "text-zinc-600"}`}><span className={`grid h-7 w-9 place-items-center rounded-lg ${active ? "bg-emerald-400/10" : ""}`}><Icon className="h-[18px] w-[18px]" /></span><span className="truncate">{item.shortLabel}</span></button>; })}
       </div>
@@ -2403,11 +2403,11 @@ function ShopPageHeader({ eyebrow, title, description, meta, actions, tone = "em
   return (
     <div className="shop-hero flex flex-col items-stretch gap-5 pb-1 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex min-w-0 items-center gap-3.5">
-        <div className="grid h-[42px] w-[42px] shrink-0 place-items-center rounded-[10px] border border-[#21293a] bg-[#141923] text-emerald-400"><HeaderIcon className="h-5 w-5" /></div>
+        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-lg border border-[#30363d] bg-[#161b22] text-emerald-400"><HeaderIcon className="h-5 w-5" /></div>
         <div className="min-w-0 flex-1">
           <div className={`mb-0.5 text-[10px] font-extrabold uppercase tracking-[.1em] ${colors.text}`}>{eyebrow}</div>
           <h1 className="text-[22px] font-extrabold leading-tight tracking-[-.02em] text-white">{title}</h1>
-          <p className="mt-0.5 max-w-2xl text-xs leading-relaxed text-[#8c96a8]">{description}</p>
+          <p className="mt-0.5 max-w-2xl text-xs leading-relaxed text-[#8b949e]">{description}</p>
           {meta}
         </div>
       </div>
@@ -2545,8 +2545,8 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
       </div>
       <section className="shop-card mobile-today-grid mobile-surface grid gap-3 rounded-2xl border border-[#252b27] bg-[#101712] p-4 sm:grid-cols-[1fr_auto_auto] sm:items-center sm:p-5">
         <div><div className="text-[9px] font-semibold uppercase tracking-[.16em] text-emerald-400">Today</div><div className="mt-1 text-xs text-zinc-500">Live totals from today’s saved work.</div></div>
-        <div className="rounded-md border border-[#21293a] bg-[#19202e] px-5 py-3"><div className="text-[9px] font-semibold uppercase tracking-wider text-[#525d73]">Revenue</div><div className="shop-money mt-1 text-lg font-bold text-white">{money(summary?.todayRevenue || 0)}</div></div>
-        <div className="rounded-md border border-[#21293a] bg-[#19202e] px-5 py-3"><div className="text-[9px] font-semibold uppercase tracking-wider text-[#525d73]">Jobs / items</div><div className="shop-money mt-1 text-lg font-bold text-emerald-300">{summary?.todayUnits || 0}</div></div>
+        <div className="rounded-lg border border-[#30363d] bg-[#21262d] px-5 py-3"><div className="text-[9px] font-semibold uppercase tracking-wider text-[#6e7681]">Revenue</div><div className="shop-money mt-1 text-lg font-bold text-white">{money(summary?.todayRevenue || 0)}</div></div>
+        <div className="rounded-lg border border-[#30363d] bg-[#21262d] px-5 py-3"><div className="text-[9px] font-semibold uppercase tracking-wider text-[#6e7681]">Jobs / items</div><div className="shop-money mt-1 text-lg font-bold text-emerald-300">{summary?.todayUnits || 0}</div></div>
       </section>
       <div>
         <button type="button" onClick={() => setMobileFormOpen((open) => !open)} className="mobile-form-trigger mobile-tap flex w-full items-center gap-3 rounded-2xl border border-white/[.07] px-4 py-4 text-left md:hidden">
@@ -2935,8 +2935,8 @@ function CardHeader({ title, icon, action }: { title: string; icon: React.ReactN
 
 function Button({ children, variant = "primary", onClick, disabled, className = "" }: { children: React.ReactNode; variant?: "primary" | "secondary" | "ghost" | "danger"; onClick?: () => void; disabled?: boolean; className?: string }) {
   const styles = {
-    primary: "border border-emerald-500 bg-emerald-500 text-[#090a0f] hover:bg-emerald-600 hover:border-emerald-600",
-    secondary: "border border-[#21293a] bg-[#19202e] text-zinc-100 hover:border-[#34405a] hover:bg-[#21293a]",
+    primary: "border border-emerald-500 bg-emerald-500 text-[#090c10] shadow-[0_4px_12px_rgba(16,185,129,.2)] hover:-translate-y-px hover:border-emerald-600 hover:bg-emerald-600",
+    secondary: "border border-[#30363d] bg-[#21262d] text-zinc-100 hover:border-[#484f58] hover:bg-[#30363d]",
     ghost: "border border-transparent text-zinc-400 hover:border-white/[.06] hover:bg-white/[.035] hover:text-white",
     danger: "bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20",
   };
