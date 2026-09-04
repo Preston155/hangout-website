@@ -556,7 +556,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260904_EXECUTIVE_REWORK_V33";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260904_TERMINAL_REWORK_V34";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -586,8 +586,8 @@ export function App() {
         position:relative;
         min-width:320px;
         color:#f9fafb;
-        background:#020617;
-        font-family:"Plus Jakarta Sans",Inter,ui-sans-serif,system-ui,sans-serif;
+        background:#030712;
+        font-family:Inter,ui-sans-serif,system-ui,sans-serif;
       }
       .shop-shell::before {
         content:"";
@@ -596,9 +596,9 @@ export function App() {
         z-index:-3;
         pointer-events:none;
         background:
-          radial-gradient(circle at 10% 10%,rgba(16,185,129,.12),transparent 40%),
-          radial-gradient(circle at 90% 20%,rgba(59,130,246,.08),transparent 45%),
-          radial-gradient(circle at 50% 80%,rgba(139,92,246,.06),transparent 50%);
+          radial-gradient(circle at 10% 0%,rgba(16,185,129,.12),transparent 40%),
+          radial-gradient(circle at 85% 30%,rgba(59,130,246,.08),transparent 40%),
+          radial-gradient(circle at 50% 90%,rgba(139,92,246,.05),transparent 50%);
       }
       .shop-shell::after {
         content:"";
@@ -618,18 +618,18 @@ export function App() {
       .shop-hero { position:relative; }
       .shop-hero::before, .shop-hero::after { display:none; }
       .shop-hero__beam, .shop-hero__speed { display:none; }
-      .shop-panel { border-color:rgba(255,255,255,.08) !important; background-color:rgba(15,23,42,.55) !important; backdrop-filter:blur(16px); }
+      .shop-panel { border-color:rgba(255,255,255,.08) !important; background-color:rgba(17,24,39,.5) !important; backdrop-filter:blur(18px); }
       .shop-ambient { display:none; }
       .alive-scan { position:relative; overflow:hidden; }
       .mobile-surface { position:relative; }
       .mobile-surface::before { display:none; }
       .shop-stat-grid { gap:16px !important; overflow:visible; border:0; border-radius:0; background:transparent; box-shadow:none; }
-      .shop-stat-grid .mobile-stat-card { border:1px solid rgba(255,255,255,.08) !important; border-radius:20px !important; background:rgba(15,23,42,.55); backdrop-filter:blur(16px); box-shadow:0 12px 32px rgba(0,0,0,.16); transition:border-color .2s ease,transform .2s ease; }
-      .shop-stat-grid .mobile-stat-card:hover { border-color:rgba(255,255,255,.15) !important; transform:translateY(-2px); }
+      .shop-stat-grid .mobile-stat-card { border:1px solid rgba(255,255,255,.08) !important; border-radius:20px !important; background:rgba(17,24,39,.5); backdrop-filter:blur(18px); box-shadow:0 12px 32px rgba(0,0,0,.16); transition:border-color .2s ease,transform .2s ease; }
+      .shop-stat-grid .mobile-stat-card:hover { border-color:rgba(16,185,129,.4) !important; transform:translateY(-2px); }
       .shop-shell input, .shop-shell select, .shop-shell textarea { color-scheme:dark; }
       .shop-shell table tbody tr { transition:background-color .15s ease; }
       .shop-shell table tbody tr:hover { background:rgba(255,255,255,.025); }
-      .shop-card { background:rgba(15,23,42,.55) !important; border-color:rgba(255,255,255,.08) !important; box-shadow:0 16px 44px rgba(0,0,0,.18); backdrop-filter:blur(16px); }
+      .shop-card { background:rgba(17,24,39,.5) !important; border-color:rgba(255,255,255,.08) !important; box-shadow:0 16px 44px rgba(0,0,0,.18); backdrop-filter:blur(18px); }
       .shop-money { font-family:"JetBrains Mono",ui-monospace,monospace; }
       .shop-card-title-icon { box-shadow:inset 0 0 0 1px rgba(255,255,255,.055); }
       .live-dot { position:relative; }
@@ -649,7 +649,7 @@ export function App() {
         .receipt-screen-actions { display:none !important; }
       }
       @media (max-width: 767px) {
-        .shop-shell { background:#020617; }
+        .shop-shell { background:#030712; }
         input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
         select,
         textarea {
@@ -862,9 +862,9 @@ export function App() {
       <div className="shop-ambient" aria-hidden="true" />
       <div className="flex min-h-screen">
         <Sidebar page={page} setPage={setPage} />
-        <main className="flex min-w-0 flex-1 flex-col lg:pl-[270px]">
+        <main className="flex min-w-0 flex-1 flex-col lg:pl-[280px]">
           <Topbar page={page} />
-          <div className="mx-auto w-full max-w-[1440px] flex-1 px-4 pb-28 pt-5 sm:px-6 sm:pb-28 sm:pt-7 lg:px-14 lg:pb-14 lg:pt-12">
+          <div className="mx-auto w-full max-w-[1440px] flex-1 px-4 pb-28 pt-5 sm:px-6 sm:pb-28 sm:pt-7 lg:px-12 lg:pb-14 lg:pt-12">
             <AnimatePresence mode="wait">
               <motion.div className="mobile-page" key={page} initial={{ opacity: 0, y: reduceMotion ? 0 : 10, scale: reduceMotion ? 1 : 0.995 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: reduceMotion ? 0 : -6 }} transition={{ duration: reduceMotion ? 0 : 0.22, ease: [0.2, 0.8, 0.2, 1] }}>
                 {page === "tire-inventory" && <TireInventoryPage showToast={showToast} setPage={setPage} />}
@@ -954,7 +954,7 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
   return (
     <div className="shop-shell min-h-screen text-zinc-100">
       <div className="grid min-h-screen lg:grid-cols-[minmax(0,1.1fr)_minmax(480px,.9fr)]">
-        <section className="relative hidden overflow-hidden border-r border-white/[.08] bg-[#090d16] p-12 lg:flex lg:flex-col xl:p-16">
+        <section className="relative hidden overflow-hidden border-r border-white/[.08] bg-[rgba(10,15,30,.72)] p-12 backdrop-blur-2xl lg:flex lg:flex-col xl:p-16">
           <div className="flex items-center gap-3"><div className="grid h-12 w-12 place-items-center rounded-xl border border-white/[.07] bg-white/[.035]"><ShopWheel className="w-10" /></div><div><div className="text-base font-semibold text-white">Akron Tire Shop</div><div className="mt-0.5 text-[9px] font-semibold uppercase tracking-[.16em] text-emerald-400">Shop operations</div></div></div>
           <div className="my-auto max-w-xl"><div className="text-[10px] font-semibold uppercase tracking-[.18em] text-emerald-400">Inventory · Sales · Service</div><h1 className="mt-4 text-5xl font-semibold leading-[1.04] tracking-[-.055em] text-[#f4f4ef] xl:text-6xl">Everything your shop needs, in one place.</h1><p className="mt-5 max-w-lg text-sm leading-7 text-zinc-500">Keep stock accurate, record every job, and review daily revenue without juggling separate tools.</p></div>
           <div className="grid grid-cols-3 gap-px overflow-hidden rounded-xl border border-white/[.08] bg-white/[.08]"><div className="bg-[#0f172a] p-4"><Package className="h-4 w-4 text-emerald-400" /><div className="mt-3 text-xs font-medium text-zinc-300">Inventory</div></div><div className="bg-[#0f172a] p-4"><ShoppingCart className="h-4 w-4 text-emerald-400" /><div className="mt-3 text-xs font-medium text-zinc-300">Sales</div></div><div className="bg-[#0f172a] p-4"><ClipboardList className="h-4 w-4 text-emerald-400" /><div className="mt-3 text-xs font-medium text-zinc-300">Reports</div></div></div>
@@ -979,7 +979,7 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
 
 function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) {
   return (
-    <aside className="fixed inset-y-0 left-0 z-40 hidden w-[270px] flex-col border-r border-white/[.08] bg-[rgba(7,10,23,.78)] px-[18px] py-7 backdrop-blur-2xl lg:flex">
+    <aside className="fixed inset-y-0 left-0 z-40 hidden w-[280px] flex-col border-r border-white/[.08] bg-[rgba(10,15,30,.72)] px-5 py-8 backdrop-blur-2xl lg:flex">
       <div className="flex items-center gap-3 px-2 py-1.5">
         <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-[0_0_20px_rgba(16,185,129,.25)]"><ShopWheel className="w-9" /></div>
         <div className="min-w-0">
@@ -995,7 +995,7 @@ function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) 
           const active = item.id === page;
           const tone = shopToneStyles[item.tone];
           return (
-            <button key={item.id} onClick={() => setPage(item.id)} className={`group flex min-h-11 w-full items-center gap-3 rounded-xl border px-3 text-left text-[13px] font-semibold transition ${active ? "border-white/[.08] bg-[#0f172a] text-white shadow-[0_4px_12px_rgba(0,0,0,.2)]" : "border-transparent text-zinc-400 hover:bg-white/[.03] hover:text-white"}`}>
+            <button key={item.id} onClick={() => setPage(item.id)} className={`group flex min-h-12 w-full items-center gap-3.5 rounded-xl border px-4 text-left text-[13px] font-semibold transition ${active ? "border-emerald-400/20 bg-[#0d1322] text-white shadow-[0_4px_18px_rgba(0,0,0,.25)]" : "border-transparent text-zinc-400 hover:bg-white/[.03] hover:text-white"}`}>
               <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-lg ${active ? "bg-emerald-400/10" : "bg-transparent"}`}><Icon className={`h-4 w-4 ${active ? tone.text : "text-zinc-600 group-hover:text-zinc-400"}`} /></span>
               <span>{item.label}</span>
             </button>
@@ -1013,7 +1013,7 @@ function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) 
 function Topbar({ page }: { page: Page }) {
   const currentNav = navItems.find((item) => item.id === page);
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center border-b border-white/[.08] bg-[#020617]/90 px-4 backdrop-blur-2xl sm:px-6 lg:hidden">
+    <header className="sticky top-0 z-30 flex h-16 items-center border-b border-white/[.08] bg-[#030712]/90 px-4 backdrop-blur-2xl sm:px-6 lg:hidden">
       <div className="flex items-center gap-2.5 lg:hidden"><ShopWheel className="w-8 shrink-0" /><div><div className="text-[9px] font-bold uppercase tracking-[.16em] text-emerald-400">Akron Tire Shop</div><div className="mt-0.5 text-sm font-semibold tracking-[-.015em] text-white">{currentNav?.label}</div></div></div>
       <div className="ml-auto flex items-center gap-2 text-[9px] font-medium text-zinc-600 sm:text-[10px]"><span className="hidden font-mono tabular-nums text-zinc-500 sm:inline"><LiveShopTime /></span><span className="hidden h-3 w-px bg-white/[.08] sm:inline" /><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /><span className="hidden min-[380px]:inline">All changes saved</span><span className="min-[380px]:hidden">Saved</span></div>
     </header>
@@ -1022,7 +1022,7 @@ function Topbar({ page }: { page: Page }) {
 
 function MobileShopNav({ page, setPage }: { page: Page; setPage: (p: Page) => void }) {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-white/[.08] bg-[rgba(7,10,23,.94)] px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-1.5 backdrop-blur-2xl lg:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-white/[.08] bg-[rgba(10,15,30,.94)] px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-1.5 backdrop-blur-2xl lg:hidden">
       <div className="mx-auto grid max-w-lg grid-cols-5 gap-1">
         {navItems.map((item) => { const Icon = item.icon; const active = item.id === page; return <button key={item.id} onClick={() => setPage(item.id)} className={`relative flex min-w-0 flex-col items-center gap-1 px-1 py-2 text-[9px] font-medium transition ${active ? "text-emerald-300" : "text-zinc-600"}`}><span className={`grid h-7 w-9 place-items-center rounded-lg ${active ? "bg-emerald-400/10" : ""}`}><Icon className="h-[18px] w-[18px]" /></span><span className="truncate">{item.shortLabel}</span></button>; })}
       </div>
