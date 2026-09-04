@@ -555,7 +555,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260904_CLEAN_V27";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260904_MOBILE_ICON_V28";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -583,6 +583,7 @@ export function App() {
       .shop-shell {
         isolation:isolate;
         position:relative;
+        min-width:320px;
         background:#090b0a;
       }
       .shop-shell::before {
@@ -648,6 +649,9 @@ export function App() {
         .shop-hero .shop-wordmark { font-size:26px !important; line-height:1 !important; }
         .mobile-form-trigger { background:#111412; }
         .mobile-stat-grid { gap:8px !important; }
+        .mobile-today-grid { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+        .mobile-today-grid > :first-child { grid-column:1 / -1; }
+        .mobile-today-grid > :not(:first-child) { min-width:0; }
         button, a { -webkit-tap-highlight-color: transparent; }
         .mobile-tap { transition: background-color .18s ease, border-color .18s ease; }
         @keyframes mobile-status-pulse {
@@ -655,6 +659,12 @@ export function App() {
           50% { opacity: 1; transform: scale(1.15); }
         }
         .mobile-status-pulse { animation: mobile-status-pulse 2.2s ease-in-out infinite; }
+      }
+      @media (max-width: 389px) {
+        .payment-summary-grid { grid-template-columns:minmax(0,1fr) !important; }
+        .payment-summary-grid > * { display:flex; align-items:center; justify-content:space-between; gap:12px; text-align:left; }
+        .payment-summary-grid > * + * { border-left-width:0 !important; border-top:1px solid rgba(255,255,255,.06); }
+        .payment-summary-grid > * > :last-child { margin-top:0 !important; }
       }
       @media (prefers-reduced-motion: reduce) {
         .mobile-page > *, .mobile-status-pulse, .shop-wheel img, .shop-wheel--animated::before, .tire-smoke, .tire-spark, .shop-hero::before, .shop-hero__beam, .shop-hero__speed, .shop-ambient::before, .shop-ambient::after, .alive-scan::after, .live-dot::after { animation: none !important; }
@@ -2505,7 +2515,7 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <ShopPageHeader tone="sky" eyebrow="Inventory" title="Manage Inventory" description="Add tires, update stock, and keep pricing organized." actions={<Button className="w-auto justify-center px-5 sm:w-auto" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record a Sale</Button>} />
+      <ShopPageHeader tone="sky" eyebrow="Inventory" title="Manage Inventory" description="Add tires, update stock, and keep pricing organized." actions={<Button className="w-full justify-center px-5 sm:w-auto" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record a Sale</Button>} />
       <div className="mobile-stat-grid grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <TireStat label="Tire types" value={summary?.skus || 0} detail="Active inventory lines" />
         <TireStat label="Inventory quantity" value={summary?.units || 0} detail="Sets, pairs, and individual tires" />
@@ -2733,7 +2743,7 @@ function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void;
       <section className="mobile-surface rounded-xl border border-white/[.065] bg-[#111312] p-4 sm:p-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><div className="text-[9px] font-semibold uppercase tracking-[.14em] text-zinc-500">Payment totals</div><div className="mt-1 text-sm font-semibold text-white">{paymentPeriodLabel}</div></div><div className="grid grid-cols-2 rounded-lg bg-[#090b0a] p-1 ring-1 ring-inset ring-white/[.07]"><button onClick={() => setPaymentPeriod("day")} className={`rounded-md px-3 py-2 text-xs font-semibold transition ${paymentPeriod === "day" ? "bg-white/[.08] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Day</button><button onClick={() => setPaymentPeriod("month")} className={`rounded-md px-3 py-2 text-xs font-semibold transition ${paymentPeriod === "month" ? "bg-white/[.08] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Month</button></div></div>
         {paymentPeriod === "day" && <div className="mt-4 grid grid-cols-[42px_minmax(0,1fr)_42px] gap-2"><button aria-label="Previous day" onClick={() => setPaymentDate((current) => shiftDateKey(current, -1))} className="grid h-10 place-items-center rounded-lg border border-white/[.07] bg-[#090b0a] text-zinc-400 hover:text-white"><ChevronRight className="h-4 w-4 rotate-180" /></button><input aria-label="Payment totals date" type="date" max={todayKey} value={paymentDate} onChange={(event) => event.target.value && setPaymentDate(event.target.value)} className="min-w-0 rounded-lg border border-white/[.07] bg-[#090b0a] px-3 text-center text-xs font-semibold text-white outline-none focus:border-emerald-500/40" /><button aria-label="Next day" disabled={paymentDate >= todayKey} onClick={() => setPaymentDate((current) => shiftDateKey(current, 1))} className="grid h-10 place-items-center rounded-lg border border-white/[.07] bg-[#090b0a] text-zinc-400 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"><ChevronRight className="h-4 w-4" /></button></div>}
-        <div className="mt-4 grid grid-cols-3 divide-x divide-white/[.06] rounded-lg border border-white/[.065] bg-[#0c0e0d]">{(["Cash", "Cashapp", "Chime"] as const).map((method) => <button key={method} onClick={() => setSelectedPayment(method)} className={`min-w-0 px-2.5 py-3 text-left transition first:rounded-l-lg last:rounded-r-lg sm:px-3 ${selectedPayment === method ? "bg-white/[.04]" : "hover:bg-white/[.02]"}`}><div className={`text-[9px] font-semibold uppercase tracking-[.12em] ${selectedPayment === method ? "text-emerald-400" : "text-zinc-500"}`}>{method}</div><div className="mt-1 truncate text-base font-semibold text-white sm:text-lg">{money(paymentMethodTotal(paymentSales, method))}</div></button>)}</div>
+        <div className="payment-summary-grid mt-4 grid grid-cols-3 divide-x divide-white/[.06] overflow-hidden rounded-lg border border-white/[.065] bg-[#0c0e0d]">{(["Cash", "Cashapp", "Chime"] as const).map((method) => <button key={method} onClick={() => setSelectedPayment(method)} className={`min-w-0 px-2.5 py-3 text-left transition first:rounded-l-lg last:rounded-r-lg sm:px-3 ${selectedPayment === method ? "bg-white/[.04]" : "hover:bg-white/[.02]"}`}><div className={`text-[9px] font-semibold uppercase tracking-[.12em] ${selectedPayment === method ? "text-emerald-400" : "text-zinc-500"}`}>{method}</div><div className="mt-1 truncate text-base font-semibold text-white sm:text-lg">{money(paymentMethodTotal(paymentSales, method))}</div></button>)}</div>
         <div className="mt-3 flex items-center justify-between text-xs"><span className="text-zinc-600">{selectedPayment} total</span><span className="font-semibold text-zinc-200">{money(selectedPaymentTotal)}</span></div>
       </section>
       <Card>
@@ -2840,9 +2850,9 @@ function TireSalesReportPage({ showToast, setPage }: { showToast: (m: string) =>
         {reportPeriod === "day" ? <div className="grid grid-cols-[42px_minmax(0,1fr)_42px] items-center gap-2"><button aria-label="Previous day" onClick={() => setDayKey((current) => shiftDateKey(current, -1))} className="grid h-10 place-items-center rounded-lg border border-white/[.07] bg-[#090b0a] text-zinc-400 transition hover:text-white"><ChevronRight className="h-4 w-4 rotate-180" /></button><div className="min-w-0 text-center"><input aria-label="Report date" type="date" max={currentDateKey} value={dayKey} onChange={(event) => event.target.value && setDayKey(event.target.value)} className="w-full min-w-0 rounded-lg border border-transparent bg-transparent px-2 py-1 text-center text-base font-semibold text-white outline-none focus:border-white/[.08]" /><div className="truncate text-[10px] text-zinc-500">{dateKeyLabel(dayKey, currentDateKey)}</div></div><button aria-label="Next day" disabled={!canGoForward} onClick={() => setDayKey((current) => shiftDateKey(current, 1))} className="grid h-10 place-items-center rounded-lg border border-white/[.07] bg-[#090b0a] text-zinc-400 transition hover:text-white disabled:cursor-not-allowed disabled:opacity-30"><ChevronRight className="h-4 w-4" /></button></div> : <div className="flex items-center justify-between gap-3"><button aria-label="Previous month" onClick={() => setMonthKey((current) => shiftMonthKey(current, -1))} className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-white/[.07] bg-[#090b0a] text-zinc-400 transition hover:text-white"><ChevronRight className="h-4 w-4 rotate-180" /></button><h2 className="min-w-0 truncate text-center text-lg font-semibold text-white">{monthKeyLabel(monthKey)}</h2><button aria-label="Next month" disabled={!canGoForward} onClick={() => setMonthKey((current) => shiftMonthKey(current, 1))} className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-white/[.07] bg-[#090b0a] text-zinc-400 transition hover:text-white disabled:cursor-not-allowed disabled:opacity-30"><ChevronRight className="h-4 w-4" /></button></div>}
       </section>
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4"><TireStat featured tone="violet" label="Total revenue" value={money(revenue)} detail="Sales and services" /><TireStat label="Tires sold" value={quantity} detail="Physical tire count" /><TireStat label="Transactions" value={sales.length} detail="All recorded work" /><TireStat label="Average transaction" value={money(average)} detail="Per entry" /></div>
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 [&>*:last-child]:col-span-2 lg:[&>*:last-child]:col-span-1"><TireStat featured tone="violet" label="Total revenue" value={money(revenue)} detail="Sales and services" /><TireStat label="Tires sold" value={quantity} detail="Physical tire count" /><TireStat label="Transactions" value={sales.length} detail="All recorded work" /><TireStat label="Average transaction" value={money(average)} detail="Per entry" /></div>
 
-      <section className="mobile-surface rounded-xl border border-white/[.065] bg-[#111312] p-4 sm:p-5"><div className="text-[9px] font-semibold uppercase tracking-[.14em] text-zinc-500">Payment breakdown</div><div className="mt-3 grid grid-cols-3 divide-x divide-white/[.06] rounded-lg border border-white/[.06] bg-[#0c0e0d]">{(["Cash", "Cashapp", "Chime"] as const).map((method) => <div key={method} className="min-w-0 p-2.5 sm:p-3"><div className="text-[9px] font-semibold uppercase tracking-[.12em] text-zinc-500">{method}</div><div className="mt-1 truncate text-base font-semibold text-white sm:text-lg">{money(paymentMethodTotal(sales, method))}</div></div>)}</div></section>
+      <section className="mobile-surface rounded-xl border border-white/[.065] bg-[#111312] p-4 sm:p-5"><div className="text-[9px] font-semibold uppercase tracking-[.14em] text-zinc-500">Payment breakdown</div><div className="payment-summary-grid mt-3 grid grid-cols-3 divide-x divide-white/[.06] overflow-hidden rounded-lg border border-white/[.06] bg-[#0c0e0d]">{(["Cash", "Cashapp", "Chime"] as const).map((method) => <div key={method} className="min-w-0 p-2.5 sm:p-3"><div className="text-[9px] font-semibold uppercase tracking-[.12em] text-zinc-500">{method}</div><div className="mt-1 truncate text-base font-semibold text-white sm:text-lg">{money(paymentMethodTotal(sales, method))}</div></div>)}</div></section>
 
       <Card>
         <CardHeader title={`${periodLabel} Sales & Services`} icon={<ClipboardList className="h-4 w-4 text-zinc-400" />} />
