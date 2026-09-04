@@ -549,13 +549,13 @@ const navItems = [
 type ShopTone = "emerald" | "sky" | "amber" | "violet" | "zinc";
 const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string; ring: string }> = {
   emerald: { text: "text-emerald-400", dot: "bg-emerald-400", soft: "bg-emerald-400/10", ring: "ring-emerald-400/15" },
-  sky: { text: "text-sky-400", dot: "bg-sky-400", soft: "bg-sky-400/10", ring: "ring-sky-400/15" },
-  amber: { text: "text-amber-400", dot: "bg-amber-400", soft: "bg-amber-400/10", ring: "ring-amber-400/15" },
-  violet: { text: "text-violet-400", dot: "bg-violet-400", soft: "bg-violet-400/10", ring: "ring-violet-400/15" },
+  sky: { text: "text-emerald-400", dot: "bg-emerald-400", soft: "bg-emerald-400/10", ring: "ring-emerald-400/15" },
+  amber: { text: "text-emerald-400", dot: "bg-emerald-400", soft: "bg-emerald-400/10", ring: "ring-emerald-400/15" },
+  violet: { text: "text-emerald-400", dot: "bg-emerald-400", soft: "bg-emerald-400/10", ring: "ring-emerald-400/15" },
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260904_REDESIGN_V29";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260904_FULL_REWORK_V30";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -584,7 +584,8 @@ export function App() {
         isolation:isolate;
         position:relative;
         min-width:320px;
-        background:#090c0a;
+        color:#f4f4f0;
+        background:#0a0d0b;
       }
       .shop-shell::before {
         content:"";
@@ -592,7 +593,7 @@ export function App() {
         inset:0;
         z-index:-3;
         pointer-events:none;
-        background:linear-gradient(180deg,rgba(255,255,255,.012),transparent 28rem);
+        background:linear-gradient(180deg,rgba(255,255,255,.014),transparent 34rem);
       }
       .shop-shell::after {
         content:"";
@@ -600,25 +601,30 @@ export function App() {
         inset:0;
         z-index:-2;
         pointer-events:none;
-        background:radial-gradient(circle at 50% -8rem,rgba(52,211,153,.045),transparent 34rem);
+        background:radial-gradient(circle at 65% -12rem,rgba(52,211,153,.055),transparent 42rem);
       }
-      .shop-wheel { position:relative; display:grid; place-items:center; aspect-ratio:1; filter:drop-shadow(0 18px 22px rgba(0,0,0,.48)); }
+      .shop-wheel { position:relative; display:grid; place-items:center; aspect-ratio:1; filter:drop-shadow(0 12px 18px rgba(0,0,0,.38)); }
       .shop-wheel--positioned { position:absolute; }
       .shop-wheel img { position:relative; z-index:2; display:block; width:100%; height:100%; object-fit:contain; user-select:none; -webkit-user-drag:none; }
       .shop-wheel--animated img { transform:rotate(-4deg); }
-      .shop-wheel::after { content:""; position:absolute; left:15%; right:15%; bottom:-5%; height:9%; border-radius:50%; background:rgba(0,0,0,.55); filter:blur(6px); z-index:-1; }
+      .shop-wheel::after { display:none; }
       .shop-wheel--animated::before, .tire-smoke, .tire-spark { display:none; }
       .shop-wordmark { font-family:Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif; letter-spacing:-.035em; text-transform:uppercase; }
       .shop-hero { position:relative; }
       .shop-hero::before, .shop-hero::after { display:none; }
       .shop-hero__beam, .shop-hero__speed { display:none; }
-      .shop-panel { border-color:rgba(255,255,255,.075) !important; background-color:#111412 !important; }
+      .shop-panel { border-color:#242a26 !important; background-color:#121613 !important; }
       .shop-ambient { display:none; }
       .alive-scan { position:relative; overflow:hidden; }
       .mobile-surface { position:relative; }
       .mobile-surface::before { display:none; }
-      .shop-stat-grid { gap:1px !important; overflow:hidden; border:1px solid rgba(255,255,255,.07); border-radius:12px; background:rgba(255,255,255,.07); }
-      .shop-stat-grid .mobile-stat-card { border:0 !important; border-radius:0 !important; background:#111512; }
+      .shop-stat-grid { gap:1px !important; overflow:hidden; border:1px solid #252b27; border-radius:16px; background:#252b27; box-shadow:0 14px 36px rgba(0,0,0,.14); }
+      .shop-stat-grid .mobile-stat-card { border:0 !important; border-radius:0 !important; background:#121613; }
+      .shop-shell input, .shop-shell select, .shop-shell textarea { color-scheme:dark; }
+      .shop-shell table tbody tr { transition:background-color .15s ease; }
+      .shop-shell table tbody tr:hover { background:rgba(255,255,255,.025); }
+      .shop-card { box-shadow:0 16px 42px rgba(0,0,0,.12); }
+      .shop-card-title-icon { box-shadow:inset 0 0 0 1px rgba(255,255,255,.055); }
       .live-dot { position:relative; }
       .live-dot::after { content:""; position:absolute; inset:-4px; border:1px solid currentColor; border-radius:999px; opacity:0; animation:live-ring 2.4s ease-out infinite; }
       @keyframes live-ring { 0%{transform:scale(.65);opacity:.55} 75%,100%{transform:scale(1.9);opacity:0} }
@@ -636,7 +642,7 @@ export function App() {
         .receipt-screen-actions { display:none !important; }
       }
       @media (max-width: 767px) {
-        .shop-shell { background:#090b0a; }
+        .shop-shell { background:#0a0d0b; }
         input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
         select,
         textarea {
@@ -845,13 +851,13 @@ export function App() {
 
   return (
     <DashboardClockProvider>
-    <div className="shop-shell relative min-h-screen bg-[#080a09] font-sans text-zinc-100 antialiased selection:bg-lime-300/30 selection:text-white">
+    <div className="shop-shell relative min-h-screen font-sans text-zinc-100 antialiased selection:bg-emerald-300/25 selection:text-white">
       <div className="shop-ambient" aria-hidden="true" />
       <div className="flex min-h-screen">
         <Sidebar page={page} setPage={setPage} />
-        <main className="flex min-w-0 flex-1 flex-col lg:pl-60">
+        <main className="flex min-w-0 flex-1 flex-col lg:pl-64">
           <Topbar page={page} />
-          <div className="mx-auto w-full max-w-[1500px] flex-1 px-4 pb-28 pt-5 sm:px-6 sm:pb-28 sm:pt-7 lg:px-8 lg:pb-10 lg:pt-8 xl:px-10">
+          <div className="mx-auto w-full max-w-[1560px] flex-1 px-4 pb-28 pt-5 sm:px-6 sm:pb-28 sm:pt-7 lg:px-10 lg:pb-12 lg:pt-10 xl:px-14">
             <AnimatePresence mode="wait">
               <motion.div className="mobile-page" key={page} initial={{ opacity: 0, y: reduceMotion ? 0 : 10, scale: reduceMotion ? 1 : 0.995 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: reduceMotion ? 0 : -6 }} transition={{ duration: reduceMotion ? 0 : 0.22, ease: [0.2, 0.8, 0.2, 1] }}>
                 {page === "tire-inventory" && <TireInventoryPage showToast={showToast} setPage={setPage} />}
@@ -939,31 +945,26 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
   };
 
   return (
-    <div className="shop-shell relative grid min-h-screen place-items-center overflow-hidden bg-[#090b0a] p-4 text-zinc-100 sm:p-6">
-      <div className="shop-ambient" aria-hidden="true" />
-      <ShopWheel className="shop-wheel--positioned -left-16 bottom-8 hidden w-56 -rotate-12 opacity-30 blur-[.2px] sm:grid" />
-      <ShopWheel className="shop-wheel--positioned -right-20 top-10 hidden w-72 rotate-12 opacity-20 sm:grid" accent="#22d3ee" />
-      <div className="w-full max-w-[420px]">
-        <div className="mb-7 text-center">
-          <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-[10px] font-bold uppercase tracking-[.24em] text-lime-300">Akron, Ohio</motion.div>
-          <div className="shop-wordmark mt-1 text-[28px] text-white">Akron Tire Shop</div>
-          <h1 className="mt-5 text-[26px] font-semibold tracking-[-.035em] text-white sm:text-[30px]">Welcome back</h1>
-          <p className="mx-auto mt-2 max-w-xs text-xs leading-relaxed text-zinc-500">Secure access to inventory, sales, services, and reports.</p>
-        </div>
-        <form onSubmit={login} className="rounded-2xl bg-[#111312] p-5 shadow-[0_24px_70px_rgba(0,0,0,.28)] ring-1 ring-inset ring-white/[.06] sm:p-6">
-          <div className="space-y-4">
-            {passkeyAvailable && <><button type="button" disabled={busy} onClick={() => void loginWithPasskey()} className="mobile-tap flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-400 py-3 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-300 active:scale-[0.98] disabled:opacity-40"><KeyRound className="h-4 w-4" />{busy ? "Waiting for passkey..." : "Continue with a passkey"}</button><p className="-mt-1 text-center text-[10px] leading-relaxed text-zinc-600">Use Face ID, Windows Hello, or a saved passkey.</p><div className="flex items-center gap-3"><span className="h-px flex-1 bg-white/[.07]" /><span className="text-[9px] font-medium uppercase tracking-[.14em] text-zinc-600">or use passcode</span><span className="h-px flex-1 bg-white/[.07]" /></div></>}
-            <div>
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1.5">Access Passcode</label>
-              <input autoFocus={!passkeyAvailable} type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••••••" className="w-full rounded-xl border border-white/[.09] bg-[#090b0a] px-3.5 py-3 text-xs text-zinc-200 placeholder-zinc-700 outline-none transition focus:border-emerald-400/45 focus:ring-2 focus:ring-emerald-400/10" />
-            </div>
-            {error && <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-2.5 text-xs text-red-400">{error}</div>}
-            <button disabled={busy || !password} className="mobile-tap w-full rounded-xl bg-white/[.07] py-3 text-xs font-semibold text-zinc-100 ring-1 ring-inset ring-white/[.07] transition hover:bg-white/[.1] active:scale-[0.98] disabled:opacity-40">
-              {busy ? "Signing in..." : "Enter Shop"}
-            </button>
+    <div className="shop-shell min-h-screen text-zinc-100">
+      <div className="grid min-h-screen lg:grid-cols-[minmax(0,1.1fr)_minmax(480px,.9fr)]">
+        <section className="relative hidden overflow-hidden border-r border-[#252b27] bg-[#101411] p-12 lg:flex lg:flex-col xl:p-16">
+          <div className="flex items-center gap-3"><div className="grid h-12 w-12 place-items-center rounded-xl border border-white/[.07] bg-white/[.035]"><ShopWheel className="w-10" /></div><div><div className="text-base font-semibold text-white">Akron Tire Shop</div><div className="mt-0.5 text-[9px] font-semibold uppercase tracking-[.16em] text-emerald-400">Shop operations</div></div></div>
+          <div className="my-auto max-w-xl"><div className="text-[10px] font-semibold uppercase tracking-[.18em] text-emerald-400">Inventory · Sales · Service</div><h1 className="mt-4 text-5xl font-semibold leading-[1.04] tracking-[-.055em] text-[#f4f4ef] xl:text-6xl">Everything your shop needs, in one place.</h1><p className="mt-5 max-w-lg text-sm leading-7 text-zinc-500">Keep stock accurate, record every job, and review daily revenue without juggling separate tools.</p></div>
+          <div className="grid grid-cols-3 gap-px overflow-hidden rounded-xl border border-white/[.06] bg-white/[.06]"><div className="bg-[#121713] p-4"><Package className="h-4 w-4 text-emerald-400" /><div className="mt-3 text-xs font-medium text-zinc-300">Inventory</div></div><div className="bg-[#121713] p-4"><ShoppingCart className="h-4 w-4 text-emerald-400" /><div className="mt-3 text-xs font-medium text-zinc-300">Sales</div></div><div className="bg-[#121713] p-4"><ClipboardList className="h-4 w-4 text-emerald-400" /><div className="mt-3 text-xs font-medium text-zinc-300">Reports</div></div></div>
+        </section>
+        <section className="flex min-h-screen items-center justify-center px-5 py-10 sm:px-10 lg:bg-[#0a0d0b]">
+          <div className="w-full max-w-[420px]">
+            <div className="mb-8 lg:hidden"><div className="flex items-center gap-3"><div className="grid h-11 w-11 place-items-center rounded-xl border border-white/[.07] bg-[#151a16]"><ShopWheel className="w-9" /></div><div><div className="text-base font-semibold text-white">Akron Tire Shop</div><div className="mt-0.5 text-[9px] font-semibold uppercase tracking-[.15em] text-emerald-400">Shop operations</div></div></div></div>
+            <div><div className="text-[10px] font-semibold uppercase tracking-[.16em] text-zinc-600">Private access</div><h2 className="mt-2 text-[32px] font-semibold tracking-[-.045em] text-white">Sign in to the shop</h2><p className="mt-2 text-sm leading-relaxed text-zinc-500">Use your passkey or shop passcode to continue.</p></div>
+            <form onSubmit={login} className="mt-8 space-y-4">
+              {passkeyAvailable && <><button type="button" disabled={busy} onClick={() => void loginWithPasskey()} className="mobile-tap flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-emerald-400 px-4 text-sm font-semibold text-[#07100b] transition hover:bg-emerald-300 disabled:opacity-40"><KeyRound className="h-4 w-4" />{busy ? "Waiting for passkey..." : "Continue with a passkey"}</button><p className="text-center text-[10px] leading-relaxed text-zinc-600">Face ID, Windows Hello, or a saved passkey</p><div className="flex items-center gap-3 py-1"><span className="h-px flex-1 bg-white/[.07]" /><span className="text-[9px] font-medium uppercase tracking-[.14em] text-zinc-700">or</span><span className="h-px flex-1 bg-white/[.07]" /></div></>}
+              <label className="block text-[11px] font-medium text-zinc-400">Shop passcode<input autoFocus={!passkeyAvailable} type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter your passcode" className="mt-2 min-h-12 w-full rounded-xl border border-[#29302b] bg-[#111512] px-4 text-sm text-zinc-200 placeholder-zinc-700 outline-none transition focus:border-emerald-400/50 focus:ring-2 focus:ring-emerald-400/10" /></label>
+              {error && <div className="rounded-xl border border-red-500/20 bg-red-500/[.07] p-3 text-xs text-red-400">{error}</div>}
+              <button disabled={busy || !password} className="mobile-tap min-h-12 w-full rounded-xl border border-white/[.08] bg-white/[.055] px-4 text-sm font-semibold text-zinc-100 transition hover:bg-white/[.09] disabled:opacity-40">{busy ? "Signing in..." : "Enter Shop"}</button>
+            </form>
+            <div className="mt-8 flex items-center gap-2 border-t border-white/[.06] pt-5 text-[10px] text-zinc-700"><ShieldCheck className="h-3.5 w-3.5" /> Secure private shop management</div>
           </div>
-        </form>
-        <div className="mt-6 flex items-center justify-center gap-2 text-[10px] text-zinc-700"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400/60" /> Private shop management</div>
+        </section>
       </div>
     </div>
   );
@@ -971,32 +972,32 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
 
 function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) {
   return (
-    <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-white/[.07] bg-[#0d100e] px-4 py-5 lg:flex">
-      <div className="flex items-center gap-3 px-2 py-1">
-        <ShopWheel className="w-10 shrink-0" />
+    <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-[#242a26] bg-[#0f1310] px-4 py-5 lg:flex">
+      <div className="flex items-center gap-3 px-2 py-1.5">
+        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-white/[.07] bg-[#171c18]"><ShopWheel className="w-9" /></div>
         <div className="min-w-0">
-          <div className="text-[15px] font-semibold tracking-[-.025em] text-white">Akron Tire Shop</div>
-          <div className="mt-0.5 text-[9px] font-medium uppercase tracking-[.13em] text-emerald-400">Shop management</div>
+          <div className="text-[15px] font-semibold tracking-[-.025em] text-[#f5f5f0]">Akron Tire Shop</div>
+          <div className="mt-0.5 text-[9px] font-medium uppercase tracking-[.14em] text-emerald-400">Operations</div>
         </div>
       </div>
       <div className="my-5 h-px bg-white/[.07]" />
+      <div className="mb-2 px-3 text-[9px] font-semibold uppercase tracking-[.15em] text-zinc-700">Workspace</div>
       <nav className="space-y-1">
         {navItems.map((item) => {
           const Icon = item.icon;
           const active = item.id === page;
           const tone = shopToneStyles[item.tone];
           return (
-            <button key={item.id} onClick={() => setPage(item.id)} className={`group relative flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-xs font-medium transition ${active ? "bg-white/[.065] text-white" : "text-zinc-500 hover:bg-white/[.035] hover:text-zinc-200"}`}>
-              {active && <span className={`absolute inset-y-2 left-0 w-0.5 rounded-full ${tone.dot}`} />}
-              <Icon className={`h-4 w-4 ${active ? tone.text : "text-zinc-600 group-hover:text-zinc-400"}`} />
+            <button key={item.id} onClick={() => setPage(item.id)} className={`group flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-xs font-medium transition ${active ? "bg-[#1b211d] text-white ring-1 ring-inset ring-white/[.06]" : "text-zinc-500 hover:bg-white/[.03] hover:text-zinc-200"}`}>
+              <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-lg ${active ? "bg-emerald-400/10" : "bg-transparent"}`}><Icon className={`h-4 w-4 ${active ? tone.text : "text-zinc-600 group-hover:text-zinc-400"}`} /></span>
               <span>{item.label}</span>
             </button>
           );
         })}
       </nav>
-      <div className="mt-auto rounded-xl border border-white/[.06] bg-white/[.025] px-3 py-3">
-        <div className="flex items-center gap-2 text-[10px] font-medium text-zinc-300"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Everything is saved</div>
-        <p className="mt-1 text-[9px] leading-relaxed text-zinc-600">Inventory and sales update automatically.</p>
+      <div className="mt-auto rounded-xl border border-[#252b27] bg-[#121613] px-3.5 py-3.5">
+        <div className="flex items-center justify-between gap-2"><span className="text-[10px] font-medium text-zinc-300">Shop database</span><span className="flex items-center gap-1.5 text-[9px] text-emerald-400"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Live</span></div>
+        <p className="mt-1.5 text-[9px] leading-relaxed text-zinc-600">Changes save automatically across every device.</p>
       </div>
     </aside>
   );
@@ -1005,9 +1006,8 @@ function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) 
 function Topbar({ page }: { page: Page }) {
   const currentNav = navItems.find((item) => item.id === page);
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center border-b border-white/[.07] bg-[#090c0a]/95 px-4 backdrop-blur-xl sm:h-16 sm:px-6 lg:px-8 xl:px-10">
+    <header className="sticky top-0 z-30 flex h-16 items-center border-b border-[#242a26] bg-[#0a0d0b]/95 px-4 backdrop-blur-xl sm:px-6 lg:hidden">
       <div className="flex items-center gap-2.5 lg:hidden"><ShopWheel className="w-8 shrink-0" /><div><div className="text-[9px] font-bold uppercase tracking-[.16em] text-emerald-400">Akron Tire Shop</div><div className="mt-0.5 text-sm font-semibold tracking-[-.015em] text-white">{currentNav?.label}</div></div></div>
-      <div className="hidden lg:block"><div className="text-[10px] font-semibold uppercase tracking-[.14em] text-zinc-500">Akron Tire Shop</div><div className="mt-0.5 text-sm font-semibold tracking-[-.01em] text-zinc-200">{currentNav?.label}</div></div>
       <div className="ml-auto flex items-center gap-2 text-[9px] font-medium text-zinc-600 sm:text-[10px]"><span className="hidden font-mono tabular-nums text-zinc-500 sm:inline"><LiveShopTime /></span><span className="hidden h-3 w-px bg-white/[.08] sm:inline" /><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /><span className="hidden min-[380px]:inline">All changes saved</span><span className="min-[380px]:hidden">Saved</span></div>
     </header>
   );
@@ -1015,9 +1015,9 @@ function Topbar({ page }: { page: Page }) {
 
 function MobileShopNav({ page, setPage }: { page: Page; setPage: (p: Page) => void }) {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-white/[.08] bg-[#0d0f0e]/[.97] px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-1.5 backdrop-blur-2xl lg:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[#252b27] bg-[#0f1310]/[.98] px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-1.5 backdrop-blur-2xl lg:hidden">
       <div className="mx-auto grid max-w-lg grid-cols-5 gap-1">
-        {navItems.map((item) => { const Icon = item.icon; const active = item.id === page; const tone = shopToneStyles[item.tone]; return <motion.button whileTap={{ scale: 0.94 }} key={item.id} onClick={() => setPage(item.id)} className={`relative flex min-w-0 flex-col items-center gap-1 px-1 py-2 text-[9px] font-medium ${active ? "text-zinc-100" : "text-zinc-600"}`}>{active && <motion.span layoutId="mobile-shop-active" className={`absolute -top-1.5 h-0.5 w-7 rounded-full ${tone.dot}`} transition={{ type: "spring", stiffness: 420, damping: 34 }} />}<motion.span animate={{ y: active ? -1 : 0 }} transition={{ type: "spring", stiffness: 420, damping: 28 }}><Icon className={`h-[19px] w-[19px] ${active ? tone.text : "text-zinc-600"}`} /></motion.span><span className="truncate">{item.shortLabel}</span></motion.button>; })}
+        {navItems.map((item) => { const Icon = item.icon; const active = item.id === page; return <button key={item.id} onClick={() => setPage(item.id)} className={`relative flex min-w-0 flex-col items-center gap-1 px-1 py-2 text-[9px] font-medium transition ${active ? "text-emerald-300" : "text-zinc-600"}`}><span className={`grid h-7 w-9 place-items-center rounded-lg ${active ? "bg-emerald-400/10" : ""}`}><Icon className="h-[18px] w-[18px]" /></span><span className="truncate">{item.shortLabel}</span></button>; })}
       </div>
     </nav>
   );
@@ -2119,23 +2119,23 @@ function SettingsPage({ showToast }: { showToast: (m: string) => void }) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 lg:space-y-7">
       <ShopPageHeader tone="zinc" eyebrow="Security" title="Account" description="Manage secure access to Akron Tire Shop." />
-      <section className="mobile-surface overflow-hidden rounded-2xl border border-white/[.065] bg-[#111412]">
-        <div className="border-b border-white/[.07] px-5 py-4"><div className="text-sm font-semibold text-white">Sign-in security</div><div className="mt-1 text-[11px] text-zinc-500">Use Face ID or your passcode to access shop records.</div></div>
-        <div className="p-5">
-          <div className="flex flex-col gap-4 rounded-lg border border-emerald-500/20 bg-emerald-500/[.06] p-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-start gap-3"><div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-emerald-500/10"><KeyRound className="h-4 w-4 text-emerald-300" /></div><div><div className="text-xs font-medium text-white">Device sign-in</div><div className="mt-1 max-w-xl text-[11px] leading-relaxed text-zinc-500">On Windows, this creates a Windows Hello passkey unlocked with your PC PIN. iPhone passkeys use Face ID.</div><div className="mt-1.5 text-[10px] font-medium text-emerald-400">{passkeyCount} passkey{passkeyCount === 1 ? "" : "s"} registered</div></div></div>
-            <button disabled={passkeyBusy} onClick={() => void addPasskey()} className="shrink-0 rounded-lg bg-emerald-400 px-4 py-2.5 text-xs font-semibold text-zinc-950 transition hover:bg-emerald-300 disabled:opacity-40">{passkeyBusy ? "Waiting for Windows..." : isWindows ? "Set Up Windows PIN" : passkeyCount > 0 ? "Add Another Passkey" : "Add a Passkey"}</button>
+      <section className="shop-card mobile-surface overflow-hidden rounded-2xl border border-[#252b27] bg-[#121613]">
+        <div className="border-b border-[#252b27] px-5 py-4 sm:px-6"><div className="text-[15px] font-semibold text-white">Sign-in security</div><div className="mt-1 text-xs text-zinc-500">Control how you securely access shop records.</div></div>
+        <div className="p-5 sm:p-6">
+          <div className="flex flex-col gap-5 rounded-xl border border-[#29332c] bg-[#0f1511] p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+            <div className="flex items-start gap-3.5"><div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-emerald-500/15 bg-emerald-500/[.07]"><KeyRound className="h-[18px] w-[18px] text-emerald-300" /></div><div><div className="text-sm font-medium text-white">Passkey access</div><div className="mt-1 max-w-xl text-xs leading-relaxed text-zinc-500">Use Windows Hello on your PC or Face ID on your iPhone. Your regular shop passcode will still work.</div><div className="mt-2 text-[10px] font-medium text-emerald-400">{passkeyCount} passkey{passkeyCount === 1 ? "" : "s"} registered</div></div></div>
+            <button disabled={passkeyBusy} onClick={() => void addPasskey()} className="min-h-11 shrink-0 rounded-xl bg-emerald-400 px-4 text-xs font-semibold text-zinc-950 transition hover:bg-emerald-300 disabled:opacity-40">{passkeyBusy ? "Waiting for Windows..." : isWindows ? "Set Up Windows PIN" : passkeyCount > 0 ? "Add Another Passkey" : "Add a Passkey"}</button>
           </div>
         </div>
       </section>
-      <section className="mobile-surface flex flex-col gap-4 rounded-2xl border border-white/[.065] bg-[#111412] p-5 sm:flex-row sm:items-center sm:justify-between"><div><div className="text-sm font-semibold text-white">Sign out</div><div className="mt-1 text-[11px] text-zinc-500">You will need Face ID or the shop passcode to get back in.</div></div><button onClick={signOut} className="mobile-tap rounded-xl border border-red-500/20 px-4 py-2.5 text-xs font-semibold text-red-400 transition hover:bg-red-500/10">Sign Out</button></section>
+      <section className="shop-card mobile-surface flex flex-col gap-4 rounded-2xl border border-[#252b27] bg-[#121613] p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6"><div><div className="text-sm font-semibold text-white">End this session</div><div className="mt-1 text-xs text-zinc-500">You will need your passkey or shop passcode to sign back in.</div></div><button onClick={signOut} className="mobile-tap min-h-11 rounded-xl border border-red-500/20 px-4 text-xs font-semibold text-red-400 transition hover:bg-red-500/10">Sign Out</button></section>
     </div>
   );
 }
 
-const tireFieldClass = "w-full rounded-xl border border-white/[.08] bg-[#0a0c0b] px-3.5 py-2.5 text-xs text-zinc-100 placeholder-zinc-700 outline-none transition focus:border-emerald-400/45 focus:ring-2 focus:ring-emerald-400/10";
+const tireFieldClass = "w-full min-h-11 rounded-xl border border-[#29302b] bg-[#0d110e] px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-700 outline-none transition focus:border-emerald-400/45 focus:ring-2 focus:ring-emerald-400/10";
 
 function money(value: number) {
   return value.toLocaleString("en-US", { style: "currency", currency: "USD" });
@@ -2384,13 +2384,17 @@ function easternDateTimeToIso(date: string, time: string) {
 
 function ShopPageHeader({ eyebrow, title, description, meta, actions, tone = "emerald" }: { eyebrow: string; title: string; description: string; meta?: React.ReactNode; actions?: React.ReactNode; tone?: ShopTone }) {
   const colors = shopToneStyles[tone];
+  const HeaderIcon = tone === "sky" ? Package : tone === "amber" ? ShoppingCart : tone === "violet" ? ClipboardList : tone === "zinc" ? Settings : Eye;
   return (
-    <div className="shop-hero flex flex-col items-stretch gap-4 border-b border-white/[.07] pb-5 sm:flex-row sm:items-end sm:justify-between sm:pb-6">
-      <div className="min-w-0 flex-1">
-        <div className={`mb-2 flex items-center gap-2 text-[9px] font-bold uppercase tracking-[.16em] ${colors.text}`}><span className={`h-1.5 w-1.5 rounded-full ${colors.dot}`} />{eyebrow}</div>
-        <h1 className="text-[28px] font-semibold leading-tight tracking-[-.04em] text-white sm:text-[36px]">{title}</h1>
-        <p className="mt-2 max-w-2xl text-xs leading-relaxed text-zinc-500 sm:text-[13px]">{description}</p>
-        {meta}
+    <div className="shop-hero flex flex-col items-stretch gap-5 border-b border-[#252b27] pb-6 sm:flex-row sm:items-center sm:justify-between sm:pb-7">
+      <div className="flex min-w-0 items-start gap-3.5 sm:gap-4">
+        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-[#29302b] bg-[#141915] text-emerald-400 sm:h-12 sm:w-12"><HeaderIcon className="h-5 w-5" /></div>
+        <div className="min-w-0 flex-1">
+          <div className={`mb-1.5 text-[9px] font-semibold uppercase tracking-[.16em] ${colors.text}`}>{eyebrow}</div>
+          <h1 className="text-[27px] font-semibold leading-tight tracking-[-.04em] text-[#f5f5f0] sm:text-[34px]">{title}</h1>
+          <p className="mt-1.5 max-w-2xl text-xs leading-relaxed text-zinc-500 sm:text-[13px]">{description}</p>
+          {meta}
+        </div>
       </div>
       {actions && <div className="w-full shrink-0 sm:w-auto">{actions}</div>}
     </div>
@@ -2400,9 +2404,9 @@ function ShopPageHeader({ eyebrow, title, description, meta, actions, tone = "em
 function TireStat({ label, value, detail, featured = false, tone = "emerald" }: { label: string; value: string | number; detail: string; featured?: boolean; tone?: ShopTone }) {
   const colors = shopToneStyles[tone];
   return (
-    <div className={`mobile-stat-card mobile-surface relative min-w-0 overflow-hidden bg-[#111512] p-4 sm:p-5 ${featured ? "col-span-2 sm:col-span-1" : ""}`}>
+    <div className={`mobile-stat-card mobile-surface relative min-w-0 overflow-hidden bg-[#121613] p-4 sm:p-5 ${featured ? "col-span-2 sm:col-span-1" : ""}`}>
       <div className={`truncate text-[9px] font-semibold uppercase tracking-[.12em] ${featured ? colors.text : "text-zinc-500"}`}>{label}</div>
-      <AnimatePresence mode="popLayout" initial={false}><motion.div key={String(value)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: .12 }} className="mt-1.5 truncate text-xl font-semibold tracking-[-.035em] text-white sm:text-2xl">{value}</motion.div></AnimatePresence>
+      <AnimatePresence mode="popLayout" initial={false}><motion.div key={String(value)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: .12 }} className="mt-2 truncate text-2xl font-semibold tracking-[-.04em] text-[#f5f5f0] sm:text-[28px]">{value}</motion.div></AnimatePresence>
       <div className="mt-1.5 text-[10px] leading-snug text-zinc-600">{detail}</div>
     </div>
   );
@@ -2516,7 +2520,7 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-5 lg:space-y-7">
       <ShopPageHeader tone="sky" eyebrow="Inventory" title="Manage Inventory" description="Add tires, update stock, and keep pricing organized." actions={<Button className="w-full justify-center px-5 sm:w-auto" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record a Sale</Button>} />
       <div className="shop-stat-grid mobile-stat-grid grid grid-cols-2 lg:grid-cols-4">
         <TireStat label="Tire types" value={summary?.skus || 0} detail="Active inventory lines" />
@@ -2524,10 +2528,10 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
         <TireStat label="Low stock" value={summary?.lowStock || 0} detail="Five or fewer remaining" />
         <TireStat label="Retail value" value={money(summary?.inventoryValue || 0)} detail="Current price × quantity" />
       </div>
-      <section className="mobile-today-grid mobile-surface grid gap-3 rounded-2xl border border-sky-400/10 bg-sky-400/[.035] p-4 sm:grid-cols-[1fr_auto_auto] sm:items-center sm:p-5">
-        <div><div className="text-[9px] font-semibold uppercase tracking-[.16em] text-sky-300">Today at the shop</div><div className="mt-1 text-xs text-zinc-500">A quick live snapshot from today’s saved work.</div></div>
-        <div className="rounded-xl bg-[#090b0a]/70 px-4 py-3 ring-1 ring-inset ring-white/[.055]"><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Revenue</div><div className="mt-1 text-xl font-semibold text-white">{money(summary?.todayRevenue || 0)}</div></div>
-        <div className="rounded-xl bg-[#090b0a]/70 px-4 py-3 ring-1 ring-inset ring-white/[.055]"><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Jobs / items</div><div className="mt-1 text-xl font-semibold text-sky-300">{summary?.todayUnits || 0}</div></div>
+      <section className="shop-card mobile-today-grid mobile-surface grid gap-3 rounded-2xl border border-[#252b27] bg-[#101712] p-4 sm:grid-cols-[1fr_auto_auto] sm:items-center sm:p-5">
+        <div><div className="text-[9px] font-semibold uppercase tracking-[.16em] text-emerald-400">Today</div><div className="mt-1 text-xs text-zinc-500">Live totals from today’s saved work.</div></div>
+        <div className="rounded-xl border border-[#252d27] bg-[#0d110e] px-5 py-3"><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Revenue</div><div className="mt-1 text-xl font-semibold text-white">{money(summary?.todayRevenue || 0)}</div></div>
+        <div className="rounded-xl border border-[#252d27] bg-[#0d110e] px-5 py-3"><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Jobs / items</div><div className="mt-1 text-xl font-semibold text-emerald-300">{summary?.todayUnits || 0}</div></div>
       </section>
       <div>
         <button type="button" onClick={() => setMobileFormOpen((open) => !open)} className="mobile-form-trigger mobile-tap flex w-full items-center gap-3 rounded-2xl border border-white/[.07] px-4 py-4 text-left md:hidden">
@@ -2592,7 +2596,7 @@ function TireInventoryViewPage({ showToast }: { showToast: (m: string) => void }
   const summary = data?.summary;
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-5 lg:space-y-7">
       <ShopPageHeader tone="sky" eyebrow="Read-only inventory" title="Inventory View" description="Available tires, quantities, and current selling prices." actions={<Button className="w-full sm:w-auto" variant="secondary" onClick={() => void load()}><RefreshCw className="h-3.5 w-3.5" /> Refresh Stock</Button>} />
       <div className="shop-stat-grid grid grid-cols-2 sm:grid-cols-3 [&>*:last-child]:col-span-2 sm:[&>*:last-child]:col-span-1"><TireStat label="Inventory types" value={summary?.skus || 0} detail="Sizes and package types" /><TireStat label="Available quantity" value={summary?.units || 0} detail="Sets, pairs, and individuals" /><TireStat label="Low stock" value={summary?.lowStock || 0} detail="Five or fewer remaining" /></div>
       <Card>
@@ -2738,11 +2742,11 @@ function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void;
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-5 lg:space-y-7">
       <ShopPageHeader tone="amber" eyebrow="Sales desk" title="Sales & Services" description="Record tire sales, mount and balance work, plugs, rotations, and brakes." actions={<Button className="w-full justify-center sm:w-auto" variant="secondary" onClick={() => setPage("tire-inventory")}><Package className="h-3.5 w-3.5" /> Open Inventory</Button>} />
       <div className="shop-stat-grid grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 [&>*:last-child]:col-span-2 xl:[&>*:last-child]:col-span-1"><TireStat featured tone="amber" label="Today's revenue" value={money(summary?.todayRevenue || 0)} detail="Calculated automatically" /><TireStat label="Tires sold today" value={todayTiresSold} detail="Physical tires" /><TireStat label="Jobs / items" value={summary?.todayUnits || 0} detail="Today's quantity" /><TireStat label="Transactions" value={todaySales.length} detail="Work recorded today" /><TireStat label="Average sale" value={money(averageSale)} detail="Revenue per transaction" /></div>
-      <section className="rounded-xl border border-white/[.065] bg-[#111312] p-4 sm:p-5"><div className="mb-4 flex items-end justify-between gap-3"><div><div className="text-[9px] font-semibold uppercase tracking-[.14em] text-zinc-500">Month to date</div><h2 className="mt-1 text-base font-semibold text-white">{currentMonthLabel}</h2></div><div className="text-right"><div className="text-[9px] font-semibold uppercase tracking-[.14em] text-zinc-500">Revenue</div><div className="mt-1 text-2xl font-semibold tracking-[-.04em] text-white">{money(monthRevenue)}</div></div></div><div className="grid grid-cols-2 gap-x-5 gap-y-3 border-t border-white/[.06] pt-4 sm:grid-cols-4"><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Tires sold</div><div className="mt-1 text-base font-semibold text-zinc-200">{monthTiresSold}</div></div><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Jobs / items</div><div className="mt-1 text-base font-semibold text-zinc-200">{monthItems}</div></div><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Transactions</div><div className="mt-1 text-base font-semibold text-zinc-200">{monthSales.length}</div></div><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Average</div><div className="mt-1 text-base font-semibold text-zinc-200">{money(monthAverage)}</div></div></div></section>
-      <section className="mobile-surface rounded-xl border border-white/[.065] bg-[#111312] p-4 sm:p-5">
+      <section className="shop-card rounded-2xl border border-[#252b27] bg-[#121613] p-4 sm:p-5"><div className="mb-4 flex items-end justify-between gap-3"><div><div className="text-[9px] font-semibold uppercase tracking-[.14em] text-emerald-400">Month to date</div><h2 className="mt-1 text-base font-semibold text-white">{currentMonthLabel}</h2></div><div className="text-right"><div className="text-[9px] font-semibold uppercase tracking-[.14em] text-zinc-500">Revenue</div><div className="mt-1 text-2xl font-semibold tracking-[-.04em] text-white">{money(monthRevenue)}</div></div></div><div className="grid grid-cols-2 gap-x-5 gap-y-3 border-t border-[#252b27] pt-4 sm:grid-cols-4"><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Tires sold</div><div className="mt-1 text-base font-semibold text-zinc-200">{monthTiresSold}</div></div><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Jobs / items</div><div className="mt-1 text-base font-semibold text-zinc-200">{monthItems}</div></div><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Transactions</div><div className="mt-1 text-base font-semibold text-zinc-200">{monthSales.length}</div></div><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Average</div><div className="mt-1 text-base font-semibold text-zinc-200">{money(monthAverage)}</div></div></div></section>
+      <section className="shop-card mobile-surface rounded-2xl border border-[#252b27] bg-[#121613] p-4 sm:p-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><div className="text-[9px] font-semibold uppercase tracking-[.14em] text-zinc-500">Payment totals</div><div className="mt-1 text-sm font-semibold text-white">{paymentPeriodLabel}</div></div><div className="grid grid-cols-2 rounded-lg bg-[#090b0a] p-1 ring-1 ring-inset ring-white/[.07]"><button onClick={() => setPaymentPeriod("day")} className={`rounded-md px-3 py-2 text-xs font-semibold transition ${paymentPeriod === "day" ? "bg-white/[.08] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Day</button><button onClick={() => setPaymentPeriod("month")} className={`rounded-md px-3 py-2 text-xs font-semibold transition ${paymentPeriod === "month" ? "bg-white/[.08] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Month</button></div></div>
         {paymentPeriod === "day" && <div className="mt-4 grid grid-cols-[42px_minmax(0,1fr)_42px] gap-2"><button aria-label="Previous day" onClick={() => setPaymentDate((current) => shiftDateKey(current, -1))} className="grid h-10 place-items-center rounded-lg border border-white/[.07] bg-[#090b0a] text-zinc-400 hover:text-white"><ChevronRight className="h-4 w-4 rotate-180" /></button><input aria-label="Payment totals date" type="date" max={todayKey} value={paymentDate} onChange={(event) => event.target.value && setPaymentDate(event.target.value)} className="min-w-0 rounded-lg border border-white/[.07] bg-[#090b0a] px-3 text-center text-xs font-semibold text-white outline-none focus:border-emerald-500/40" /><button aria-label="Next day" disabled={paymentDate >= todayKey} onClick={() => setPaymentDate((current) => shiftDateKey(current, 1))} className="grid h-10 place-items-center rounded-lg border border-white/[.07] bg-[#090b0a] text-zinc-400 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"><ChevronRight className="h-4 w-4" /></button></div>}
         <div className="payment-summary-grid mt-4 grid grid-cols-3 divide-x divide-white/[.06] overflow-hidden rounded-lg border border-white/[.065] bg-[#0c0e0d]">{(["Cash", "Cashapp", "Chime"] as const).map((method) => <button key={method} onClick={() => setSelectedPayment(method)} className={`min-w-0 px-2.5 py-3 text-left transition first:rounded-l-lg last:rounded-r-lg sm:px-3 ${selectedPayment === method ? "bg-white/[.04]" : "hover:bg-white/[.02]"}`}><div className={`text-[9px] font-semibold uppercase tracking-[.12em] ${selectedPayment === method ? "text-emerald-400" : "text-zinc-500"}`}>{method}</div><div className="mt-1 truncate text-base font-semibold text-white sm:text-lg">{money(paymentMethodTotal(paymentSales, method))}</div></button>)}</div>
@@ -2844,17 +2848,17 @@ function TireSalesReportPage({ showToast, setPage }: { showToast: (m: string) =>
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-5 lg:space-y-7">
       <ShopPageHeader tone="violet" eyebrow="Reporting" title="Sales Reports" description="View daily or monthly sales, services, and payment totals." meta={lastUpdated && <p className="mt-1.5 text-[10px] text-zinc-600">Updated {lastUpdated.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}</p>} actions={<div className="grid grid-cols-2 gap-2 min-[520px]:grid-cols-3 sm:flex"><Button className="justify-center" variant="ghost" disabled={refreshing} onClick={() => void load()}><RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} /> Refresh</Button><Button className="justify-center" variant="secondary" disabled={!sales.length} onClick={exportSales}><FileText className="h-3.5 w-3.5" /> Export CSV</Button><Button className="col-span-2 justify-center min-[520px]:col-span-1" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record Work</Button></div>} />
 
-      <section className="mobile-surface rounded-xl border border-white/[.065] bg-[#111312] p-4 sm:p-5">
+      <section className="shop-card mobile-surface rounded-2xl border border-[#252b27] bg-[#121613] p-4 sm:p-5">
         <div className="mx-auto mb-4 grid max-w-[240px] grid-cols-2 rounded-lg bg-[#090b0a] p-1 ring-1 ring-inset ring-white/[.07]"><button onClick={() => setReportPeriod("day")} className={`rounded-md px-3 py-2 text-xs font-semibold transition ${reportPeriod === "day" ? "bg-white/[.08] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Day</button><button onClick={() => setReportPeriod("month")} className={`rounded-md px-3 py-2 text-xs font-semibold transition ${reportPeriod === "month" ? "bg-white/[.08] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Month</button></div>
         {reportPeriod === "day" ? <div className="grid grid-cols-[42px_minmax(0,1fr)_42px] items-center gap-2"><button aria-label="Previous day" onClick={() => setDayKey((current) => shiftDateKey(current, -1))} className="grid h-10 place-items-center rounded-lg border border-white/[.07] bg-[#090b0a] text-zinc-400 transition hover:text-white"><ChevronRight className="h-4 w-4 rotate-180" /></button><div className="min-w-0 text-center"><input aria-label="Report date" type="date" max={currentDateKey} value={dayKey} onChange={(event) => event.target.value && setDayKey(event.target.value)} className="w-full min-w-0 rounded-lg border border-transparent bg-transparent px-2 py-1 text-center text-base font-semibold text-white outline-none focus:border-white/[.08]" /><div className="truncate text-[10px] text-zinc-500">{dateKeyLabel(dayKey, currentDateKey)}</div></div><button aria-label="Next day" disabled={!canGoForward} onClick={() => setDayKey((current) => shiftDateKey(current, 1))} className="grid h-10 place-items-center rounded-lg border border-white/[.07] bg-[#090b0a] text-zinc-400 transition hover:text-white disabled:cursor-not-allowed disabled:opacity-30"><ChevronRight className="h-4 w-4" /></button></div> : <div className="flex items-center justify-between gap-3"><button aria-label="Previous month" onClick={() => setMonthKey((current) => shiftMonthKey(current, -1))} className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-white/[.07] bg-[#090b0a] text-zinc-400 transition hover:text-white"><ChevronRight className="h-4 w-4 rotate-180" /></button><h2 className="min-w-0 truncate text-center text-lg font-semibold text-white">{monthKeyLabel(monthKey)}</h2><button aria-label="Next month" disabled={!canGoForward} onClick={() => setMonthKey((current) => shiftMonthKey(current, 1))} className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-white/[.07] bg-[#090b0a] text-zinc-400 transition hover:text-white disabled:cursor-not-allowed disabled:opacity-30"><ChevronRight className="h-4 w-4" /></button></div>}
       </section>
 
       <div className="shop-stat-grid grid grid-cols-2 lg:grid-cols-4 [&>*:last-child]:col-span-2 lg:[&>*:last-child]:col-span-1"><TireStat featured tone="violet" label="Total revenue" value={money(revenue)} detail="Sales and services" /><TireStat label="Tires sold" value={quantity} detail="Physical tire count" /><TireStat label="Transactions" value={sales.length} detail="All recorded work" /><TireStat label="Average transaction" value={money(average)} detail="Per entry" /></div>
 
-      <section className="mobile-surface rounded-xl border border-white/[.065] bg-[#111312] p-4 sm:p-5"><div className="text-[9px] font-semibold uppercase tracking-[.14em] text-zinc-500">Payment breakdown</div><div className="payment-summary-grid mt-3 grid grid-cols-3 divide-x divide-white/[.06] overflow-hidden rounded-lg border border-white/[.06] bg-[#0c0e0d]">{(["Cash", "Cashapp", "Chime"] as const).map((method) => <div key={method} className="min-w-0 p-2.5 sm:p-3"><div className="text-[9px] font-semibold uppercase tracking-[.12em] text-zinc-500">{method}</div><div className="mt-1 truncate text-base font-semibold text-white sm:text-lg">{money(paymentMethodTotal(sales, method))}</div></div>)}</div></section>
+      <section className="shop-card mobile-surface rounded-2xl border border-[#252b27] bg-[#121613] p-4 sm:p-5"><div className="text-[9px] font-semibold uppercase tracking-[.14em] text-zinc-500">Payment breakdown</div><div className="payment-summary-grid mt-3 grid grid-cols-3 divide-x divide-white/[.06] overflow-hidden rounded-xl border border-[#252b27] bg-[#0d110e]">{(["Cash", "Cashapp", "Chime"] as const).map((method) => <div key={method} className="min-w-0 p-3 sm:p-4"><div className="text-[9px] font-semibold uppercase tracking-[.12em] text-zinc-500">{method}</div><div className="mt-1 truncate text-base font-semibold text-white sm:text-lg">{money(paymentMethodTotal(sales, method))}</div></div>)}</div></section>
 
       <Card>
         <CardHeader title={`${periodLabel} Sales & Services`} icon={<ClipboardList className="h-4 w-4 text-zinc-400" />} />
@@ -2897,15 +2901,15 @@ function Toast({ message }: { message: string }) {
 }
 
 function Card({ children }: { children: React.ReactNode }) {
-  return <div className="mobile-surface rounded-xl border border-white/[.065] bg-[#111312] p-4 sm:p-5">{children}</div>;
+  return <div className="shop-card mobile-surface rounded-2xl border border-[#252b27] bg-[#121613] p-4 sm:p-5 lg:p-6">{children}</div>;
 }
 
 function CardHeader({ title, icon, action }: { title: string; icon: React.ReactNode; action?: React.ReactNode }) {
   return (
     <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex items-center gap-2">
-        {icon}
-        <h2 className="text-sm font-semibold tracking-[-.01em] text-zinc-100">{title}</h2>
+      <div className="flex items-center gap-3">
+        <span className="shop-card-title-icon grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-white/[.035]">{icon}</span>
+        <h2 className="text-[15px] font-semibold tracking-[-.02em] text-[#f5f5f0]">{title}</h2>
       </div>
       {action}
     </div>
@@ -2914,13 +2918,13 @@ function CardHeader({ title, icon, action }: { title: string; icon: React.ReactN
 
 function Button({ children, variant = "primary", onClick, disabled, className = "" }: { children: React.ReactNode; variant?: "primary" | "secondary" | "ghost" | "danger"; onClick?: () => void; disabled?: boolean; className?: string }) {
   const styles = {
-    primary: "bg-emerald-400 text-[#07100b] hover:bg-emerald-300",
-    secondary: "border border-white/[.09] bg-white/[.035] text-zinc-200 hover:bg-white/[.065]",
-    ghost: "text-zinc-400 hover:text-white hover:bg-white/[.05]",
+    primary: "bg-emerald-400 text-[#07100b] hover:bg-emerald-300 shadow-[0_8px_24px_rgba(52,211,153,.08)]",
+    secondary: "border border-[#303832] bg-[#171c18] text-zinc-200 hover:bg-[#1b211d]",
+    ghost: "border border-transparent text-zinc-400 hover:border-white/[.06] hover:bg-white/[.035] hover:text-white",
     danger: "bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20",
   };
   return (
-    <button disabled={disabled} onClick={onClick} className={`mobile-tap inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg px-3.5 py-2.5 text-xs font-semibold transition disabled:opacity-40 ${styles[variant]} ${className}`}>
+    <button disabled={disabled} onClick={onClick} className={`mobile-tap inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-40 ${styles[variant]} ${className}`}>
       {children}
     </button>
   );
