@@ -556,7 +556,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260904_OPERATIONS_CONSOLE_V35";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260904_OPERATIONS_CONSOLE_V36";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -984,17 +984,15 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
 
 function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) {
   return (
-    <aside className="fixed inset-y-0 left-0 z-40 hidden w-[260px] flex-col border-r border-[#232938] bg-[#12151e] px-4 py-6 lg:flex">
-      <div className="flex items-center gap-3 px-2 py-1.5">
-        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-[0_0_20px_rgba(16,185,129,.25)]"><ShopWheel className="w-9" /></div>
+    <aside className="fixed inset-y-0 left-0 z-40 hidden w-[260px] flex-col border-r border-[#232938] bg-[#12151e] lg:flex">
+      <div className="flex items-center gap-3 border-b border-[#232938] px-5 py-6">
+        <div className="grid h-10 w-10 shrink-0 place-items-center rounded-[10px] bg-emerald-500"><ShopWheel className="w-8" /></div>
         <div className="min-w-0">
-          <div className="text-[15px] font-extrabold tracking-[-.025em] text-white">Akron Tire Shop</div>
-          <div className="mt-0.5 text-[9px] font-bold uppercase tracking-[.14em] text-emerald-400">Operations OS</div>
+          <div className="text-[15px] font-bold tracking-[-.015em] text-white">Akron Tire Shop</div>
+          <div className="mt-0.5 text-[10px] font-semibold uppercase tracking-[.08em] text-emerald-400">Operations OS</div>
         </div>
       </div>
-      <div className="my-5 h-px bg-[#232938]" />
-      <div className="mb-2 px-3 text-[9px] font-semibold uppercase tracking-[.15em] text-zinc-700">Workspace</div>
-      <nav className="space-y-1">
+      <nav className="flex-1 space-y-1 px-3 py-5">
         {navItems.map((item) => {
           const Icon = item.icon;
           const active = item.id === page;
@@ -1007,9 +1005,9 @@ function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) 
           );
         })}
       </nav>
-      <div className="mt-auto border-t border-[#232938] px-2 pt-4">
-        <div className="flex items-center justify-between gap-2"><span className="text-[10px] font-medium text-zinc-300">Shop database</span><span className="flex items-center gap-1.5 text-[9px] text-emerald-400"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Live</span></div>
-        <p className="mt-1.5 text-[9px] leading-relaxed text-zinc-600">Changes save automatically across every device.</p>
+      <div className="border-t border-[#232938] px-5 py-4">
+        <div className="flex items-center gap-2 text-[11px] font-medium text-zinc-400"><span className="h-2 w-2 rounded-full bg-emerald-500" /> Database connected</div>
+        <p className="mt-1 text-[9px] leading-relaxed text-zinc-600">Changes save automatically.</p>
       </div>
     </aside>
   );
@@ -2400,17 +2398,13 @@ function easternDateTimeToIso(date: string, time: string) {
 
 function ShopPageHeader({ eyebrow, title, description, meta, actions, tone = "emerald" }: { eyebrow: string; title: string; description: string; meta?: React.ReactNode; actions?: React.ReactNode; tone?: ShopTone }) {
   const colors = shopToneStyles[tone];
-  const HeaderIcon = tone === "sky" ? Package : tone === "amber" ? ShoppingCart : tone === "violet" ? ClipboardList : tone === "zinc" ? Settings : Eye;
   return (
     <div className="shop-hero flex flex-col items-stretch gap-5 pb-1 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex min-w-0 items-start gap-3.5 sm:gap-4">
-        <div className="grid h-10 w-10 shrink-0 place-items-center rounded-[10px] border border-[#232938] bg-[#1a1e2b] text-emerald-400 sm:h-11 sm:w-11"><HeaderIcon className="h-5 w-5" /></div>
-        <div className="min-w-0 flex-1">
-          <div className={`mb-1.5 text-[9px] font-semibold uppercase tracking-[.16em] ${colors.text}`}>{eyebrow}</div>
-          <h1 className="text-[26px] font-extrabold leading-tight tracking-[-.025em] text-white sm:text-[30px]">{title}</h1>
-          <p className="mt-1.5 max-w-2xl text-xs leading-relaxed text-zinc-400 sm:text-[13px]">{description}</p>
-          {meta}
-        </div>
+      <div className="min-w-0 flex-1">
+        <div className={`mb-1 text-[10px] font-bold uppercase tracking-[.08em] ${colors.text}`}>{eyebrow}</div>
+        <h1 className="text-[24px] font-extrabold leading-tight tracking-[-.025em] text-white sm:text-[28px]">{title}</h1>
+        <p className="mt-1 max-w-2xl text-xs leading-relaxed text-zinc-400 sm:text-[13px]">{description}</p>
+        {meta}
       </div>
       {actions && <div className="w-full shrink-0 sm:w-auto">{actions}</div>}
     </div>
@@ -2537,12 +2531,12 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
 
   return (
     <div className="space-y-5 lg:space-y-7">
-      <ShopPageHeader tone="sky" eyebrow="Inventory" title="Manage Inventory" description="Add tires, update stock, and keep pricing organized." actions={<Button className="w-full justify-center px-5 sm:w-auto" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record a Sale</Button>} />
+      <ShopPageHeader tone="sky" eyebrow="Inventory control" title="Inventory Management" description="Track, adjust, and organize every tire in stock." actions={<Button className="w-full justify-center px-5 sm:w-auto" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record a Sale</Button>} />
       <div className="shop-stat-grid mobile-stat-grid grid grid-cols-2 lg:grid-cols-4">
-        <TireStat label="Tire types" value={summary?.skus || 0} detail="Active inventory lines" />
-        <TireStat label="Inventory quantity" value={summary?.units || 0} detail="Sets, pairs, and individual tires" />
-        <TireStat label="Low stock" value={summary?.lowStock || 0} detail="Five or fewer remaining" />
-        <TireStat label="Retail value" value={money(summary?.inventoryValue || 0)} detail="Current price × quantity" />
+        <TireStat label="Tire line types" value={summary?.skus || 0} detail="Active inventory lines" />
+        <TireStat label="Total quantity" value={summary?.units || 0} detail="Physical stock on hand" />
+        <TireStat label="Low stock items" value={summary?.lowStock || 0} detail="Five or fewer remaining" />
+        <TireStat label="Total asset value" value={money(summary?.inventoryValue || 0)} detail="Estimated retail valuation" />
       </div>
       <section className="shop-card mobile-today-grid mobile-surface grid gap-3 rounded-2xl border border-[#252b27] bg-[#101712] p-4 sm:grid-cols-[1fr_auto_auto] sm:items-center sm:p-5">
         <div><div className="text-[9px] font-semibold uppercase tracking-[.16em] text-emerald-400">Today</div><div className="mt-1 text-xs text-zinc-500">Live totals from today’s saved work.</div></div>
@@ -2926,7 +2920,7 @@ function CardHeader({ title, icon, action }: { title: string; icon: React.ReactN
   return (
     <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-3">
-        <span className="shop-card-title-icon grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-white/[.035]">{icon}</span>
+        <span className="grid h-5 w-5 shrink-0 place-items-center text-emerald-400">{icon}</span>
         <h2 className="text-[15px] font-bold tracking-[-.015em] text-white">{title}</h2>
       </div>
       {action}
