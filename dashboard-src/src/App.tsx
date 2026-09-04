@@ -556,7 +556,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260904_SHOP_BOARD_V39";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260904_INVENTORY_SYSTEM_V40";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -585,9 +585,9 @@ export function App() {
         isolation:isolate;
         position:relative;
         min-width:320px;
-        color:#f3f1ea;
-        background:#131317;
-        font-family:Oswald,ui-sans-serif,system-ui,sans-serif;
+        color:#f2f3f5;
+        background:#08090b;
+        font-family:Inter,ui-sans-serif,system-ui,sans-serif;
       }
       .shop-shell::before {
         content:"";
@@ -595,7 +595,7 @@ export function App() {
         inset:0;
         z-index:-3;
         pointer-events:none;
-        background:#131317;
+        background:#08090b;
       }
       .shop-shell::after {
         content:"";
@@ -615,31 +615,31 @@ export function App() {
       .shop-hero { position:relative; }
       .shop-hero::before, .shop-hero::after { display:none; }
       .shop-hero__beam, .shop-hero__speed { display:none; }
-      .shop-panel { border-color:#35363c !important; background-color:#1c1d21 !important; }
+      .shop-panel { border-color:#212328 !important; background-color:#131519 !important; }
       .shop-ambient { display:none; }
       .alive-scan { position:relative; overflow:hidden; }
       .mobile-surface { position:relative; }
       .mobile-surface::before { display:none; }
       .shop-stat-grid { gap:16px !important; overflow:visible; border:0; border-radius:0; background:transparent; box-shadow:none; }
-      .shop-stat-grid .mobile-stat-card { border:1px solid #35363c !important; border-radius:8px !important; background:#232428; box-shadow:none; transition:border-color .12s ease; }
-      .shop-stat-grid .mobile-stat-card:hover { border-color:#47484f !important; }
+      .shop-stat-grid .mobile-stat-card { border:1px solid #212328 !important; border-radius:16px !important; background:#131519; box-shadow:0 1px 2px rgba(0,0,0,.3); transition:border-color .12s ease; }
+      .shop-stat-grid .mobile-stat-card:hover { border-color:#2c2f36 !important; }
       .shop-shell input, .shop-shell select, .shop-shell textarea {
         color-scheme:dark;
-        border-color:#35363c !important;
-        background-color:#232428 !important;
+        border-color:#212328 !important;
+        background-color:#0c0d10 !important;
       }
-      .shop-shell input:focus, .shop-shell select:focus, .shop-shell textarea:focus { border-color:#f2a900 !important; }
-      .shop-shell thead { background:#232428; }
-      .shop-shell th { color:#66676d; font-size:10px; font-weight:700; letter-spacing:.08em; }
-      .shop-shell td { border-color:#35363c !important; }
+      .shop-shell input:focus, .shop-shell select:focus, .shop-shell textarea:focus { border-color:#10b981 !important; }
+      .shop-shell thead { background:#0c0d10; }
+      .shop-shell th { color:#5b5e67; font-size:10px; font-weight:700; letter-spacing:.08em; }
+      .shop-shell td { border-color:#212328 !important; }
       .shop-shell table tbody tr { transition:background-color .15s ease; }
-      .shop-shell table tbody tr:hover { background:#232428; }
-      .shop-card { background:#1c1d21 !important; border-color:#35363c !important; border-radius:14px !important; box-shadow:none; }
+      .shop-shell table tbody tr:hover { background:#171a1f; }
+      .shop-card { background:#131519 !important; border-color:#212328 !important; border-radius:16px !important; box-shadow:0 1px 2px rgba(0,0,0,.3); }
       .shop-money, .shop-shell .font-mono { font-family:"IBM Plex Mono",ui-monospace,monospace !important; }
-      .shop-shell h1, .shop-shell h2, .shop-shell h3, .shop-shell button { font-family:Oswald,ui-sans-serif,system-ui,sans-serif; }
-      .shop-tag-card { position:relative; border:1px solid #35363c; border-radius:8px; background:#232428; padding:20px 16px 16px; transition:border-color .12s ease; }
-      .shop-tag-card:hover { border-color:#47484f; }
-      .shop-tag-hole { position:absolute; top:-8px; left:22px; width:16px; height:16px; border:1px solid #47484f; border-radius:999px; background:#131317; }
+      .shop-shell h1, .shop-shell h2, .shop-shell h3, .shop-shell button { font-family:Inter,ui-sans-serif,system-ui,sans-serif; }
+      .shop-tag-card { position:relative; border:1px solid #212328; border-radius:10px; background:#131519; padding:18px 18px 16px; box-shadow:0 1px 2px rgba(0,0,0,.3); transition:border-color .12s ease; }
+      .shop-tag-card:hover { border-color:#2c2f36; }
+      .shop-tag-hole { display:none; }
       .shop-card-title-icon { box-shadow:inset 0 0 0 1px rgba(255,255,255,.055); }
       .live-dot { position:relative; }
       .live-dot::after { content:""; position:absolute; inset:-4px; border:1px solid currentColor; border-radius:999px; opacity:0; animation:live-ring 2.4s ease-out infinite; }
@@ -658,7 +658,7 @@ export function App() {
         .receipt-screen-actions { display:none !important; }
       }
       @media (max-width: 767px) {
-        .shop-shell { background:#131317; }
+        .shop-shell { background:#08090b; }
         input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
         select,
         textarea {
@@ -669,7 +669,7 @@ export function App() {
           transition: border-color .18s ease, background-color .18s ease;
         }
         .shop-hero { min-height:0; }
-        .mobile-form-trigger { background:#1c1d21; }
+        .mobile-form-trigger { background:#131519; }
         .shop-stat-grid { gap:10px !important; }
         .mobile-today-grid { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
         .mobile-today-grid > :first-child { grid-column:1 / -1; }
@@ -867,13 +867,13 @@ export function App() {
 
   return (
     <DashboardClockProvider>
-    <div className="shop-shell relative min-h-screen text-zinc-100 antialiased selection:bg-amber-400/20 selection:text-white">
+    <div className="shop-shell relative min-h-screen text-zinc-100 antialiased selection:bg-emerald-400/20 selection:text-white">
       <div className="shop-ambient" aria-hidden="true" />
       <div className="flex min-h-screen">
         <Sidebar page={page} setPage={setPage} />
-        <main className="flex min-w-0 flex-1 flex-col lg:pt-[67px]">
+        <main className="flex min-w-0 flex-1 flex-col lg:pl-[250px]">
           <Topbar page={page} />
-          <div className="mx-auto w-full max-w-[1240px] flex-1 px-4 pb-28 pt-5 sm:px-6 sm:pb-28 sm:pt-7 lg:px-7 lg:pb-16 lg:pt-7">
+          <div className="mx-auto w-full max-w-[1320px] flex-1 px-4 pb-28 pt-5 sm:px-6 sm:pb-28 sm:pt-7 lg:px-8 lg:pb-20 lg:pt-[30px]">
             <AnimatePresence mode="wait">
               <motion.div className="mobile-page" key={page} initial={{ opacity: 0, y: reduceMotion ? 0 : 10, scale: reduceMotion ? 1 : 0.995 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: reduceMotion ? 0 : -6 }} transition={{ duration: reduceMotion ? 0 : 0.22, ease: [0.2, 0.8, 0.2, 1] }}>
                 {page === "tire-inventory" && <TireInventoryPage showToast={showToast} setPage={setPage} />}
@@ -988,34 +988,34 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
 
 function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) {
   return (
-    <header className="fixed inset-x-0 top-0 z-40 hidden border-b border-[#35363c] bg-[#0b0c0e] lg:block">
-      <div className="mx-auto flex h-[67px] max-w-[1240px] items-center justify-between gap-6 px-7">
-        <div className="flex shrink-0 items-center gap-3">
-          <div className="grid h-[34px] w-[34px] place-items-center rounded border border-amber-400/35 bg-amber-400/[.13]"><ShopWheel className="w-7" accent="#f2a900" /></div>
-          <div><div className="text-base font-semibold text-[#f3f1ea]">Akron Tire Shop</div><div className="font-mono text-[10px] text-[#66676d]">SHOP BOARD</div></div>
-        </div>
-        <nav className="flex h-full items-end gap-1">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const active = item.id === page;
-            return (
-              <button key={item.id} onClick={() => setPage(item.id)} className={`relative flex h-full items-center gap-2 border-b-[3px] px-3 pt-2 text-sm font-medium transition ${active ? "border-amber-400 text-amber-400" : "border-transparent text-[#9a9aa0] hover:text-[#f3f1ea]"}`}>
-                <span className={`absolute left-1/2 top-2 h-[7px] w-[7px] -translate-x-1/2 rounded-full border ${active ? "border-amber-400 bg-amber-400" : "border-[#47484f] bg-[#0b0c0e]"}`} />
-                <Icon className="mt-2 h-4 w-4" /><span className="mt-2">{item.shortLabel}</span>
-              </button>
-            );
-          })}
-        </nav>
+    <aside className="fixed inset-y-0 left-0 z-40 hidden w-[250px] flex-col border-r border-[#212328] bg-[#0e1013] lg:flex">
+      <div className="flex min-h-[68px] items-center gap-3 border-b border-[#212328] px-[18px] py-5">
+        <div className="grid h-9 w-9 shrink-0 place-items-center rounded-md border border-emerald-400/30 bg-emerald-400/[.12]"><ShopWheel className="w-7" accent="#10b981" /></div>
+        <div className="min-w-0"><div className="text-[14.5px] font-bold text-[#f2f3f5]">Akron Tire Shop</div><div className="mt-0.5 font-mono text-[10px] text-[#5b5e67]">INVENTORY SYSTEM</div></div>
       </div>
-    </header>
+      <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-3.5">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          const active = item.id === page;
+          return (
+            <button key={item.id} onClick={() => setPage(item.id)} className={`flex min-h-10 w-full items-center gap-3 rounded-md px-3 text-left text-[13.5px] font-medium transition ${active ? "bg-emerald-400/[.12] text-emerald-300" : "text-[#9296a1] hover:bg-[#171a1f] hover:text-[#f2f3f5]"}`}>
+              <Icon className="h-[18px] w-[18px] shrink-0" /><span>{item.label}</span>
+            </button>
+          );
+        })}
+      </nav>
+      <div className="border-t border-[#212328] p-3">
+        <div className="flex items-center justify-between rounded-md border border-[#212328] px-3 py-2.5 text-[11px] text-[#9296a1]"><span>Shop database</span><span className="flex items-center gap-1.5 text-emerald-300"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Live</span></div>
+      </div>
+    </aside>
   );
 }
 
 function Topbar({ page }: { page: Page }) {
   const currentNav = navItems.find((item) => item.id === page);
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center border-b border-[#35363c] bg-[#0b0c0e] px-4 sm:px-6 lg:hidden">
-      <div className="flex items-center gap-2.5 lg:hidden"><ShopWheel className="w-8 shrink-0" accent="#f2a900" /><div><div className="text-[9px] font-bold uppercase tracking-[.16em] text-amber-400">Akron Tire Shop</div><div className="mt-0.5 text-sm font-semibold tracking-[-.015em] text-white">{currentNav?.label}</div></div></div>
+    <header className="sticky top-0 z-30 flex h-16 items-center border-b border-[#212328] bg-[#0e1013] px-4 sm:px-6 lg:hidden">
+      <div className="flex items-center gap-2.5 lg:hidden"><ShopWheel className="w-8 shrink-0" accent="#10b981" /><div><div className="text-[9px] font-bold uppercase tracking-[.16em] text-emerald-400">Akron Tire Shop</div><div className="mt-0.5 text-sm font-semibold tracking-[-.015em] text-white">{currentNav?.label}</div></div></div>
       <div className="ml-auto flex items-center gap-2 text-[9px] font-medium text-zinc-600 sm:text-[10px]"><span className="hidden font-mono tabular-nums text-zinc-500 sm:inline"><LiveShopTime /></span><span className="hidden h-3 w-px bg-white/[.08] sm:inline" /><span className="h-1.5 w-1.5 rounded-full bg-[#4caf6d]" /><span className="hidden min-[380px]:inline">All changes saved</span><span className="min-[380px]:hidden">Saved</span></div>
     </header>
   );
@@ -1023,9 +1023,9 @@ function Topbar({ page }: { page: Page }) {
 
 function MobileShopNav({ page, setPage }: { page: Page; setPage: (p: Page) => void }) {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[#35363c] bg-[#0b0c0e]/[.98] px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-1.5 backdrop-blur-xl lg:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[#212328] bg-[#0e1013]/[.98] px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-1.5 backdrop-blur-xl lg:hidden">
       <div className="mx-auto grid max-w-lg grid-cols-5 gap-1">
-        {navItems.map((item) => { const Icon = item.icon; const active = item.id === page; return <button key={item.id} onClick={() => setPage(item.id)} className={`relative flex min-w-0 flex-col items-center gap-1 px-1 py-2 text-[9px] font-medium transition ${active ? "text-amber-400" : "text-zinc-600"}`}><span className={`grid h-7 w-9 place-items-center rounded ${active ? "bg-amber-400/10" : ""}`}><Icon className="h-[18px] w-[18px]" /></span><span className="truncate">{item.shortLabel}</span></button>; })}
+        {navItems.map((item) => { const Icon = item.icon; const active = item.id === page; return <button key={item.id} onClick={() => setPage(item.id)} className={`relative flex min-w-0 flex-col items-center gap-1 px-1 py-2 text-[9px] font-medium transition ${active ? "text-emerald-300" : "text-zinc-600"}`}><span className={`grid h-7 w-9 place-items-center rounded-md ${active ? "bg-emerald-400/10" : ""}`}><Icon className="h-[18px] w-[18px]" /></span><span className="truncate">{item.shortLabel}</span></button>; })}
       </div>
     </nav>
   );
@@ -2400,8 +2400,8 @@ function ShopPageHeader({ eyebrow, title, description, meta, actions, tone = "em
     <div className="shop-hero flex flex-col items-stretch gap-4 pb-1 sm:flex-row sm:items-end sm:justify-between">
       <div className="min-w-0 flex-1">
         <div className={`mb-0.5 text-[10px] font-semibold uppercase tracking-[.12em] ${colors.text}`}>{eyebrow}</div>
-        <h1 className="text-2xl font-semibold leading-tight text-[#f3f1ea]">{title}</h1>
-        <p className="mt-1 max-w-2xl text-[13px] leading-relaxed text-[#9a9aa0]">{description}</p>
+        <h1 className="text-[25px] font-bold leading-tight text-[#f2f3f5]">{title}</h1>
+        <p className="mt-1 max-w-[46ch] text-[13.5px] leading-relaxed text-[#9296a1]">{description}</p>
         {meta}
       </div>
       {actions && <div className="w-full shrink-0 sm:w-auto">{actions}</div>}
@@ -2529,18 +2529,15 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
 
   return (
     <div className="space-y-5 lg:space-y-7">
-      <ShopPageHeader tone="sky" eyebrow="Shop board" title="Inventory" description="What’s on the wall, what’s low, and what it’s worth right now." actions={<Button className="w-full justify-center px-5 sm:w-auto" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record a sale</Button>} />
-      <section className="flex flex-col gap-5 rounded-[14px] border border-[#47484f] bg-[#0b0c0e] px-5 py-5 sm:flex-row sm:items-stretch sm:gap-7 sm:px-7">
-        <div className="shrink-0"><div className="text-xs text-[#66676d]">Today’s revenue</div><div className="shop-money mt-1 text-[34px] font-bold leading-none text-[#f2a900] [text-shadow:0_0_18px_rgba(242,169,0,.35)] sm:text-[46px]">{money(summary?.todayRevenue || 0)}</div></div>
-        <div className="hidden w-px bg-[repeating-linear-gradient(to_bottom,#47484f_0_6px,transparent_6px_12px)] sm:block" />
-        <div className="grid flex-1 grid-cols-2 gap-x-7 gap-y-4 sm:grid-cols-5 sm:items-center">
-          <div><div className="text-[11px] text-[#66676d]">Jobs / items sold</div><div className="shop-money mt-1 text-xl font-semibold">{summary?.todayUnits || 0}</div></div>
-          <div><div className="text-[11px] text-[#66676d]">Tire types stocked</div><div className="shop-money mt-1 text-xl font-semibold">{summary?.skus || 0}</div></div>
-          <div><div className="text-[11px] text-[#66676d]">Units on hand</div><div className="shop-money mt-1 text-xl font-semibold">{summary?.units || 0}</div></div>
-          <div><div className="text-[11px] text-[#f2a900]">Low stock lines</div><div className="shop-money mt-1 text-xl font-semibold text-[#f2a900]">{summary?.lowStock || 0}</div></div>
-          <div className="col-span-2 sm:col-span-1"><div className="text-[11px] text-[#66676d]">Retail value on hand</div><div className="shop-money mt-1 text-xl font-semibold text-[#4caf6d]">{money(summary?.inventoryValue || 0)}</div></div>
-        </div>
-      </section>
+      <ShopPageHeader tone="sky" eyebrow="Inventory" title="Inventory Management" description="Track what’s on the wall, catch low stock before it runs out, and see what your inventory is worth right now." actions={<Button className="w-full justify-center px-5 sm:w-auto" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record a Sale</Button>} />
+      <div className="shop-stat-grid grid grid-cols-2 lg:grid-cols-3">
+        <TireStat featured label="Today’s revenue" value={money(summary?.todayRevenue || 0)} detail="Saved work today" />
+        <TireStat label="Jobs sold today" value={summary?.todayUnits || 0} detail="Jobs and line items" />
+        <TireStat label="Tire types stocked" value={summary?.skus || 0} detail="Active inventory lines" />
+        <TireStat label="Units available" value={summary?.units || 0} detail="Sets, pairs, and tires" />
+        <TireStat featured tone="amber" label="Low stock lines" value={summary?.lowStock || 0} detail="Five or fewer remaining" />
+        <TireStat label="Retail value on hand" value={money(summary?.inventoryValue || 0)} detail="Current price × quantity" />
+      </div>
       <div>
         <button type="button" onClick={() => setMobileFormOpen((open) => !open)} className="mobile-form-trigger mobile-tap flex w-full items-center gap-3 rounded-2xl border border-white/[.07] px-4 py-4 text-left md:hidden">
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-sky-400/10 text-sky-300"><Package className="h-5 w-5" /></span>
@@ -2564,13 +2561,13 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
         </div>
       </div>
       <Card>
-      <CardHeader title="The wall" icon={<Package className="h-4 w-4 text-zinc-400" />} action={<input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search size..." className="w-full rounded border border-[#35363c] bg-[#232428] px-3.5 py-2.5 text-xs text-zinc-200 outline-none transition focus:border-amber-400 sm:w-64" />} />
+      <CardHeader title="Inventory" icon={<Package className="h-4 w-4 text-zinc-400" />} action={<input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search size..." className="w-full rounded-md border border-[#212328] bg-[#0c0d10] px-3.5 py-2.5 text-xs text-zinc-200 outline-none transition focus:border-emerald-400 sm:w-64" />} />
         <div className="mt-4 flex flex-col gap-3 border-b border-white/[.055] pb-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="grid grid-cols-4 gap-1 rounded-xl bg-[#090b0a] p-1 ring-1 ring-inset ring-white/[.055]">
-            {([['all', 'All'], ['available', 'Available'], ['low', 'Low'], ['out', 'Out']] as const).map(([value, label]) => <button key={value} type="button" onClick={() => setStockFilter(value)} className={`mobile-tap rounded-lg px-2.5 py-2 text-[10px] font-semibold transition sm:px-3 ${stockFilter === value ? "bg-sky-400/12 text-sky-200 ring-1 ring-inset ring-sky-400/20" : "text-zinc-500 hover:text-zinc-200"}`}>{label}</button>)}
+            {([['all', 'All'], ['available', 'Available'], ['low', 'Low'], ['out', 'Out']] as const).map(([value, label]) => <button key={value} type="button" onClick={() => setStockFilter(value)} className={`mobile-tap rounded-md px-2.5 py-2 text-[10px] font-semibold transition sm:px-3 ${stockFilter === value ? "bg-emerald-400/10 text-emerald-300 ring-1 ring-inset ring-emerald-400/20" : "text-zinc-500 hover:text-zinc-200"}`}>{label}</button>)}
           </div>
           <div className="grid grid-cols-2 gap-2 sm:flex">
-            <select value={rimFilter} onChange={(event) => setRimFilter(event.target.value)} className="min-h-10 rounded-xl border border-white/[.08] bg-[#090b0a] px-3 text-xs text-zinc-200 outline-none focus:border-sky-400/45"><option value="all">All rim sizes</option>{rimSizes.map((rim) => <option key={rim} value={rim}>{rim === "Other" ? rim : `${rim}\" rims`}</option>)}</select>
+            <select value={rimFilter} onChange={(event) => setRimFilter(event.target.value)} className="min-h-10 rounded-md border border-[#212328] bg-[#0c0d10] px-3 text-xs text-zinc-200 outline-none focus:border-emerald-400"><option value="all">All rim sizes</option>{rimSizes.map((rim) => <option key={rim} value={rim}>{rim === "Other" ? rim : `${rim}\" rims`}</option>)}</select>
             <Button variant="secondary" disabled={!data || inventory.length === 0} onClick={exportInventory}><FileText className="h-3.5 w-3.5" /> Export CSV</Button>
           </div>
         </div>
@@ -2581,10 +2578,10 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
               const stockClass = item.quantity === 0 ? "bg-red-500/[.13] text-[#e0503b]" : item.quantity <= 5 ? "bg-amber-400/[.13] text-[#f2a900]" : "bg-[#4caf6d]/[.13] text-[#4caf6d]";
               return <article key={item.id} className="shop-tag-card">
                 <span className="shop-tag-hole" />
-                <div className="shop-money truncate text-xl font-semibold text-[#f3f1ea]">{item.size}</div>
-                <div className="mt-2 flex flex-wrap items-center gap-2"><span className="rounded border border-[#35363c] bg-[#1c1d21] px-2 py-1 text-[11px] font-medium text-[#9a9aa0]">{tirePackageLabel(item.packageType)}</span><span className={`shop-money rounded px-2 py-1 text-[10px] font-semibold ${stockClass}`}>{item.quantity} {tirePackageLabel(item.packageType, true)} · {status}</span></div>
-                <div className="shop-money mt-3 text-[17px] font-semibold text-[#f3f1ea]">{money(item.price)}</div>
-                <div className="mt-3 flex items-center gap-1.5"><button disabled={adjustingId !== null || item.quantity === 0} onClick={() => void adjustItem(item, -1)} className="grid h-8 w-8 place-items-center rounded border border-[#35363c] bg-[#1c1d21] font-mono font-bold disabled:opacity-35" aria-label={`Remove one ${item.size} tire`}>−</button><button disabled={adjustingId !== null} onClick={() => void adjustItem(item, 1)} className="grid h-8 w-8 place-items-center rounded border border-[#35363c] bg-[#1c1d21] font-mono font-bold disabled:opacity-35" aria-label={`Add one ${item.size} tire`}>+</button><button disabled={busy} onClick={() => void removeItem(item)} className="ml-auto rounded border border-red-500/30 px-3 py-1.5 text-[11px] font-semibold text-[#e0503b] hover:bg-red-500/10">Remove</button></div>
+                <div className="shop-money truncate text-lg font-semibold text-[#f2f3f5]">{item.size}</div>
+                <div className="mt-2 flex flex-wrap items-center gap-2"><span className="rounded-md border border-[#212328] bg-[#0c0d10] px-2 py-1 text-[11px] font-medium text-[#9296a1]">{tirePackageLabel(item.packageType)}</span><span className={`rounded-md px-2 py-1 text-[10px] font-semibold ${stockClass}`}>{item.quantity} {tirePackageLabel(item.packageType, true)} · {status}</span></div>
+                <div className="shop-money mt-3 text-lg font-semibold text-[#f2f3f5]">{money(item.price)}</div>
+                <div className="mt-3 flex items-center gap-1.5"><button disabled={adjustingId !== null || item.quantity === 0} onClick={() => void adjustItem(item, -1)} className="grid h-8 w-8 place-items-center rounded-md border border-[#212328] bg-[#0c0d10] font-mono font-bold disabled:opacity-35" aria-label={`Remove one ${item.size} tire`}>−</button><span className="shop-money min-w-8 text-center text-xs font-semibold">{item.quantity}</span><button disabled={adjustingId !== null} onClick={() => void adjustItem(item, 1)} className="grid h-8 w-8 place-items-center rounded-md border border-[#212328] bg-[#0c0d10] font-mono font-bold disabled:opacity-35" aria-label={`Add one ${item.size} tire`}>+</button><button disabled={busy} onClick={() => void removeItem(item)} className="ml-auto rounded-md border border-red-500/20 px-3 py-1.5 text-[11px] font-semibold text-red-400 hover:bg-red-500/10">Remove</button></div>
               </article>;
             })}
           </div>
@@ -2923,7 +2920,7 @@ function CardHeader({ title, icon, action }: { title: string; icon: React.ReactN
   return (
     <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-3">
-        <span className="grid h-5 w-5 shrink-0 place-items-center text-amber-400">{icon}</span>
+        <span className="grid h-5 w-5 shrink-0 place-items-center text-emerald-400">{icon}</span>
         <h2 className="text-[15px] font-bold tracking-[-.015em] text-white">{title}</h2>
       </div>
       {action}
@@ -2933,8 +2930,8 @@ function CardHeader({ title, icon, action }: { title: string; icon: React.ReactN
 
 function Button({ children, variant = "primary", onClick, disabled, className = "" }: { children: React.ReactNode; variant?: "primary" | "secondary" | "ghost" | "danger"; onClick?: () => void; disabled?: boolean; className?: string }) {
   const styles = {
-    primary: "border border-[#f2a900] bg-[#f2a900] text-[#17130a] hover:border-[#d89600] hover:bg-[#d89600] active:translate-y-px",
-    secondary: "border border-[#35363c] bg-[#232428] text-zinc-100 hover:border-[#47484f] hover:bg-[#2a2b30]",
+    primary: "border border-emerald-500 bg-emerald-500 text-[#06120c] shadow-sm hover:border-[#0ea371] hover:bg-[#0ea371] active:translate-y-px",
+    secondary: "border border-[#212328] bg-[#0c0d10] text-zinc-100 hover:border-[#2c2f36] hover:bg-[#171a1f]",
     ghost: "border border-transparent text-zinc-400 hover:border-white/[.06] hover:bg-white/[.035] hover:text-white",
     danger: "bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20",
   };
