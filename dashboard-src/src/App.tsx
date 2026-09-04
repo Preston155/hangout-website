@@ -556,7 +556,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260904_EMOJI_UPGRADE_V41";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260904_TYPE_HERO_V42";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -587,7 +587,7 @@ export function App() {
         min-width:320px;
         color:#f2f3f5;
         background:#08090b;
-        font-family:Inter,ui-sans-serif,system-ui,sans-serif;
+        font-family:"DM Sans",ui-sans-serif,system-ui,sans-serif;
       }
       .shop-shell::before {
         content:"";
@@ -611,9 +611,10 @@ export function App() {
       .shop-wheel--animated img { transform:rotate(-4deg); }
       .shop-wheel::after { display:none; }
       .shop-wheel--animated::before, .tire-smoke, .tire-spark { display:none; }
-      .shop-wordmark { font-family:Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif; letter-spacing:-.035em; text-transform:uppercase; }
-      .shop-hero { position:relative; }
-      .shop-hero::before, .shop-hero::after { display:none; }
+      .shop-wordmark { font-family:"Barlow Condensed",Impact,sans-serif; font-weight:800; letter-spacing:-.025em; text-transform:uppercase; }
+      .shop-hero { position:relative; overflow:hidden; padding:26px 28px 25px; border:1px solid #24282d; border-radius:18px; background:radial-gradient(circle at 88% 10%,rgba(16,185,129,.12),transparent 26rem),linear-gradient(135deg,#15181b 0%,#111316 62%,#0e1013 100%); box-shadow:0 18px 55px -38px rgba(0,0,0,.95),inset 0 1px rgba(255,255,255,.035); }
+      .shop-hero::before { content:""; position:absolute; inset:0 auto 0 0; display:block; width:3px; background:linear-gradient(180deg,#34d399,#10b981 55%,transparent); }
+      .shop-hero::after { content:""; position:absolute; right:-56px; top:-74px; display:block; width:210px; height:210px; border:42px solid rgba(255,255,255,.018); border-radius:999px; pointer-events:none; }
       .shop-hero__beam, .shop-hero__speed { display:none; }
       .shop-panel { border-color:#212328 !important; background-color:#131519 !important; }
       .shop-ambient { display:none; }
@@ -621,8 +622,9 @@ export function App() {
       .mobile-surface { position:relative; }
       .mobile-surface::before { display:none; }
       .shop-stat-grid { gap:16px !important; overflow:visible; border:0; border-radius:0; background:transparent; box-shadow:none; }
-      .shop-stat-grid .mobile-stat-card { border:1px solid #212328 !important; border-radius:16px !important; background:#131519; box-shadow:0 1px 2px rgba(0,0,0,.3); transition:border-color .12s ease; }
+      .shop-stat-grid .mobile-stat-card { border:1px solid #212328 !important; border-radius:16px !important; background:linear-gradient(145deg,#15171b,#111317); box-shadow:0 1px 2px rgba(0,0,0,.3); transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease; }
       .shop-stat-grid .mobile-stat-card:hover { border-color:#2c2f36 !important; }
+      .shop-stat-grid .shop-stat--featured { border-color:rgba(52,211,153,.2) !important; background:linear-gradient(145deg,rgba(16,185,129,.105),#121619 58%,#111317); }
       .shop-shell input, .shop-shell select, .shop-shell textarea {
         color-scheme:dark;
         border-color:#212328 !important;
@@ -635,8 +637,9 @@ export function App() {
       .shop-shell table tbody tr { transition:background-color .15s ease; }
       .shop-shell table tbody tr:hover { background:#171a1f; }
       .shop-card { background:#131519 !important; border-color:#212328 !important; border-radius:16px !important; box-shadow:0 1px 2px rgba(0,0,0,.3); }
-      .shop-money, .shop-shell .font-mono { font-family:"IBM Plex Mono",ui-monospace,monospace !important; }
-      .shop-shell h1, .shop-shell h2, .shop-shell h3, .shop-shell button { font-family:Inter,ui-sans-serif,system-ui,sans-serif; }
+      .shop-money, .shop-shell .font-mono { font-family:"JetBrains Mono",ui-monospace,monospace !important; font-variant-numeric:tabular-nums; }
+      .shop-shell h1, .shop-shell h2, .shop-shell h3 { font-family:"Barlow Condensed","Arial Narrow",sans-serif; letter-spacing:-.018em; }
+      .shop-shell button { font-family:"DM Sans",ui-sans-serif,system-ui,sans-serif; }
       .shop-tag-card { position:relative; border:1px solid #212328; border-radius:10px; background:#131519; padding:18px 18px 16px; box-shadow:0 1px 2px rgba(0,0,0,.3); transition:border-color .12s ease; }
       .shop-tag-card:hover { border-color:#2c2f36; }
       .shop-tag-hole { display:none; }
@@ -668,7 +671,7 @@ export function App() {
         .mobile-surface {
           transition: border-color .18s ease, background-color .18s ease;
         }
-        .shop-hero { min-height:0; }
+        .shop-hero { min-height:0; padding:20px 19px; border-radius:16px; }
         .mobile-form-trigger { background:#131519; }
         .shop-stat-grid { gap:10px !important; }
         .mobile-today-grid { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
@@ -2399,8 +2402,8 @@ function ShopPageHeader({ eyebrow, title, description, emoji, meta, actions, ton
     <div className="shop-hero flex flex-col items-stretch gap-4 pb-1 sm:flex-row sm:items-end sm:justify-between">
       <div className="min-w-0 flex-1">
         <div className={`mb-0.5 text-[10px] font-semibold uppercase tracking-[.12em] ${colors.text}`}>{eyebrow}</div>
-        <div className="flex items-center gap-2.5"><span aria-hidden="true" className={`grid h-9 w-9 shrink-0 place-items-center rounded-lg text-[20px] ring-1 ring-inset ${colors.soft} ${colors.ring}`}>{emoji || "🛞"}</span><h1 className="text-[25px] font-bold leading-tight text-[#f2f3f5]">{title}</h1></div>
-        <p className="mt-1 max-w-[46ch] text-[13.5px] leading-relaxed text-[#9296a1]">{description}</p>
+        <div className="relative z-[1] flex items-center gap-3"><span aria-hidden="true" className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl text-[21px] ring-1 ring-inset ${colors.soft} ${colors.ring}`}>{emoji || "🛞"}</span><h1 className="text-[30px] font-bold leading-none text-[#f4f5f6] sm:text-[34px]">{title}</h1></div>
+        <p className="relative z-[1] mt-2 max-w-[52ch] text-[13px] leading-relaxed text-[#9296a1]">{description}</p>
         {meta}
       </div>
       {actions && <div className="w-full shrink-0 sm:w-auto">{actions}</div>}
@@ -2411,7 +2414,7 @@ function ShopPageHeader({ eyebrow, title, description, emoji, meta, actions, ton
 function TireStat({ label, value, detail, emoji, featured = false, tone = "emerald" }: { label: string; value: string | number; detail: string; emoji?: string; featured?: boolean; tone?: ShopTone }) {
   const colors = shopToneStyles[tone];
   return (
-    <div className={`mobile-stat-card mobile-surface relative min-w-0 overflow-hidden p-5 ${featured ? "col-span-2 sm:col-span-1" : ""}`}>
+    <div className={`mobile-stat-card mobile-surface relative min-w-0 overflow-hidden p-5 ${featured ? "shop-stat--featured col-span-2 sm:col-span-1" : ""}`}>
       <div className="flex items-center justify-between gap-2"><div className={`truncate text-[9px] font-semibold uppercase tracking-[.12em] ${featured ? colors.text : "text-zinc-500"}`}>{label}</div>{emoji && <span aria-hidden="true" className="grid h-7 w-7 shrink-0 place-items-center rounded-md bg-white/[.035] text-[14px] ring-1 ring-inset ring-white/[.055]">{emoji}</span>}</div>
       <AnimatePresence mode="popLayout" initial={false}><motion.div key={String(value)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: .12 }} className="shop-money mt-2 truncate text-2xl font-bold tracking-[-.035em] text-white sm:text-[26px]">{value}</motion.div></AnimatePresence>
       <div className="mt-1.5 text-[10px] leading-snug text-zinc-600">{detail}</div>
@@ -2528,7 +2531,7 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
 
   return (
     <div className="space-y-5 lg:space-y-7">
-      <ShopPageHeader tone="sky" eyebrow="Inventory" title="Inventory Management" emoji="🛞" description="Track what’s on the wall, catch low stock before it runs out, and see what your inventory is worth right now." actions={<Button className="w-full justify-center px-5 sm:w-auto" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record a Sale</Button>} />
+      <ShopPageHeader tone="sky" eyebrow="Shop dashboard" title="Inventory Overview" emoji="🛞" description="Everything in stock, today’s activity, and the numbers that matter—at a glance." meta={<div className="relative z-[1] mt-3 flex flex-wrap items-center gap-2 text-[10px] font-medium text-zinc-500"><span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/15 bg-emerald-400/[.07] px-2.5 py-1 text-emerald-300"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Live inventory</span><span>{data ? `${allInventory.length} stock record${allInventory.length === 1 ? "" : "s"}` : "Syncing stock…"}</span><span className="text-zinc-700">•</span><span>{new Date().toLocaleDateString("en-US", { timeZone: "America/New_York", weekday: "long", month: "short", day: "numeric" })}</span></div>} actions={<Button className="relative z-[1] w-full justify-center px-5 sm:w-auto" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record a Sale</Button>} />
       <div className="shop-stat-grid grid grid-cols-2 lg:grid-cols-3">
         <TireStat featured emoji="💵" label="Today’s revenue" value={money(summary?.todayRevenue || 0)} detail="Saved work today" />
         <TireStat emoji="🧾" label="Jobs sold today" value={summary?.todayUnits || 0} detail="Jobs and line items" />

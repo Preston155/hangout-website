@@ -9,7 +9,7 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0; min-height: 100vh;
   background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(99,102,241,.20), transparent 30rem), radial-gradient(circle at 86% 8%, rgba(217,70,239,.13), transparent 32rem), radial-gradient(circle at 0% 44%, rgba(34,211,238,.09), transparent 34rem), linear-gradient(180deg,#07070b 0%,#090912 44%,#050507 100%);
-  color: #fafafa; font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; letter-spacing: -.011em; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; overflow-x: hidden;
+  color: #fafafa; font-family: "DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; letter-spacing: -.008em; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; overflow-x: hidden;
 }
 body::before, body::after { content:""; pointer-events:none; position:fixed; inset:0; z-index:-30; }
 body::before { opacity:.56; background-image: linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px), linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px); background-size:72px 72px; mask-image:radial-gradient(ellipse at 50% 0%,#000 12%,transparent 74%); }
