@@ -555,7 +555,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260904_DAILY_REPORTS_V26";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260904_CLEAN_V27";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -583,11 +583,7 @@ export function App() {
       .shop-shell {
         isolation:isolate;
         position:relative;
-        background:
-          radial-gradient(ellipse 78% 34% at 51% -8%, rgba(236,253,245,.055), transparent 72%),
-          radial-gradient(circle at 15% 26%, rgba(132,204,22,.062), transparent 31rem),
-          radial-gradient(circle at 91% 72%, rgba(6,182,212,.045), transparent 34rem),
-          linear-gradient(135deg,#090c0a 0%,#070a09 46%,#07100e 100%);
+        background:#090b0a;
       }
       .shop-shell::before {
         content:"";
@@ -595,12 +591,7 @@ export function App() {
         inset:0;
         z-index:-3;
         pointer-events:none;
-        background:
-          repeating-linear-gradient(118deg,transparent 0 92px,rgba(190,242,100,.018) 92px 94px,transparent 94px 188px),
-          linear-gradient(90deg,rgba(255,255,255,.016) 1px,transparent 1px);
-        background-size:auto,176px 100%;
-        -webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,.78),rgba(0,0,0,.3) 68%,transparent);
-        mask-image:linear-gradient(to bottom,rgba(0,0,0,.78),rgba(0,0,0,.3) 68%,transparent);
+        background:linear-gradient(180deg,rgba(255,255,255,.012),transparent 28rem);
       }
       .shop-shell::after {
         content:"";
@@ -608,55 +599,29 @@ export function App() {
         inset:0;
         z-index:-2;
         pointer-events:none;
-        background:
-          radial-gradient(ellipse 54% 20% at 52% 6%,rgba(255,255,255,.027),transparent 72%),
-          radial-gradient(ellipse 84% 60% at 50% 108%,rgba(0,0,0,.44),transparent 70%),
-          linear-gradient(90deg,rgba(0,0,0,.28),transparent 20%,transparent 80%,rgba(0,0,0,.28));
+        background:radial-gradient(circle at 50% -8rem,rgba(52,211,153,.045),transparent 34rem);
       }
       .shop-wheel { position:relative; display:grid; place-items:center; aspect-ratio:1; filter:drop-shadow(0 18px 22px rgba(0,0,0,.48)); }
       .shop-wheel--positioned { position:absolute; }
       .shop-wheel img { position:relative; z-index:2; display:block; width:100%; height:100%; object-fit:contain; user-select:none; -webkit-user-drag:none; }
-      .shop-wheel--animated img { animation:wheel-real-spin 8s linear infinite; will-change:transform; }
+      .shop-wheel--animated img { transform:rotate(-4deg); }
       .shop-wheel::after { content:""; position:absolute; left:15%; right:15%; bottom:-5%; height:9%; border-radius:50%; background:rgba(0,0,0,.55); filter:blur(6px); z-index:-1; }
-      .shop-wheel--animated::before { content:""; position:absolute; z-index:3; inset:8%; border-radius:50%; background:linear-gradient(112deg,transparent 31%,rgba(255,255,255,.32) 46%,transparent 58%); mix-blend-mode:screen; opacity:0; animation:rim-light-sweep 4.8s ease-in-out infinite; pointer-events:none; }
-      .tire-smoke { position:absolute; z-index:1; left:2%; bottom:5%; width:23%; aspect-ratio:1; border-radius:50%; background:radial-gradient(circle,rgba(226,232,240,.34) 0%,rgba(148,163,184,.14) 44%,transparent 72%); filter:blur(5px); opacity:0; animation:tire-smoke-rise 3.1s ease-out infinite; pointer-events:none; }
-      .tire-smoke--two { left:9%; bottom:9%; width:18%; animation-delay:1s; animation-duration:3.5s; }
-      .tire-smoke--three { left:-3%; bottom:13%; width:15%; animation-delay:2s; animation-duration:3.9s; }
-      .tire-spark { position:absolute; z-index:4; left:9%; bottom:9%; width:3px; height:3px; border-radius:50%; background:#bef264; box-shadow:0 0 8px #bef264,0 0 15px rgba(190,242,100,.55); opacity:0; animation:tire-spark-fly 2.5s ease-out infinite; pointer-events:none; }
-      .tire-spark--two { animation-delay:.7s; transform:scale(.7); }
-      .tire-spark--three { animation-delay:1.45s; transform:scale(.5); }
+      .shop-wheel--animated::before, .tire-smoke, .tire-spark { display:none; }
       .shop-wordmark { font-family:Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif; letter-spacing:-.035em; text-transform:uppercase; }
-      .shop-hero { position:relative; overflow:hidden; isolation:isolate; background:linear-gradient(112deg,#121513 0%,#0d100f 62%,#0a0d0c 100%); border:1px solid rgba(255,255,255,.075); border-radius:18px; box-shadow:0 22px 60px rgba(0,0,0,.22); }
-      .shop-hero::before { content:""; position:absolute; inset:0; z-index:-2; background:repeating-linear-gradient(118deg,transparent 0 34px,rgba(190,242,100,.04) 34px 37px,transparent 37px 72px); animation:tread-drive 16s linear infinite; }
-      .shop-hero::after { content:""; position:absolute; width:340px; height:340px; right:-125px; top:-155px; z-index:-1; border-radius:50%; background:rgba(190,242,100,.11); filter:blur(70px); }
-      .shop-hero__beam { position:absolute; z-index:0; inset:-45% auto -45% -30%; width:18%; transform:rotate(14deg); background:linear-gradient(90deg,transparent,rgba(255,255,255,.075),transparent); filter:blur(2px); animation:shop-light-pass 7s ease-in-out infinite; pointer-events:none; }
-      .shop-hero__speed { position:absolute; z-index:0; right:9%; bottom:18%; width:24%; height:1px; background:linear-gradient(90deg,transparent,rgba(56,189,248,.36),transparent); opacity:.5; animation:speed-line 2.8s ease-in-out infinite; pointer-events:none; }
-      .shop-hero__speed--two { right:17%; bottom:28%; width:15%; animation-delay:.65s; }
-      .shop-panel { border-color:rgba(255,255,255,.075) !important; background-color:#111412 !important; box-shadow:0 18px 48px rgba(0,0,0,.16); }
-      .shop-ambient { position:fixed; inset:0; z-index:-1; overflow:hidden; pointer-events:none; }
-      .shop-ambient::before, .shop-ambient::after { content:""; position:absolute; width:48vw; height:18rem; min-width:340px; border-radius:50%; filter:blur(96px); opacity:.095; animation:ambient-drift 18s ease-in-out infinite alternate; }
-      .shop-ambient::before { left:-12vw; top:15vh; background:linear-gradient(90deg,#84cc16,transparent 82%); transform:rotate(-12deg); }
-      .shop-ambient::after { right:-13vw; bottom:4vh; background:linear-gradient(90deg,transparent 8%,#0891b2); transform:rotate(10deg); animation-delay:-9s; animation-direction:alternate-reverse; }
+      .shop-hero { position:relative; overflow:hidden; isolation:isolate; background:#111412; border:1px solid rgba(255,255,255,.075); border-radius:14px; }
+      .shop-hero::before { content:""; position:absolute; inset:0 auto 0 0; width:3px; z-index:0; background:#34d399; }
+      .shop-hero::after { content:""; position:absolute; width:220px; height:220px; right:-100px; top:-130px; z-index:-1; border-radius:50%; background:rgba(52,211,153,.055); filter:blur(48px); }
+      .shop-hero__beam, .shop-hero__speed { display:none; }
+      .shop-panel { border-color:rgba(255,255,255,.075) !important; background-color:#111412 !important; }
+      .shop-ambient { display:none; }
       .alive-scan { position:relative; overflow:hidden; }
-      .alive-scan::after { content:""; position:absolute; inset:-2px auto -2px -38%; width:24%; transform:skewX(-18deg); background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent); animation:button-sheen 5.5s ease-in-out infinite; pointer-events:none; }
       .mobile-surface { position:relative; }
-      .mobile-surface::before { content:""; position:absolute; inset:0; border-radius:inherit; background:linear-gradient(115deg,rgba(255,255,255,.022),transparent 38%); pointer-events:none; }
+      .mobile-surface::before { display:none; }
       .live-dot { position:relative; }
       .live-dot::after { content:""; position:absolute; inset:-4px; border:1px solid currentColor; border-radius:999px; opacity:0; animation:live-ring 2.4s ease-out infinite; }
-      @keyframes wheel-real-spin { to{transform:rotate(360deg)} }
-      @keyframes tire-smoke-rise { 0%{opacity:0;transform:translate3d(8px,8px,0) scale(.35)} 18%{opacity:.48} 62%{opacity:.22} 100%{opacity:0;transform:translate3d(-34px,-48px,0) scale(1.8)} }
-      @keyframes rim-light-sweep { 0%,62%{opacity:0;transform:rotate(-24deg) scale(.85)} 72%{opacity:.65} 88%,100%{opacity:0;transform:rotate(32deg) scale(1.08)} }
-      @keyframes tire-spark-fly { 0%,72%{opacity:0;transform:translate3d(0,0,0) scale(.4)} 76%{opacity:1} 100%{opacity:0;transform:translate3d(-28px,-22px,0) scale(1.15)} }
-      @keyframes shop-light-pass { 0%,68%{left:-30%;opacity:0} 74%{opacity:.8} 92%,100%{left:122%;opacity:0} }
-      @keyframes speed-line { 0%,100%{opacity:.08;transform:translateX(12px) scaleX(.45)} 48%{opacity:.65;transform:translateX(-8px) scaleX(1)} }
-      @keyframes tread-drive { to{background-position:144px 0} }
-      @keyframes ambient-drift { from{transform:translate3d(-2%, -2%, 0) scale(.96)} to{transform:translate3d(9%, 7%, 0) scale(1.08)} }
-      @keyframes button-sheen { 0%,70%{left:-38%;opacity:0} 76%{opacity:1} 94%,100%{left:118%;opacity:0} }
       @keyframes live-ring { 0%{transform:scale(.65);opacity:.55} 75%,100%{transform:scale(1.9);opacity:0} }
-      @keyframes shop-float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
       @media (min-width: 768px) {
-        .mobile-surface { transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease,background-color .22s ease; }
-        .mobile-surface:hover { transform:translateY(-2px); box-shadow:0 18px 48px rgba(0,0,0,.22); }
+        .mobile-surface { transition:border-color .18s ease,background-color .18s ease; }
       }
       @media print {
         @page { size:auto; margin:0; }
@@ -669,50 +634,22 @@ export function App() {
         .receipt-screen-actions { display:none !important; }
       }
       @media (max-width: 767px) {
-        .shop-shell {
-          background:
-            radial-gradient(ellipse 95% 28% at 50% -5%,rgba(236,253,245,.05),transparent 74%),
-            radial-gradient(circle at 4% 28%,rgba(132,204,22,.052),transparent 19rem),
-            radial-gradient(circle at 100% 74%,rgba(6,182,212,.038),transparent 22rem),
-            linear-gradient(150deg,#090c0a 0%,#070a09 55%,#07100e 100%);
-        }
-        .shop-shell::before { background-size:auto,112px 100%; opacity:.72; }
-        .shop-shell::after { background:linear-gradient(90deg,rgba(0,0,0,.2),transparent 22%,transparent 78%,rgba(0,0,0,.2)); }
-        .shop-ambient::before, .shop-ambient::after { height:13rem; opacity:.07; filter:blur(74px); }
+        .shop-shell { background:#090b0a; }
         input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
         select,
         textarea {
           font-size: 16px !important;
           touch-action: manipulation;
         }
-        .mobile-page > * {
-          animation: mobile-soft-rise .34s cubic-bezier(.2,.8,.2,1) both;
-        }
-        .mobile-page > *:nth-child(2) { animation-delay: 45ms; }
-        .mobile-page > *:nth-child(3) { animation-delay: 80ms; }
-        .mobile-page > *:nth-child(4) { animation-delay: 115ms; }
-        .mobile-page > *:nth-child(n+5) { animation-delay: 140ms; }
         .mobile-surface {
-          box-shadow: 0 12px 34px rgba(0,0,0,.16);
-          transition: border-color .2s ease, background-color .2s ease, transform .16s ease;
+          transition: border-color .18s ease, background-color .18s ease;
         }
-        .shop-hero { min-height:0; padding:17px !important; gap:13px !important; border-radius:16px; box-shadow:0 14px 36px rgba(0,0,0,.18); }
-        .shop-hero .shop-wordmark { font-size:28px !important; line-height:.98 !important; }
-        .mobile-form-trigger { background:linear-gradient(110deg,#121614,#0e1110); box-shadow:0 12px 30px rgba(0,0,0,.16); }
-        .mobile-stat-grid { gap:1px !important; padding:1px; overflow:hidden; border-radius:16px; background:rgba(255,255,255,.065); }
-        .mobile-stat-grid .mobile-stat-card { border-radius:0 !important; box-shadow:none !important; background:#111412 !important; }
-        .mobile-stat-grid .mobile-stat-card::before { display:none; }
-        .mobile-today-grid { grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important; gap:1px !important; padding:1px !important; overflow:hidden; background:rgba(56,189,248,.13) !important; }
-        .mobile-today-grid > :first-child { grid-column:1 / -1; padding:14px 15px; background:#0e1515; }
-        .mobile-today-grid > :not(:first-child) { min-width:0; border-radius:0 !important; padding:13px 14px !important; background:#090c0b !important; box-shadow:none !important; }
-        .mobile-today-grid > :not(:first-child) > :last-child { font-size:20px !important; }
+        .shop-hero { min-height:0; padding:16px !important; gap:12px !important; border-radius:13px; }
+        .shop-hero .shop-wordmark { font-size:26px !important; line-height:1 !important; }
+        .mobile-form-trigger { background:#111412; }
+        .mobile-stat-grid { gap:8px !important; }
         button, a { -webkit-tap-highlight-color: transparent; }
-        .mobile-tap { transition: transform .14s ease, background-color .18s ease, border-color .18s ease; }
-        .mobile-tap:active { transform: scale(.97); }
-        @keyframes mobile-soft-rise {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
+        .mobile-tap { transition: background-color .18s ease, border-color .18s ease; }
         @keyframes mobile-status-pulse {
           0%, 100% { opacity: .45; transform: scale(.85); }
           50% { opacity: 1; transform: scale(1.15); }
@@ -904,7 +841,7 @@ export function App() {
         <Sidebar page={page} setPage={setPage} />
         <main className="flex min-w-0 flex-1 flex-col lg:pl-60">
           <Topbar page={page} />
-          <div className="mx-auto w-full max-w-[1260px] flex-1 px-4 pb-28 pt-5 sm:px-6 sm:pb-28 sm:pt-7 lg:px-9 lg:pb-12 lg:pt-9">
+          <div className="mx-auto w-full max-w-[1220px] flex-1 px-4 pb-28 pt-4 sm:px-6 sm:pb-28 sm:pt-6 lg:px-8 lg:pb-10 lg:pt-7">
             <AnimatePresence mode="wait">
               <motion.div className="mobile-page" key={page} initial={{ opacity: 0, y: reduceMotion ? 0 : 10, scale: reduceMotion ? 1 : 0.995 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: reduceMotion ? 0 : -6 }} transition={{ duration: reduceMotion ? 0 : 0.22, ease: [0.2, 0.8, 0.2, 1] }}>
                 {page === "tire-inventory" && <TireInventoryPage showToast={showToast} setPage={setPage} />}
@@ -1024,20 +961,20 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
 
 function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) {
   return (
-    <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-white/[.055] bg-[#0b0d0c] px-4 py-6 lg:flex">
+    <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-white/[.07] bg-[#0d0f0e] px-4 py-6 lg:flex">
       <div className="px-2">
         <div className="text-[9px] font-bold uppercase tracking-[.22em] text-emerald-400">Akron</div>
         <div className="mt-1 text-[17px] font-semibold tracking-[-.025em] text-white">Tire Shop</div>
         <div className="mt-1 text-[10px] text-zinc-600">Inventory · Sales · Service</div>
       </div>
-      <div className="my-6 h-px bg-white/[.055]" />
+      <div className="my-5 h-px bg-white/[.06]" />
       <nav className="space-y-1">
         {navItems.map((item) => {
           const Icon = item.icon;
           const active = item.id === page;
           const tone = shopToneStyles[item.tone];
           return (
-            <button key={item.id} onClick={() => setPage(item.id)} className={`group relative flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-xs font-medium transition ${active ? "bg-white/[.055] text-white" : "text-zinc-500 hover:bg-white/[.03] hover:text-zinc-200"}`}>
+            <button key={item.id} onClick={() => setPage(item.id)} className={`group relative flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-xs font-medium transition ${active ? "bg-white/[.065] text-white" : "text-zinc-500 hover:bg-white/[.035] hover:text-zinc-200"}`}>
               {active && <span className={`absolute inset-y-2 left-0 w-0.5 rounded-full ${tone.dot}`} />}
               <Icon className={`h-4 w-4 ${active ? tone.text : "text-zinc-600 group-hover:text-zinc-400"}`} />
               <span>{item.label}</span>
@@ -1045,8 +982,7 @@ function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) 
           );
         })}
       </nav>
-      <div className="mt-auto flex h-28 items-center justify-center overflow-hidden"><ShopWheel className="w-24 opacity-55" /></div>
-      <div className="border-t border-white/[.055] px-2 pt-4">
+      <div className="mt-auto border-t border-white/[.06] px-2 pt-4">
         <div className="flex items-center gap-2 text-[11px] font-medium text-zinc-300"><span className="h-2 w-2 rounded-full bg-emerald-400" /> Data saves automatically</div>
         <p className="mt-1.5 text-[10px] leading-relaxed text-zinc-600">Inventory and sales are stored securely.</p>
       </div>
@@ -1057,18 +993,17 @@ function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) 
 function Topbar({ page }: { page: Page }) {
   const currentNav = navItems.find((item) => item.id === page);
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center border-b border-white/[.055] bg-[#080a09]/92 px-4 backdrop-blur-xl sm:h-16 sm:px-6 lg:px-9">
+    <header className="sticky top-0 z-30 flex h-14 items-center border-b border-white/[.07] bg-[#090b0a]/95 px-4 backdrop-blur-xl sm:h-16 sm:px-6 lg:px-8">
       <div className="lg:hidden"><div className="text-[9px] font-bold uppercase tracking-[.18em] text-emerald-400">Akron Tire Shop</div><div className="mt-0.5 text-sm font-semibold tracking-[-.015em] text-white">{currentNav?.label}</div></div>
       <div className="hidden lg:block"><div className="text-sm font-semibold tracking-[-.01em] text-zinc-200">{currentNav?.label}</div></div>
-      <ShopWheel className="ml-auto mr-3 w-9 lg:hidden" />
-      <div className="flex items-center gap-2 text-[9px] font-medium text-zinc-600 sm:text-[10px] lg:ml-auto"><span className="hidden font-mono tabular-nums text-zinc-500 sm:inline"><LiveShopTime /></span><span className="hidden h-3 w-px bg-white/[.08] sm:inline" /><span className="live-dot mobile-status-pulse h-1.5 w-1.5 rounded-full bg-emerald-400 text-emerald-400" /><span className="hidden min-[380px]:inline">All changes saved</span><span className="min-[380px]:hidden">Saved</span></div>
+      <div className="ml-auto flex items-center gap-2 text-[9px] font-medium text-zinc-600 sm:text-[10px]"><span className="hidden font-mono tabular-nums text-zinc-500 sm:inline"><LiveShopTime /></span><span className="hidden h-3 w-px bg-white/[.08] sm:inline" /><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /><span className="hidden min-[380px]:inline">All changes saved</span><span className="min-[380px]:hidden">Saved</span></div>
     </header>
   );
 }
 
 function MobileShopNav({ page, setPage }: { page: Page; setPage: (p: Page) => void }) {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-white/[.07] bg-[#0b0d0c]/95 px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-1.5 shadow-[0_-10px_30px_rgba(0,0,0,.28)] backdrop-blur-2xl lg:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-white/[.08] bg-[#0d0f0e]/[.97] px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-1.5 backdrop-blur-2xl lg:hidden">
       <div className="mx-auto grid max-w-lg grid-cols-5 gap-1">
         {navItems.map((item) => { const Icon = item.icon; const active = item.id === page; const tone = shopToneStyles[item.tone]; return <motion.button whileTap={{ scale: 0.94 }} key={item.id} onClick={() => setPage(item.id)} className={`relative flex min-w-0 flex-col items-center gap-1 px-1 py-2 text-[9px] font-medium ${active ? "text-zinc-100" : "text-zinc-600"}`}>{active && <motion.span layoutId="mobile-shop-active" className={`absolute -top-1.5 h-0.5 w-7 rounded-full ${tone.dot}`} transition={{ type: "spring", stiffness: 420, damping: 34 }} />}<motion.span animate={{ y: active ? -1 : 0 }} transition={{ type: "spring", stiffness: 420, damping: 28 }}><Icon className={`h-[19px] w-[19px] ${active ? tone.text : "text-zinc-600"}`} /></motion.span><span className="truncate">{item.shortLabel}</span></motion.button>; })}
       </div>
@@ -2438,18 +2373,14 @@ function easternDateTimeToIso(date: string, time: string) {
 function ShopPageHeader({ eyebrow, title, description, meta, actions, tone = "emerald" }: { eyebrow: string; title: string; description: string; meta?: React.ReactNode; actions?: React.ReactNode; tone?: ShopTone }) {
   const colors = shopToneStyles[tone];
   return (
-    <div className="shop-hero flex min-h-[150px] flex-col items-stretch gap-4 px-5 py-5 sm:min-h-[172px] sm:px-7 sm:py-6">
-      <span aria-hidden="true" className="shop-hero__beam" />
-      <span aria-hidden="true" className="shop-hero__speed" />
-      <span aria-hidden="true" className="shop-hero__speed shop-hero__speed--two" />
-      <ShopWheel smoke animated className="shop-wheel--positioned right-3 top-3 hidden w-24 opacity-90 min-[460px]:grid sm:right-6 sm:top-5 sm:w-28" accent={tone === "sky" ? "#38bdf8" : tone === "amber" ? "#fbbf24" : tone === "violet" ? "#a78bfa" : "#bef264"} />
-      <div className="relative z-10 min-w-0 flex-1 min-[460px]:pr-28 sm:pr-32">
-        <div className={`mb-2.5 flex items-center gap-2 text-[9px] font-bold uppercase tracking-[.19em] ${colors.text}`}><span className={`live-dot h-1.5 w-1.5 rounded-full ${colors.dot}`} />{eyebrow}</div>
-        <h1 className="shop-wordmark text-[31px] leading-[.95] text-white sm:text-[42px]">{title}</h1>
-        <p className="mt-2.5 max-w-2xl text-xs leading-relaxed text-zinc-400 sm:text-[13px]">{description}</p>
+    <div className="shop-hero flex flex-col items-stretch gap-4 px-5 py-5 sm:flex-row sm:items-end sm:justify-between sm:px-6 sm:py-5">
+      <div className="relative z-10 min-w-0 flex-1">
+        <div className={`mb-2 flex items-center gap-2 text-[9px] font-bold uppercase tracking-[.16em] ${colors.text}`}><span className={`h-1.5 w-1.5 rounded-full ${colors.dot}`} />{eyebrow}</div>
+        <h1 className="text-[26px] font-semibold leading-tight tracking-[-.035em] text-white sm:text-[31px]">{title}</h1>
+        <p className="mt-1.5 max-w-2xl text-xs leading-relaxed text-zinc-400">{description}</p>
         {meta}
       </div>
-      {actions && <div className="relative z-10 w-full">{actions}</div>}
+      {actions && <div className="relative z-10 w-full shrink-0 sm:w-auto">{actions}</div>}
     </div>
   );
 }
@@ -2457,11 +2388,10 @@ function ShopPageHeader({ eyebrow, title, description, meta, actions, tone = "em
 function TireStat({ label, value, detail, featured = false, tone = "emerald" }: { label: string; value: string | number; detail: string; featured?: boolean; tone?: ShopTone }) {
   const colors = shopToneStyles[tone];
   return (
-    <div className={`mobile-stat-card mobile-surface relative min-w-0 overflow-hidden rounded-xl p-3.5 ring-1 ring-inset sm:p-4 ${featured ? `col-span-2 sm:col-span-1 ${colors.soft} ${colors.ring}` : "bg-[#111312] ring-white/[.055]"}`}>
-      <motion.span aria-hidden="true" className={`absolute inset-x-0 bottom-0 h-px origin-left ${featured ? colors.dot : "bg-white/[.08]"}`} initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: .55, ease: [0.2, 0.8, 0.2, 1] }} />
-      <div className="truncate text-[9px] font-semibold uppercase tracking-wider text-zinc-500 sm:text-[10px]">{label}</div>
-      <AnimatePresence mode="popLayout" initial={false}><motion.div key={String(value)} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: .18 }} className={`mt-1 truncate font-semibold tracking-[-.03em] sm:mt-1.5 sm:text-2xl ${featured ? `text-[28px] ${colors.text}` : "text-xl text-white"}`}>{value}</motion.div></AnimatePresence>
-      <div className={`mt-1 text-[11px] text-zinc-500 ${featured ? "block" : "hidden sm:block"}`}>{detail}</div>
+    <div className={`mobile-stat-card mobile-surface relative min-w-0 overflow-hidden rounded-xl border bg-[#111312] p-3.5 sm:p-4 ${featured ? `col-span-2 border-white/[.09] sm:col-span-1` : "border-white/[.065]"}`}>
+      <div className={`truncate text-[9px] font-semibold uppercase tracking-[.12em] ${featured ? colors.text : "text-zinc-500"}`}>{label}</div>
+      <AnimatePresence mode="popLayout" initial={false}><motion.div key={String(value)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: .12 }} className="mt-1.5 truncate text-xl font-semibold tracking-[-.035em] text-white sm:text-2xl">{value}</motion.div></AnimatePresence>
+      <div className="mt-1 text-[10px] text-zinc-600">{detail}</div>
     </div>
   );
 }
@@ -2799,12 +2729,12 @@ function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void;
     <div className="space-y-4 sm:space-y-6">
       <ShopPageHeader tone="amber" eyebrow="Sales desk" title="Sales & Services" description="Record tire sales, mount and balance work, plugs, rotations, and brakes." actions={<Button className="w-full justify-center sm:w-auto" variant="secondary" onClick={() => setPage("tire-inventory")}><Package className="h-3.5 w-3.5" /> Open Inventory</Button>} />
       <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-5 [&>*:last-child]:col-span-2 xl:[&>*:last-child]:col-span-1"><TireStat featured tone="amber" label="Today's revenue" value={money(summary?.todayRevenue || 0)} detail="Calculated automatically" /><TireStat label="Tires sold today" value={todayTiresSold} detail="Physical tires" /><TireStat label="Jobs / items" value={summary?.todayUnits || 0} detail="Today's quantity" /><TireStat label="Transactions" value={todaySales.length} detail="Work recorded today" /><TireStat label="Average sale" value={money(averageSale)} detail="Revenue per transaction" /></div>
-      <section className="rounded-xl border border-emerald-500/15 bg-emerald-500/[.04] p-4 sm:p-5"><div className="mb-4 flex items-end justify-between gap-3"><div><div className="text-[10px] font-semibold uppercase tracking-wider text-emerald-400">This Month</div><h2 className="mt-1 text-lg font-semibold text-white">{currentMonthLabel}</h2></div><div className="text-right"><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-500">Monthly revenue</div><div className="mt-1 text-2xl font-semibold tracking-tight text-emerald-300">{money(monthRevenue)}</div></div></div><div className="grid grid-cols-2 gap-3 border-t border-emerald-500/10 pt-4 sm:grid-cols-4"><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Tires sold</div><div className="mt-1 text-base font-semibold text-emerald-300">{monthTiresSold}</div></div><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Jobs / items</div><div className="mt-1 text-base font-semibold text-zinc-200">{monthItems}</div></div><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Transactions</div><div className="mt-1 text-base font-semibold text-zinc-200">{monthSales.length}</div></div><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Average sale</div><div className="mt-1 text-base font-semibold text-zinc-200">{money(monthAverage)}</div></div></div></section>
-      <section className="mobile-surface rounded-2xl border border-white/[.065] bg-[#111412] p-4 sm:p-5">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><div className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">Payment totals</div><div className="mt-1 text-sm font-semibold text-white">{paymentPeriodLabel}</div></div><div className="grid grid-cols-2 rounded-lg border border-zinc-800 bg-zinc-950 p-1"><button onClick={() => setPaymentPeriod("day")} className={`rounded-md px-3 py-2 text-xs font-semibold transition ${paymentPeriod === "day" ? "bg-zinc-800 text-white" : "text-zinc-500"}`}>By Day</button><button onClick={() => setPaymentPeriod("month")} className={`rounded-md px-3 py-2 text-xs font-semibold transition ${paymentPeriod === "month" ? "bg-zinc-800 text-white" : "text-zinc-500"}`}>This Month</button></div></div>
-        {paymentPeriod === "day" && <div className="mt-4 grid grid-cols-[44px_minmax(0,1fr)_44px] gap-2"><button aria-label="Previous day" onClick={() => setPaymentDate((current) => shiftDateKey(current, -1))} className="grid h-11 place-items-center rounded-xl border border-zinc-800 bg-zinc-950 text-zinc-300 hover:border-zinc-600 hover:text-white"><ChevronRight className="h-4 w-4 rotate-180" /></button><input aria-label="Payment totals date" type="date" max={todayKey} value={paymentDate} onChange={(event) => event.target.value && setPaymentDate(event.target.value)} className="min-w-0 rounded-xl border border-zinc-800 bg-zinc-950 px-3 text-center text-xs font-semibold text-white outline-none focus:border-emerald-500/50" /><button aria-label="Next day" disabled={paymentDate >= todayKey} onClick={() => setPaymentDate((current) => shiftDateKey(current, 1))} className="grid h-11 place-items-center rounded-xl border border-zinc-800 bg-zinc-950 text-zinc-300 hover:border-zinc-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"><ChevronRight className="h-4 w-4" /></button></div>}
-        <div className="mt-4 grid grid-cols-3 gap-2">{(["Cash", "Cashapp", "Chime"] as const).map((method) => <button key={method} onClick={() => setSelectedPayment(method)} className={`min-w-0 rounded-xl border p-2.5 text-left sm:p-3 transition ${selectedPayment === method ? "border-emerald-500/35 bg-emerald-500/10" : "border-zinc-800 bg-zinc-950/40 hover:border-zinc-700"}`}><div className={`text-[10px] font-semibold uppercase tracking-wider ${selectedPayment === method ? "text-emerald-400" : "text-zinc-500"}`}>{method}</div><div className="mt-1 truncate text-base font-semibold text-white sm:text-xl">{money(paymentMethodTotal(paymentSales, method))}</div></button>)}</div>
-        <div className="mt-3 flex items-center justify-between rounded-lg bg-zinc-950/60 px-3 py-2.5 text-xs"><span className="text-zinc-500">Selected: {selectedPayment}</span><span className="font-semibold text-emerald-300">{money(selectedPaymentTotal)}</span></div>
+      <section className="rounded-xl border border-white/[.065] bg-[#111312] p-4 sm:p-5"><div className="mb-4 flex items-end justify-between gap-3"><div><div className="text-[9px] font-semibold uppercase tracking-[.14em] text-zinc-500">Month to date</div><h2 className="mt-1 text-base font-semibold text-white">{currentMonthLabel}</h2></div><div className="text-right"><div className="text-[9px] font-semibold uppercase tracking-[.14em] text-zinc-500">Revenue</div><div className="mt-1 text-2xl font-semibold tracking-[-.04em] text-white">{money(monthRevenue)}</div></div></div><div className="grid grid-cols-2 gap-x-5 gap-y-3 border-t border-white/[.06] pt-4 sm:grid-cols-4"><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Tires sold</div><div className="mt-1 text-base font-semibold text-zinc-200">{monthTiresSold}</div></div><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Jobs / items</div><div className="mt-1 text-base font-semibold text-zinc-200">{monthItems}</div></div><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Transactions</div><div className="mt-1 text-base font-semibold text-zinc-200">{monthSales.length}</div></div><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Average</div><div className="mt-1 text-base font-semibold text-zinc-200">{money(monthAverage)}</div></div></div></section>
+      <section className="mobile-surface rounded-xl border border-white/[.065] bg-[#111312] p-4 sm:p-5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><div className="text-[9px] font-semibold uppercase tracking-[.14em] text-zinc-500">Payment totals</div><div className="mt-1 text-sm font-semibold text-white">{paymentPeriodLabel}</div></div><div className="grid grid-cols-2 rounded-lg bg-[#090b0a] p-1 ring-1 ring-inset ring-white/[.07]"><button onClick={() => setPaymentPeriod("day")} className={`rounded-md px-3 py-2 text-xs font-semibold transition ${paymentPeriod === "day" ? "bg-white/[.08] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Day</button><button onClick={() => setPaymentPeriod("month")} className={`rounded-md px-3 py-2 text-xs font-semibold transition ${paymentPeriod === "month" ? "bg-white/[.08] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Month</button></div></div>
+        {paymentPeriod === "day" && <div className="mt-4 grid grid-cols-[42px_minmax(0,1fr)_42px] gap-2"><button aria-label="Previous day" onClick={() => setPaymentDate((current) => shiftDateKey(current, -1))} className="grid h-10 place-items-center rounded-lg border border-white/[.07] bg-[#090b0a] text-zinc-400 hover:text-white"><ChevronRight className="h-4 w-4 rotate-180" /></button><input aria-label="Payment totals date" type="date" max={todayKey} value={paymentDate} onChange={(event) => event.target.value && setPaymentDate(event.target.value)} className="min-w-0 rounded-lg border border-white/[.07] bg-[#090b0a] px-3 text-center text-xs font-semibold text-white outline-none focus:border-emerald-500/40" /><button aria-label="Next day" disabled={paymentDate >= todayKey} onClick={() => setPaymentDate((current) => shiftDateKey(current, 1))} className="grid h-10 place-items-center rounded-lg border border-white/[.07] bg-[#090b0a] text-zinc-400 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"><ChevronRight className="h-4 w-4" /></button></div>}
+        <div className="mt-4 grid grid-cols-3 divide-x divide-white/[.06] rounded-lg border border-white/[.065] bg-[#0c0e0d]">{(["Cash", "Cashapp", "Chime"] as const).map((method) => <button key={method} onClick={() => setSelectedPayment(method)} className={`min-w-0 px-2.5 py-3 text-left transition first:rounded-l-lg last:rounded-r-lg sm:px-3 ${selectedPayment === method ? "bg-white/[.04]" : "hover:bg-white/[.02]"}`}><div className={`text-[9px] font-semibold uppercase tracking-[.12em] ${selectedPayment === method ? "text-emerald-400" : "text-zinc-500"}`}>{method}</div><div className="mt-1 truncate text-base font-semibold text-white sm:text-lg">{money(paymentMethodTotal(paymentSales, method))}</div></button>)}</div>
+        <div className="mt-3 flex items-center justify-between text-xs"><span className="text-zinc-600">{selectedPayment} total</span><span className="font-semibold text-zinc-200">{money(selectedPaymentTotal)}</span></div>
       </section>
       <Card>
         <CardHeader title={editingSaleId ? "Edit Work Entry" : "Record Work"} icon={<ShoppingCart className="h-4 w-4 text-amber-400" />} action={<div className="text-right"><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Total</div><div className="text-sm font-semibold text-amber-300">{money(currentSaleTotal)}</div></div>} />
@@ -2905,14 +2835,14 @@ function TireSalesReportPage({ showToast, setPage }: { showToast: (m: string) =>
     <div className="space-y-4 sm:space-y-6">
       <ShopPageHeader tone="violet" eyebrow="Reporting" title="Sales Reports" description="View daily or monthly sales, services, and payment totals." meta={lastUpdated && <p className="mt-1.5 text-[10px] text-zinc-600">Updated {lastUpdated.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}</p>} actions={<div className="grid grid-cols-2 gap-2 min-[520px]:grid-cols-3 sm:flex"><Button className="justify-center" variant="ghost" disabled={refreshing} onClick={() => void load()}><RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} /> Refresh</Button><Button className="justify-center" variant="secondary" disabled={!sales.length} onClick={exportSales}><FileText className="h-3.5 w-3.5" /> Export CSV</Button><Button className="col-span-2 justify-center min-[520px]:col-span-1" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record Work</Button></div>} />
 
-      <section className="mobile-surface rounded-2xl border border-white/[.065] bg-[#111412] p-4 sm:p-5">
-        <div className="mx-auto mb-4 grid max-w-xs grid-cols-2 rounded-lg border border-zinc-800 bg-zinc-950 p-1"><button onClick={() => setReportPeriod("day")} className={`rounded-md px-3 py-2 text-xs font-semibold transition ${reportPeriod === "day" ? "bg-zinc-800 text-white" : "text-zinc-500"}`}>By Day</button><button onClick={() => setReportPeriod("month")} className={`rounded-md px-3 py-2 text-xs font-semibold transition ${reportPeriod === "month" ? "bg-zinc-800 text-white" : "text-zinc-500"}`}>By Month</button></div>
-        {reportPeriod === "day" ? <div className="grid grid-cols-[44px_minmax(0,1fr)_44px] items-center gap-2"><button aria-label="Previous day" onClick={() => setDayKey((current) => shiftDateKey(current, -1))} className="grid h-11 place-items-center rounded-xl border border-zinc-800 bg-zinc-950 text-zinc-300 transition hover:border-zinc-600 hover:text-white"><ChevronRight className="h-5 w-5 rotate-180" /></button><div className="min-w-0 text-center"><div className="text-[10px] font-semibold uppercase tracking-wider text-emerald-400">Viewing day</div><input aria-label="Report date" type="date" max={currentDateKey} value={dayKey} onChange={(event) => event.target.value && setDayKey(event.target.value)} className="mt-1 w-full min-w-0 rounded-lg border border-transparent bg-transparent px-2 py-1 text-center text-base font-semibold text-white outline-none focus:border-zinc-700 sm:text-xl" /><div className="truncate text-[10px] text-zinc-500">{dateKeyLabel(dayKey, currentDateKey)}</div></div><button aria-label="Next day" disabled={!canGoForward} onClick={() => setDayKey((current) => shiftDateKey(current, 1))} className="grid h-11 place-items-center rounded-xl border border-zinc-800 bg-zinc-950 text-zinc-300 transition hover:border-zinc-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"><ChevronRight className="h-5 w-5" /></button></div> : <div className="flex items-center justify-between gap-3"><button aria-label="Previous month" onClick={() => setMonthKey((current) => shiftMonthKey(current, -1))} className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-zinc-800 bg-zinc-950 text-zinc-300 transition hover:border-zinc-600 hover:text-white"><ChevronRight className="h-5 w-5 rotate-180" /></button><div className="min-w-0 text-center"><div className="text-[10px] font-semibold uppercase tracking-wider text-emerald-400">Viewing month</div><h2 className="mt-1 truncate text-xl font-semibold text-white sm:text-2xl">{monthKeyLabel(monthKey)}</h2></div><button aria-label="Next month" disabled={!canGoForward} onClick={() => setMonthKey((current) => shiftMonthKey(current, 1))} className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-zinc-800 bg-zinc-950 text-zinc-300 transition hover:border-zinc-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"><ChevronRight className="h-5 w-5" /></button></div>}
+      <section className="mobile-surface rounded-xl border border-white/[.065] bg-[#111312] p-4 sm:p-5">
+        <div className="mx-auto mb-4 grid max-w-[240px] grid-cols-2 rounded-lg bg-[#090b0a] p-1 ring-1 ring-inset ring-white/[.07]"><button onClick={() => setReportPeriod("day")} className={`rounded-md px-3 py-2 text-xs font-semibold transition ${reportPeriod === "day" ? "bg-white/[.08] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Day</button><button onClick={() => setReportPeriod("month")} className={`rounded-md px-3 py-2 text-xs font-semibold transition ${reportPeriod === "month" ? "bg-white/[.08] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Month</button></div>
+        {reportPeriod === "day" ? <div className="grid grid-cols-[42px_minmax(0,1fr)_42px] items-center gap-2"><button aria-label="Previous day" onClick={() => setDayKey((current) => shiftDateKey(current, -1))} className="grid h-10 place-items-center rounded-lg border border-white/[.07] bg-[#090b0a] text-zinc-400 transition hover:text-white"><ChevronRight className="h-4 w-4 rotate-180" /></button><div className="min-w-0 text-center"><input aria-label="Report date" type="date" max={currentDateKey} value={dayKey} onChange={(event) => event.target.value && setDayKey(event.target.value)} className="w-full min-w-0 rounded-lg border border-transparent bg-transparent px-2 py-1 text-center text-base font-semibold text-white outline-none focus:border-white/[.08]" /><div className="truncate text-[10px] text-zinc-500">{dateKeyLabel(dayKey, currentDateKey)}</div></div><button aria-label="Next day" disabled={!canGoForward} onClick={() => setDayKey((current) => shiftDateKey(current, 1))} className="grid h-10 place-items-center rounded-lg border border-white/[.07] bg-[#090b0a] text-zinc-400 transition hover:text-white disabled:cursor-not-allowed disabled:opacity-30"><ChevronRight className="h-4 w-4" /></button></div> : <div className="flex items-center justify-between gap-3"><button aria-label="Previous month" onClick={() => setMonthKey((current) => shiftMonthKey(current, -1))} className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-white/[.07] bg-[#090b0a] text-zinc-400 transition hover:text-white"><ChevronRight className="h-4 w-4 rotate-180" /></button><h2 className="min-w-0 truncate text-center text-lg font-semibold text-white">{monthKeyLabel(monthKey)}</h2><button aria-label="Next month" disabled={!canGoForward} onClick={() => setMonthKey((current) => shiftMonthKey(current, 1))} className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-white/[.07] bg-[#090b0a] text-zinc-400 transition hover:text-white disabled:cursor-not-allowed disabled:opacity-30"><ChevronRight className="h-4 w-4" /></button></div>}
       </section>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4"><TireStat featured tone="violet" label="Total revenue" value={money(revenue)} detail="Sales and services" /><TireStat label="Tires sold" value={quantity} detail="Physical tire count" /><TireStat label="Transactions" value={sales.length} detail="All recorded work" /><TireStat label="Average transaction" value={money(average)} detail="Per entry" /></div>
 
-      <section className="mobile-surface rounded-2xl border border-white/[.065] bg-[#111412] p-4 sm:p-5"><div className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">Payment breakdown</div><div className="mt-3 grid grid-cols-3 gap-2">{(["Cash", "Cashapp", "Chime"] as const).map((method) => <div key={method} className="min-w-0 rounded-xl border border-white/[.06] bg-[#090b0a]/70 p-2.5 sm:p-3"><div className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">{method}</div><div className="mt-1 truncate text-base font-semibold text-white sm:text-xl">{money(paymentMethodTotal(sales, method))}</div></div>)}</div></section>
+      <section className="mobile-surface rounded-xl border border-white/[.065] bg-[#111312] p-4 sm:p-5"><div className="text-[9px] font-semibold uppercase tracking-[.14em] text-zinc-500">Payment breakdown</div><div className="mt-3 grid grid-cols-3 divide-x divide-white/[.06] rounded-lg border border-white/[.06] bg-[#0c0e0d]">{(["Cash", "Cashapp", "Chime"] as const).map((method) => <div key={method} className="min-w-0 p-2.5 sm:p-3"><div className="text-[9px] font-semibold uppercase tracking-[.12em] text-zinc-500">{method}</div><div className="mt-1 truncate text-base font-semibold text-white sm:text-lg">{money(paymentMethodTotal(sales, method))}</div></div>)}</div></section>
 
       <Card>
         <CardHeader title={`${periodLabel} Sales & Services`} icon={<ClipboardList className="h-4 w-4 text-zinc-400" />} />
@@ -2955,7 +2885,7 @@ function Toast({ message }: { message: string }) {
 }
 
 function Card({ children }: { children: React.ReactNode }) {
-  return <div className="mobile-surface rounded-xl bg-[#111312] p-4 ring-1 ring-inset ring-white/[.055] sm:rounded-2xl sm:p-5">{children}</div>;
+  return <div className="mobile-surface rounded-xl border border-white/[.065] bg-[#111312] p-4 sm:p-5">{children}</div>;
 }
 
 function CardHeader({ title, icon, action }: { title: string; icon: React.ReactNode; action?: React.ReactNode }) {
@@ -2973,12 +2903,12 @@ function CardHeader({ title, icon, action }: { title: string; icon: React.ReactN
 function Button({ children, variant = "primary", onClick, disabled, className = "" }: { children: React.ReactNode; variant?: "primary" | "secondary" | "ghost" | "danger"; onClick?: () => void; disabled?: boolean; className?: string }) {
   const styles = {
     primary: "bg-emerald-400 text-[#07100b] hover:bg-emerald-300",
-    secondary: "ring-1 ring-inset ring-white/[.08] bg-white/[.03] text-zinc-200 hover:bg-white/[.06]",
+    secondary: "border border-white/[.09] bg-white/[.035] text-zinc-200 hover:bg-white/[.065]",
     ghost: "text-zinc-400 hover:text-white hover:bg-white/[.05]",
     danger: "bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20",
   };
   return (
-    <button disabled={disabled} onClick={onClick} className={`mobile-tap ${variant === "primary" ? "alive-scan" : ""} inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg px-3.5 py-2.5 text-xs font-semibold transition active:scale-[0.97] disabled:opacity-40 sm:rounded-xl ${styles[variant]} ${className}`}>
+    <button disabled={disabled} onClick={onClick} className={`mobile-tap inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg px-3.5 py-2.5 text-xs font-semibold transition disabled:opacity-40 ${styles[variant]} ${className}`}>
       {children}
     </button>
   );
