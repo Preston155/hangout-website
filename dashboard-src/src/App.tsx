@@ -556,7 +556,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260904_TYPE_HERO_V42";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260905_SHOP_FLOOR_V43";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -603,7 +603,8 @@ export function App() {
         inset:0;
         z-index:-2;
         pointer-events:none;
-        background:none;
+        background:radial-gradient(circle at 76% 0%,rgba(245,158,11,.055),transparent 29rem),linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px);
+        background-size:auto,48px 48px,48px 48px;
       }
       .shop-wheel { position:relative; display:grid; place-items:center; aspect-ratio:1; filter:drop-shadow(0 12px 18px rgba(0,0,0,.38)); }
       .shop-wheel--positioned { position:absolute; }
@@ -612,8 +613,8 @@ export function App() {
       .shop-wheel::after { display:none; }
       .shop-wheel--animated::before, .tire-smoke, .tire-spark { display:none; }
       .shop-wordmark { font-family:"Barlow Condensed",Impact,sans-serif; font-weight:800; letter-spacing:-.025em; text-transform:uppercase; }
-      .shop-hero { position:relative; overflow:hidden; padding:26px 28px 25px; border:1px solid #24282d; border-radius:18px; background:radial-gradient(circle at 88% 10%,rgba(16,185,129,.12),transparent 26rem),linear-gradient(135deg,#15181b 0%,#111316 62%,#0e1013 100%); box-shadow:0 18px 55px -38px rgba(0,0,0,.95),inset 0 1px rgba(255,255,255,.035); }
-      .shop-hero::before { content:""; position:absolute; inset:0 auto 0 0; display:block; width:3px; background:linear-gradient(180deg,#34d399,#10b981 55%,transparent); }
+      .shop-hero { position:relative; overflow:hidden; padding:26px 28px 25px; border:1px solid #24282d; border-radius:18px; background:radial-gradient(circle at 88% 10%,rgba(245,158,11,.105),transparent 26rem),linear-gradient(135deg,#15181b 0%,#111316 62%,#0e1013 100%); box-shadow:0 18px 55px -38px rgba(0,0,0,.95),inset 0 1px rgba(255,255,255,.035); }
+      .shop-hero::before { content:""; position:absolute; inset:0 auto 0 0; display:block; width:3px; background:linear-gradient(180deg,#fbbf24,#f59e0b 55%,transparent); }
       .shop-hero::after { content:""; position:absolute; right:-56px; top:-74px; display:block; width:210px; height:210px; border:42px solid rgba(255,255,255,.018); border-radius:999px; pointer-events:none; }
       .shop-hero__beam, .shop-hero__speed { display:none; }
       .shop-panel { border-color:#212328 !important; background-color:#131519 !important; }
@@ -625,6 +626,10 @@ export function App() {
       .shop-stat-grid .mobile-stat-card { border:1px solid #212328 !important; border-radius:16px !important; background:linear-gradient(145deg,#15171b,#111317); box-shadow:0 1px 2px rgba(0,0,0,.3); transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease; }
       .shop-stat-grid .mobile-stat-card:hover { border-color:#2c2f36 !important; }
       .shop-stat-grid .shop-stat--featured { border-color:rgba(52,211,153,.2) !important; background:linear-gradient(145deg,rgba(16,185,129,.105),#121619 58%,#111317); }
+      .inventory-command { border:1px solid #24272c; border-radius:18px; background:#121417; box-shadow:0 18px 50px -42px rgba(0,0,0,.95); }
+      .inventory-command__metric + .inventory-command__metric { border-left:1px solid #24272c; }
+      .stock-health-track { background:#23262b; box-shadow:inset 0 1px 2px rgba(0,0,0,.45); }
+      .stock-health-fill { background:linear-gradient(90deg,#f59e0b,#34d399); box-shadow:0 0 18px rgba(52,211,153,.16); }
       .shop-shell input, .shop-shell select, .shop-shell textarea {
         color-scheme:dark;
         border-color:#212328 !important;
@@ -674,6 +679,7 @@ export function App() {
         .shop-hero { min-height:0; padding:20px 19px; border-radius:16px; }
         .mobile-form-trigger { background:#131519; }
         .shop-stat-grid { gap:10px !important; }
+        .inventory-command__metric + .inventory-command__metric { border-left:0; border-top:1px solid #24272c; }
         .mobile-today-grid { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
         .mobile-today-grid > :first-child { grid-column:1 / -1; }
         .mobile-today-grid > :not(:first-child) { min-width:0; }
@@ -991,23 +997,24 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
 
 function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) {
   return (
-    <aside className="fixed inset-y-0 left-0 z-40 hidden w-[250px] flex-col border-r border-[#212328] bg-[#0e1013] lg:flex">
-      <div className="flex min-h-[68px] items-center gap-3 border-b border-[#212328] px-[18px] py-5">
-        <div className="grid h-9 w-9 shrink-0 place-items-center rounded-md border border-emerald-400/30 bg-emerald-400/[.12]"><ShopWheel className="w-7" accent="#10b981" /></div>
-        <div className="min-w-0"><div className="text-[14.5px] font-bold text-[#f2f3f5]">Akron Tire Shop</div><div className="mt-0.5 font-mono text-[10px] text-[#5b5e67]">INVENTORY SYSTEM</div></div>
+    <aside className="fixed inset-y-0 left-0 z-40 hidden w-[250px] flex-col border-r border-[#212328] bg-[#0d0f12] lg:flex">
+      <div className="flex min-h-[76px] items-center gap-3.5 border-b border-[#212328] px-[18px] py-5">
+        <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-amber-400/25 bg-amber-400/[.09]"><ShopWheel className="w-8" accent="#f59e0b" /></div>
+        <div className="min-w-0"><div className="text-[9px] font-bold uppercase tracking-[.2em] text-amber-400">Akron</div><div className="shop-wordmark mt-0.5 text-[20px] leading-none text-[#f2f3f5]">Tire Shop</div></div>
       </div>
-      <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-3.5">
+      <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
+        <div className="mb-2 px-3 text-[9px] font-bold uppercase tracking-[.17em] text-zinc-700">Shop workspace</div>
         {navItems.map((item) => {
           const active = item.id === page;
           return (
-            <button key={item.id} onClick={() => setPage(item.id)} className={`flex min-h-10 w-full items-center gap-3 rounded-md px-3 text-left text-[13.5px] font-medium transition ${active ? "bg-emerald-400/[.12] text-emerald-300" : "text-[#9296a1] hover:bg-[#171a1f] hover:text-[#f2f3f5]"}`}>
-              <span aria-hidden="true" className={`grid h-7 w-7 shrink-0 place-items-center rounded-md text-[15px] ring-1 ring-inset ${active ? "bg-emerald-400/[.12] ring-emerald-400/20" : "bg-[#0a0c0f] ring-white/[.06]"}`}>{item.emoji}</span><span>{item.label}</span>
+            <button key={item.id} onClick={() => setPage(item.id)} className={`relative flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-left text-[13px] font-medium transition ${active ? "bg-amber-400/[.09] text-amber-200" : "text-[#9296a1] hover:bg-[#171a1f] hover:text-[#f2f3f5]"}`}>
+              {active && <span className="absolute inset-y-2 left-0 w-0.5 rounded-full bg-amber-400" />}<span aria-hidden="true" className={`grid h-7 w-7 shrink-0 place-items-center rounded-md text-[15px] ring-1 ring-inset ${active ? "bg-amber-400/[.11] ring-amber-400/20" : "bg-[#090b0d] ring-white/[.05] grayscale opacity-75"}`}>{item.emoji}</span><span>{item.label}</span>
             </button>
           );
         })}
       </nav>
       <div className="border-t border-[#212328] p-3">
-        <div className="flex items-center justify-between rounded-md border border-[#212328] px-3 py-2.5 text-[11px] text-[#9296a1]"><span>Shop database</span><span className="flex items-center gap-1.5 text-emerald-300"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Live</span></div>
+        <div className="rounded-lg border border-[#212328] bg-[#090b0d] px-3 py-3"><div className="flex items-center justify-between text-[11px] text-[#9296a1]"><span>Shop database</span><span className="flex items-center gap-1.5 text-emerald-300"><span className="live-dot h-1.5 w-1.5 rounded-full bg-emerald-400" /> Live</span></div><div className="mt-1 text-[9px] text-zinc-700">Inventory and sales synced</div></div>
       </div>
     </aside>
   );
@@ -1017,7 +1024,7 @@ function Topbar({ page }: { page: Page }) {
   const currentNav = navItems.find((item) => item.id === page);
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center border-b border-[#212328] bg-[#0e1013] px-4 sm:px-6 lg:hidden">
-      <div className="flex items-center gap-2.5 lg:hidden"><ShopWheel className="w-8 shrink-0" accent="#10b981" /><div><div className="text-[9px] font-bold uppercase tracking-[.16em] text-emerald-400">Akron Tire Shop</div><div className="mt-0.5 flex items-center gap-1.5 text-sm font-semibold tracking-[-.015em] text-white"><span aria-hidden="true" className="text-[13px]">{currentNav?.emoji}</span>{currentNav?.label}</div></div></div>
+      <div className="flex items-center gap-2.5 lg:hidden"><ShopWheel className="w-8 shrink-0" accent="#f59e0b" /><div><div className="text-[9px] font-bold uppercase tracking-[.16em] text-amber-400">Akron Tire Shop</div><div className="mt-0.5 flex items-center gap-1.5 text-sm font-semibold tracking-[-.015em] text-white"><span aria-hidden="true" className="text-[13px]">{currentNav?.emoji}</span>{currentNav?.label}</div></div></div>
       <div className="ml-auto flex items-center gap-2 text-[9px] font-medium text-zinc-600 sm:text-[10px]"><span className="hidden font-mono tabular-nums text-zinc-500 sm:inline"><LiveShopTime /></span><span className="hidden h-3 w-px bg-white/[.08] sm:inline" /><span className="h-1.5 w-1.5 rounded-full bg-[#4caf6d]" /><span className="hidden min-[380px]:inline">All changes saved</span><span className="min-[380px]:hidden">Saved</span></div>
     </header>
   );
@@ -1027,7 +1034,7 @@ function MobileShopNav({ page, setPage }: { page: Page; setPage: (p: Page) => vo
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[#212328] bg-[#0e1013]/[.98] px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-1.5 backdrop-blur-xl lg:hidden">
       <div className="mx-auto grid max-w-lg grid-cols-5 gap-1">
-        {navItems.map((item) => { const active = item.id === page; return <button key={item.id} onClick={() => setPage(item.id)} className={`relative flex min-w-0 flex-col items-center gap-1 px-1 py-2 text-[9px] font-medium transition ${active ? "text-emerald-300" : "text-zinc-600"}`}><span aria-hidden="true" className={`grid h-7 w-9 place-items-center rounded-md text-[17px] ${active ? "bg-emerald-400/10 ring-1 ring-inset ring-emerald-400/15" : "grayscale opacity-65"}`}>{item.emoji}</span><span className="truncate">{item.shortLabel}</span></button>; })}
+        {navItems.map((item) => { const active = item.id === page; return <button key={item.id} onClick={() => setPage(item.id)} className={`relative flex min-w-0 flex-col items-center gap-1 px-1 py-2 text-[9px] font-medium transition ${active ? "text-amber-300" : "text-zinc-600"}`}><span aria-hidden="true" className={`grid h-7 w-9 place-items-center rounded-md text-[17px] ${active ? "bg-amber-400/10 ring-1 ring-inset ring-amber-400/15" : "grayscale opacity-65"}`}>{item.emoji}</span><span className="truncate">{item.shortLabel}</span></button>; })}
       </div>
     </nav>
   );
@@ -2514,6 +2521,7 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
     return matchesSearch && matchesRim && matchesStock;
   });
   const summary = data?.summary;
+  const stockHealth = summary?.skus ? Math.max(0, Math.round(((summary.skus - summary.lowStock) / summary.skus) * 100)) : 0;
 
   const exportInventory = () => {
     downloadCsv(`akron-inventory-${easternDateKey(new Date())}.csv`, [
@@ -2532,14 +2540,20 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
   return (
     <div className="space-y-5 lg:space-y-7">
       <ShopPageHeader tone="sky" eyebrow="Shop dashboard" title="Inventory Overview" emoji="🛞" description="Everything in stock, today’s activity, and the numbers that matter—at a glance." meta={<div className="relative z-[1] mt-3 flex flex-wrap items-center gap-2 text-[10px] font-medium text-zinc-500"><span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/15 bg-emerald-400/[.07] px-2.5 py-1 text-emerald-300"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Live inventory</span><span>{data ? `${allInventory.length} stock record${allInventory.length === 1 ? "" : "s"}` : "Syncing stock…"}</span><span className="text-zinc-700">•</span><span>{new Date().toLocaleDateString("en-US", { timeZone: "America/New_York", weekday: "long", month: "short", day: "numeric" })}</span></div>} actions={<Button className="relative z-[1] w-full justify-center px-5 sm:w-auto" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record a Sale</Button>} />
-      <div className="shop-stat-grid grid grid-cols-2 lg:grid-cols-3">
-        <TireStat featured emoji="💵" label="Today’s revenue" value={money(summary?.todayRevenue || 0)} detail="Saved work today" />
-        <TireStat emoji="🧾" label="Jobs sold today" value={summary?.todayUnits || 0} detail="Jobs and line items" />
-        <TireStat emoji="🛞" label="Tire types stocked" value={summary?.skus || 0} detail="Active inventory lines" />
-        <TireStat emoji="📦" label="Units available" value={summary?.units || 0} detail="Sets, pairs, and tires" />
-        <TireStat featured emoji="⚠️" tone="amber" label="Low stock lines" value={summary?.lowStock || 0} detail="Five or fewer remaining" />
-        <TireStat emoji="💰" label="Retail value on hand" value={money(summary?.inventoryValue || 0)} detail="Current price × quantity" />
-      </div>
+      <section className="grid gap-3 lg:grid-cols-[minmax(0,1.55fr)_minmax(280px,.75fr)]">
+        <div className="inventory-command overflow-hidden">
+          <div className="flex items-center justify-between gap-3 border-b border-[#24272c] px-5 py-4 sm:px-6"><div><div className="text-[9px] font-bold uppercase tracking-[.18em] text-amber-400">Today at the shop</div><div className="mt-1 text-xs text-zinc-500">A live snapshot of saved work</div></div><span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-emerald-300"><span className="live-dot h-1.5 w-1.5 rounded-full bg-emerald-400" /> Live</span></div>
+          <div className="grid sm:grid-cols-3">
+            <div className="inventory-command__metric px-5 py-5 sm:px-6"><div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[.12em] text-zinc-500"><span aria-hidden="true">💵</span> Revenue</div><div className="shop-money mt-2 text-[28px] font-bold tracking-[-.055em] text-white">{money(summary?.todayRevenue || 0)}</div><div className="mt-1 text-[10px] text-zinc-600">Recorded today</div></div>
+            <div className="inventory-command__metric px-5 py-5 sm:px-6"><div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[.12em] text-zinc-500"><span aria-hidden="true">🧾</span> Jobs</div><div className="shop-money mt-2 text-[28px] font-bold tracking-[-.055em] text-white">{summary?.todayUnits || 0}</div><div className="mt-1 text-[10px] text-zinc-600">Jobs and line items</div></div>
+            <div className="inventory-command__metric px-5 py-5 sm:px-6"><div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[.12em] text-zinc-500"><span aria-hidden="true">💰</span> Stock value</div><div className="shop-money mt-2 text-[28px] font-bold tracking-[-.055em] text-white">{money(summary?.inventoryValue || 0)}</div><div className="mt-1 text-[10px] text-zinc-600">Current retail value</div></div>
+          </div>
+        </div>
+        <div className="inventory-command flex flex-col justify-between p-5 sm:p-6">
+          <div><div className="flex items-start justify-between gap-3"><div><div className="text-[9px] font-bold uppercase tracking-[.18em] text-zinc-500">Stock health</div><div className="mt-2 flex items-end gap-2"><span className="shop-money text-[28px] font-bold tracking-[-.055em] text-white">{stockHealth}%</span><span className="pb-1 text-[10px] text-zinc-600">healthy</span></div></div><span aria-hidden="true" className="grid h-10 w-10 place-items-center rounded-xl bg-amber-400/[.09] text-lg ring-1 ring-inset ring-amber-400/15">📦</span></div><div className="stock-health-track mt-4 h-1.5 overflow-hidden rounded-full"><div className="stock-health-fill h-full rounded-full transition-[width] duration-500" style={{ width: `${stockHealth}%` }} /></div></div>
+          <div className="mt-5 grid grid-cols-3 gap-3 border-t border-[#24272c] pt-4"><div><div className="shop-money text-base font-semibold text-white">{summary?.skus || 0}</div><div className="mt-0.5 text-[9px] text-zinc-600">Tire types</div></div><div><div className="shop-money text-base font-semibold text-white">{summary?.units || 0}</div><div className="mt-0.5 text-[9px] text-zinc-600">Available</div></div><div><div className={`shop-money text-base font-semibold ${(summary?.lowStock || 0) > 0 ? "text-amber-300" : "text-emerald-300"}`}>{summary?.lowStock || 0}</div><div className="mt-0.5 text-[9px] text-zinc-600">Low stock</div></div></div>
+        </div>
+      </section>
       <div>
         <button type="button" onClick={() => setMobileFormOpen((open) => !open)} className="mobile-form-trigger mobile-tap flex w-full items-center gap-3 rounded-2xl border border-white/[.07] px-4 py-4 text-left md:hidden">
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-sky-400/10 text-sky-300"><Package className="h-5 w-5" /></span>
@@ -2548,7 +2562,7 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
         </button>
         <div className={`${mobileFormOpen ? "mt-2 block" : "hidden"} md:block`}>
       <Card>
-        <CardHeader title={editingId ? "✏️ Edit stock ticket" : "➕ New stock ticket"} icon={<Package className="h-4 w-4 text-amber-400" />} />
+        <CardHeader title={editingId ? "Edit stock ticket" : "New stock ticket"} icon={<Package className="h-4 w-4 text-amber-400" />} />
         <form onSubmit={saveItem} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <label className="text-[11px] font-medium text-zinc-400">Size<input required name="size" value={form.size} onChange={updateField} placeholder="275/60R20" className={`mt-1.5 ${tireFieldClass}`} /></label>
           <label className="text-[11px] font-medium text-zinc-400">Sold as<select name="packageType" value={form.packageType} onChange={(event) => setForm((current) => ({ ...current, packageType: event.target.value }))} className={`mt-1.5 ${tireFieldClass}`}><option value="set4">Set of 4</option><option value="pair">Pair (2)</option><option value="single">Individual</option></select></label>
@@ -2563,7 +2577,7 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
         </div>
       </div>
       <Card>
-      <CardHeader title="🛞 Inventory" icon={<Package className="h-4 w-4 text-zinc-400" />} action={<input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search size..." className="w-full rounded-md border border-[#212328] bg-[#0c0d10] px-3.5 py-2.5 text-xs text-zinc-200 outline-none transition focus:border-emerald-400 sm:w-64" />} />
+      <CardHeader title="Inventory" icon={<Package className="h-4 w-4 text-zinc-400" />} action={<input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search size..." className="w-full rounded-md border border-[#212328] bg-[#0c0d10] px-3.5 py-2.5 text-xs text-zinc-200 outline-none transition focus:border-emerald-400 sm:w-64" />} />
         <div className="mt-4 flex flex-col gap-3 border-b border-white/[.055] pb-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="grid grid-cols-4 gap-1 rounded-xl bg-[#090b0a] p-1 ring-1 ring-inset ring-white/[.055]">
             {([['all', 'All'], ['available', 'Available'], ['low', 'Low'], ['out', 'Out']] as const).map(([value, label]) => <button key={value} type="button" onClick={() => setStockFilter(value)} className={`mobile-tap rounded-md px-2.5 py-2 text-[10px] font-semibold transition sm:px-3 ${stockFilter === value ? "bg-emerald-400/10 text-emerald-300 ring-1 ring-inset ring-emerald-400/20" : "text-zinc-500 hover:text-zinc-200"}`}>{label}</button>)}
