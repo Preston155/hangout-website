@@ -556,7 +556,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260905_SHOP_FLOOR_V43";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260905_MOBILE_REWORK_V44";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -667,6 +667,9 @@ export function App() {
       }
       @media (max-width: 767px) {
         .shop-shell { background:#08090b; }
+        .shop-mobile-topbar { height:70px; background:rgba(10,12,15,.94); border-color:rgba(255,255,255,.07); box-shadow:0 8px 28px rgba(0,0,0,.28); backdrop-filter:blur(18px); }
+        .shop-mobile-nav { padding-top:7px; background:rgba(10,12,15,.96); border-color:rgba(255,255,255,.08); box-shadow:0 -10px 30px rgba(0,0,0,.3); }
+        .shop-mobile-nav button:nth-child(3) > span:first-child { transform:translateY(-8px); height:38px; width:44px; border:1px solid rgba(245,158,11,.24); background:#1b170e; box-shadow:0 8px 18px rgba(0,0,0,.28); }
         input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
         select,
         textarea {
@@ -676,10 +679,18 @@ export function App() {
         .mobile-surface {
           transition: border-color .18s ease, background-color .18s ease;
         }
-        .shop-hero { min-height:0; padding:20px 19px; border-radius:16px; }
+        .shop-hero { min-height:0; padding:20px 19px 19px; border-radius:18px; background:radial-gradient(circle at 100% 0%,rgba(245,158,11,.18),transparent 18rem),linear-gradient(145deg,#17191d,#101215); box-shadow:0 18px 38px -28px rgba(0,0,0,.9),inset 0 1px rgba(255,255,255,.04); }
+        .shop-hero::after { right:-88px; top:-105px; opacity:.8; }
         .mobile-form-trigger { background:#131519; }
         .shop-stat-grid { gap:10px !important; }
+        .inventory-command { border-radius:16px; }
         .inventory-command__metric + .inventory-command__metric { border-left:0; border-top:1px solid #24272c; }
+        .inventory-command__metric:nth-child(3) { border-left:1px solid #24272c; }
+        .shop-tag-card { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:start; column-gap:12px; padding:14px 15px 13px; border-radius:14px; }
+        .shop-tag-size { grid-column:1; grid-row:1; align-self:center; font-size:17px; }
+        .shop-tag-price { grid-column:2; grid-row:1; margin-top:0; align-self:center; text-align:right; font-size:16px; }
+        .shop-tag-meta { grid-column:1 / -1; grid-row:2; margin-top:9px; }
+        .shop-tag-actions { grid-column:1 / -1; grid-row:3; margin-top:12px; padding-top:11px; border-top:1px solid #24272c; }
         .mobile-today-grid { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
         .mobile-today-grid > :first-child { grid-column:1 / -1; }
         .mobile-today-grid > :not(:first-child) { min-width:0; }
@@ -1023,7 +1034,7 @@ function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) 
 function Topbar({ page }: { page: Page }) {
   const currentNav = navItems.find((item) => item.id === page);
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center border-b border-[#212328] bg-[#0e1013] px-4 sm:px-6 lg:hidden">
+    <header className="shop-mobile-topbar sticky top-0 z-30 flex h-16 items-center border-b border-[#212328] bg-[#0e1013] px-4 sm:px-6 lg:hidden">
       <div className="flex items-center gap-2.5 lg:hidden"><ShopWheel className="w-8 shrink-0" accent="#f59e0b" /><div><div className="text-[9px] font-bold uppercase tracking-[.16em] text-amber-400">Akron Tire Shop</div><div className="mt-0.5 flex items-center gap-1.5 text-sm font-semibold tracking-[-.015em] text-white"><span aria-hidden="true" className="text-[13px]">{currentNav?.emoji}</span>{currentNav?.label}</div></div></div>
       <div className="ml-auto flex items-center gap-2 text-[9px] font-medium text-zinc-600 sm:text-[10px]"><span className="hidden font-mono tabular-nums text-zinc-500 sm:inline"><LiveShopTime /></span><span className="hidden h-3 w-px bg-white/[.08] sm:inline" /><span className="h-1.5 w-1.5 rounded-full bg-[#4caf6d]" /><span className="hidden min-[380px]:inline">All changes saved</span><span className="min-[380px]:hidden">Saved</span></div>
     </header>
@@ -1032,7 +1043,7 @@ function Topbar({ page }: { page: Page }) {
 
 function MobileShopNav({ page, setPage }: { page: Page; setPage: (p: Page) => void }) {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[#212328] bg-[#0e1013]/[.98] px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-1.5 backdrop-blur-xl lg:hidden">
+    <nav className="shop-mobile-nav fixed inset-x-0 bottom-0 z-40 border-t border-[#212328] bg-[#0e1013]/[.98] px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-1.5 backdrop-blur-xl lg:hidden">
       <div className="mx-auto grid max-w-lg grid-cols-5 gap-1">
         {navItems.map((item) => { const active = item.id === page; return <button key={item.id} onClick={() => setPage(item.id)} className={`relative flex min-w-0 flex-col items-center gap-1 px-1 py-2 text-[9px] font-medium transition ${active ? "text-amber-300" : "text-zinc-600"}`}><span aria-hidden="true" className={`grid h-7 w-9 place-items-center rounded-md text-[17px] ${active ? "bg-amber-400/10 ring-1 ring-inset ring-amber-400/15" : "grayscale opacity-65"}`}>{item.emoji}</span><span className="truncate">{item.shortLabel}</span></button>; })}
       </div>
@@ -2543,8 +2554,8 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
       <section className="grid gap-3 lg:grid-cols-[minmax(0,1.55fr)_minmax(280px,.75fr)]">
         <div className="inventory-command overflow-hidden">
           <div className="flex items-center justify-between gap-3 border-b border-[#24272c] px-5 py-4 sm:px-6"><div><div className="text-[9px] font-bold uppercase tracking-[.18em] text-amber-400">Today at the shop</div><div className="mt-1 text-xs text-zinc-500">A live snapshot of saved work</div></div><span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-emerald-300"><span className="live-dot h-1.5 w-1.5 rounded-full bg-emerald-400" /> Live</span></div>
-          <div className="grid sm:grid-cols-3">
-            <div className="inventory-command__metric px-5 py-5 sm:px-6"><div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[.12em] text-zinc-500"><span aria-hidden="true">💵</span> Revenue</div><div className="shop-money mt-2 text-[28px] font-bold tracking-[-.055em] text-white">{money(summary?.todayRevenue || 0)}</div><div className="mt-1 text-[10px] text-zinc-600">Recorded today</div></div>
+          <div className="grid grid-cols-2 sm:grid-cols-3">
+            <div className="inventory-command__metric col-span-2 px-5 py-5 sm:col-span-1 sm:px-6"><div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[.12em] text-zinc-500"><span aria-hidden="true">💵</span> Revenue</div><div className="shop-money mt-2 text-[28px] font-bold tracking-[-.055em] text-white">{money(summary?.todayRevenue || 0)}</div><div className="mt-1 text-[10px] text-zinc-600">Recorded today</div></div>
             <div className="inventory-command__metric px-5 py-5 sm:px-6"><div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[.12em] text-zinc-500"><span aria-hidden="true">🧾</span> Jobs</div><div className="shop-money mt-2 text-[28px] font-bold tracking-[-.055em] text-white">{summary?.todayUnits || 0}</div><div className="mt-1 text-[10px] text-zinc-600">Jobs and line items</div></div>
             <div className="inventory-command__metric px-5 py-5 sm:px-6"><div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[.12em] text-zinc-500"><span aria-hidden="true">💰</span> Stock value</div><div className="shop-money mt-2 text-[28px] font-bold tracking-[-.055em] text-white">{money(summary?.inventoryValue || 0)}</div><div className="mt-1 text-[10px] text-zinc-600">Current retail value</div></div>
           </div>
@@ -2594,10 +2605,10 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
               const stockClass = item.quantity === 0 ? "bg-red-500/[.13] text-[#e0503b]" : item.quantity <= 5 ? "bg-amber-400/[.13] text-[#f2a900]" : "bg-[#4caf6d]/[.13] text-[#4caf6d]";
               return <article key={item.id} className="shop-tag-card">
                 <span className="shop-tag-hole" />
-                <div className="shop-money truncate text-lg font-semibold text-[#f2f3f5]">{item.size}</div>
-                <div className="mt-2 flex flex-wrap items-center gap-2"><span className="rounded-md border border-[#212328] bg-[#0c0d10] px-2 py-1 text-[11px] font-medium text-[#9296a1]">{tirePackageLabel(item.packageType)}</span><span className={`rounded-md px-2 py-1 text-[10px] font-semibold ${stockClass}`}>{item.quantity} {tirePackageLabel(item.packageType, true)} · {status}</span></div>
-                <div className="shop-money mt-3 text-lg font-semibold text-[#f2f3f5]">{money(item.price)}</div>
-                <div className="mt-3 flex items-center gap-1.5"><button disabled={adjustingId !== null || item.quantity === 0} onClick={() => void adjustItem(item, -1)} className="grid h-8 w-8 place-items-center rounded-md border border-[#212328] bg-[#0c0d10] font-mono font-bold disabled:opacity-35" aria-label={`Remove one ${item.size} tire`}>−</button><span className="shop-money min-w-8 text-center text-xs font-semibold">{item.quantity}</span><button disabled={adjustingId !== null} onClick={() => void adjustItem(item, 1)} className="grid h-8 w-8 place-items-center rounded-md border border-[#212328] bg-[#0c0d10] font-mono font-bold disabled:opacity-35" aria-label={`Add one ${item.size} tire`}>+</button><button disabled={busy} onClick={() => void removeItem(item)} className="ml-auto rounded-md border border-red-500/20 px-3 py-1.5 text-[11px] font-semibold text-red-400 hover:bg-red-500/10">Remove</button></div>
+                <div className="shop-tag-size shop-money truncate text-lg font-semibold text-[#f2f3f5]">{item.size}</div>
+                <div className="shop-tag-meta mt-2 flex flex-wrap items-center gap-2"><span className="rounded-md border border-[#212328] bg-[#0c0d10] px-2 py-1 text-[11px] font-medium text-[#9296a1]">{tirePackageLabel(item.packageType)}</span><span className={`rounded-md px-2 py-1 text-[10px] font-semibold ${stockClass}`}>{item.quantity} {tirePackageLabel(item.packageType, true)} · {status}</span></div>
+                <div className="shop-tag-price shop-money mt-3 text-lg font-semibold text-[#f2f3f5]">{money(item.price)}</div>
+                <div className="shop-tag-actions mt-3 flex items-center gap-1.5"><button disabled={adjustingId !== null || item.quantity === 0} onClick={() => void adjustItem(item, -1)} className="grid h-8 w-8 place-items-center rounded-md border border-[#212328] bg-[#0c0d10] font-mono font-bold disabled:opacity-35" aria-label={`Remove one ${item.size} tire`}>−</button><span className="shop-money min-w-8 text-center text-xs font-semibold">{item.quantity}</span><button disabled={adjustingId !== null} onClick={() => void adjustItem(item, 1)} className="grid h-8 w-8 place-items-center rounded-md border border-[#212328] bg-[#0c0d10] font-mono font-bold disabled:opacity-35" aria-label={`Add one ${item.size} tire`}>+</button><button disabled={busy} onClick={() => void removeItem(item)} className="ml-auto rounded-md border border-red-500/20 px-3 py-1.5 text-[11px] font-semibold text-red-400 hover:bg-red-500/10">Remove</button></div>
               </article>;
             })}
           </div>
