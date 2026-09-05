@@ -556,7 +556,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260905_MOBILE_REWORK_V44";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260905_LIGHT_WORKSPACE_V45";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -630,6 +630,29 @@ export function App() {
       .inventory-command__metric + .inventory-command__metric { border-left:1px solid #24272c; }
       .stock-health-track { background:#23262b; box-shadow:inset 0 1px 2px rgba(0,0,0,.45); }
       .stock-health-fill { background:linear-gradient(90deg,#f59e0b,#34d399); box-shadow:0 0 18px rgba(52,211,153,.16); }
+      .shop-content { position:relative; z-index:0; color:#242527; background:#f2f0ea; }
+      .shop-content::before { content:""; position:fixed; inset:0 0 0 250px; z-index:-1; pointer-events:none; background:radial-gradient(circle at 84% 0%,rgba(245,158,11,.11),transparent 28rem),#f2f0ea; }
+      .shop-content .shop-hero { border-color:#e5a52b; background:radial-gradient(circle at 92% -10%,rgba(255,255,255,.3),transparent 22rem),linear-gradient(135deg,#f8b83e,#f59e0b); box-shadow:0 20px 45px -34px rgba(130,76,0,.5); }
+      .shop-content .shop-hero::before { background:rgba(25,25,22,.86); }
+      .shop-content .shop-hero h1, .shop-content .shop-hero p, .shop-content .shop-hero .text-zinc-500, .shop-content .shop-hero .text-zinc-700 { color:#242019 !important; }
+      .shop-content .shop-hero [class*="bg-emerald"] { border-color:rgba(24,89,60,.18) !important; background:rgba(255,255,255,.24) !important; color:#175b3e !important; }
+      .shop-content .shop-hero button { border-color:#1c1d1f; background:#1c1d1f; color:#fff; box-shadow:0 8px 20px -12px rgba(0,0,0,.7); }
+      .shop-content .inventory-command, .shop-content .shop-card, .shop-content .shop-tag-card, .shop-content .mobile-stat-card { border-color:#dfddd6 !important; background:#fff !important; box-shadow:0 10px 35px -30px rgba(30,30,25,.35); }
+      .shop-content .inventory-command__metric + .inventory-command__metric { border-color:#e8e5de; }
+      .shop-content .text-white, .shop-content .text-zinc-100, .shop-content .text-zinc-200 { color:#222326 !important; }
+      .shop-content .text-zinc-300, .shop-content .text-zinc-400 { color:#55575d !important; }
+      .shop-content .text-zinc-500 { color:#777a80 !important; }
+      .shop-content .text-zinc-600, .shop-content .text-zinc-700 { color:#94969b !important; }
+      .shop-content .shop-money { color:#1c1d20; }
+      .shop-content input, .shop-content select, .shop-content textarea { border-color:#dcd9d0 !important; background:#f8f7f3 !important; color:#202124 !important; }
+      .shop-content input::placeholder, .shop-content textarea::placeholder { color:#a2a19c; }
+      .shop-content [class*="bg-[#090b0a]"], .shop-content [class*="bg-[#0c0d10]"], .shop-content [class*="bg-zinc-950"], .shop-content [class*="bg-zinc-900"] { border-color:#dedbd3 !important; background:#f7f5f0 !important; }
+      .shop-content .stock-health-track { background:#ebe8e0; box-shadow:inset 0 1px 2px rgba(45,43,36,.1); }
+      .shop-content thead { background:#f5f3ee; }
+      .shop-content th, .shop-content td { border-color:#e5e2da !important; }
+      .shop-content table tbody tr:hover { background:#faf8f3; }
+      .shop-content .shop-tag-actions { border-color:#ece9e2; }
+      .shop-content .shop-tag-actions button:not(:last-child) { border-color:#d9d6ce; background:#f7f5f0; color:#292a2d; }
       .shop-shell input, .shop-shell select, .shop-shell textarea {
         color-scheme:dark;
         border-color:#212328 !important;
@@ -666,10 +689,14 @@ export function App() {
         .receipt-screen-actions { display:none !important; }
       }
       @media (max-width: 767px) {
-        .shop-shell { background:#08090b; }
-        .shop-mobile-topbar { height:70px; background:rgba(10,12,15,.94); border-color:rgba(255,255,255,.07); box-shadow:0 8px 28px rgba(0,0,0,.28); backdrop-filter:blur(18px); }
-        .shop-mobile-nav { padding-top:7px; background:rgba(10,12,15,.96); border-color:rgba(255,255,255,.08); box-shadow:0 -10px 30px rgba(0,0,0,.3); }
-        .shop-mobile-nav button:nth-child(3) > span:first-child { transform:translateY(-8px); height:38px; width:44px; border:1px solid rgba(245,158,11,.24); background:#1b170e; box-shadow:0 8px 18px rgba(0,0,0,.28); }
+        .shop-shell { background:#f2f0ea; }
+        .shop-content::before { inset:0; background:#f2f0ea; }
+        .shop-mobile-topbar { height:70px; background:rgba(255,255,252,.94); border-color:#e1ded6; box-shadow:0 8px 28px rgba(52,48,38,.08); backdrop-filter:blur(18px); }
+        .shop-mobile-topbar .text-white { color:#1f2022 !important; }
+        .shop-mobile-topbar .text-zinc-500, .shop-mobile-topbar .text-zinc-600 { color:#777a80 !important; }
+        .shop-mobile-nav { padding-top:7px; background:rgba(255,255,252,.97); border-color:#dedbd2; box-shadow:0 -10px 30px rgba(45,42,34,.09); }
+        .shop-mobile-nav button { color:#8d8e91; }
+        .shop-mobile-nav button:nth-child(3) > span:first-child { transform:translateY(-8px); height:38px; width:44px; border:1px solid rgba(245,158,11,.42); background:#fff3d7; box-shadow:0 8px 18px rgba(82,58,16,.14); }
         input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
         select,
         textarea {
@@ -679,9 +706,9 @@ export function App() {
         .mobile-surface {
           transition: border-color .18s ease, background-color .18s ease;
         }
-        .shop-hero { min-height:0; padding:20px 19px 19px; border-radius:18px; background:radial-gradient(circle at 100% 0%,rgba(245,158,11,.18),transparent 18rem),linear-gradient(145deg,#17191d,#101215); box-shadow:0 18px 38px -28px rgba(0,0,0,.9),inset 0 1px rgba(255,255,255,.04); }
+        .shop-hero { min-height:0; padding:20px 19px 19px; border-radius:18px; }
         .shop-hero::after { right:-88px; top:-105px; opacity:.8; }
-        .mobile-form-trigger { background:#131519; }
+        .mobile-form-trigger { border-color:#dedbd3 !important; background:#fff !important; box-shadow:0 8px 24px -20px rgba(40,37,30,.24); }
         .shop-stat-grid { gap:10px !important; }
         .inventory-command { border-radius:16px; }
         .inventory-command__metric + .inventory-command__metric { border-left:0; border-top:1px solid #24272c; }
@@ -891,7 +918,7 @@ export function App() {
       <div className="shop-ambient" aria-hidden="true" />
       <div className="flex min-h-screen">
         <Sidebar page={page} setPage={setPage} />
-        <main className="flex min-w-0 flex-1 flex-col lg:pl-[250px]">
+        <main className="shop-content flex min-w-0 flex-1 flex-col lg:pl-[250px]">
           <Topbar page={page} />
           <div className="mx-auto w-full max-w-[1320px] flex-1 px-4 pb-28 pt-5 sm:px-6 sm:pb-28 sm:pt-7 lg:px-8 lg:pb-20 lg:pt-[30px]">
             <AnimatePresence mode="wait">
