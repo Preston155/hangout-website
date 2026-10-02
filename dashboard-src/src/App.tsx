@@ -540,11 +540,11 @@ const permissions: Record<string, Permission[]> = {
 };
 
 const navItems = [
-  { id: "tire-inventory" as Page, label: "Stock Management", shortLabel: "Stock", emoji: "🛞", tone: "sky" as const },
-  { id: "inventory-view" as Page, label: "View Inventory", shortLabel: "View", emoji: "🔎", tone: "emerald" as const },
-  { id: "tire-sales" as Page, label: "New Sale or Service", shortLabel: "New Sale", emoji: "🧾", tone: "amber" as const },
-  { id: "tire-sales-report" as Page, label: "Sales Reports", shortLabel: "Reports", emoji: "📊", tone: "violet" as const },
-  { id: "settings" as Page, label: "Account", shortLabel: "Account", emoji: "⚙️", tone: "zinc" as const },
+  { id: "tire-inventory" as Page, label: "Stock Management", shortLabel: "Stock", icon: Package, tone: "sky" as const },
+  { id: "inventory-view" as Page, label: "View Inventory", shortLabel: "View", icon: Eye, tone: "emerald" as const },
+  { id: "tire-sales" as Page, label: "New Sale or Service", shortLabel: "New Sale", icon: ShoppingCart, tone: "amber" as const },
+  { id: "tire-sales-report" as Page, label: "Sales Reports", shortLabel: "Reports", icon: ClipboardList, tone: "violet" as const },
+  { id: "settings" as Page, label: "Account", shortLabel: "Account", icon: Settings, tone: "zinc" as const },
 ];
 
 type ShopTone = "emerald" | "sky" | "amber" | "violet" | "zinc";
@@ -556,7 +556,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20260905_DARK_WORKSPACE_V46";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20261002_PORTAL_V47";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -587,7 +587,7 @@ export function App() {
         min-width:320px;
         color:#f2f3f5;
         background:#08090b;
-        font-family:"DM Sans",ui-sans-serif,system-ui,sans-serif;
+        font-family:"Plus Jakarta Sans",ui-sans-serif,system-ui,sans-serif;
       }
       .shop-shell::before {
         content:"";
@@ -603,8 +603,8 @@ export function App() {
         inset:0;
         z-index:-2;
         pointer-events:none;
-        background:radial-gradient(circle at 76% 0%,rgba(245,158,11,.055),transparent 29rem),linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px);
-        background-size:auto,48px 48px,48px 48px;
+        background:radial-gradient(circle at 78% -10%,rgba(255,92,27,.13),transparent 32rem),radial-gradient(circle at 8% 100%,rgba(112,255,170,.045),transparent 26rem),linear-gradient(rgba(255,255,255,.014) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.014) 1px,transparent 1px);
+        background-size:auto,auto,56px 56px,56px 56px;
       }
       .shop-wheel { position:relative; display:grid; place-items:center; aspect-ratio:1; filter:drop-shadow(0 12px 18px rgba(0,0,0,.38)); }
       .shop-wheel--positioned { position:absolute; }
@@ -612,9 +612,9 @@ export function App() {
       .shop-wheel--animated img { transform:rotate(-4deg); }
       .shop-wheel::after { display:none; }
       .shop-wheel--animated::before, .tire-smoke, .tire-spark { display:none; }
-      .shop-wordmark { font-family:"Barlow Condensed",Impact,sans-serif; font-weight:800; letter-spacing:-.025em; text-transform:uppercase; }
-      .shop-hero { position:relative; overflow:hidden; padding:26px 28px 25px; border:1px solid #24282d; border-radius:18px; background:radial-gradient(circle at 88% 10%,rgba(245,158,11,.105),transparent 26rem),linear-gradient(135deg,#15181b 0%,#111316 62%,#0e1013 100%); box-shadow:0 18px 55px -38px rgba(0,0,0,.95),inset 0 1px rgba(255,255,255,.035); }
-      .shop-hero::before { content:""; position:absolute; inset:0 auto 0 0; display:block; width:3px; background:linear-gradient(180deg,#fbbf24,#f59e0b 55%,transparent); }
+      .shop-wordmark { font-family:"Space Grotesk",ui-sans-serif,sans-serif; font-weight:700; letter-spacing:-.075em; text-transform:uppercase; }
+      .shop-hero { position:relative; overflow:hidden; padding:30px 32px 29px; border:1px solid rgba(255,255,255,.09); border-radius:22px; background:radial-gradient(circle at 88% 4%,rgba(255,92,27,.20),transparent 23rem),linear-gradient(135deg,rgba(29,31,34,.97) 0%,rgba(17,18,21,.98) 62%,rgba(10,11,13,.99) 100%); box-shadow:0 22px 70px -38px rgba(0,0,0,.98),inset 0 1px rgba(255,255,255,.055); }
+      .shop-hero::before { content:""; position:absolute; inset:0 auto 0 0; display:block; width:4px; background:linear-gradient(180deg,#ff7a36,#ff4d17 55%,rgba(255,77,23,0)); }
       .shop-hero::after { content:""; position:absolute; right:-56px; top:-74px; display:block; width:210px; height:210px; border:42px solid rgba(255,255,255,.018); border-radius:999px; pointer-events:none; }
       .shop-hero__beam, .shop-hero__speed { display:none; }
       .shop-panel { border-color:#212328 !important; background-color:#131519 !important; }
@@ -631,8 +631,8 @@ export function App() {
       .stock-health-track { background:#23262b; box-shadow:inset 0 1px 2px rgba(0,0,0,.45); }
       .stock-health-fill { background:linear-gradient(90deg,#f59e0b,#34d399); box-shadow:0 0 18px rgba(52,211,153,.16); }
       .shop-content { position:relative; z-index:0; color:#f2f3f5; background:#090a0c; }
-      .shop-content::before { content:""; position:fixed; inset:0 0 0 250px; z-index:-1; pointer-events:none; background:radial-gradient(circle at 82% -6%,rgba(245,158,11,.075),transparent 32rem),linear-gradient(180deg,#0a0b0d,#08090b); }
-      .shop-content .shop-hero { border-color:#382b18; background:radial-gradient(circle at 92% -12%,rgba(245,158,11,.15),transparent 24rem),linear-gradient(135deg,#191713,#121316 58%,#0d0f11); box-shadow:0 24px 55px -38px rgba(0,0,0,.95),inset 0 1px rgba(255,255,255,.035); }
+      .shop-content::before { content:""; position:fixed; inset:0 0 0 268px; z-index:-1; pointer-events:none; background:radial-gradient(circle at 82% -6%,rgba(255,92,27,.105),transparent 34rem),linear-gradient(180deg,#0b0c0f,#08090b); }
+      .shop-content .shop-hero { border-color:rgba(255,122,54,.23); background:radial-gradient(circle at 92% -12%,rgba(255,92,27,.20),transparent 24rem),linear-gradient(135deg,#211714,#141518 58%,#0d0f11); box-shadow:0 24px 65px -38px rgba(0,0,0,.95),inset 0 1px rgba(255,255,255,.045); }
       .shop-content .inventory-command { background:linear-gradient(145deg,#15171a,#101215); }
       .shop-shell input, .shop-shell select, .shop-shell textarea {
         color-scheme:dark;
@@ -645,16 +645,92 @@ export function App() {
       .shop-shell td { border-color:#212328 !important; }
       .shop-shell table tbody tr { transition:background-color .15s ease; }
       .shop-shell table tbody tr:hover { background:#171a1f; }
-      .shop-card { background:#131519 !important; border-color:#212328 !important; border-radius:16px !important; box-shadow:0 1px 2px rgba(0,0,0,.3); }
-      .shop-money, .shop-shell .font-mono { font-family:"JetBrains Mono",ui-monospace,monospace !important; font-variant-numeric:tabular-nums; }
-      .shop-shell h1, .shop-shell h2, .shop-shell h3 { font-family:"Barlow Condensed","Arial Narrow",sans-serif; letter-spacing:-.018em; }
-      .shop-shell button { font-family:"DM Sans",ui-sans-serif,system-ui,sans-serif; }
-      .shop-tag-card { position:relative; border:1px solid #212328; border-radius:10px; background:#131519; padding:18px 18px 16px; box-shadow:0 1px 2px rgba(0,0,0,.3); transition:border-color .12s ease; }
-      .shop-tag-card:hover { border-color:#2c2f36; }
+      .shop-card { background:linear-gradient(145deg,rgba(22,24,28,.95),rgba(16,17,20,.96)) !important; border-color:rgba(255,255,255,.075) !important; border-radius:18px !important; box-shadow:0 14px 42px -36px rgba(0,0,0,.95),inset 0 1px rgba(255,255,255,.025); }
+      .shop-money, .shop-shell .font-mono { font-family:"DM Mono",ui-monospace,monospace !important; font-variant-numeric:tabular-nums; }
+      .shop-shell h1, .shop-shell h2, .shop-shell h3 { font-family:"Space Grotesk",ui-sans-serif,sans-serif; letter-spacing:-.045em; }
+      .shop-shell button { font-family:"Plus Jakarta Sans",ui-sans-serif,system-ui,sans-serif; }
+      .shop-tag-card { position:relative; border:1px solid rgba(255,255,255,.075); border-radius:16px; background:linear-gradient(145deg,rgba(25,27,31,.96),rgba(15,16,19,.98)); padding:18px 18px 16px; box-shadow:0 14px 36px -30px rgba(0,0,0,.85),inset 0 1px rgba(255,255,255,.025); transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease; }
+      .shop-tag-card:hover { transform:translateY(-2px); border-color:rgba(255,122,54,.35); box-shadow:0 20px 36px -28px rgba(0,0,0,.95); }
       .shop-tag-hole { display:none; }
       .shop-card-title-icon { box-shadow:inset 0 0 0 1px rgba(255,255,255,.055); }
       .live-dot { position:relative; }
       .live-dot::after { content:""; position:absolute; inset:-4px; border:1px solid currentColor; border-radius:999px; opacity:0; animation:live-ring 2.4s ease-out infinite; }
+      .shop-desktop-bar { display:none; }
+      @media (min-width:1024px) {
+        .shop-desktop-bar { display:flex; height:76px; align-items:center; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,.065); padding:0 32px; background:rgba(12,13,16,.75); backdrop-filter:blur(18px); }
+        .shop-desktop-bar__crumb { color:#72757d; font-size:10px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; }
+        .shop-desktop-bar__title { margin-top:3px; color:#f5f4f1; font-family:"Space Grotesk",sans-serif; font-size:17px; font-weight:600; letter-spacing:-.03em; }
+        .shop-desktop-bar__status { display:flex; align-items:center; gap:12px; color:#92959d; font-size:11px; font-weight:600; }
+        .shop-desktop-bar__status strong { color:#d8dadf; font-family:"DM Mono",monospace; font-size:10px; font-weight:500; }
+        .shop-desktop-bar__live { display:inline-flex; align-items:center; gap:7px; border:1px solid rgba(138,255,180,.13); border-radius:999px; background:rgba(82,255,144,.06); padding:7px 10px; color:#a8f7bf; font-size:10px; font-weight:700; }
+      }
+      /* Visual system v2: the shop should feel like a tool, not a template. */
+      /* Portal shell: shared visual language with the BotNest control center. */
+      .shop-shell { --portal-accent:#ff6a2b; --portal-surface:#111113; --portal-panel:#161618; background:#080809; }
+      .shop-shell::before { background:#080809; }
+      .shop-shell::after { opacity:.58; background:radial-gradient(760px 440px at 88% -14%,rgba(255,106,43,.13),transparent 68%),linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px); background-size:auto,84px 84px,84px 84px; }
+      .shop-sidebar { width:244px; background:#0d0d0e; border-color:rgba(255,255,255,.065); }
+      .shop-sidebar__brand { min-height:70px; border-color:rgba(255,255,255,.065); }
+      .shop-sidebar nav { padding:16px 10px; }
+      .shop-sidebar nav > div { margin:0 0 8px; padding:0 10px; color:#777981; font-size:9px; letter-spacing:.16em; }
+      .shop-sidebar nav button { min-height:42px; border-radius:7px; padding:0 10px; font-size:12px; font-weight:600; }
+      .shop-sidebar nav button > span:nth-child(2) { width:31px; height:31px; border-radius:6px; }
+      .shop-sidebar nav button[class*="border-orange"] { border-color:rgba(255,106,43,.18); background:linear-gradient(90deg,rgba(255,106,43,.15),rgba(255,106,43,.045)); box-shadow:none; }
+      .shop-sidebar nav button[class*="border-orange"] > span:nth-child(2) { background:rgba(255,106,43,.14); box-shadow:none; }
+      .shop-sidebar__health { margin:0 10px 10px; border-color:rgba(52,211,153,.20)!important; background:rgba(16,185,129,.055)!important; border-radius:7px!important; }
+      .shop-content::before { inset:0 0 0 244px; background:radial-gradient(680px 360px at 84% -12%,rgba(255,106,43,.095),transparent 72%),linear-gradient(180deg,#0b0b0d,#080809); }
+      .shop-desktop-bar { height:62px!important; padding:0 28px!important; background:rgba(16,16,17,.92)!important; border-color:rgba(255,255,255,.065)!important; }
+      .shop-desktop-bar__crumb { color:#7d7f87!important; font-size:9px!important; }
+      .shop-desktop-bar__title { color:#f5f5f6!important; font-size:16px!important; }
+      .shop-desktop-bar__live { border-radius:6px!important; background:rgba(16,185,129,.08)!important; }
+      .shop-content .shop-hero { border-radius:10px; border-color:rgba(255,255,255,.085); background:radial-gradient(520px 240px at 95% -10%,rgba(255,106,43,.15),transparent 72%),linear-gradient(145deg,#19191b,#111113 65%,#0e0e10); box-shadow:0 22px 54px -38px #000,inset 0 1px rgba(255,255,255,.045); }
+      .shop-hero::before { width:3px; background:linear-gradient(180deg,#ff8a58,#ff6a2b 52%,transparent); }
+      .shop-card,.inventory-command,.shop-tag-card { border-radius:10px!important; background:linear-gradient(145deg,#171719,#111113)!important; border-color:rgba(255,255,255,.075)!important; box-shadow:0 18px 44px -38px rgba(0,0,0,.95)!important; }
+      .shop-stat-grid .mobile-stat-card { border-radius:10px!important; min-height:118px; background:linear-gradient(145deg,#18181a,#111113)!important; }
+      .shop-shell input,.shop-shell select,.shop-shell textarea { border-radius:7px!important; background:#0c0c0e!important; border-color:rgba(255,255,255,.10)!important; }
+      .shop-shell input:focus,.shop-shell select:focus,.shop-shell textarea:focus { border-color:rgba(255,106,43,.72)!important; box-shadow:0 0 0 3px rgba(255,106,43,.09)!important; }
+      .shop-shell button:focus-visible,.shop-shell input:focus-visible,.shop-shell select:focus-visible { outline-color:#ff8a58!important; }
+      .shop-mobile-topbar { background:rgba(13,13,14,.94)!important; border-color:rgba(255,255,255,.07)!important; backdrop-filter:blur(22px) saturate(145%); }
+      .shop-mobile-nav { background:rgba(13,13,14,.97)!important; border-color:rgba(255,255,255,.075)!important; backdrop-filter:blur(22px) saturate(145%); }
+      @media (min-width:1024px) { .shop-content > .mx-auto { max-width:1420px; } }
+      @media (max-width:1023px) { .shop-content::before { inset:0; } }
+      @media (max-width:767px) {
+        .shop-shell { min-width:0; }
+        .shop-content > .mx-auto { padding-left:14px; padding-right:14px; padding-bottom:92px; }
+        .shop-mobile-topbar { height:62px!important; padding-left:14px!important; padding-right:14px!important; }
+        .shop-mobile-nav { padding-left:5px!important; padding-right:5px!important; }
+        .shop-mobile-nav > div { gap:2px!important; }
+        .shop-mobile-nav button { min-height:54px; font-size:9px!important; }
+        .shop-hero { padding:18px 17px!important; border-radius:9px!important; }
+        .shop-stat-grid .mobile-stat-card { min-height:106px; padding:15px!important; }
+        .shop-card,.inventory-command,.shop-tag-card { border-radius:9px!important; }
+        .shop-shell button { min-height:42px; }
+      }
+      .shop-shell { background:#0a0b0d; }
+      .shop-content { background:transparent; }
+      .shop-content > .mx-auto { max-width:1440px; }
+      .shop-hero { border-radius:24px; padding:30px 32px; }
+      .shop-hero::before { width:5px; }
+      .shop-hero h1 { font-size:clamp(28px,3vw,42px) !important; font-weight:700 !important; }
+      .shop-hero p { color:#9b9da5 !important; max-width:60ch; }
+      .inventory-command { border-color:rgba(255,255,255,.08); border-radius:20px; background:linear-gradient(145deg,rgba(23,25,29,.98),rgba(13,14,17,.98)); box-shadow:0 20px 55px -42px #000; }
+      .inventory-command__metric { position:relative; }
+      .inventory-command__metric:nth-child(1)::after { content:""; position:absolute; left:0; right:0; bottom:0; height:2px; background:#ff6a2b; opacity:.75; }
+      .inventory-command__metric:nth-child(2)::after { content:""; position:absolute; left:0; right:0; bottom:0; height:2px; background:#f9bf3b; opacity:.75; }
+      .inventory-command__metric:nth-child(3)::after { content:""; position:absolute; left:0; right:0; bottom:0; height:2px; background:#78e4a0; opacity:.75; }
+      .shop-stat-grid .mobile-stat-card { min-height:132px; border-radius:20px !important; background:linear-gradient(150deg,#1c1e23,#111216) !important; }
+      .shop-stat-grid .mobile-stat-card:hover { transform:translateY(-2px); border-color:rgba(255,106,43,.38) !important; box-shadow:0 22px 38px -30px #000; }
+      .shop-card > :first-child { letter-spacing:-.01em; }
+      .shop-card input, .shop-card select, .shop-card textarea { border-radius:12px !important; }
+      .shop-card button, .inventory-command button { border-radius:11px !important; }
+      .shop-tag-card { min-height:172px; overflow:hidden; }
+      .shop-tag-card::before { content:""; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,.17),transparent); }
+      .shop-tag-size { font-size:20px !important; letter-spacing:-.06em; }
+      .shop-tag-price { color:#f6f1ec !important; }
+      .shop-tag-meta span:first-child { border-color:rgba(255,255,255,.1) !important; background:rgba(255,255,255,.035) !important; color:#b9bbc0 !important; }
+      .shop-shell button:focus-visible, .shop-shell input:focus-visible, .shop-shell select:focus-visible { outline:2px solid #ff6a2b; outline-offset:2px; }
+      .shop-mobile-topbar { background:rgba(11,12,15,.92) !important; border-color:rgba(255,255,255,.07) !important; }
+      .shop-mobile-nav { background:rgba(10,11,14,.97) !important; border-color:rgba(255,255,255,.08) !important; }
       @keyframes live-ring { 0%{transform:scale(.65);opacity:.55} 75%,100%{transform:scale(1.9);opacity:0} }
       @media (min-width: 768px) {
         .mobile-surface { transition:border-color .18s ease,background-color .18s ease; }
@@ -675,7 +751,6 @@ export function App() {
         .shop-mobile-topbar { height:70px; background:rgba(10,12,15,.94); border-color:rgba(255,255,255,.07); box-shadow:0 8px 28px rgba(0,0,0,.28); backdrop-filter:blur(18px); }
         .shop-mobile-nav { padding-top:7px; background:rgba(10,12,15,.97); border-color:rgba(255,255,255,.08); box-shadow:0 -10px 30px rgba(0,0,0,.3); }
         .shop-mobile-nav button { color:#666970; }
-        .shop-mobile-nav button:nth-child(3) > span:first-child { transform:translateY(-8px); height:38px; width:44px; border:1px solid rgba(245,158,11,.28); background:#1b170e; box-shadow:0 8px 18px rgba(0,0,0,.3); }
         input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
         select,
         textarea {
@@ -897,7 +972,8 @@ export function App() {
       <div className="shop-ambient" aria-hidden="true" />
       <div className="flex min-h-screen">
         <Sidebar page={page} setPage={setPage} />
-        <main className="shop-content flex min-w-0 flex-1 flex-col lg:pl-[250px]">
+        <main className="shop-content flex min-w-0 flex-1 flex-col lg:pl-[244px]">
+          <DesktopShopBar page={page} />
           <Topbar page={page} />
           <div className="mx-auto w-full max-w-[1320px] flex-1 px-4 pb-28 pt-5 sm:px-6 sm:pb-28 sm:pt-7 lg:px-8 lg:pb-20 lg:pt-[30px]">
             <AnimatePresence mode="wait">
@@ -990,14 +1066,14 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
     <div className="shop-shell min-h-screen text-zinc-100">
       <div className="grid min-h-screen lg:grid-cols-[minmax(0,1.1fr)_minmax(480px,.9fr)]">
         <section className="relative hidden overflow-hidden border-r border-[#30363d] bg-[#0d1117] p-12 lg:flex lg:flex-col xl:p-16">
-          <div className="flex items-center gap-3"><div className="grid h-12 w-12 place-items-center rounded-xl border border-white/[.07] bg-white/[.035]"><ShopWheel className="w-10" /></div><div><div className="text-base font-semibold text-white">Akron Tire Shop</div><div className="mt-0.5 text-[9px] font-semibold uppercase tracking-[.16em] text-emerald-400">Shop operations</div></div></div>
-          <div className="my-auto max-w-xl"><div className="text-[10px] font-semibold uppercase tracking-[.18em] text-emerald-400">Inventory · Sales · Service</div><h1 className="mt-4 text-5xl font-semibold leading-[1.04] tracking-[-.055em] text-[#f4f4ef] xl:text-6xl">Everything your shop needs, in one place.</h1><p className="mt-5 max-w-lg text-sm leading-7 text-zinc-500">Keep stock accurate, record every job, and review daily revenue without juggling separate tools.</p></div>
-          <div className="grid grid-cols-3 gap-px overflow-hidden rounded-xl border border-[#232938] bg-[#232938]"><div className="bg-[#1a1e2b] p-4"><Package className="h-4 w-4 text-emerald-400" /><div className="mt-3 text-xs font-medium text-zinc-300">Inventory</div></div><div className="bg-[#1a1e2b] p-4"><ShoppingCart className="h-4 w-4 text-emerald-400" /><div className="mt-3 text-xs font-medium text-zinc-300">Sales</div></div><div className="bg-[#1a1e2b] p-4"><ClipboardList className="h-4 w-4 text-emerald-400" /><div className="mt-3 text-xs font-medium text-zinc-300">Reports</div></div></div>
+          <div className="flex items-center gap-3"><div className="grid h-12 w-12 place-items-center rounded-xl border border-orange-400/25 bg-orange-400/[.09]"><ShopWheel className="w-10" accent="#ff6a2b" /></div><div><div className="text-base font-semibold text-white">Akron Tire Shop</div><div className="mt-0.5 text-[9px] font-semibold uppercase tracking-[.16em] text-orange-300">Private shop workspace</div></div></div>
+          <div className="my-auto max-w-xl"><div className="text-[10px] font-semibold uppercase tracking-[.18em] text-orange-300">Stock · service · sales</div><h1 className="mt-4 text-5xl font-semibold leading-[1.04] tracking-[-.055em] text-[#f4f4ef] xl:text-6xl">Built for the shop floor.</h1><p className="mt-5 max-w-lg text-sm leading-7 text-zinc-500">One clean place to check stock, ring up work, and keep the day moving.</p></div>
+          <div className="grid grid-cols-3 gap-px overflow-hidden rounded-2xl border border-white/[.08] bg-white/[.08]"><div className="bg-white/[.035] p-4"><Package className="h-4 w-4 text-orange-300" /><div className="mt-3 text-xs font-medium text-zinc-300">Live stock</div></div><div className="bg-white/[.035] p-4"><ShoppingCart className="h-4 w-4 text-orange-300" /><div className="mt-3 text-xs font-medium text-zinc-300">Sales desk</div></div><div className="bg-white/[.035] p-4"><ClipboardList className="h-4 w-4 text-orange-300" /><div className="mt-3 text-xs font-medium text-zinc-300">Daily reports</div></div></div>
         </section>
         <section className="flex min-h-screen items-center justify-center px-5 py-10 sm:px-10 lg:bg-[#090c10]">
           <div className="w-full max-w-[420px]">
-            <div className="mb-8 lg:hidden"><div className="flex items-center gap-3"><div className="grid h-11 w-11 place-items-center rounded-xl border border-white/[.07] bg-[#151a16]"><ShopWheel className="w-9" /></div><div><div className="text-base font-semibold text-white">Akron Tire Shop</div><div className="mt-0.5 text-[9px] font-semibold uppercase tracking-[.15em] text-emerald-400">Shop operations</div></div></div></div>
-            <div><div className="text-[10px] font-semibold uppercase tracking-[.16em] text-zinc-600">Private access</div><h2 className="mt-2 text-[32px] font-semibold tracking-[-.045em] text-white">Sign in to the shop</h2><p className="mt-2 text-sm leading-relaxed text-zinc-500">Use your passkey or shop passcode to continue.</p></div>
+            <div className="mb-8 lg:hidden"><div className="flex items-center gap-3"><div className="grid h-11 w-11 place-items-center rounded-xl border border-orange-400/20 bg-orange-400/[.08]"><ShopWheel className="w-9" accent="#ff6a2b" /></div><div><div className="text-base font-semibold text-white">Akron Tire Shop</div><div className="mt-0.5 text-[9px] font-semibold uppercase tracking-[.15em] text-orange-300">Shop workspace</div></div></div></div>
+            <div><div className="text-[10px] font-semibold uppercase tracking-[.16em] text-zinc-600">Secure access</div><h2 className="mt-2 text-[32px] font-semibold tracking-[-.045em] text-white">Open the workspace.</h2><p className="mt-2 text-sm leading-relaxed text-zinc-500">Use your passkey or shop passcode to continue.</p></div>
             <form onSubmit={login} className="mt-8 space-y-4">
               {passkeyAvailable && <><button type="button" disabled={busy} onClick={() => void loginWithPasskey()} className="mobile-tap flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-emerald-400 px-4 text-sm font-semibold text-[#07100b] transition hover:bg-emerald-300 disabled:opacity-40"><KeyRound className="h-4 w-4" />{busy ? "Waiting for passkey..." : "Continue with a passkey"}</button><p className="text-center text-[10px] leading-relaxed text-zinc-600">Face ID, Windows Hello, or a saved passkey</p><div className="flex items-center gap-3 py-1"><span className="h-px flex-1 bg-white/[.07]" /><span className="text-[9px] font-medium uppercase tracking-[.14em] text-zinc-700">or</span><span className="h-px flex-1 bg-white/[.07]" /></div></>}
               <label className="block text-[11px] font-medium text-zinc-400">Shop passcode<input autoFocus={!passkeyAvailable} type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter your passcode" className="mt-2 min-h-12 w-full rounded-xl border border-white/[.08] bg-black/30 px-4 text-sm text-zinc-200 placeholder-zinc-700 outline-none transition focus:border-emerald-400/50 focus:ring-2 focus:ring-emerald-400/10" /></label>
@@ -1014,34 +1090,41 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
 
 function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) {
   return (
-    <aside className="fixed inset-y-0 left-0 z-40 hidden w-[250px] flex-col border-r border-[#212328] bg-[#0d0f12] lg:flex">
-      <div className="flex min-h-[76px] items-center gap-3.5 border-b border-[#212328] px-[18px] py-5">
-        <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-amber-400/25 bg-amber-400/[.09]"><ShopWheel className="w-8" accent="#f59e0b" /></div>
-        <div className="min-w-0"><div className="text-[9px] font-bold uppercase tracking-[.2em] text-amber-400">Akron</div><div className="shop-wordmark mt-0.5 text-[20px] leading-none text-[#f2f3f5]">Tire Shop</div></div>
+    <aside className="shop-sidebar fixed inset-y-0 left-0 z-40 hidden w-[244px] flex-col border-r border-white/[.065] bg-[#0b0c0f] lg:flex">
+      <div className="shop-sidebar__brand flex min-h-[70px] items-center gap-3.5 border-b border-white/[.065] px-5 py-4">
+        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-orange-400/25 bg-orange-400/[.10]"><ShopWheel className="w-9" accent="#ff6a2b" /></div>
+        <div className="min-w-0"><div className="text-[9px] font-bold uppercase tracking-[.24em] text-orange-300">Akron, Ohio</div><div className="shop-wordmark mt-0.5 text-[21px] leading-none text-[#f7f6f2]">Tire Shop</div></div>
       </div>
-      <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
-        <div className="mb-2 px-3 text-[9px] font-bold uppercase tracking-[.17em] text-zinc-700">Shop workspace</div>
+      <nav className="flex-1 space-y-1.5 overflow-y-auto px-3 py-5">
+        <div className="mb-3 px-3 text-[9px] font-bold uppercase tracking-[.19em] text-zinc-600">Shop workspace</div>
         {navItems.map((item) => {
           const active = item.id === page;
+          const Icon = item.icon;
           return (
-            <button key={item.id} onClick={() => setPage(item.id)} className={`relative flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-left text-[13px] font-medium transition ${active ? "bg-amber-400/[.09] text-amber-200" : "text-[#9296a1] hover:bg-[#171a1f] hover:text-[#f2f3f5]"}`}>
-              {active && <span className="absolute inset-y-2 left-0 w-0.5 rounded-full bg-amber-400" />}<span aria-hidden="true" className={`grid h-7 w-7 shrink-0 place-items-center rounded-md text-[15px] ring-1 ring-inset ${active ? "bg-amber-400/[.11] ring-amber-400/20" : "bg-[#090b0d] ring-white/[.05] grayscale opacity-75"}`}>{item.emoji}</span><span>{item.label}</span>
+            <button key={item.id} onClick={() => setPage(item.id)} className={`group relative flex min-h-14 w-full items-center gap-3 rounded-2xl border px-3.5 text-left text-[13px] font-semibold transition-all duration-200 ${active ? "border-orange-300/20 bg-gradient-to-r from-orange-400/[.16] to-orange-400/[.045] text-orange-50 shadow-[0_10px_24px_rgba(0,0,0,.18)]" : "border-transparent text-[#9296a1] hover:border-white/[.07] hover:bg-white/[.045] hover:text-[#f2f3f5]"}`}>
+              {active && <span className="absolute inset-y-3.5 left-0 w-1 rounded-r-full bg-orange-300 shadow-[0_0_14px_rgba(251,146,60,.9)]" />}<span aria-hidden="true" className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl ring-1 ring-inset transition-all duration-200 ${active ? "bg-orange-400/[.18] text-orange-100 ring-orange-300/25 shadow-[0_6px_16px_rgba(234,88,12,.18)]" : "bg-white/[.035] text-zinc-500 ring-white/[.06] group-hover:bg-white/[.07] group-hover:text-zinc-300"}`}><Icon className="h-[17px] w-[17px]" /></span><span className="min-w-0 flex-1 truncate">{item.label}</span>{active && <span aria-hidden="true" className="h-1.5 w-1.5 shrink-0 rounded-full bg-orange-300 shadow-[0_0_9px_rgba(251,146,60,.9)]" />}
             </button>
           );
         })}
       </nav>
-      <div className="border-t border-[#212328] p-3">
-        <div className="rounded-lg border border-[#212328] bg-[#090b0d] px-3 py-3"><div className="flex items-center justify-between text-[11px] text-[#9296a1]"><span>Shop database</span><span className="flex items-center gap-1.5 text-emerald-300"><span className="live-dot h-1.5 w-1.5 rounded-full bg-emerald-400" /> Live</span></div><div className="mt-1 text-[9px] text-zinc-700">Inventory and sales synced</div></div>
+      <div className="border-t border-white/[.065] p-3">
+        <div className="shop-sidebar__health rounded-xl border border-white/[.07] bg-white/[.025] px-3.5 py-3.5"><div className="flex items-center justify-between text-[11px] font-semibold text-[#b1b4ba]"><span>Shop database</span><span className="flex items-center gap-1.5 text-emerald-300"><span className="live-dot h-1.5 w-1.5 rounded-full bg-emerald-400" /> Live</span></div><div className="mt-1.5 text-[9px] leading-relaxed text-zinc-600">Inventory and sales records are synced.</div></div>
       </div>
     </aside>
   );
 }
 
+function DesktopShopBar({ page }: { page: Page }) {
+  const currentNav = navItems.find((item) => item.id === page);
+  return <header className="shop-desktop-bar"><div><div className="shop-desktop-bar__crumb">Akron Tire Shop / Workspace</div><div className="shop-desktop-bar__title">{currentNav?.label || "Shop workspace"}</div></div><div className="shop-desktop-bar__status"><strong><LiveShopTime /></strong><span className="h-4 w-px bg-white/[.08]" /><span className="shop-desktop-bar__live"><span className="live-dot h-1.5 w-1.5 rounded-full bg-emerald-400" /> All changes saved</span></div></header>;
+}
+
 function Topbar({ page }: { page: Page }) {
   const currentNav = navItems.find((item) => item.id === page);
+  const Icon = currentNav?.icon || Package;
   return (
     <header className="shop-mobile-topbar sticky top-0 z-30 flex h-16 items-center border-b border-[#212328] bg-[#0e1013] px-4 sm:px-6 lg:hidden">
-      <div className="flex items-center gap-2.5 lg:hidden"><ShopWheel className="w-8 shrink-0" accent="#f59e0b" /><div><div className="text-[9px] font-bold uppercase tracking-[.16em] text-amber-400">Akron Tire Shop</div><div className="mt-0.5 flex items-center gap-1.5 text-sm font-semibold tracking-[-.015em] text-white"><span aria-hidden="true" className="text-[13px]">{currentNav?.emoji}</span>{currentNav?.label}</div></div></div>
+      <div className="flex items-center gap-2.5 lg:hidden"><ShopWheel className="w-8 shrink-0" accent="#ff6a2b" /><div><div className="text-[9px] font-bold uppercase tracking-[.16em] text-orange-300">Akron Tire Shop</div><div className="mt-0.5 flex items-center gap-1.5 text-sm font-semibold tracking-[-.015em] text-white"><Icon className="h-3.5 w-3.5 text-orange-300" />{currentNav?.label}</div></div></div>
       <div className="ml-auto flex items-center gap-2 text-[9px] font-medium text-zinc-600 sm:text-[10px]"><span className="hidden font-mono tabular-nums text-zinc-500 sm:inline"><LiveShopTime /></span><span className="hidden h-3 w-px bg-white/[.08] sm:inline" /><span className="h-1.5 w-1.5 rounded-full bg-[#4caf6d]" /><span className="hidden min-[380px]:inline">All changes saved</span><span className="min-[380px]:hidden">Saved</span></div>
     </header>
   );
@@ -1050,8 +1133,8 @@ function Topbar({ page }: { page: Page }) {
 function MobileShopNav({ page, setPage }: { page: Page; setPage: (p: Page) => void }) {
   return (
     <nav className="shop-mobile-nav fixed inset-x-0 bottom-0 z-40 border-t border-[#212328] bg-[#0e1013]/[.98] px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-1.5 backdrop-blur-xl lg:hidden">
-      <div className="mx-auto grid max-w-lg grid-cols-5 gap-1">
-        {navItems.map((item) => { const active = item.id === page; return <button key={item.id} onClick={() => setPage(item.id)} className={`relative flex min-w-0 flex-col items-center gap-1 px-1 py-2 text-[9px] font-medium transition ${active ? "text-amber-300" : "text-zinc-600"}`}><span aria-hidden="true" className={`grid h-7 w-9 place-items-center rounded-md text-[17px] ${active ? "bg-amber-400/10 ring-1 ring-inset ring-amber-400/15" : "grayscale opacity-65"}`}>{item.emoji}</span><span className="truncate">{item.shortLabel}</span></button>; })}
+      <div className="mx-auto grid max-w-lg grid-cols-5 gap-1.5">
+        {navItems.map((item) => { const active = item.id === page; const Icon = item.icon; return <button key={item.id} onClick={() => setPage(item.id)} className={`relative flex min-w-0 flex-col items-center gap-1 rounded-xl px-1 py-2 text-[9px] font-medium transition-all duration-200 ${active ? "bg-orange-400/[.08] text-orange-200 shadow-[0_5px_16px_rgba(0,0,0,.2)]" : "text-zinc-600 active:bg-white/[.04]"}`}>{active && <span aria-hidden="true" className="absolute inset-x-3 top-0 h-0.5 rounded-full bg-orange-300 shadow-[0_0_9px_rgba(251,146,60,.9)]" />}<span aria-hidden="true" className={`grid h-8 w-10 place-items-center rounded-lg transition-all duration-200 ${active ? "bg-orange-400/[.17] text-orange-100 ring-1 ring-inset ring-orange-300/25" : "text-zinc-600 opacity-70"}`}><Icon className="h-4 w-4" /></span><span className="max-w-full truncate">{item.shortLabel}</span></button>; })}
       </div>
     </nav>
   );
@@ -2201,6 +2284,24 @@ function tirePackageClass(value?: string) {
   return "border-zinc-700 bg-zinc-800/60 text-zinc-400";
 }
 
+type TirePackageFilter = "all" | "single" | "pair" | "set4";
+
+const tirePackageFilters: Array<{ value: TirePackageFilter; label: string }> = [
+  { value: "all", label: "All stock" },
+  { value: "single", label: "Individuals" },
+  { value: "pair", label: "Pairs" },
+  { value: "set4", label: "Sets of 4" },
+];
+
+function TirePackageTabs({ value, onChange, inventory }: { value: TirePackageFilter; onChange: (value: TirePackageFilter) => void; inventory: TireInventoryItem[] }) {
+  const countFor = (filter: TirePackageFilter) => filter === "all" ? inventory.length : inventory.filter((item) => item.packageType === filter).length;
+  return (
+    <div className="grid grid-cols-2 gap-1.5 rounded-2xl border border-white/[.06] bg-[#090b0a] p-1.5 shadow-[0_8px_24px_rgba(0,0,0,.14)] sm:grid-cols-4">
+      {tirePackageFilters.map((filter) => <button key={filter.value} type="button" onClick={() => onChange(filter.value)} className={`mobile-tap inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl border px-2.5 py-2 text-[10px] font-semibold transition-all duration-200 sm:px-3 ${value === filter.value ? "border-sky-300/20 bg-gradient-to-b from-sky-400/[.16] to-sky-400/[.07] text-sky-100 shadow-[0_5px_14px_rgba(14,116,144,.12)]" : "border-transparent text-zinc-500 hover:border-white/[.06] hover:bg-white/[.035] hover:text-zinc-200"}`}><span>{filter.label}</span><span className={`rounded-md px-1.5 py-0.5 text-[9px] ${value === filter.value ? "bg-sky-300/[.14] text-sky-100" : "bg-white/[.04] text-zinc-600"}`}>{countFor(filter.value)}</span></button>)}
+    </div>
+  );
+}
+
 function workTypeLabel(value?: string) {
   if (value === "mount") return "Mount & Balance";
   if (value === "plug") return "Plug";
@@ -2452,6 +2553,7 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
   const [form, setForm] = useState(blank);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [packageFilter, setPackageFilter] = useState<TirePackageFilter>("all");
   const [stockFilter, setStockFilter] = useState<"all" | "available" | "low" | "out">("all");
   const [rimFilter, setRimFilter] = useState("all");
   const [busy, setBusy] = useState(false);
@@ -2530,12 +2632,13 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
   const rimSizes = [...new Set(allInventory.map((item) => tireRimSize(item.size)))].sort((a, b) => (Number(a) || 999) - (Number(b) || 999));
   const inventory = allInventory.filter((item) => {
     const matchesSearch = `${item.size} ${tirePackageLabel(item.packageType)}`.toLowerCase().includes(search.toLowerCase());
+    const matchesPackage = packageFilter === "all" || item.packageType === packageFilter;
     const matchesRim = rimFilter === "all" || tireRimSize(item.size) === rimFilter;
     const matchesStock = stockFilter === "all"
       || (stockFilter === "available" && item.quantity > 0)
       || (stockFilter === "low" && item.quantity > 0 && item.quantity <= 5)
       || (stockFilter === "out" && item.quantity === 0);
-    return matchesSearch && matchesRim && matchesStock;
+    return matchesSearch && matchesPackage && matchesRim && matchesStock;
   });
   const summary = data?.summary;
   const stockHealth = summary?.skus ? Math.max(0, Math.round(((summary.skus - summary.lowStock) / summary.skus) * 100)) : 0;
@@ -2556,7 +2659,7 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
 
   return (
     <div className="space-y-5 lg:space-y-7">
-      <ShopPageHeader tone="sky" eyebrow="Shop dashboard" title="Inventory Overview" emoji="🛞" description="Everything in stock, today’s activity, and the numbers that matter—at a glance." meta={<div className="relative z-[1] mt-3 flex flex-wrap items-center gap-2 text-[10px] font-medium text-zinc-500"><span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/15 bg-emerald-400/[.07] px-2.5 py-1 text-emerald-300"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Live inventory</span><span>{data ? `${allInventory.length} stock record${allInventory.length === 1 ? "" : "s"}` : "Syncing stock…"}</span><span className="text-zinc-700">•</span><span>{new Date().toLocaleDateString("en-US", { timeZone: "America/New_York", weekday: "long", month: "short", day: "numeric" })}</span></div>} actions={<Button className="relative z-[1] w-full justify-center px-5 sm:w-auto" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record a Sale</Button>} />
+      <ShopPageHeader tone="sky" eyebrow="Live stock room" title="Inventory" emoji="🛞" description="Check every size, update quantities, and keep the floor organized." meta={<div className="relative z-[1] mt-3 flex flex-wrap items-center gap-2 text-[10px] font-medium text-zinc-500"><span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/15 bg-emerald-400/[.07] px-2.5 py-1 text-emerald-300"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Inventory synced</span><span>{data ? `${allInventory.length} stock record${allInventory.length === 1 ? "" : "s"}` : "Syncing stock…"}</span><span className="text-zinc-700">•</span><span>{new Date().toLocaleDateString("en-US", { timeZone: "America/New_York", weekday: "long", month: "short", day: "numeric" })}</span></div>} actions={<Button className="relative z-[1] w-full justify-center px-5 sm:w-auto" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> New sale</Button>} />
       <section className="grid gap-3 lg:grid-cols-[minmax(0,1.55fr)_minmax(280px,.75fr)]">
         <div className="inventory-command overflow-hidden">
           <div className="flex items-center justify-between gap-3 border-b border-[#24272c] px-5 py-4 sm:px-6"><div><div className="text-[9px] font-bold uppercase tracking-[.18em] text-amber-400">Today at the shop</div><div className="mt-1 text-xs text-zinc-500">A live snapshot of saved work</div></div><span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-emerald-300"><span className="live-dot h-1.5 w-1.5 rounded-full bg-emerald-400" /> Live</span></div>
@@ -2568,7 +2671,7 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
         </div>
         <div className="inventory-command flex flex-col justify-between p-5 sm:p-6">
           <div><div className="flex items-start justify-between gap-3"><div><div className="text-[9px] font-bold uppercase tracking-[.18em] text-zinc-500">Stock health</div><div className="mt-2 flex items-end gap-2"><span className="shop-money text-[28px] font-bold tracking-[-.055em] text-white">{stockHealth}%</span><span className="pb-1 text-[10px] text-zinc-600">healthy</span></div></div><span aria-hidden="true" className="grid h-10 w-10 place-items-center rounded-xl bg-amber-400/[.09] text-lg ring-1 ring-inset ring-amber-400/15">📦</span></div><div className="stock-health-track mt-4 h-1.5 overflow-hidden rounded-full"><div className="stock-health-fill h-full rounded-full transition-[width] duration-500" style={{ width: `${stockHealth}%` }} /></div></div>
-          <div className="mt-5 grid grid-cols-3 gap-3 border-t border-[#24272c] pt-4"><div><div className="shop-money text-base font-semibold text-white">{summary?.skus || 0}</div><div className="mt-0.5 text-[9px] text-zinc-600">Tire types</div></div><div><div className="shop-money text-base font-semibold text-white">{summary?.units || 0}</div><div className="mt-0.5 text-[9px] text-zinc-600">Available</div></div><div><div className={`shop-money text-base font-semibold ${(summary?.lowStock || 0) > 0 ? "text-amber-300" : "text-emerald-300"}`}>{summary?.lowStock || 0}</div><div className="mt-0.5 text-[9px] text-zinc-600">Low stock</div></div></div>
+          <div className="mt-5 grid grid-cols-3 gap-3 border-t border-[#24272c] pt-4"><div><div className="shop-money text-base font-semibold text-white">{summary?.skus || 0}</div><div className="mt-0.5 text-[9px] text-zinc-600">Tire types</div></div><div><div className="shop-money text-base font-semibold text-orange-200">{summary?.units || 0}</div><div className="mt-0.5 text-[9px] text-zinc-600">Total tires</div></div><div><div className={`shop-money text-base font-semibold ${(summary?.lowStock || 0) > 0 ? "text-amber-300" : "text-emerald-300"}`}>{summary?.lowStock || 0}</div><div className="mt-0.5 text-[9px] text-zinc-600">Low stock</div></div></div>
         </div>
       </section>
       <div>
@@ -2596,15 +2699,16 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
       <Card>
       <CardHeader title="Inventory" icon={<Package className="h-4 w-4 text-zinc-400" />} action={<input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search size..." className="w-full rounded-md border border-[#212328] bg-[#0c0d10] px-3.5 py-2.5 text-xs text-zinc-200 outline-none transition focus:border-emerald-400 sm:w-64" />} />
         <div className="mt-4 flex flex-col gap-3 border-b border-white/[.055] pb-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="grid grid-cols-4 gap-1 rounded-xl bg-[#090b0a] p-1 ring-1 ring-inset ring-white/[.055]">
-            {([['all', 'All'], ['available', 'Available'], ['low', 'Low'], ['out', 'Out']] as const).map(([value, label]) => <button key={value} type="button" onClick={() => setStockFilter(value)} className={`mobile-tap rounded-md px-2.5 py-2 text-[10px] font-semibold transition sm:px-3 ${stockFilter === value ? "bg-emerald-400/10 text-emerald-300 ring-1 ring-inset ring-emerald-400/20" : "text-zinc-500 hover:text-zinc-200"}`}>{label}</button>)}
-          </div>
+          <TirePackageTabs value={packageFilter} onChange={setPackageFilter} inventory={allInventory} />
           <div className="grid grid-cols-2 gap-2 sm:flex">
             <select value={rimFilter} onChange={(event) => setRimFilter(event.target.value)} className="min-h-10 rounded-md border border-[#212328] bg-[#0c0d10] px-3 text-xs text-zinc-200 outline-none focus:border-emerald-400"><option value="all">All rim sizes</option>{rimSizes.map((rim) => <option key={rim} value={rim}>{rim === "Other" ? rim : `${rim}\" rims`}</option>)}</select>
             <Button variant="secondary" disabled={!data || inventory.length === 0} onClick={exportInventory}><FileText className="h-3.5 w-3.5" /> Export CSV</Button>
           </div>
         </div>
-        {!data ? <EmptyState title="Loading inventory" text="Reading the tire shop database..." /> : inventory.length === 0 ? <EmptyState title="No tires found" text={search || stockFilter !== "all" || rimFilter !== "all" ? "No inventory matches these filters." : "Use the form above to enter your first inventory item."} /> : (
+        <div className="mt-3 grid grid-cols-4 gap-1 rounded-xl bg-[#090b0a] p-1 ring-1 ring-inset ring-white/[.055] sm:w-fit">
+          {([['all', 'All'], ['available', 'Available'], ['low', 'Low'], ['out', 'Out']] as const).map(([value, label]) => <button key={value} type="button" onClick={() => setStockFilter(value)} className={`mobile-tap rounded-md px-2.5 py-2 text-[10px] font-semibold transition sm:px-3 ${stockFilter === value ? "bg-emerald-400/10 text-emerald-300 ring-1 ring-inset ring-emerald-400/20" : "text-zinc-500 hover:text-zinc-200"}`}>{label}</button>)}
+        </div>
+        {!data ? <EmptyState title="Loading inventory" text="Reading the tire shop database..." /> : inventory.length === 0 ? <EmptyState title="No tires found" text={search || packageFilter !== "all" || stockFilter !== "all" || rimFilter !== "all" ? "No inventory matches these filters." : "Use the form above to enter your first inventory item."} /> : (
           <div className="mt-6 grid gap-x-4 gap-y-[18px] sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {inventory.map((item) => {
               const status = item.quantity === 0 ? "Out" : item.quantity <= 5 ? "Low" : "In stock";
@@ -2627,6 +2731,7 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
 function TireInventoryViewPage({ showToast }: { showToast: (m: string) => void }) {
   const [data, setData] = useState<TireShopData | null>(null);
   const [search, setSearch] = useState("");
+  const [packageFilter, setPackageFilter] = useState<TirePackageFilter>("all");
 
   const load = useCallback(async () => {
     try { setData(await api<TireShopData>("/api/tire-shop")); }
@@ -2635,16 +2740,18 @@ function TireInventoryViewPage({ showToast }: { showToast: (m: string) => void }
 
   useEffect(() => { void load(); }, [load]);
 
-  const inventory = (data?.inventory || []).filter((item) => `${item.size} ${tirePackageLabel(item.packageType)}`.toLowerCase().includes(search.toLowerCase()));
+  const allInventory = data?.inventory || [];
+  const inventory = allInventory.filter((item) => `${item.size} ${tirePackageLabel(item.packageType)}`.toLowerCase().includes(search.toLowerCase()) && (packageFilter === "all" || item.packageType === packageFilter));
   const summary = data?.summary;
 
   return (
     <div className="space-y-5 lg:space-y-7">
-      <ShopPageHeader tone="sky" eyebrow="Read-only inventory" title="Inventory View" emoji="🔎" description="Available tires, quantities, and current selling prices." actions={<Button className="w-full sm:w-auto" variant="secondary" onClick={() => void load()}><RefreshCw className="h-3.5 w-3.5" /> Refresh Stock</Button>} />
-      <div className="shop-stat-grid grid grid-cols-2 sm:grid-cols-3 [&>*:last-child]:col-span-2 sm:[&>*:last-child]:col-span-1"><TireStat emoji="🛞" label="Inventory types" value={summary?.skus || 0} detail="Sizes and package types" /><TireStat emoji="📦" label="Available quantity" value={summary?.units || 0} detail="Sets, pairs, and individuals" /><TireStat emoji="⚠️" label="Low stock" value={summary?.lowStock || 0} detail="Five or fewer remaining" /></div>
+      <ShopPageHeader tone="sky" eyebrow="Shop stock" title="Inventory view" emoji="🔎" description="A clean read-only view of quantities and current prices." actions={<Button className="w-full sm:w-auto" variant="secondary" onClick={() => void load()}><RefreshCw className="h-3.5 w-3.5" /> Refresh</Button>} />
+      <div className="shop-stat-grid grid grid-cols-2 sm:grid-cols-3 [&>*:last-child]:col-span-2 sm:[&>*:last-child]:col-span-1"><TireStat emoji="🛞" label="Inventory types" value={summary?.skus || 0} detail="Sizes and package types" /><TireStat emoji="📦" label="Total tires" value={summary?.units || 0} detail="All stock quantities combined" featured /><TireStat emoji="⚠️" label="Low stock" value={summary?.lowStock || 0} detail="Five or fewer remaining" /></div>
       <Card>
         <CardHeader title="Available Inventory" icon={<Package className="h-4 w-4 text-zinc-400" />} action={<input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search tire size..." className="w-full rounded-xl border border-white/[.08] bg-[#090b0a] px-3.5 py-2.5 text-xs text-zinc-200 outline-none transition focus:border-emerald-400/45 sm:w-64" />} />
-        {!data ? <EmptyState title="Loading inventory" text="Reading current stock..." /> : inventory.length === 0 ? <EmptyState title="No tires found" text={search ? "Try another tire size." : "There is no inventory to display yet."} /> : <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{inventory.map((item) => <article key={item.id} className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-4"><div className="flex items-start justify-between gap-3"><div><div className="font-mono text-lg font-semibold text-white">{item.size}</div><span className={`mt-2 inline-flex rounded-md border px-2 py-1 text-[10px] font-semibold ${tirePackageClass(item.packageType)}`}>{tirePackageLabel(item.packageType)}</span></div><div className="text-right"><div className={`text-2xl font-semibold ${item.quantity === 0 ? "text-red-400" : item.quantity <= 5 ? "text-amber-300" : "text-emerald-300"}`}>{item.quantity}</div><div className="text-[10px] text-zinc-500">available</div></div></div><div className="mt-4 flex items-end justify-between border-t border-zinc-800 pt-3"><div><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Selling price</div><div className="mt-1 text-lg font-semibold text-zinc-100">{money(item.price)}</div></div><div className={`rounded-md px-2 py-1 text-[9px] font-semibold uppercase tracking-wider ${item.quantity === 0 ? "bg-red-500/10 text-red-400" : item.quantity <= 5 ? "bg-amber-500/10 text-amber-300" : "bg-emerald-500/10 text-emerald-300"}`}>{item.quantity === 0 ? "Out of stock" : item.quantity <= 5 ? "Low stock" : "In stock"}</div></div></article>)}</div>}
+        <div className="mt-4"><TirePackageTabs value={packageFilter} onChange={setPackageFilter} inventory={allInventory} /></div>
+        {!data ? <EmptyState title="Loading inventory" text="Reading current stock..." /> : inventory.length === 0 ? <EmptyState title="No tires found" text={search ? "Try another tire size." : packageFilter !== "all" ? `There are no ${tirePackageLabel(packageFilter, true)} in inventory.` : "There is no inventory to display yet."} /> : <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{inventory.map((item) => <article key={item.id} className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-4"><div className="flex items-start justify-between gap-3"><div><div className="font-mono text-lg font-semibold text-white">{item.size}</div><span className={`mt-2 inline-flex rounded-md border px-2 py-1 text-[10px] font-semibold ${tirePackageClass(item.packageType)}`}>{tirePackageLabel(item.packageType)}</span></div><div className="text-right"><div className={`text-2xl font-semibold ${item.quantity === 0 ? "text-red-400" : item.quantity <= 5 ? "text-amber-300" : "text-emerald-300"}`}>{item.quantity}</div><div className="text-[10px] text-zinc-500">available</div></div></div><div className="mt-4 flex items-end justify-between border-t border-zinc-800 pt-3"><div><div className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Selling price</div><div className="mt-1 text-lg font-semibold text-zinc-100">{money(item.price)}</div></div><div className={`rounded-md px-2 py-1 text-[9px] font-semibold uppercase tracking-wider ${item.quantity === 0 ? "bg-red-500/10 text-red-400" : item.quantity <= 5 ? "bg-amber-500/10 text-amber-300" : "bg-emerald-500/10 text-emerald-300"}`}>{item.quantity === 0 ? "Out of stock" : item.quantity <= 5 ? "Low stock" : "In stock"}</div></div></article>)}</div>}
       </Card>
     </div>
   );
@@ -2787,7 +2894,7 @@ function TireSalesPage({ showToast, setPage }: { showToast: (m: string) => void;
 
   return (
     <div className="space-y-5 lg:space-y-7">
-      <ShopPageHeader tone="amber" eyebrow="Sales desk" title="Sales & Services" emoji="🧾" description="Record tire sales, mount and balance work, plugs, rotations, and brakes." actions={<Button className="w-full justify-center sm:w-auto" variant="secondary" onClick={() => setPage("tire-inventory")}><Package className="h-3.5 w-3.5" /> Open Inventory</Button>} />
+      <ShopPageHeader tone="amber" eyebrow="Sales desk" title="New sale or service" emoji="🧾" description="Ring up tire sales and shop work without leaving the workspace." actions={<Button className="w-full justify-center sm:w-auto" variant="secondary" onClick={() => setPage("tire-inventory")}><Package className="h-3.5 w-3.5" /> Open inventory</Button>} />
       <div className="shop-stat-grid grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 [&>*:last-child]:col-span-2 xl:[&>*:last-child]:col-span-1"><TireStat featured emoji="💵" tone="amber" label="Today's revenue" value={money(summary?.todayRevenue || 0)} detail="Calculated automatically" /><TireStat emoji="🛞" label="Tires sold today" value={todayTiresSold} detail="Physical tires" /><TireStat emoji="🔧" label="Jobs / items" value={summary?.todayUnits || 0} detail="Today's quantity" /><TireStat emoji="🧾" label="Transactions" value={todaySales.length} detail="Work recorded today" /><TireStat emoji="📈" label="Average sale" value={money(averageSale)} detail="Revenue per transaction" /></div>
       <section className="shop-card rounded-2xl border border-[#252b27] bg-[#121613] p-4 sm:p-5"><div className="mb-4 flex items-end justify-between gap-3"><div><div className="text-[9px] font-semibold uppercase tracking-[.14em] text-emerald-400">Month to date</div><h2 className="mt-1 text-base font-semibold text-white">{currentMonthLabel}</h2></div><div className="text-right"><div className="text-[9px] font-semibold uppercase tracking-[.14em] text-zinc-500">Revenue</div><div className="mt-1 text-2xl font-semibold tracking-[-.04em] text-white">{money(monthRevenue)}</div></div></div><div className="grid grid-cols-2 gap-x-5 gap-y-3 border-t border-[#252b27] pt-4 sm:grid-cols-4"><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Tires sold</div><div className="mt-1 text-base font-semibold text-zinc-200">{monthTiresSold}</div></div><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Jobs / items</div><div className="mt-1 text-base font-semibold text-zinc-200">{monthItems}</div></div><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Transactions</div><div className="mt-1 text-base font-semibold text-zinc-200">{monthSales.length}</div></div><div><div className="text-[9px] uppercase tracking-wider text-zinc-600">Average</div><div className="mt-1 text-base font-semibold text-zinc-200">{money(monthAverage)}</div></div></div></section>
       <section className="shop-card mobile-surface rounded-2xl border border-[#252b27] bg-[#121613] p-4 sm:p-5">
@@ -2844,7 +2951,7 @@ function TireSalesReportPage({ showToast, setPage }: { showToast: (m: string) =>
   }, [showToast]);
   useEffect(() => {
     void load();
-    const timer = window.setInterval(() => void load(), 10000);
+    const timer = window.setInterval(() => void load(), 5000);
     const refreshOnFocus = () => void load();
     window.addEventListener("focus", refreshOnFocus);
     document.addEventListener("visibilitychange", refreshOnFocus);
@@ -2894,7 +3001,7 @@ function TireSalesReportPage({ showToast, setPage }: { showToast: (m: string) =>
 
   return (
     <div className="space-y-5 lg:space-y-7">
-      <ShopPageHeader tone="violet" eyebrow="Reporting" title="Sales Reports" emoji="📊" description="View daily or monthly sales, services, and payment totals." meta={lastUpdated && <p className="mt-1.5 text-[10px] text-zinc-600">Updated {lastUpdated.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}</p>} actions={<div className="grid grid-cols-2 gap-2 min-[520px]:grid-cols-3 sm:flex"><Button className="justify-center" variant="ghost" disabled={refreshing} onClick={() => void load()}><RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} /> Refresh</Button><Button className="justify-center" variant="secondary" disabled={!sales.length} onClick={exportSales}><FileText className="h-3.5 w-3.5" /> Export CSV</Button><Button className="col-span-2 justify-center min-[520px]:col-span-1" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record Work</Button></div>} />
+      <ShopPageHeader tone="violet" eyebrow="Shop reports" title="Sales reports" emoji="📊" description="Review the money, services, and payment activity from the shop floor." meta={lastUpdated && <p className="mt-1.5 text-[10px] text-zinc-600">Updated {lastUpdated.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}</p>} actions={<div className="grid grid-cols-2 gap-2 min-[520px]:grid-cols-3 sm:flex"><Button className="justify-center" variant="ghost" disabled={refreshing} onClick={() => void load()}><RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} /> Refresh</Button><Button className="justify-center" variant="secondary" disabled={!sales.length} onClick={exportSales}><FileText className="h-3.5 w-3.5" /> Export CSV</Button><Button className="col-span-2 justify-center min-[520px]:col-span-1" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> New entry</Button></div>} />
 
       <section className="shop-card mobile-surface rounded-2xl border border-[#252b27] bg-[#121613] p-4 sm:p-5">
         <div className="mx-auto mb-4 grid max-w-[240px] grid-cols-2 rounded-lg bg-[#090b0a] p-1 ring-1 ring-inset ring-white/[.07]"><button onClick={() => setReportPeriod("day")} className={`rounded-md px-3 py-2 text-xs font-semibold transition ${reportPeriod === "day" ? "bg-white/[.08] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Day</button><button onClick={() => setReportPeriod("month")} className={`rounded-md px-3 py-2 text-xs font-semibold transition ${reportPeriod === "month" ? "bg-white/[.08] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Month</button></div>
