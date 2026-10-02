@@ -556,7 +556,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20261002_DISCORD_PORTAL_V48";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20261002_DISCORD_PORTAL_V49";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -841,6 +841,17 @@ export function App() {
         .shop-stat-grid { gap:9px!important; }
         .shop-stat-grid .mobile-stat-card { min-height:104px!important; padding:14px!important; }
       }
+
+      /* BotNest-style sidebar: intentionally simple, flat, and fully dark. */
+      .shop-sidebar-nav { padding:14px 7px!important; }
+      .shop-nav-section + .shop-nav-section { margin-top:17px; }
+      .shop-nav-heading { margin:0 0 6px; padding:0 6px; color:#949ba4; font-size:9px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; }
+      .shop-nav-item { position:relative; display:flex; width:100%; min-height:38px; align-items:center; gap:14px; overflow:hidden; border:1px solid transparent; border-radius:6px; padding:0 8px; color:#c6c7cc; font-size:12px; font-weight:600; text-align:left; transition:background .15s ease,color .15s ease,border-color .15s ease; }
+      .shop-nav-item:hover { background:#2b2d31; color:#fff; }
+      .shop-nav-item--active { border-color:rgba(88,101,242,.75); background:#24242a; color:#fff; }
+      .shop-nav-item__icon { width:16px; height:16px; flex:0 0 auto; color:#aeb1b9; }
+      .shop-nav-item--active .shop-nav-item__icon { color:#8b93ff; }
+      .shop-nav-item__badge { width:6px; height:6px; margin-left:auto; border-radius:999px; background:#5865f2; box-shadow:0 0 10px rgba(88,101,242,.65); }
     `;
     document.head.appendChild(style);
     return () => style.remove();
@@ -1137,23 +1148,26 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
 }
 
 function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) {
+  const workspace = navItems.filter((item) => item.id === "tire-inventory");
+  const tools = navItems.filter((item) => ["inventory-view", "tire-sales", "tire-sales-report"].includes(item.id));
+  const manage = navItems.filter((item) => item.id === "settings");
+  const renderItem = (item: typeof navItems[number]) => {
+    const active = item.id === page;
+    const Icon = item.icon;
+    return <button key={item.id} onClick={() => setPage(item.id)} className={`shop-nav-item ${active ? "shop-nav-item--active" : ""}`}>
+      <Icon className="shop-nav-item__icon" /><span>{item.id === "tire-inventory" ? "Shop dashboard" : item.label}</span>{active && <span className="shop-nav-item__badge" aria-hidden="true" />}
+    </button>;
+  };
   return (
     <aside className="shop-sidebar fixed inset-y-0 left-0 z-40 hidden w-[244px] flex-col border-r border-white/[.065] bg-[#0b0c0f] lg:flex">
       <div className="shop-sidebar__brand flex min-h-[70px] items-center gap-3.5 border-b border-white/[.065] px-5 py-4">
-        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-orange-400/25 bg-orange-400/[.10]"><ShopWheel className="w-9" accent="#ff6a2b" /></div>
-        <div className="min-w-0"><div className="text-[9px] font-bold uppercase tracking-[.24em] text-orange-300">Akron, Ohio</div><div className="shop-wordmark mt-0.5 text-[21px] leading-none text-[#f7f6f2]">Tire Shop</div></div>
+        <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-[#5865f2]/35 bg-[#5865f2]/[.12]"><ShopWheel className="w-8" accent="#5865f2" /></div>
+        <div className="min-w-0"><div className="text-[9px] font-bold uppercase tracking-[.2em] text-[#aab0ff]">Akron, Ohio</div><div className="shop-wordmark mt-0.5 text-[19px] leading-none text-[#f7f7f8]">Tire Shop</div></div>
       </div>
-      <nav className="flex-1 space-y-1.5 overflow-y-auto px-3 py-5">
-        <div className="mb-3 px-3 text-[9px] font-bold uppercase tracking-[.19em] text-zinc-600">Shop workspace</div>
-        {navItems.map((item) => {
-          const active = item.id === page;
-          const Icon = item.icon;
-          return (
-            <button key={item.id} onClick={() => setPage(item.id)} className={`group relative flex min-h-14 w-full items-center gap-3 rounded-2xl border px-3.5 text-left text-[13px] font-semibold transition-all duration-200 ${active ? "border-orange-300/20 bg-gradient-to-r from-orange-400/[.16] to-orange-400/[.045] text-orange-50 shadow-[0_10px_24px_rgba(0,0,0,.18)]" : "border-transparent text-[#9296a1] hover:border-white/[.07] hover:bg-white/[.045] hover:text-[#f2f3f5]"}`}>
-              {active && <span className="absolute inset-y-3.5 left-0 w-1 rounded-r-full bg-orange-300 shadow-[0_0_14px_rgba(251,146,60,.9)]" />}<span aria-hidden="true" className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl ring-1 ring-inset transition-all duration-200 ${active ? "bg-orange-400/[.18] text-orange-100 ring-orange-300/25 shadow-[0_6px_16px_rgba(234,88,12,.18)]" : "bg-white/[.035] text-zinc-500 ring-white/[.06] group-hover:bg-white/[.07] group-hover:text-zinc-300"}`}><Icon className="h-[17px] w-[17px]" /></span><span className="min-w-0 flex-1 truncate">{item.label}</span>{active && <span aria-hidden="true" className="h-1.5 w-1.5 shrink-0 rounded-full bg-orange-300 shadow-[0_0_9px_rgba(251,146,60,.9)]" />}
-            </button>
-          );
-        })}
+      <nav className="shop-sidebar-nav flex-1 overflow-y-auto px-3 py-5">
+        <section className="shop-nav-section"><div className="shop-nav-heading">Workspace</div>{workspace.map(renderItem)}</section>
+        <section className="shop-nav-section"><div className="shop-nav-heading">Tools</div>{tools.map(renderItem)}</section>
+        <section className="shop-nav-section"><div className="shop-nav-heading">Manage</div>{manage.map(renderItem)}</section>
       </nav>
       <div className="border-t border-white/[.065] p-3">
         <div className="shop-sidebar__health rounded-xl border border-white/[.07] bg-white/[.025] px-3.5 py-3.5"><div className="flex items-center justify-between text-[11px] font-semibold text-[#b1b4ba]"><span>Shop database</span><span className="flex items-center gap-1.5 text-emerald-300"><span className="live-dot h-1.5 w-1.5 rounded-full bg-emerald-400" /> Live</span></div><div className="mt-1.5 text-[9px] leading-relaxed text-zinc-600">Inventory and sales records are synced.</div></div>
@@ -1172,7 +1186,7 @@ function Topbar({ page }: { page: Page }) {
   const Icon = currentNav?.icon || Package;
   return (
     <header className="shop-mobile-topbar sticky top-0 z-30 flex h-16 items-center border-b border-[#212328] bg-[#0e1013] px-4 sm:px-6 lg:hidden">
-      <div className="flex items-center gap-2.5 lg:hidden"><ShopWheel className="w-8 shrink-0" accent="#ff6a2b" /><div><div className="text-[9px] font-bold uppercase tracking-[.16em] text-orange-300">Akron Tire Shop</div><div className="mt-0.5 flex items-center gap-1.5 text-sm font-semibold tracking-[-.015em] text-white"><Icon className="h-3.5 w-3.5 text-orange-300" />{currentNav?.label}</div></div></div>
+      <div className="flex items-center gap-2.5 lg:hidden"><ShopWheel className="w-8 shrink-0" accent="#5865f2" /><div><div className="text-[9px] font-bold uppercase tracking-[.16em] text-[#aab0ff]">Akron Tire Shop</div><div className="mt-0.5 flex items-center gap-1.5 text-sm font-semibold tracking-[-.015em] text-white"><Icon className="h-3.5 w-3.5 text-[#aab0ff]" />{currentNav?.label}</div></div></div>
       <div className="ml-auto flex items-center gap-2 text-[9px] font-medium text-zinc-600 sm:text-[10px]"><span className="hidden font-mono tabular-nums text-zinc-500 sm:inline"><LiveShopTime /></span><span className="hidden h-3 w-px bg-white/[.08] sm:inline" /><span className="h-1.5 w-1.5 rounded-full bg-[#4caf6d]" /><span className="hidden min-[380px]:inline">All changes saved</span><span className="min-[380px]:hidden">Saved</span></div>
     </header>
   );
@@ -1182,7 +1196,7 @@ function MobileShopNav({ page, setPage }: { page: Page; setPage: (p: Page) => vo
   return (
     <nav className="shop-mobile-nav fixed inset-x-0 bottom-0 z-40 border-t border-[#212328] bg-[#0e1013]/[.98] px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-1.5 backdrop-blur-xl lg:hidden">
       <div className="mx-auto grid max-w-lg grid-cols-5 gap-1.5">
-        {navItems.map((item) => { const active = item.id === page; const Icon = item.icon; return <button key={item.id} onClick={() => setPage(item.id)} className={`relative flex min-w-0 flex-col items-center gap-1 rounded-xl px-1 py-2 text-[9px] font-medium transition-all duration-200 ${active ? "bg-orange-400/[.08] text-orange-200 shadow-[0_5px_16px_rgba(0,0,0,.2)]" : "text-zinc-600 active:bg-white/[.04]"}`}>{active && <span aria-hidden="true" className="absolute inset-x-3 top-0 h-0.5 rounded-full bg-orange-300 shadow-[0_0_9px_rgba(251,146,60,.9)]" />}<span aria-hidden="true" className={`grid h-8 w-10 place-items-center rounded-lg transition-all duration-200 ${active ? "bg-orange-400/[.17] text-orange-100 ring-1 ring-inset ring-orange-300/25" : "text-zinc-600 opacity-70"}`}><Icon className="h-4 w-4" /></span><span className="max-w-full truncate">{item.shortLabel}</span></button>; })}
+        {navItems.map((item) => { const active = item.id === page; const Icon = item.icon; return <button key={item.id} onClick={() => setPage(item.id)} className={`relative flex min-w-0 flex-col items-center gap-1 rounded-xl px-1 py-2 text-[9px] font-medium transition-all duration-200 ${active ? "bg-[#5865f2]/[.14] text-white shadow-[0_5px_16px_rgba(0,0,0,.2)]" : "text-zinc-500 active:bg-white/[.04]"}`}>{active && <span aria-hidden="true" className="absolute inset-x-3 top-0 h-0.5 rounded-full bg-[#5865f2] shadow-[0_0_9px_rgba(88,101,242,.8)]" />}<span aria-hidden="true" className={`grid h-8 w-10 place-items-center rounded-lg transition-all duration-200 ${active ? "bg-[#5865f2]/[.24] text-white ring-1 ring-inset ring-[#5865f2]/40" : "text-zinc-500 opacity-70"}`}><Icon className="h-4 w-4" /></span><span className="max-w-full truncate">{item.shortLabel}</span></button>; })}
       </div>
     </nav>
   );
