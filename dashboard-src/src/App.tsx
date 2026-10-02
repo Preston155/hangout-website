@@ -556,7 +556,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20261002_TRUE_BLACK_V50";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20261002_LOGIN_PORTAL_V51";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -1135,27 +1135,23 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
   };
 
   return (
-    <div className="shop-shell min-h-screen text-zinc-100">
-      <div className="grid min-h-screen lg:grid-cols-[minmax(0,1.1fr)_minmax(480px,.9fr)]">
-        <section className="relative hidden overflow-hidden border-r border-[#30363d] bg-[#0d1117] p-12 lg:flex lg:flex-col xl:p-16">
-          <div className="flex items-center gap-3"><div className="grid h-12 w-12 place-items-center rounded-xl border border-orange-400/25 bg-orange-400/[.09]"><ShopWheel className="w-10" accent="#ff6a2b" /></div><div><div className="text-base font-semibold text-white">Akron Tire Shop</div><div className="mt-0.5 text-[9px] font-semibold uppercase tracking-[.16em] text-orange-300">Private shop workspace</div></div></div>
-          <div className="my-auto max-w-xl"><div className="text-[10px] font-semibold uppercase tracking-[.18em] text-orange-300">Stock · service · sales</div><h1 className="mt-4 text-5xl font-semibold leading-[1.04] tracking-[-.055em] text-[#f4f4ef] xl:text-6xl">Built for the shop floor.</h1><p className="mt-5 max-w-lg text-sm leading-7 text-zinc-500">One clean place to check stock, ring up work, and keep the day moving.</p></div>
-          <div className="grid grid-cols-3 gap-px overflow-hidden rounded-2xl border border-white/[.08] bg-white/[.08]"><div className="bg-white/[.035] p-4"><Package className="h-4 w-4 text-orange-300" /><div className="mt-3 text-xs font-medium text-zinc-300">Live stock</div></div><div className="bg-white/[.035] p-4"><ShoppingCart className="h-4 w-4 text-orange-300" /><div className="mt-3 text-xs font-medium text-zinc-300">Sales desk</div></div><div className="bg-white/[.035] p-4"><ClipboardList className="h-4 w-4 text-orange-300" /><div className="mt-3 text-xs font-medium text-zinc-300">Daily reports</div></div></div>
-        </section>
-        <section className="flex min-h-screen items-center justify-center px-5 py-10 sm:px-10 lg:bg-[#090c10]">
-          <div className="w-full max-w-[420px]">
-            <div className="mb-8 lg:hidden"><div className="flex items-center gap-3"><div className="grid h-11 w-11 place-items-center rounded-xl border border-orange-400/20 bg-orange-400/[.08]"><ShopWheel className="w-9" accent="#ff6a2b" /></div><div><div className="text-base font-semibold text-white">Akron Tire Shop</div><div className="mt-0.5 text-[9px] font-semibold uppercase tracking-[.15em] text-orange-300">Shop workspace</div></div></div></div>
-            <div><div className="text-[10px] font-semibold uppercase tracking-[.16em] text-zinc-600">Secure access</div><h2 className="mt-2 text-[32px] font-semibold tracking-[-.045em] text-white">Open the workspace.</h2><p className="mt-2 text-sm leading-relaxed text-zinc-500">Use your passkey or shop passcode to continue.</p></div>
-            <form onSubmit={login} className="mt-8 space-y-4">
-              {passkeyAvailable && <><button type="button" disabled={busy} onClick={() => void loginWithPasskey()} className="mobile-tap flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-emerald-400 px-4 text-sm font-semibold text-[#07100b] transition hover:bg-emerald-300 disabled:opacity-40"><KeyRound className="h-4 w-4" />{busy ? "Waiting for passkey..." : "Continue with a passkey"}</button><p className="text-center text-[10px] leading-relaxed text-zinc-600">Face ID, Windows Hello, or a saved passkey</p><div className="flex items-center gap-3 py-1"><span className="h-px flex-1 bg-white/[.07]" /><span className="text-[9px] font-medium uppercase tracking-[.14em] text-zinc-700">or</span><span className="h-px flex-1 bg-white/[.07]" /></div></>}
-              <label className="block text-[11px] font-medium text-zinc-400">Shop passcode<input autoFocus={!passkeyAvailable} type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter your passcode" className="mt-2 min-h-12 w-full rounded-xl border border-white/[.08] bg-black/30 px-4 text-sm text-zinc-200 placeholder-zinc-700 outline-none transition focus:border-emerald-400/50 focus:ring-2 focus:ring-emerald-400/10" /></label>
-              {error && <div className="rounded-xl border border-red-500/20 bg-red-500/[.07] p-3 text-xs text-red-400">{error}</div>}
-              <button disabled={busy || !password} className="mobile-tap min-h-12 w-full rounded-xl border border-white/[.08] bg-white/[.055] px-4 text-sm font-semibold text-zinc-100 transition hover:bg-white/[.09] disabled:opacity-40">{busy ? "Signing in..." : "Enter Shop"}</button>
-            </form>
-            <div className="mt-8 flex items-center gap-2 border-t border-white/[.06] pt-5 text-[10px] text-zinc-700"><ShieldCheck className="h-3.5 w-3.5" /> Secure private shop management</div>
+    <div className="shop-shell min-h-screen bg-[#080809] text-zinc-100">
+      <main className="flex min-h-screen items-center justify-center px-4 py-8 sm:px-6">
+        <section className="w-full max-w-[440px] rounded-xl border border-white/[.08] bg-[#111113] p-6 shadow-[0_24px_80px_rgba(0,0,0,.62)] sm:p-8">
+          <div className="flex items-center gap-3">
+            <div className="grid h-11 w-11 shrink-0 place-items-center rounded-lg border border-[#5865f2]/35 bg-[#5865f2]/[.12]"><ShopWheel className="w-9" accent="#5865f2" /></div>
+            <div><div className="text-base font-semibold text-[#f7f7f8]">Akron Tire Shop</div><div className="mt-0.5 text-[9px] font-bold uppercase tracking-[.18em] text-[#aab0ff]">Operations console</div></div>
           </div>
+          <div className="mt-8"><div className="text-[10px] font-bold uppercase tracking-[.18em] text-zinc-500">Secure access</div><h1 className="mt-2 text-[30px] font-semibold tracking-[-.045em] text-white">Welcome back.</h1><p className="mt-2 text-sm leading-relaxed text-zinc-400">Use your passkey or shop access code to open the workspace.</p></div>
+          <form onSubmit={login} className="mt-7 space-y-4">
+            {passkeyAvailable && <><button type="button" disabled={busy} onClick={() => void loginWithPasskey()} className="mobile-tap flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-[#5865f2] px-4 text-sm font-semibold text-white transition hover:bg-[#4752c4] disabled:opacity-40"><KeyRound className="h-4 w-4" />{busy ? "Waiting for passkey..." : "Continue with a passkey"}</button><p className="text-center text-[10px] leading-relaxed text-zinc-500">Face ID, Windows Hello, or a saved passkey</p><div className="flex items-center gap-3 py-1"><span className="h-px flex-1 bg-white/[.07]" /><span className="text-[9px] font-medium uppercase tracking-[.14em] text-zinc-600">or</span><span className="h-px flex-1 bg-white/[.07]" /></div></>}
+            <label className="block text-[11px] font-semibold uppercase tracking-[.1em] text-zinc-400">Shop access code<input autoFocus={!passkeyAvailable} type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter your access code" className="mt-2 min-h-12 w-full rounded-lg border border-white/[.08] bg-[#080809] px-4 text-sm text-zinc-100 placeholder-zinc-600 outline-none transition focus:border-[#5865f2]/70 focus:ring-2 focus:ring-[#5865f2]/20" /></label>
+            {error && <div className="rounded-lg border border-red-500/20 bg-red-500/[.07] p-3 text-xs text-red-400">{error}</div>}
+            <button disabled={busy || !password} className="mobile-tap min-h-12 w-full rounded-lg border border-white/[.1] bg-white/[.07] px-4 text-sm font-semibold text-white transition hover:bg-white/[.11] disabled:opacity-40">{busy ? "Signing in..." : "Enter workspace"}</button>
+          </form>
+          <div className="mt-7 flex items-center gap-2 border-t border-white/[.07] pt-5 text-[10px] text-zinc-500"><ShieldCheck className="h-3.5 w-3.5 text-[#aab0ff]" /> Secure private shop management</div>
         </section>
-      </div>
+      </main>
     </div>
   );
 }
