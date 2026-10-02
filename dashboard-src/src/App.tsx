@@ -556,7 +556,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20261002_DISCORD_PORTAL_V49";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20261002_TRUE_BLACK_V50";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -852,6 +852,19 @@ export function App() {
       .shop-nav-item__icon { width:16px; height:16px; flex:0 0 auto; color:#aeb1b9; }
       .shop-nav-item--active .shop-nav-item__icon { color:#8b93ff; }
       .shop-nav-item__badge { width:6px; height:6px; margin-left:auto; border-radius:999px; background:#5865f2; box-shadow:0 0 10px rgba(88,101,242,.65); }
+
+      /* True-black finish: surfaces only lift enough to keep controls legible. */
+      html,body,#root { background:#080809!important; }
+      .shop-shell,.shop-shell::before { background:#080809!important; }
+      .shop-shell::after { opacity:0!important; }
+      .shop-sidebar,.shop-sidebar__brand,.shop-desktop-bar,.shop-mobile-topbar,.shop-mobile-nav { background:#0d0d0e!important; }
+      .shop-content,.shop-content::before { background:#080809!important; }
+      .shop-content .shop-hero { background:#111113!important; border-color:rgba(255,255,255,.075)!important; }
+      .shop-card,.inventory-command,.shop-tag-card,.shop-stat-grid .mobile-stat-card { background:#111113!important; border-color:rgba(255,255,255,.07)!important; }
+      .shop-shell input,.shop-shell select,.shop-shell textarea,.shop-shell thead { background:#09090a!important; }
+      .shop-shell table tbody tr:hover { background:#18181a!important; }
+      .shop-nav-item:hover { background:#19191b!important; }
+      .shop-nav-item--active { background:#17171b!important; }
     `;
     document.head.appendChild(style);
     return () => style.remove();
