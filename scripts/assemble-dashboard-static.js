@@ -3,7 +3,6 @@ const path = require("path");
 
 const root = path.join(__dirname, "..");
 const builtDashboard = path.join(root, "dashboard-src", "dist", "index.html");
-const publicStorefront = path.join(root, "customer-site", "index.html");
 const publicIndex = path.join(root, "public", "index.html");
 const staffDirectory = path.join(root, "public", "staff");
 const staffIndex = path.join(staffDirectory, "index.html");
@@ -14,14 +13,10 @@ if (!fs.existsSync(builtDashboard)) {
   throw new Error("Dashboard build is missing. Run the dashboard build first.");
 }
 
-if (!fs.existsSync(publicStorefront)) {
-  throw new Error("Customer storefront is missing. Add customer-site/index.html before building.");
-}
-
-// The root is the customer-facing site. Keep the authenticated operations app
-// under /staff so it can continue using the same API and persisted data files.
+// This is a private shop workspace, so the operations dashboard belongs at the
+// root. Keep /staff as an alias for saved bookmarks and existing staff links.
 fs.mkdirSync(staffDirectory, { recursive: true });
-fs.copyFileSync(publicStorefront, publicIndex);
+fs.copyFileSync(builtDashboard, publicIndex);
 fs.copyFileSync(builtDashboard, staffIndex);
 
 // The dashboard's standalone build references its favicon and shop artwork
@@ -32,4 +27,4 @@ if (fs.existsSync(publicAssets)) {
 }
 require("./generate-legal-static");
 require("./build-httpdocs");
-console.log("Assembled customer storefront and staff dashboard for Plesk.");
+console.log("Assembled private shop dashboard for Plesk.");

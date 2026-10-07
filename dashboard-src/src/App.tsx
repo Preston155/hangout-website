@@ -1164,7 +1164,7 @@ function Sidebar({ page, setPage }: { page: Page; setPage: (p: Page) => void }) 
     const active = item.id === page;
     const Icon = item.icon;
     return <button key={item.id} onClick={() => setPage(item.id)} className={`shop-nav-item ${active ? "shop-nav-item--active" : ""}`}>
-      <Icon className="shop-nav-item__icon" /><span>{item.id === "tire-inventory" ? "Shop dashboard" : item.label}</span>{active && <span className="shop-nav-item__badge" aria-hidden="true" />}
+      <Icon className="shop-nav-item__icon" /><span>{item.label}</span>{active && <span className="shop-nav-item__badge" aria-hidden="true" />}
     </button>;
   };
   return (
