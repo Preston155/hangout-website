@@ -3,6 +3,7 @@ const path = require("path");
 
 const root = path.join(__dirname, "..");
 const builtDashboard = path.join(root, "dashboard-src", "dist", "index.html");
+const privateWorkspace = path.join(root, "customer-site", "index.html");
 const publicIndex = path.join(root, "public", "index.html");
 const staffDirectory = path.join(root, "public", "staff");
 const staffIndex = path.join(staffDirectory, "index.html");
@@ -12,11 +13,14 @@ const staffAssets = path.join(staffDirectory, "assets");
 if (!fs.existsSync(builtDashboard)) {
   throw new Error("Dashboard build is missing. Run the dashboard build first.");
 }
+if (!fs.existsSync(privateWorkspace)) {
+  throw new Error("Private workspace source is missing.");
+}
 
-// This is a private shop workspace, so the operations dashboard belongs at the
-// root. Keep /staff as an alias for saved bookmarks and existing staff links.
+// The root keeps the custom Akron design, now as a private operations workspace.
+// Keep the legacy dashboard at /staff for any saved links during the transition.
 fs.mkdirSync(staffDirectory, { recursive: true });
-fs.copyFileSync(builtDashboard, publicIndex);
+fs.copyFileSync(privateWorkspace, publicIndex);
 fs.copyFileSync(builtDashboard, staffIndex);
 
 // The dashboard's standalone build references its favicon and shop artwork
