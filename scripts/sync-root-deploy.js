@@ -13,6 +13,7 @@ const DEPLOY_ENTRIES = [
   "data",
   "assets",
   "api",
+  "staff",
   "login",
   "privacy",
   "terms",

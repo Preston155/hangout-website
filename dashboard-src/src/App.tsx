@@ -540,10 +540,10 @@ const permissions: Record<string, Permission[]> = {
 };
 
 const navItems = [
-  { id: "tire-inventory" as Page, label: "Stock Management", shortLabel: "Stock", icon: Package, tone: "sky" as const },
-  { id: "inventory-view" as Page, label: "View Inventory", shortLabel: "View", icon: Eye, tone: "emerald" as const },
-  { id: "tire-sales" as Page, label: "New Sale or Service", shortLabel: "New Sale", icon: ShoppingCart, tone: "amber" as const },
-  { id: "tire-sales-report" as Page, label: "Sales Reports", shortLabel: "Reports", icon: ClipboardList, tone: "violet" as const },
+  { id: "tire-inventory" as Page, label: "Tire Sizes", shortLabel: "Sizes", icon: Package, tone: "sky" as const },
+  { id: "inventory-view" as Page, label: "Inventory", shortLabel: "Stock", icon: Eye, tone: "emerald" as const },
+  { id: "tire-sales" as Page, label: "Sales", shortLabel: "Sales", icon: ShoppingCart, tone: "amber" as const },
+  { id: "tire-sales-report" as Page, label: "Sales History", shortLabel: "History", icon: ClipboardList, tone: "violet" as const },
   { id: "settings" as Page, label: "Account", shortLabel: "Account", icon: Settings, tone: "zinc" as const },
 ];
 
@@ -556,7 +556,7 @@ const shopToneStyles: Record<ShopTone, { text: string; dot: string; soft: string
   zinc: { text: "text-zinc-400", dot: "bg-zinc-400", soft: "bg-white/[.06]", ring: "ring-white/[.08]" },
 };
 
-const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20261002_LOGIN_PORTAL_V51";
+const SHOP_BUILD_MARKER = "AKRON_SHOP_UI_20261007_SIZES_AND_SALES_TABS_V52";
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -2730,7 +2730,7 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
 
   return (
     <div className="space-y-5 lg:space-y-7">
-      <ShopPageHeader tone="sky" eyebrow="Live stock room" title="Inventory" emoji="🛞" description="Check every size, update quantities, and keep the floor organized." meta={<div className="relative z-[1] mt-3 flex flex-wrap items-center gap-2 text-[10px] font-medium text-zinc-500"><span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/15 bg-emerald-400/[.07] px-2.5 py-1 text-emerald-300"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Inventory synced</span><span>{data ? `${allInventory.length} stock record${allInventory.length === 1 ? "" : "s"}` : "Syncing stock…"}</span><span className="text-zinc-700">•</span><span>{new Date().toLocaleDateString("en-US", { timeZone: "America/New_York", weekday: "long", month: "short", day: "numeric" })}</span></div>} actions={<Button className="relative z-[1] w-full justify-center px-5 sm:w-auto" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> New sale</Button>} />
+      <ShopPageHeader tone="sky" eyebrow="Live tire catalog" title="Tire Sizes" emoji="🛞" description="Keep every tire size, package, quantity, and selling price organized in one saved catalog." meta={<div className="relative z-[1] mt-3 flex flex-wrap items-center gap-2 text-[10px] font-medium text-zinc-500"><span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/15 bg-emerald-400/[.07] px-2.5 py-1 text-emerald-300"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Inventory synced</span><span>{data ? `${allInventory.length} saved tire size${allInventory.length === 1 ? "" : "s"}` : "Syncing tire sizes…"}</span><span className="text-zinc-700">•</span><span>{new Date().toLocaleDateString("en-US", { timeZone: "America/New_York", weekday: "long", month: "short", day: "numeric" })}</span></div>} actions={<Button className="relative z-[1] w-full justify-center px-5 sm:w-auto" onClick={() => setPage("tire-sales")}><ShoppingCart className="h-3.5 w-3.5" /> Record sale</Button>} />
       <section className="grid gap-3 lg:grid-cols-[minmax(0,1.55fr)_minmax(280px,.75fr)]">
         <div className="inventory-command overflow-hidden">
           <div className="flex items-center justify-between gap-3 border-b border-[#24272c] px-5 py-4 sm:px-6"><div><div className="text-[9px] font-bold uppercase tracking-[.18em] text-amber-400">Today at the shop</div><div className="mt-1 text-xs text-zinc-500">A live snapshot of saved work</div></div><span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-emerald-300"><span className="live-dot h-1.5 w-1.5 rounded-full bg-emerald-400" /> Live</span></div>
@@ -2768,7 +2768,7 @@ function TireInventoryPage({ showToast, setPage }: { showToast: (m: string) => v
         </div>
       </div>
       <Card>
-      <CardHeader title="Inventory" icon={<Package className="h-4 w-4 text-zinc-400" />} action={<input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search size..." className="w-full rounded-md border border-[#212328] bg-[#0c0d10] px-3.5 py-2.5 text-xs text-zinc-200 outline-none transition focus:border-emerald-400 sm:w-64" />} />
+        <CardHeader title="All tire sizes" icon={<Package className="h-4 w-4 text-zinc-400" />} action={<input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search size..." className="w-full rounded-md border border-[#212328] bg-[#0c0d10] px-3.5 py-2.5 text-xs text-zinc-200 outline-none transition focus:border-emerald-400 sm:w-64" />} />
         <div className="mt-4 flex flex-col gap-3 border-b border-white/[.055] pb-4 sm:flex-row sm:items-center sm:justify-between">
           <TirePackageTabs value={packageFilter} onChange={setPackageFilter} inventory={allInventory} />
           <div className="grid grid-cols-2 gap-2 sm:flex">
