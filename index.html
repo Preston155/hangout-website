@@ -466,7 +466,7 @@ footer{border-top:1px solid var(--line);padding-block:72px 32px;margin-top:clamp
 
     <section class="work-panel" id="panel-sales"><div class="workspace-grid"><article class="work-card"><span class="kicker">New sale</span><h2>Close it out.</h2><p>Today’s tire sales deduct stock automatically.</p><form class="work-form" id="saleForm"><label class="wide">Tire size<select name="inventoryId" id="saleInventory" required></select></label><label>Quantity<input name="quantity" type="number" min="1" value="1" required></label><label>Total price<input name="totalPrice" type="number" min="0" step="0.01" placeholder="0.00" required></label><label>Customer<input name="customer" placeholder="Walk-in customer"></label><label>Payment<select name="paymentMethod"><option>Cash</option><option>Cashapp</option><option>Chime</option></select></label><label class="wide">Notes<input name="notes" placeholder="Optional"></label><div class="form-action"><button class="btn btn-red" type="submit">Record sale</button><span class="work-msg" id="saleMessage"></span></div></form></article><article class="work-card"><span class="kicker">Today</span><div class="dash-stats"><div><div class="stat-value" id="statRevenue">—</div><div class="stat-label">Revenue</div></div><div><div class="stat-value" id="statSold">—</div><div class="stat-label">Items sold</div></div><div><div class="stat-value" id="statSales">—</div><div class="stat-label">Sales</div></div></div></article></div><article class="work-card" style="margin-top:18px"><span class="kicker">Latest activity</span><div class="sales-list" id="recentSales"></div></article></section>
 
-    <section class="work-panel" id="panel-history"><article class="work-card"><div class="inventory-tools"><div><span class="kicker">Saved records</span><h2 style="margin-top:8px">Sales history.</h2></div><button class="btn btn-ghost btn-sm" id="refreshHistory" type="button">Refresh</button></div><div class="sales-list" id="historyList"></div></article></section>
+    <section class="work-panel" id="panel-history"><article class="work-card"><div class="inventory-tools"><div><span class="kicker">Saved records</span><h2 style="margin-top:8px">Sales history.</h2><p id="historySummary">Choose a day to review its sales and services.</p></div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end"><button class="btn btn-ghost btn-sm" id="historyPrev" type="button" aria-label="Previous day">←</button><input id="historyDate" type="date" aria-label="History date" style="min-height:42px;border:1px solid var(--line);border-radius:8px;background:#0b0b0d;padding:0 10px;color:var(--text)"><button class="btn btn-ghost btn-sm" id="historyNext" type="button" aria-label="Next day">→</button><button class="btn btn-ghost btn-sm" id="refreshHistory" type="button">Refresh</button></div></div><div class="sales-list" id="historyList"></div></article></section>
     <section class="work-panel" id="panel-overview"><div class="workspace-grid"><article class="work-card"><span class="kicker">Shop health</span><h2>Everything in one place.</h2><p>Your tire catalog, stock counts, sales, and service records are connected to the same saved data you already have.</p><button class="btn btn-red" type="button" data-go-tab="sizes" style="margin-top:22px">Manage tire sizes</button></article><article class="work-card"><span class="kicker">Inventory value</span><div class="stat-value" id="statValue">—</div><p>Current retail value of tires on the rack.</p></article></div></section>
   </section>
 </main>
@@ -1196,13 +1196,28 @@ const SHOP = {
     if ([...select.options].some(option => option.value === selected)) select.value = selected;
   }
 
+  const shopDay = value => new Intl.DateTimeFormat('en-CA', { timeZone:'America/New_York', year:'numeric', month:'2-digit', day:'2-digit' }).format(new Date(value));
+  const shiftHistoryDay = amount => {
+    const picker = $('#historyDate');
+    const current = picker.value || shopDay(new Date());
+    const date = new Date(current + 'T12:00:00');
+    date.setDate(date.getDate() + amount);
+    const next = shopDay(date);
+    if (next <= shopDay(new Date())) picker.value = next;
+    renderSales();
+  };
+
   function renderSales() {
     if (!shop) return;
     const sales = shop.sales || [];
     const rows = sales.slice(0, 8).map(sale => `<div class="sale-row"><div><b>${escape(sale.size || sale.serviceType || 'Shop service')}</b><span>${escape(sale.customer || 'Walk-in')} · ${escape(sale.paymentMethod || 'Cash')} · ${new Date(sale.soldAt).toLocaleString()}</span></div><strong>${money(sale.total)}</strong><span>${sale.quantity || 1} item${Number(sale.quantity) === 1 ? '' : 's'}</span></div>`).join('');
-    const allRows = sales.map(sale => `<div class="sale-row"><div><b>${escape(sale.size || sale.serviceType || 'Shop service')}</b><span>${escape(sale.customer || 'Walk-in')} · ${escape(sale.paymentMethod || 'Cash')} · ${new Date(sale.soldAt).toLocaleString()}</span></div><strong>${money(sale.total)}</strong><span>${sale.quantity || 1} item${Number(sale.quantity) === 1 ? '' : 's'}</span></div>`).join('');
+    const selectedDay = $('#historyDate').value || shopDay(new Date());
+    const daySales = sales.filter(sale => shopDay(sale.soldAt) === selectedDay);
+    const allRows = daySales.map(sale => `<div class="sale-row"><div><b>${escape(sale.size || sale.serviceType || 'Shop service')}</b><span>${escape(sale.customer || 'Walk-in')} · ${escape(sale.paymentMethod || 'Cash')} · ${new Date(sale.soldAt).toLocaleString()}</span></div><strong>${money(sale.total)}</strong><span>${sale.quantity || 1} item${Number(sale.quantity) === 1 ? '' : 's'}</span></div>`).join('');
     $('#recentSales').innerHTML = rows || '<div class="empty-work">No sales recorded yet.</div>';
-    $('#historyList').innerHTML = allRows || '<div class="empty-work">No sales history yet.</div>';
+    $('#historyList').innerHTML = allRows || `<div class="empty-work">No sales or services were saved on ${new Date(selectedDay + 'T12:00:00').toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' })}.</div>`;
+    const dayTotal = daySales.reduce((sum, sale) => sum + Number(sale.total || 0), 0);
+    $('#historySummary').textContent = `${daySales.length} record${daySales.length === 1 ? '' : 's'} · ${money(dayTotal)} on ${new Date(selectedDay + 'T12:00:00').toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' })}.`;
   }
 
   function render() { renderStats(); renderInventory(); renderSales(); $('#syncState').textContent = 'All changes saved'; }
@@ -1221,6 +1236,11 @@ const SHOP = {
   $$('[data-app-tab],[data-go-tab]').forEach(button => button.addEventListener('click', event => { event.preventDefault(); openTab(button.dataset.appTab || button.dataset.goTab); }));
   $('#sizeSearch').addEventListener('input', renderInventory);
   $('#refreshHistory').addEventListener('click', () => loadShop().catch(error => setMessage('sizeMessage', error.message, true)));
+  $('#historyDate').value = shopDay(new Date());
+  $('#historyDate').max = shopDay(new Date());
+  $('#historyDate').addEventListener('change', renderSales);
+  $('#historyPrev').addEventListener('click', () => shiftHistoryDay(-1));
+  $('#historyNext').addEventListener('click', () => shiftHistoryDay(1));
   $('#sizeForm').addEventListener('submit', async event => {
     event.preventDefault(); const data = Object.fromEntries(new FormData(event.currentTarget)); const button = event.submitter; button.disabled = true; setMessage('sizeMessage', 'Saving…');
     try { shop = await request('/api/tire-shop/inventory', { method:'POST', body:JSON.stringify({...data, quantity:Number(data.quantity), price:Number(data.price)}) }); event.currentTarget.reset(); event.currentTarget.quantity.value = 1; setMessage('sizeMessage', 'Tire size saved.'); render(); }
